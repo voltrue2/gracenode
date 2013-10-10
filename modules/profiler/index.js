@@ -28,10 +28,12 @@ exports.stop = function () {
 	var now = date.getTime();
 	var totalTime = now - startTime;
 	var logList = [];
-	var longest = 0;
 	var len = marks.length;
 	var gap = 0;
 	var space = '';
+	var msg = ' Application took [' + totalTime + ' ms] ';
+	var msgLen = msg.length;
+	var longest = msgLen;
 	// degenrate profiling logs
 	for (var i = 0; i < len; i++) {
 		var item = marks[i];
@@ -56,8 +58,7 @@ exports.stop = function () {
 		log.verbose('|' + logList[j] + space + '|');
 		log.verbose(line);
 	}
-	var msg = ' Application took [' + totalTime + ' ms] ';
-	gap = longest - msg.length;
+	gap = longest - msgLen;
 	space = '';
 	for (var n = 0; n < gap; n++) {
 		space += ' ';

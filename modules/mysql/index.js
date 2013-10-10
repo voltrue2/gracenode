@@ -243,7 +243,7 @@ MySql.prototype.roGet = function (sql, params, mustExist, cb) {
 		}
 		that._connection.query(sql, params, function (error, res) {
 			if (!error && !res.length && mustExist) {
-				// we consider not fining any record an error
+				// we consider not finding any record an error
 				error = new Error(sql + ' ' + JSON.stringify(params) + ' found nothing');
 			}
 			
@@ -268,7 +268,7 @@ MySql.prototype.rwGet = function (sql, params, mustExist, cb) {
 
 	this._connection.query(sql, params, function (error, res) {
 		if (!error && !res.length && mustExist) {
-			// we consider not fining any record an error
+			// we consider not finding any record an error
 			error = new Error(sql + ' ' + JSON.stringify(params) + ' found nothing');
 		}
 

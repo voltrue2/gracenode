@@ -6,6 +6,7 @@
  *			"port": port number,
  *			"host": "host name or ip address",
  *			"controllerPath": "path to controller directory"
+ *			"ignored": ["name of a request you want to ignore", "favicon.ico"]
  *		}
  * }
  * */
@@ -37,23 +38,34 @@ exports.start = function () {
 	var server = http.createServer(function (request, response) {
 		
 		gracenode.profiler.start();
+		gracenode.profiler.mark('handling request [' + request.url + ']');
 		
 		var reqHeader = request.headers;
 		var controllerData = parseUri(request.url);
-		
+	
+		// check for ignored
+		var ignored = config.ignored || [];
+		if (ignored.indexOf(controllerData.controller) !== -1) {
+			// ignored request detected
+			log.verbose('ignored request: ', request.url);
+			return respond(request, response, 200, '');
+		}
+	
 		log.verbose('request recieved: ', request.url, controllerData);
 		
 		// extract post/get
 		extractQuery(request, function (data) {
-
-			gracenode.profiler.mark('handling request [' + request.url + ']');
-
 			execController(controllerData, data, request, response);
 		});
 	});
 	server.listen(config.port, config.host);
 
 	log.verbose('server started: ', config.host + ':' + config.port);
+
+	// listener for GraceNode shutdown
+	gracenode.event.on('shutdown', function () {
+		log.verbose('stopping server...');
+	});
 };
 
 /**

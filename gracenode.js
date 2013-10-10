@@ -8,14 +8,18 @@ var modules = [
 	{ name: 'util', sourceName: 'util', config: null, path: null }
 ];
 
+var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('./modules/config');
 var logger = require('./modules/log');
 var log = logger.create('GraceNode');
 var profiler = null;
+var eventEmitter = new EventEmitter();
 
+// exposed properties
 exports.configPath = '';
 exports.configFiles = [];
+exports.event = new EventEmitter();
 
 var prevCwd = process.cwd();
 var appRoot = __dirname.substring(0, __dirname.lastIndexOf(GraceNode));
@@ -159,12 +163,15 @@ function setupModules(callback) {
 // uncaught exception handler
 process.on('uncaughtException', function (error) {
 	log.fatal('GraceNode detected an uncaught exception');
+	exports.event.emit('uncaughtException', error);
 	log.fatal(error);
 });
 
 // signal event listener
 
 process.on('exit', function (error) {
+	exports.event.emit('exit', error);
+	
 	if (error) {
 		log.fatal('exit GraceNode with an error');
 	} else {
@@ -173,6 +180,7 @@ process.on('exit', function (error) {
 });
 
 process.on('SIGINT', function () {
-	log.verbose('shut down GraceNode');
+	log.verbose('shutdown GraceNode');
+	exports.event.emit('shutdown');
 	process.exit(0);
 });

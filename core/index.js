@@ -12,7 +12,7 @@ exports.configPath = '';
 exports.configFiles = [];
 
 /**
- * @param {String} name of the module to be used. example: modName = myServer -> GraceNote.myServer
+ * @param {String} name of the module to be used. example: modName = myServer -> GraceNode.myServer
  * @param {String} original name of the module to be used. example modSourceName = server -> load module called "server"
  * @param {Object} { altConfigName: alternative configuration name of be used, altPath: alternative path to the module }
  * */
@@ -35,13 +35,13 @@ exports.setup = function (cb) {
 	async.waterfall(setupList, function (error) {
 		if (error) {
 			log.fatal(error);
-			log.fatal('GraceNote failed to setup');
+			log.fatal('GraceNode failed to setup');
 			process.exit(1);
 		}
 
 		cb();
 		
-		log.verbose('GraceNote setup complete');
+		log.verbose('GraceNode setup complete');
 	
 		profiler.stop();
 	});
@@ -78,7 +78,7 @@ function setupLog(callback) {
 }
 
 function setupProfiler(callback) {
-	profiler.GraceNote = exports;
+	profiler.GraceNode = exports;
 	exports.profiler = profiler;
 	callback(null);
 	
@@ -106,7 +106,7 @@ function setupModules(callback) {
 			exports[name] = require(path);
 			
 			// pass itself to the module
-			exports[name].GraceNote = exports;
+			exports[name].GraceNode = exports;
 
 			// pass the name of module
 			exports[name].name = name;
@@ -137,6 +137,6 @@ process.on('uncaughtException', function (error) {
 
 // signal event listener
 process.on('SIGINT', function () {
-	log.verbose('GraceNote stopped');
+	log.verbose('GraceNode stopped');
 	process.exit(0);
 });
