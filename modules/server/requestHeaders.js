@@ -3,7 +3,7 @@ var gracenode = require('../../gracenode');
 var log = gracenode.log.create('headers');
 
 var osRegex = /(iPhone|Linux|Windows|iPod|iPad|Macintosh|Android)/i;
-var browserRegex = /(IE|CHrome|Firefox|Safari|Opera)/i;
+var browserRegex = /(IE|Chrome|Firefox|Safari|Opera)/i;
 
 
 exports.create = function (reqHeaders) {
