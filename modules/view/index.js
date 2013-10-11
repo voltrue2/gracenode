@@ -36,18 +36,28 @@ exports.load = function (viewFilePath, cb) {
 		if (error) {
 			return cb(new Error('failed to read the file stat: ' + path + '\n' + JSON.stringify(error, null, 4)));
 		}
-		
+		// content data
+		var content = null;
 		// get file modtime in unix timestamp
 		var dateObj = new Date(stat.mtime);
 		var mtime = dateObj.getTime();
 		// create memory cache key
 		var key = path + mtime;
 		// check for cache in memory
-		var outputData = viewList[key];		
-		if (outputData) {
+		content = viewList[key];		
+		if (content) {
 			// cache found > use it
 			log.verbose('view output data found in cache: ', key);
-			return cb(null, embedData(viewList[key]));
+			content = embedData(content);
+			// remove line breaks and tabs
+			content = content.replace(/(\r\n|\n|\r)/gm, '');	
+			// handle included files
+			return handleIncludedFiles(content, function (error, contentData) {
+				if (error) {
+					return cb(error);
+				}	
+				cb(null, contentData);
+			});
 		}	
 
 		// no cached data found > read the file
@@ -58,13 +68,10 @@ exports.load = function (viewFilePath, cb) {
 			// store in memory cache
 			viewList[key] = file;
 			log.verbose('view output data stored in cache: ', key);
-	
 			// prepare content
-			var content = embedData(file);		
-			
+			content = embedData(file);		
 			// remove line breaks and tabs
 			content = content.replace(/(\r\n|\n|\r)/gm, '');	
-
 			// handle included files
 			handleIncludedFiles(content, function (error, contentData) {
 				if (error) {
