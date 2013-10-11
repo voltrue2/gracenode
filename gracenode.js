@@ -80,9 +80,9 @@ exports.setup = function (cb) {
 			process.exit(1);
 		}
 
-		cb();
-
 		log.verbose('GraceNode setup complete');
+
+		cb();
 	
 		profiler.stop();
 	});
