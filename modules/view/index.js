@@ -17,7 +17,6 @@ var clientData = {};
 
 exports.assign = function (name, value) {
 	clientData[name] = value;
-	log.verbose('assinging cilent data: ' + name + ' = ', value);
 };
 
 exports.load = function (viewFilePath, cb) {

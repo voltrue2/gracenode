@@ -21,6 +21,7 @@ var http = require('http');
 var gracenode = require('../../gracenode');
 var log = gracenode.log.create('server');
 var queryData = require('./queryData.js');
+var headers = require('./requestHeaders.js');
 
 var config = null;
 var contentTypes = {
@@ -43,13 +44,6 @@ exports.start = function () {
 		
 		gracenode.profiler.start();
 		gracenode.profiler.mark('handling request [' + request.url + ']');
-
-		/* test code
-		response.writeHead({
-			'Content-Type': 'text/html;'
-		});	
-		return response.end('<!DOCTYPE html><html><head></head><body><h1>Boooooo<h1></body></html>');
-		*/	
 	
 		var reqHeader = request.headers;
 		var controllerData = parseUri(request.url);
@@ -145,6 +139,8 @@ function execController(data, reqData, request, response) {
 			// pass post and get
 			controller.postData = queryData.createGetter(reqData.post || {});
 			controller.getData = queryData.createGetter(reqData.get || {});
+			// pass request headers
+			controller.requestHeaders = headers.create(request.headers);
 			// final callback to the method
 			var callback = function (error, res, contentType, statusCode) {
 				var resCode = statusCode || 200;
