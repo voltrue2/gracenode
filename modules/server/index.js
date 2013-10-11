@@ -23,6 +23,10 @@ var log = gracenode.log.create('server');
 var queryData = require('./queryData.js');
 
 var config = null;
+var contentTypes = {
+	JSON: 'JSON',
+	HTML: 'HTML'
+};
 
 exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.port || !configIn.host || !configIn.controllerPath) {
@@ -39,7 +43,14 @@ exports.start = function () {
 		
 		gracenode.profiler.start();
 		gracenode.profiler.mark('handling request [' + request.url + ']');
-		
+
+		/* test code
+		response.writeHead({
+			'Content-Type': 'text/html;'
+		});	
+		return response.end('<!DOCTYPE html><html><head></head><body><h1>Boooooo<h1></body></html>');
+		*/	
+	
 		var reqHeader = request.headers;
 		var controllerData = parseUri(request.url);
 	
@@ -48,11 +59,11 @@ exports.start = function () {
 		if (ignored.indexOf(controllerData.controller) !== -1) {
 			// ignored request detected
 			log.verbose('ignored request: ', request.url);
-			return respond(request, response, 200, '');
+			return respond(request, response, 200, '', 'JSON');
 		}
 	
 		log.verbose('request recieved: ', request.url, controllerData);
-		
+	
 		// extract post/get
 		extractQuery(request, function (data) {
 			execController(controllerData, data, request, response);
@@ -135,7 +146,7 @@ function execController(data, reqData, request, response) {
 			controller.postData = queryData.createGetter(reqData.post || {});
 			controller.getData = queryData.createGetter(reqData.get || {});
 			// final callback to the method
-			var callback = function (error, res, statusCode) {
+			var callback = function (error, res, contentType, statusCode) {
 				var resCode = statusCode || 200;
 				var resData = res;
 				if (error) {
@@ -147,8 +158,7 @@ function execController(data, reqData, request, response) {
 
 				gracenode.profiler.mark(data.controller + '.' + data.method);
 		 
-				resData = JSON.stringify(resData);
-				respond(request, response, resCode, resData);
+				respond(request, response, resCode, resData, contentType);
 			};
 			// validate method
 			if (!controller[data.method]) {
@@ -171,8 +181,23 @@ function execController(data, reqData, request, response) {
 	}
 }
 
-function respond(request, response, resCode, data) {
-	// gzip the data to be delivered
+function respond(request, response, resCode, data, contentType) {
+	log.verbose('resonding content type: ', contentType);
+	switch (contentType) {
+		case contentTypes.JSON:
+			respondJSON(request, response, resCode, data);
+			break;
+		case contentTypes.HTML:
+			respondHTML(request, response, resCode, data);
+			break;
+		default: 
+			throw new Error('invalid content type given: ' + contentType);
+			break;
+	}
+}
+
+function respondJSON(request, response, resCode, data) {
+	data = JSON.stringify(data);
 	zlib.gzip(data, function (error, compressedData) {
 		if (error) {
 			log.error(error);
@@ -180,9 +205,9 @@ function respond(request, response, resCode, data) {
 			resCode = 500;
 			compressedData = JSON.stringify({ error: error });
 		}
-		response.writeHeader(resCode, {
+		response.writeHead(resCode, {
 			'Cache-Control': 'no-cache, must-revalidate',
-			'Connection': 'close',
+			'Connection': 'Keep-Alive',
 			'Content-Encoding': 'gzip',
 			'Content-Length': compressedData.length,
 			'Content-Type': 'text/plain;charset=UTF-8',
@@ -190,14 +215,45 @@ function respond(request, response, resCode, data) {
 			'Vary': 'Accept-Encoding'
 		});
 		response.end(compressedData);
+		
+		if (resCode >= 200 && resCode <= 399) {
+			log.verbose('responded to request: ', request.url, resCode);
+		} else if (rescode >= 400 && rescode <= 499) {
+			log.error('responded to request: ', request.url, resCode);
+		} else if (resCode >= 500) {
+			log.fatal('responded to request: ', request.url, resCode);
+		}
+		gracenode.profiler.stop();
 	});
-	
-	if (resCode >= 200 && resCode <= 399) {
-		log.verbose('responded to request: ', request.url, resCode);
-	} else if (resCode >= 400 && resCode <= 499) {
-		log.error('responded to request: ', request.url, resCode);
-	} else if (resCode >= 500) {
-		log.fatal('responded to request: ', request.url, resCode);
-	}
-	gracenode.profiler.stop();
+}
+
+function respondHTML(request, response, resCode, data) {
+	zlib.gzip(data, function (error, compressedData) {
+		if (error) {
+			log.error(error);
+			
+			resCode = 500;
+			compressedData = JSON.stringify({ error: error });
+		}
+		response.writeHead(resCode, {
+			'Cache-Control': 'no-cache, must-revalidate',
+			'Connection': 'Keep-Alive',
+			'Content-Encoding': 'gzip',
+			'Content-Length': compressedData.length,
+			'Content-Type': 'text/html; charset=utf-8',
+			'Pragma': 'no-cache',
+			'Vary': 'Accept-Encoding'
+		});
+
+		response.end(compressedData, 'binary');
+		
+		if (resCode >= 200 && resCode <= 399) {
+			log.verbose('responded to request: ', request.url, resCode);
+		} else if (rescode >= 400 && rescode <= 499) {
+			log.error('responded to request: ', request.url, resCode);
+		} else if (resCode >= 500) {
+			log.fatal('responded to request: ', request.url, resCode);
+		}
+		gracenode.profiler.stop();
+	});
 }

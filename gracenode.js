@@ -17,8 +17,8 @@ var profiler = null;
 var eventEmitter = new EventEmitter();
 
 // exposed properties
-exports.configPath = '';
-exports.configFiles = [];
+configPath = '';
+configFiles = [];
 exports.event = new EventEmitter();
 
 var prevCwd = process.cwd();
@@ -26,6 +26,31 @@ var appRoot = __dirname.substring(0, __dirname.lastIndexOf(GraceNode));
 
 // change current working dir to the root of the application
 process.chdir(appRoot);
+
+/*
+* returns the application root path
+*/ 
+exports.getRootPath = function () {
+	return appRoot;
+};
+
+exports.exit = function (error) {
+	process.exit(error || 0);
+};
+
+exports.setConfigPath = function (path) {
+	configPath = path;
+	log.verbose('configuration path: ', configPath);
+};
+
+exports.setConfigFiles = function (configFileList) {
+	if (!Array.isArray(configFileList)) {
+		log.fatal('invalid configuration file list given (an array expected): ', configFileList);
+		return exports.exit(1); 
+	}	
+	configFiles = configFileList;
+	log.verbose('configuration file list set: ', configFileList);
+};
 
 /**
  * @param {String} name of the module to be used. example: modName = myServer -> GraceNode.myServer
@@ -40,10 +65,10 @@ exports.use = function (modName, sourceModName, params) {
 };
 
 exports.setup = function (cb) {
-	if (!exports.configPath) {
+	if (!configPath) {
 		return cb(new Error('configPath has not been set'));
 	}
-	if (!exports.configFiles.length) {
+	if (!configFiles.length) {
 		return cb(new Error('configuration files to load have not been set'));
 	}
 	// set up process
@@ -65,8 +90,8 @@ exports.setup = function (cb) {
 
 // set up process functions
 function setupConfig(callback) {
-	config.setPath(exports.configPath);
-	config.load(exports.configFiles, function (error) {
+	config.setPath(configPath);
+	config.load(configFiles, function (error) {
 		if (error) {
 			console.error(error);
 			console.trace();
