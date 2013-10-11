@@ -113,7 +113,6 @@ function injectData(outputData) {
 				}
 			}
 		}		
-		log.verbose('inject client data: ', keyTag + ' > ' + value);
 		return value;		
 	});
 	return outputData;
