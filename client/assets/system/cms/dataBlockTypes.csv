@@ -1,0 +1,11 @@
+id,name
+selectList,Select List
+list,List
+number,Number Field
+shortText,Short Text Field
+longText,Long Text Field
+htmlText,HTML Text Field
+jsonText,JSON Data Field
+serializedText,PHP Serialized Data Field
+password,Password Field
+media,Media Field

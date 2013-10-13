@@ -7,7 +7,11 @@
  *			"host": "host name or ip address",
  *			"controllerPath": "path to controller directory"
  *			"ignored": ["name of a request you want to ignore", "favicon.ico"]
- *		}
+ *			"error": {
+				"404": { "controller": "errorControllerName", "method": "errorMethod" },
+				"500"...
+			}
+		}
  * }
  * */
 var fs = require('fs');
@@ -17,6 +21,7 @@ var zlib = require('zlib');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var http = require('http');
+var https = require('https');
 
 var gracenode = require('../../gracenode');
 var log = gracenode.log.create('server');
@@ -38,9 +43,17 @@ exports.readConfig = function (configIn) {
 
 exports.start = function () {
 	
-	log.verbose('starting server...');
-	
-	var server = http.createServer(function (request, response) {
+	log.info('starting server...');
+
+	var serverSource = http;	
+
+	if (config.protocol === 'https') {
+		serverSource = https;
+	}
+
+	log.info('server protocol:', (config.ptotocol || 'http'));
+
+	var server = serverSource.createServer(function (request, response) {
 		
 		gracenode.profiler.start();
 		gracenode.profiler.mark('handling request [' + request.url + ']');
@@ -63,13 +76,23 @@ exports.start = function () {
 			execController(controllerData, data, request, response);
 		});
 	});
-	server.listen(config.port, config.host);
+	if (!config.socket) {
+		// listen to a port
+		log.verbose('listening to a port:', config.port);
+		server.listen(config.port, config.host);
+	} else {
+		// listen to a socket file
+		log.verbose('listening to a socket file:', config.socket);
+		server.listen(config.socket, config.host);
+	}
 
 	log.verbose('server started: ', config.host + ':' + config.port);
 
 	// listener for GraceNode shutdown
 	gracenode.event.on('shutdown', function () {
-		log.verbose('stopping server...');
+		log.info('stopping server...');
+		server.close();
+		log.info('server stopped gracefully');
 	});
 };
 
@@ -125,13 +148,17 @@ function extractQuery(request, cb) {
 	}
 }
 
-function execController(data, reqData, request, response) {
+function execController(data, reqData, request, response, forcedResCode) {
 	try {
 		// verify the controller file
 		var path = config.controllerPath + data.controller;
 		fs.readdir(path, function (error, dirData) {
 			if (error) {
 				log.error('controller not found: ', path);
+				if (handleError(request, response, 404)) {
+					// stop
+					return;
+				}
 				return respond(request, response, 404, JSON.stringify({ error: error }));
 			}
 			// require the found controller
@@ -143,13 +170,18 @@ function execController(data, reqData, request, response) {
 			controller.requestHeaders = headers.create(request.headers);
 			// final callback to the method
 			var callback = function (error, res, contentType, statusCode) {
-				var resCode = statusCode || 200;
+				var resCode = forcedResCode ? forcedResCode : statusCode || 200;
 				var resData = res;
 				if (error) {
 					if (!statusCode) {
 						resCode = 404;
 					}
 					log.error(error);
+					
+					if (handleError(request, response, resCode)) {
+						// stop
+						return;
+					}
 				}
 
 				gracenode.profiler.mark(data.controller + '.' + data.method);
@@ -161,6 +193,11 @@ function execController(data, reqData, request, response) {
 				var errorMsg = 'invalid method ' + data.controller + '.' + data.method + '()';
 
 				log.error(new Error(errorMsg));
+				
+				if (handleError(request, response, 404)) {
+					// stop
+					return;
+				}
 
 				return respond(request, response, 404, JSON.stringify({ error: errorMsg }));
 			}
@@ -171,6 +208,11 @@ function execController(data, reqData, request, response) {
 	} catch (exception) {
 		
 		log.error(exception);
+		
+		if (handleError(request, response, 500)) {
+			// stop
+			return;
+		}
 		
 		var errData = JSON.stringify({ error: exception });
 		respond(request, response, 500, errData);
@@ -187,7 +229,8 @@ function respond(request, response, resCode, data, contentType) {
 			respondHTML(request, response, resCode, data);
 			break;
 		default: 
-			throw new Error('invalid content type given: ' + contentType);
+			log.error('invalid content type given: ' + contentType);
+			respondJSON(request, response, resCode, data);
 			break;
 	}
 }
@@ -214,7 +257,7 @@ function respondJSON(request, response, resCode, data) {
 		
 		if (resCode >= 200 && resCode <= 399) {
 			log.verbose('responded to request: ', request.url, resCode);
-		} else if (rescode >= 400 && rescode <= 499) {
+		} else if (resCode >= 400 && resCode <= 499) {
 			log.error('responded to request: ', request.url, resCode);
 		} else if (resCode >= 500) {
 			log.fatal('responded to request: ', request.url, resCode);
@@ -252,4 +295,18 @@ function respondHTML(request, response, resCode, data) {
 		}
 		gracenode.profiler.stop();
 	});
+}
+
+function handleError(request, response, resCode) {
+	// check for error handlers
+	if (config.error) {
+		var errorHandler = config.error[resCode.toString()] || null;
+		if (errorHandler) {
+			errorHandler.args = [];
+			log.verbose('error handler(' + resCode + ') found:', errorHandler);
+			execController(errorHandler, {}, request, response, resCode);
+			return true;
+		}
+	}
+	return false;
 }

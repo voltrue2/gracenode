@@ -1,4 +1,5 @@
 
+var uglify = require('uglify-js');
 var fs = require('fs');
 var async = require('async');
 var gracenode = require('../../gracenode');
@@ -7,7 +8,7 @@ var log = gracenode.log.create('view');
 /*
 *
 * <:var:> embed clientData in the html as javascript variables
-* <:include file path:> included in the html
+* <:include filePath:> included in the html
 * (:variable name:) replaced with the value of clientData with the same name
 * 
 */
@@ -48,8 +49,6 @@ exports.load = function (viewFilePath, cb) {
 			// cache found > use it
 			log.verbose('view output data found in cache: ', key);
 			content = embedData(content);
-			// remove line breaks and tabs
-			content = content.replace(/(\r\n|\n|\r)/gm, '');	
 			// handle included files
 			return handleIncludedFiles(content, function (error, contentData) {
 				if (error) {
@@ -59,18 +58,20 @@ exports.load = function (viewFilePath, cb) {
 			});
 		}	
 
+		var fileType = path.substring(path.lastIndexOf('.') + 1);
+
 		// no cached data found > read the file
 		fs.readFile(path, { encoding: 'utf8' }, function (error, file) {
 			if (error) {
 				return cb(new Error('failed to load view file: ' + path + '\n' + JSON.stringify(error, null, 4)));
 			}
+			// process file to optimize the output
+			file = processFile(fileType, file);
 			// store in memory cache
 			viewList[key] = file;
 			log.verbose('view output data stored in cache: ', key);
 			// prepare content
 			content = embedData(file);		
-			// remove line breaks and tabs
-			content = content.replace(/(\r\n|\n|\r)/gm, '');	
 			// handle included files
 			handleIncludedFiles(content, function (error, contentData) {
 				if (error) {
@@ -98,11 +99,16 @@ function embedData(outputData) {
 };
 
 function injectData(outputData) {
-	outputData = outputData.replace(/(\(\:([^>]+)\:\))/ig, function (match) {
-		var keyTag = match.substring(2, match.length - 2);
+	var open = '(:';
+	var close = ':)';
+	var openIndex = outputData.indexOf(open);
+	var closeIndex = outputData.indexOf(close);
+	while (openIndex !== -1 && closeIndex !== -1) {
+		var tag = outputData.substring(openIndex, closeIndex + 2);
+		var keyTag = tag.substring(2, tag.length - 2);
 		var keys = keyTag.split('.');
-		var value = keyTag; // if no match was found > replace it with the original tag so nothing changes
-		if (clientData[keys[0]]) {
+		var value = '(?' + keyTag + '?)'; // if no match was found > replace it with (?tagName?)
+		if (clientData[keys[0]] !== undefined) {
 			value = clientData[keys[0]];
 			if (typeof value === 'object') {
 				for (var i = 0, len = keys.length; i < len; i++) {
@@ -111,16 +117,29 @@ function injectData(outputData) {
 					}
 				}
 			}
-		}		
-		return value;		
-	});
+		}
+		outputData = outputData.replace(tag, value);
+		openIndex = outputData.indexOf(open);
+		closeIndex = outputData.indexOf(close);
+	}
 	return outputData;
 }
 
 function handleIncludedFiles(outputData, cb) {
-	var list = outputData.match(/\<(\:([^>]+)\:\>)/ig);
-	if (!list) {
-		return cb(null, outputData);
+	// regex is cleaner but cannot handle multiple tags in one line...
+	//var list = outputData.match(/\<(\:([^>]+)\:\>)/ig);
+	var open = '<:include';
+	var close = ':>';
+	var openIndex = outputData.indexOf(open);
+	var closeIndex = outputData.indexOf(close);
+	var list = [];
+	while (openIndex !== -1 && closeIndex !== -1) {
+		var tag = outputData.substring(openIndex, closeIndex + 2);
+		var replaceTag = '<?' + tag.substring(2, tag.length - 2) + '?>';
+		list.push(replaceTag);
+		outputData = outputData.replace(tag, replaceTag);
+		openIndex = outputData.indexOf(open);
+		closeIndex = outputData.indexOf(close);
 	}
 	async.forEachSeries(list, function (tag, next) {
 		var path = tag.substring(10, tag.length - 2);
@@ -129,6 +148,9 @@ function handleIncludedFiles(outputData, cb) {
 				return cb(error);
 			}
 			outputData = outputData.replace(tag, data);
+			
+			gracenode.profiler.mark('include: ' + path);
+			
 			next();
 		});
 	}, 
@@ -136,6 +158,31 @@ function handleIncludedFiles(outputData, cb) {
 		if (error) {
 			return cb(error);
 		}
+		gracenode.profiler.mark('include');
 		cb(null, outputData);
 	});
+}
+
+function processFile(type, data) {
+	switch (type) {
+		case 'js':
+			try {
+				data = uglify.minify(data, { fromString: true }).code;
+			} catch (exp) {
+				log.error('failed to minify a js file:', exp);
+			}
+			break;	
+		case 'css':
+			// remove line breaks and tabs
+			data = data.replace(/(\r\n|\n|\r|\t|\ )/gm, '');	
+			break;
+		case 'png':
+		case 'gif':
+		case 'jpg':
+		case 'jpeg':
+			var bin = new Buffer(data, 'binary').toString('base64');
+			data = 'data:image/.' + type + ';base64,' + bin;
+			break;
+	}
+	return data;
 }

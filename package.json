@@ -9,6 +9,7 @@
 	"dependencies": {
 		"async": ">= 0.2.9",
 		"uglify-js": ">= 2.4.0",
+		"memcached": ">= 0.2.5",
 		"mysql": ">= 2.0.0-alpha9"
 	},
 	"engine": "node >= 1.00"

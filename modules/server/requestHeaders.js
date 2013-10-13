@@ -80,5 +80,5 @@ Headers.prototype.parseLanguage = function (acceptLang) {
 	}
 	// force lower case
 	this._lang = this._lang.toLowerCase();
-	log.verbose('default accept language:', this._lang);
+	log.verbose('client default language:', this._lang);
 };
