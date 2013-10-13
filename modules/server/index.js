@@ -10,7 +10,10 @@
  *			"error": {
 				"404": { "controller": "errorControllerName", "method": "errorMethod" },
 				"500"...
-			}
+			},
+			"reroute": [
+				{ "from": "/", "to": "/another/place/" }
+			]
 		}
  * }
  * */
@@ -31,7 +34,8 @@ var headers = require('./requestHeaders.js');
 var config = null;
 var contentTypes = {
 	JSON: 'JSON',
-	HTML: 'HTML'
+	HTML: 'HTML',
+	image: 'image'
 };
 
 exports.readConfig = function (configIn) {
@@ -57,9 +61,28 @@ exports.start = function () {
 		
 		gracenode.profiler.start();
 		gracenode.profiler.mark('handling request [' + request.url + ']');
-	
+
 		var reqHeader = request.headers;
 		var controllerData = parseUri(request.url);
+		
+		log.verbose('request recieved:', request.url);
+
+		// check rerouting
+		if (config.reroute) {
+			var cont = controllerData.controller ? '/' + controllerData.controller : '/';
+			var meth = controllerData.method ? controllerData.method + '/' : '';
+			var from = cont + meth;
+			for (var i = 0, len = config.reroute.length; i < len; i++) {
+				if (config.reroute[i].from === from) {
+					var reroute = config.reroute[i].to;
+					controllerData = parseUri(reroute);
+					request.url = reroute;
+					log.verbose('rerouting: from "' + from + '" to "' + reroute + '"');
+					break;
+				}
+			}
+		}
+	
 	
 		// check for ignored
 		var ignored = config.ignored || [];
@@ -69,7 +92,7 @@ exports.start = function () {
 			return respond(request, response, 200, '', 'JSON');
 		}
 	
-		log.verbose('request recieved: ', request.url, controllerData);
+		log.verbose('request resolved: ', controllerData);
 	
 		// extract post/get
 		extractQuery(request, function (data) {
@@ -168,6 +191,10 @@ function execController(data, reqData, request, response, forcedResCode) {
 			controller.getData = queryData.createGetter(reqData.get || {});
 			// pass request headers
 			controller.requestHeaders = headers.create(request.headers);
+			// give setHeader() to controller
+			controller.setHeader = function (name, value) {
+				response.setHeader(name, value);
+			};
 			// final callback to the method
 			var callback = function (error, res, contentType, statusCode) {
 				var resCode = forcedResCode ? forcedResCode : statusCode || 200;
@@ -227,6 +254,9 @@ function respond(request, response, resCode, data, contentType) {
 			break;
 		case contentTypes.HTML:
 			respondHTML(request, response, resCode, data);
+			break;
+		case contentTypes.image:
+			respondImage(request, response, resCode, data);
 			break;
 		default: 
 			log.error('invalid content type given: ' + contentType);
@@ -295,6 +325,25 @@ function respondHTML(request, response, resCode, data) {
 		}
 		gracenode.profiler.stop();
 	});
+}
+
+function respondImage(request, response, resCode, data) {
+	var type = request.url.substring(request.url.lastIndexOf('.') + 1);
+	response.writeHead(resCode, {
+		'Content-Length': data.length,
+		'Content-Type': 'image/' + type
+	});
+
+	response.end(data, 'binary');
+	
+	if (resCode >= 200 && resCode <= 399) {
+		log.verbose('responded to request: ', request.url, resCode);
+	} else if (rescode >= 400 && rescode <= 499) {
+		log.error('responded to request: ', request.url, resCode);
+	} else if (resCode >= 500) {
+		log.fatal('responded to request: ', request.url, resCode);
+	}
+	gracenode.profiler.stop();
 }
 
 function handleError(request, response, resCode) {
