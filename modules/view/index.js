@@ -141,6 +141,7 @@ function handleIncludedFiles(outputData, cb) {
 		openIndex = outputData.indexOf(open);
 		closeIndex = outputData.indexOf(close);
 	}
+	// include files synchronously
 	async.forEachSeries(list, function (tag, next) {
 		var path = tag.substring(10, tag.length - 2);
 		exports.load(path, function (error, data) {
