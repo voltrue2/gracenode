@@ -25,7 +25,7 @@ var delimiter = ',';
 var quote = '"';
 var staticData = {};
 
-exports.readConfig = function (configIn) {
+module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.path) {
 		return new Error('invalid configuration: \n' + JSON.stringify(configIn, null, 4));
 	}
@@ -42,7 +42,7 @@ exports.readConfig = function (configIn) {
 	}
 };
 
-exports.setup = function (cb) {
+module.exports.setup = function (cb) {
 	fs.readdir(config.path, function (error, list) {
 		if (error) {
 			return cb(error);
@@ -56,14 +56,14 @@ exports.setup = function (cb) {
 	});
 };
 
-exports.getOne = function (dataName) {
+module.exports.getOne = function (dataName) {
 	if (staticData[dataName]) {
 		return new StaticData(staticData[dataName]);
 	}
 	return null;
 };
 
-exports.getMany = function (dataNameList) {
+module.exports.getMany = function (dataNameList) {
 	var res = {};
 	for (var i = 0, len = dataNameList.length; i < len; i++) {
 		var dataName = dataNameList[i];

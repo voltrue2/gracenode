@@ -1,4 +1,4 @@
-exports.errorMsg = function () {
+module.exports.errorMsg = function () {
 	var msg = '';
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		var arg = arguments[i];
@@ -10,7 +10,7 @@ exports.errorMsg = function () {
 	return msg;
 };
 
-exports.randomInt = function (min, max) {
+module.exports.randomInt = function (min, max) {
 	var rand = Math.floor(Math.random() * (max + 1));
 	if (rand < min) {
 		return min;
@@ -18,7 +18,7 @@ exports.randomInt = function (min, max) {
 	return rand;
 };
 
-exports.getArguments = function (func) {
+module.exports.getArguments = function (func) {
 	var names = func.toString().match(/^[\s\(]*function[^(]*\(([^)]*)\)/);
 	var args = names[1].replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
 	args = args.replace(/\s+/g, '').split(',');

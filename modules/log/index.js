@@ -22,12 +22,12 @@ var config = null;
 
 var fs = require('fs');
 
-exports.readConfig = function (configIn) {
+module.exports.readConfig = function (configIn) {
 	config = configIn;
 	return true;
 };
 
-exports.create = function (name) {
+module.exports.create = function (name) {
 	return new Log(name);
 };
 

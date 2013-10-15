@@ -19,7 +19,7 @@ var eventEmitter = new EventEmitter();
 // exposed properties
 configPath = '';
 configFiles = [];
-exports.event = new EventEmitter();
+module.exports.event = new EventEmitter();
 
 var prevCwd = process.cwd();
 var appRoot = __dirname.substring(0, __dirname.lastIndexOf(GraceNode));
@@ -30,23 +30,23 @@ process.chdir(appRoot);
 /*
 * returns the application root path
 */ 
-exports.getRootPath = function () {
+module.exports.getRootPath = function () {
 	return appRoot;
 };
 
-exports.exit = function (error) {
+module.exports.exit = function (error) {
 	process.exit(error || 0);
 };
 
-exports.setConfigPath = function (path) {
+module.exports.setConfigPath = function (path) {
 	configPath = path;
 	log.verbose('configuration path: ', configPath);
 };
 
-exports.setConfigFiles = function (configFileList) {
+module.exports.setConfigFiles = function (configFileList) {
 	if (!Array.isArray(configFileList)) {
 		log.fatal('invalid configuration file list given (an array expected): ', configFileList);
-		return exports.exit(1); 
+		return module.exports.exit(1); 
 	}	
 	configFiles = configFileList;
 	log.verbose('configuration file list set: ', configFileList);
@@ -57,14 +57,14 @@ exports.setConfigFiles = function (configFileList) {
  * @param {String} original name of the module to be used. example modSourceName = server -> load module called "server"
  * @param {Object} { altConfigName: alternative configuration name of be used, altPath: alternative path to the module }
  * */
-exports.use = function (modName, sourceModName, params) {
+module.exports.use = function (modName, sourceModName, params) {
 	if (!params) {
 		params = {};
 	}	
 	modules.push({ name: modName, sourceName: sourceModName, config: params.altConfigName || null, path: params.altPath || null });
 };
 
-exports.setup = function (cb) {
+module.exports.setup = function (cb) {
 	if (!configPath) {
 		return cb(new Error('configPath has not been set'));
 	}
@@ -98,7 +98,7 @@ function setupConfig(callback) {
 			return callback(error);
 		}
 		// add as a module
-		exports.config = config;
+		module.exports.config = config;
 
 		callback(error);
 	});
@@ -107,7 +107,7 @@ function setupConfig(callback) {
 function setupLog(callback) {
 	logger.readConfig(config.getOne('modules.log'));
 	// add as a module
-	exports.log = logger;
+	module.exports.log = logger;
 
 	callback(null);
 
@@ -119,7 +119,7 @@ function setupLog(callback) {
 
 function setupProfiler(callback) {
 	profiler = require('./modules/profiler');	
-	exports.profiler = profiler;
+	module.exports.profiler = profiler;
 	callback(null);
 	
 	log.verbose('profiler setup');
@@ -188,14 +188,14 @@ function setupModules(callback) {
 // uncaught exception handler
 process.on('uncaughtException', function (error) {
 	log.fatal('GraceNode detected an uncaught exception');
-	exports.event.emit('uncaughtException', error);
+	module.exports.event.emit('uncaughtException', error);
 	log.fatal(error);
 });
 
 // signal event listener
 
 process.on('exit', function (error) {
-	exports.event.emit('exit', error);
+	module.exports.event.emit('exit', error);
 	
 	if (error) {
 		log.fatal('exit GraceNode with an error');
@@ -206,6 +206,6 @@ process.on('exit', function (error) {
 
 process.on('SIGINT', function () {
 	log.verbose('shutdown GraceNode');
-	exports.event.emit('shutdown');
+	module.exports.event.emit('shutdown');
 	process.exit(0);
 });

@@ -9,7 +9,7 @@ var configData = {};
  * @param {string} file system path to config file(s) directory
  *
  */
-exports.setPath = function (path) {
+module.exports.setPath = function (path) {
 	configPath = path;
 };
 
@@ -18,7 +18,7 @@ exports.setPath = function (path) {
  * @param {array} a list of configuration file name(s) to load
  * @param {function} callback
  */
-exports.load = function (configList, cb) {
+module.exports.load = function (configList, cb) {
 	if (configPath === undefined) {
 		return cb(new Error('configPath has not been set. you must call setConfigPath() method'));
 	}
@@ -57,7 +57,7 @@ exports.load = function (configList, cb) {
  * Return the value of configuration property
  * @param {string} property name of a configuration value, can be period separated
  * */
-exports.getOne = function (propName) {
+module.exports.getOne = function (propName) {
 	var propNames = [];
 	if (propName.indexOf('.') !== -1) {
 		// split it by period
@@ -75,11 +75,11 @@ exports.getOne = function (propName) {
 	return conf;
 };
 
-exports.getMany = function (propNameList) {
+module.exports.getMany = function (propNameList) {
 	var res = {};
 	for (var i = 0, len = propNameList.length; i < len; i++) {
 		var propName = propNameList[i];
-		res[propName] = exports.getOne(propName);
+		res[propName] = module.exports.getOne(propName);
 	}
 	return res;
 };

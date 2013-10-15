@@ -6,13 +6,13 @@ var marks = [];
 var gracenode = require('../../gracenode');
 var log = gracenode.log.create('profiler');
 
-exports.start = function () {
+module.exports.start = function () {
 	var date = new Date();
 	startTime = date.getTime();
 	nowTime = startTime;
 };
 
-exports.mark = function (name) {
+module.exports.mark = function (name) {
 	var date = new Date();
 	var now = date.getTime();
 	var time = now - nowTime;
@@ -23,7 +23,7 @@ exports.mark = function (name) {
 	});
 };
 
-exports.stop = function () {
+module.exports.stop = function () {
 	var date = new Date();
 	var now = date.getTime();
 	var totalTime = now - startTime;

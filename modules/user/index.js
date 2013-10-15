@@ -35,7 +35,7 @@ var confDef = null;
 var gracenode = require('../../gracenode');
 var log = gracenode.log.create('user');
 
-exports.readConfig = function (config) {
+module.exports.readConfig = function (config) {
 	if (!config || !config.properties || !config.maxNameLen) {
 		return new Error('invalid configuration given: \n' + JSON.stringify(config, null, 4));
 	}
@@ -46,7 +46,7 @@ exports.readConfig = function (config) {
 	return true;
 };
 
-exports.getUserById = function (id, cb) {
+module.exports.getUserById = function (id, cb) {
 	// this is user from somewhere else
 	var props = {
 		id: id,
@@ -68,15 +68,15 @@ exports.getUserById = function (id, cb) {
 	cb(new User(JSON.stringify(props)));
 };
 
-exports.getUsersByIds = function (idList, cb) {
+module.exports.getUsersByIds = function (idList, cb) {
 	
 };
 
-exports.saveUser = function (user, cb) {
+module.exports.saveUser = function (user, cb) {
 
 };
 
-exports.saveUsers = function (userList, cb) {
+module.exports.saveUsers = function (userList, cb) {
 
 };
 

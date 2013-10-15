@@ -16,11 +16,11 @@ var log = gracenode.log.create('view');
 var viewList = {};
 var clientData = {};
 
-exports.assign = function (name, value) {
+module.exports.assign = function (name, value) {
 	clientData[name] = value;
 };
 
-exports.load = function (viewFilePath, cb) {
+module.exports.load = function (viewFilePath, cb) {
 	// validate callback
 	if (typeof cb !== 'function') {
 		log.error('function load is missing callback');
@@ -144,7 +144,7 @@ function handleIncludedFiles(outputData, cb) {
 	// include files synchronously
 	async.forEachSeries(list, function (tag, next) {
 		var path = tag.substring(10, tag.length - 2);
-		exports.load(path, function (error, data) {
+		module.exports.load(path, function (error, data) {
 			if (error) {
 				return cb(error);
 			}

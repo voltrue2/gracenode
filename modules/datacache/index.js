@@ -14,14 +14,14 @@ var config = null;
 * }
 */
 
-exports.readConfig = function (configIn) {
+module.exports.readConfig = function (configIn) {
 	if (!configIn.hosts || !configIn.ttl) {
 		throw new Error('invalid configuration: \n' + JSON.stringify(configIn, null, 4));		
 	}
 	config = configIn;
 };
 
-exports.create = function (name) {
+module.exports.create = function (name) {
 	return new Cache(name);
 };
 
