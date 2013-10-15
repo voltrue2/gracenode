@@ -6,7 +6,7 @@ var osRegex = /(iPhone|Linux|Windows|iPod|iPad|Macintosh|Android)/i;
 var browserRegex = /(IE|Chrome|Firefox|Safari|Opera)/i;
 
 
-exports.create = function (reqHeaders) {
+module.exports.create = function (reqHeaders) {
 	return new Headers(reqHeaders);
 };
 

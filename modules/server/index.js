@@ -41,7 +41,7 @@ var contentTypes = {
 var controllerMap = {};
 
 // called automatically from gracenode on start
-exports.readConfig = function (configIn) {
+module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.port || !configIn.host || !configIn.controllerPath) {
 		return new Error('invalid configurations: \n' + JSON.stringify(configIn, null, 4));
 	}
@@ -49,7 +49,7 @@ exports.readConfig = function (configIn) {
 };
 
 // called automatically from gracenode on start
-exports.setup = function (cb) {
+module.exports.setup = function (cb) {
 	// read and cache all controllers
 	fs.readdir(config.controllerPath, function (error, dirList) {
 		if (error) {
@@ -63,7 +63,7 @@ exports.setup = function (cb) {
 	});
 };
 
-exports.start = function () {
+module.exports.start = function () {
 	
 	log.info('starting server...');
 
@@ -140,14 +140,14 @@ exports.start = function () {
 /**
  * used to respond to the client with 404 error from controller
  * */
-exports.userError = function (error, res, cb) {
+module.exports.userError = function (error, res, cb) {
 	cb(error, res, 404);
 };
 
 /**
  * used to respond to the client with 500 error from controller
  * */
-exports.error = function (error, res, cb) {
+module.exports.error = function (error, res, cb) {
 	cb(error, res, 500);
 };
 

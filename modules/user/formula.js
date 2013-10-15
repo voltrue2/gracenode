@@ -1,6 +1,6 @@
 var funcs = {};
 
-exports.calc = function (lv, prop) {
+module.exports.calc = function (lv, prop) {
 	var funcName = prop.growth || null;
 	if (!funcName || !funcs[funcName]) {
 		return prop.initVal;

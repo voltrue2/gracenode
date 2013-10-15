@@ -12,7 +12,7 @@ var log = gracenode.log.create('request');
  * @param {object} { protocol: http/https, hots: string, path: string. port: number, method: string, data: object }
  * @options {object} { headers: object, timeout: miliseconds }
  * */
-exports.send = function (params, options, cb) {
+module.exports.send = function (params, options, cb) {
 	if (!params) {
 		return cb(new Error('missing required arguement 1'));
 	}
