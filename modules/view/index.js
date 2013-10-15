@@ -90,6 +90,9 @@ function embedData(outputData) {
 		clientVars += 'window.' + key + '=' + JSON.stringify(clientData[key]) + ';';
 	}
 	clientVars += '</script>';
+
+	// remove HTML comments
+	outputData = removeHTMLComments(outputData);
 	
 	// inject client data
 	outputData = injectData(outputData);
@@ -97,6 +100,10 @@ function embedData(outputData) {
 	// embed
 	return outputData.replace('<:var:>', clientVars);
 };
+
+function removeHTMLComments(outputData) {
+	return outputData.replace(/<!--[\s\S]*?-->/g, '');
+}
 
 function injectData(outputData) {
 	var open = '(:';
