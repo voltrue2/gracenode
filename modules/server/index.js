@@ -194,6 +194,8 @@ function execController(data, reqData, request, response, forcedResCode) {
 		// verify the controller file
 		var path = config.controllerPath + data.controller;
 		if (controllerMap[data.controller]) {
+			// parse cookie
+			var cookies = parseCookie(request.headers);
 			// require the found controller
 			var controller = require(path);
 			// pass post and get
@@ -204,6 +206,18 @@ function execController(data, reqData, request, response, forcedResCode) {
 			// give setHeader() to controller
 			controller.setHeader = function (name, value) {
 				response.setHeader(name, value);
+			};
+			// give setCookie to controller
+			controller.setCookie = function (obj) {
+				var cookie = '';
+				for (var name in obj) {
+					cookie += name + '=' + obj[name] + '; ';
+				}
+				controller.setHeader('Set-Cookie', cookie);
+			};
+			// give get Cookie to controller
+			controller.getCookie = function (name) {
+				return cookies[name] || null;
 			};
 			// final callback to the method
 			var callback = function (error, res, contentType, statusCode) {
@@ -265,10 +279,23 @@ function execController(data, reqData, request, response, forcedResCode) {
 			// stop
 			return;
 		}
-		
 		var errData = JSON.stringify({ error: exception });
 		respond(request, response, 500, errData);
 	}
+}
+
+function parseCookie(headers) {
+	var cookieStr = headers['cookie'] || '';
+	var chunks = cookieStr.split('; ');
+	var cookies = {};
+	for (var i = 0, len = chunks.length; i < len; i++) {
+		var chunk = chunks[i];
+		if (chunk) {
+			var cookie = chunk.split('=');
+			cookies[cookie[0]] = cookie[1];	
+		}
+	}
+	return cookies;
 }
 
 function respond(request, response, resCode, data, contentType) {

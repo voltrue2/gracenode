@@ -58,13 +58,12 @@ module.exports.load = function (viewFilePath, cb) {
 			});
 		}	
 
-		var fileType = path.substring(path.lastIndexOf('.') + 1);
-
 		// no cached data found > read the file
 		fs.readFile(path, { encoding: 'utf8' }, function (error, file) {
 			if (error) {
 				return cb(new Error('failed to load view file: ' + path + '\n' + JSON.stringify(error, null, 4)));
 			}
+			var fileType = path.substring(path.lastIndexOf('.') + 1);
 			// process file to optimize the output
 			file = processFile(fileType, file);
 			// store in memory cache

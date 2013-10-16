@@ -13,19 +13,20 @@
 			console.error('ajax: missing callback (argument 3)');
 			return;
 		}
-		
-		// hate IE...
-		if (!window.XMLHttpRequest) {
-			return alert('IE!!');
-		}
 
 		var ee = new EventEmitter();		
 
 		var method = params && params.method || 'GET';
 		var path = window.encodeURI(domain + uri);
 		var paramStr = getParams(params);
+		var req ] null;
 
-		var req = new window.XMLHttpRequest();
+		if (!window.XMLHttpRequest) {
+			// IE < 7
+			req = new ActiveXObject('Microsoft.XMLHTTP');
+		} else {
+			req = new window.XMLHttpRequest();
+		}
 
 		req.overrideMimeType('text');
 		req.open(method, path, true);
@@ -79,8 +80,8 @@
 		}
 		return window.encodeURIComponent(value);
 	}
-		
-	window.setDomain = function (d) {
+	
+	window.setAjaxDomain = function (d) {
 		domain = d;
 	};
 	
