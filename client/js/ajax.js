@@ -19,7 +19,7 @@
 		var method = params && params.method || 'GET';
 		var path = window.encodeURI(domain + uri);
 		var paramStr = getParams(params);
-		var req ] null;
+		var req = null;
 
 		if (!window.XMLHttpRequest) {
 			// IE < 7
