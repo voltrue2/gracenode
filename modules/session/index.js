@@ -58,6 +58,6 @@ function getKey(sessionId) {
 function createSessionId(unique) {
 	var md5 = crypto.createHash('md5');
 	var d = new Date();
-	var src = unique + gracenode.util.randomInt(0, 300).toString() + d.getTime().toString();
+	var src = unique + gracenode.lib.randomInt(0, 300).toString() + d.getTime().toString();
 	return md5.update(src).digest('hex');
 }

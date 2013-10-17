@@ -264,7 +264,7 @@ function execController(data, reqData, request, response, forcedResCode) {
 			// append the last callback
 			data.args.push(callback);
 			// validate method requirements
-			var args = gracenode.util.getArguments(controller[data.method]);
+			var args = gracenode.lib.getArguments(controller[data.method]);
 			if (data.args.length !== args.length) {
 				log.error('number of arguments does not match: \ngiven', data.args, '\nexpected:', args);
 				if (handleError(request, response, 404)) {

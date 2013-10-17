@@ -5,7 +5,7 @@ var GraceNode = 'GraceNode';
 
 var modules = [
 	{ name: 'profiler', sourceName: 'profiler', config: null, path: null },
-	{ name: 'util', sourceName: 'util', config: null, path: null }
+	{ name: 'lib', sourceName: 'lib', config: null, path: null }
 ];
 
 var EventEmitter = require('events').EventEmitter;
