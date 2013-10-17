@@ -67,55 +67,23 @@ module.exports.start = function () {
 	
 	log.info('starting server...');
 
-	var serverSource = http;	
+	var server = null;
 
+	// create server
 	if (config.protocol === 'https') {
-		serverSource = https;
+		// https
+		var options = {
+			key: fs.readFileSync(config.pemKey),
+			cert: fs.readFileSync(config.pemCert)
+		};
+		server = https.createServer(options, requestHandler);
+	} else {
+		// http
+		server = http.createServer(requestHandler);
 	}
 
 	log.info('server protocol:', (config.ptotocol || 'http'));
 
-	var server = serverSource.createServer(function (request, response) {
-		
-		gracenode.profiler.start();
-
-		var reqHeader = request.headers;
-		var controllerData = parseUri(request.url);
-		
-		log.verbose('request recieved:', request.url);
-
-		// check rerouting
-		if (config.reroute) {
-			var cont = controllerData.controller ? '/' + controllerData.controller : '/';
-			var meth = controllerData.method ? controllerData.method + '/' : '';
-			var from = cont + meth;
-			for (var i = 0, len = config.reroute.length; i < len; i++) {
-				if (config.reroute[i].from === from) {
-					var reroute = config.reroute[i].to;
-					controllerData = parseUri(reroute);
-					request.url = reroute;
-					log.verbose('rerouting: from "' + from + '" to "' + reroute + '"');
-					break;
-				}
-			}
-		}
-	
-		// check for ignored
-		var ignored = config.ignored || [];
-		if (ignored.indexOf(controllerData.controller) !== -1) {
-			// ignored request detected
-			log.verbose('ignored request: ', request.url);
-			return respond(request, response, 200, '', 'JSON');
-		}
-	
-		log.verbose('request resolved: ', controllerData);
-		gracenode.profiler.mark('request resolved [' + request.url + ']');
-	
-		// extract post/get
-		extractQuery(request, function (data) {
-			execController(controllerData, data, request, response);
-		});
-	});
 	// port/socket listener
 	if (!config.socket) {
 		// listen to a port
@@ -150,6 +118,49 @@ module.exports.userError = function (error, res, cb) {
 module.exports.error = function (error, res, cb) {
 	cb(error, res, 500);
 };
+
+
+function requestHandler(request, response) {
+	
+	gracenode.profiler.start();
+
+	var reqHeader = request.headers;
+	var controllerData = parseUri(request.url);
+	
+	log.verbose('request recieved:', request.url);
+
+	// check rerouting
+	if (config.reroute) {
+		var cont = controllerData.controller ? '/' + controllerData.controller : '/';
+		var meth = controllerData.method ? controllerData.method + '/' : '';
+		var from = cont + meth;
+		for (var i = 0, len = config.reroute.length; i < len; i++) {
+			if (config.reroute[i].from === from) {
+				var reroute = config.reroute[i].to;
+				controllerData = parseUri(reroute);
+				request.url = reroute;
+				log.verbose('rerouting: from "' + from + '" to "' + reroute + '"');
+				break;
+			}
+		}
+	}
+
+	// check for ignored
+	var ignored = config.ignored || [];
+	if (ignored.indexOf(controllerData.controller) !== -1) {
+		// ignored request detected
+		log.verbose('ignored request: ', request.url);
+		return respond(request, response, 200, '', 'JSON');
+	}
+
+	log.verbose('request resolved: ', controllerData);
+	gracenode.profiler.mark('request resolved [' + request.url + ']');
+
+	// extract post/get
+	extractQuery(request, function (data) {
+		execController(controllerData, data, request, response);
+	});
+}
 
 /**
  * parse URL and get controller name and method
