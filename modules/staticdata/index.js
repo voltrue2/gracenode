@@ -147,7 +147,12 @@ function mapIndex(data, indexNames) {
 				if (!map[index]) {
 					map[index] = {};
 				}
-				map[index][item[index]] = item;
+				map[index][item[index]] = {};
+				for (var key in item) {
+					if (key !== index) {
+						map[index][item[index]][key] = item[key];
+					}
+				}
 			}
 		}
 	}
@@ -203,16 +208,7 @@ StaticData.prototype.getMany = function (indexList) {
 
 StaticData.prototype.getAll = function () {
 	// javascript gives you a pointer to the object not a copy, so to avoid poisning the source object, we create a copy by hand
-	var res = [];
-	for (var index in this._src) {
-		var data = this._src[index];
-		var item = {};
-		for (var key in data) {
-			item[key] = data[key];
-		}
-		res[index] = item;
-	}
-	return res;
+	return getObjValue(this._src);
 };
 
 function getObjValue(data) {
