@@ -4,12 +4,15 @@ var fs = require('fs');
 var async = require('async');
 var gracenode = require('../../gracenode');
 var log = gracenode.log.create('view');
+var parserSource = require('./parser');
 
 /*
 *
 * <:var:> embed clientData in the html as javascript variables
-* <:include filePath:> included in the html
-* (:variable name:) replaced with the value of clientData with the same name
+* 
+* Parser class handles these
+* (:include filePath:) included in the html
+* (:= variable name:) replaced with the value of clientData with the same name
 * 
 */
 
@@ -31,10 +34,12 @@ module.exports.load = function (viewFilePath, cb) {
 	
 	log.verbose('loading a view file: ', path);
 
+	var parser = parserSource.create(clientData);
+
 	// check memory cache with file modtime
 	fs.lstat(path, function (error, stat) {
 		if (error) {
-			return cb(new Error('failed to read the file stat: ' + path + '\n' + JSON.stringify(error, null, 4)));
+			return cb(new Error('failed to read the file stat: [' + path + ']\n' + JSON.stringify(error, null, 4)));
 		}
 		// content data
 		var content = null;
@@ -44,13 +49,12 @@ module.exports.load = function (viewFilePath, cb) {
 		// create memory cache key
 		var key = path + mtime;
 		// check for cache in memory
-		content = viewList[key];		
+		content = viewList[key] || null;		
 		if (content) {
 			// cache found > use it
 			log.verbose('view output data found in cache: ', key);
-			content = embedData(content);
 			// handle included files
-			return handleIncludedFiles(content, function (error, contentData) {
+			return parseContent(content, parser, function (error, contentData) {
 				if (error) {
 					return cb(error);
 				}	
@@ -61,18 +65,16 @@ module.exports.load = function (viewFilePath, cb) {
 		// no cached data found > read the file
 		fs.readFile(path, { encoding: 'utf8' }, function (error, file) {
 			if (error) {
-				return cb(new Error('failed to load view file: ' + path + '\n' + JSON.stringify(error, null, 4)));
+				return cb(new Error('failed to load view file: [' + path + ']\n' + JSON.stringify(error, null, 4)));
 			}
 			var fileType = path.substring(path.lastIndexOf('.') + 1);
 			// process file to optimize the output
-			file = processFile(fileType, file);
+			content = processFile(fileType, file);
 			// store in memory cache
 			viewList[key] = file;
 			log.verbose('view output data stored in cache: ', key);
-			// prepare content
-			content = embedData(file);		
 			// handle included files
-			handleIncludedFiles(content, function (error, contentData) {
+			parseContent(content, parser, function (error, contentData) {
 				if (error) {
 					return cb(error);
 				}	
@@ -89,12 +91,9 @@ function embedData(outputData) {
 		clientVars += 'window.' + key + '=' + JSON.stringify(clientData[key]) + ';';
 	}
 	clientVars += '</script>';
-
+	
 	// remove HTML comments
 	outputData = removeHTMLComments(outputData);
-	
-	// inject client data
-	outputData = injectData(outputData);
 
 	// embed
 	return outputData.replace('<:var:>', clientVars);
@@ -104,59 +103,26 @@ function removeHTMLComments(outputData) {
 	return outputData.replace(/<!--[\s\S]*?-->/g, '');
 }
 
-function injectData(outputData) {
-	var open = '(:';
-	var close = ':)';
-	var openIndex = outputData.indexOf(open);
-	var closeIndex = outputData.indexOf(close);
-	while (openIndex !== -1 && closeIndex !== -1) {
-		var tag = outputData.substring(openIndex, closeIndex + 2);
-		var keyTag = tag.substring(2, tag.length - 2);
-		var keys = keyTag.split('.');
-		var value = '(?' + keyTag + '?)'; // if no match was found > replace it with (?tagName?)
-		if (clientData[keys[0]] !== undefined) {
-			value = clientData[keys[0]];
-			if (typeof value === 'object') {
-				for (var i = 0, len = keys.length; i < len; i++) {
-					if (value[keys[i]] !== undefined) {
-						value = value[keys[i]];
-					}
-				}
-			}
-		}
-		outputData = outputData.replace(tag, value);
-		openIndex = outputData.indexOf(open);
-		closeIndex = outputData.indexOf(close);
-	}
-	return outputData;
-}
-
-function handleIncludedFiles(outputData, cb) {
-	// regex is cleaner but cannot handle multiple tags in one line...
-	//var list = outputData.match(/\<(\:([^>]+)\:\>)/ig);
-	var open = '<:include';
-	var close = ':>';
-	var openIndex = outputData.indexOf(open);
-	var closeIndex = outputData.indexOf(close);
-	var list = [];
-	while (openIndex !== -1 && closeIndex !== -1) {
-		var tag = outputData.substring(openIndex, closeIndex + 2);
-		var replaceTag = '<?' + tag.substring(2, tag.length - 2) + '?>';
-		list.push(replaceTag);
-		outputData = outputData.replace(tag, replaceTag);
-		openIndex = outputData.indexOf(open);
-		closeIndex = outputData.indexOf(close);
-	}
-	// include files synchronously
-	async.forEachSeries(list, function (tag, next) {
-		var path = tag.substring(10, tag.length - 2);
+function parseContent(outputData, parser, cb) {
+	outputData = embedData(outputData);
+	var result = parser.parseData(outputData);
+	var list = result.includeList;
+	outputData = result.data;
+	// include files asynchronously
+	async.forEachSeries(list, function (item, next) {
+		var tag = item.tag;
+		var path = item.path;
+			
+		gracenode.profiler.mark('start include: ' + path);
+		
 		module.exports.load(path, function (error, data) {
 			if (error) {
 				return cb(error);
 			}
-			outputData = outputData.replace(tag, data);
 			
-			gracenode.profiler.mark('include: ' + path);
+			gracenode.profiler.mark('include complete: ' + path);
+		
+			outputData = outputData.replace(tag, data);
 			
 			next();
 		});
@@ -165,7 +131,6 @@ function handleIncludedFiles(outputData, cb) {
 		if (error) {
 			return cb(error);
 		}
-		gracenode.profiler.mark('include');
 		cb(null, outputData);
 	});
 }
