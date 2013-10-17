@@ -7,7 +7,10 @@
  *			"path": "directory path to the source statif files",
  *			"linebreak": optional,
  *			"delimiter": optional,
- *			"qoute": optional
+ *			"qoute": optional,
+ *			"index": optional {
+ *				"staticFileName": ["indexName"...] > this must be a cloumn name in the file
+ *			}
  *		}
  * }
  *
@@ -94,7 +97,15 @@ function readFile(file, cb) {
 		if (data instanceof Error) {
 			return cb(data);
 		}
-		staticData[name] = data;
+		
+		// create index map(s) if asked
+		var indexMap = null;
+		var fileName = name + '.' + type;
+		if (config.index && config.index[fileName]) {
+			indexMap = mapIndex(data, config.index[fileName]);
+		}	
+
+		staticData[name] = { data: data, indexMap: indexMap };
 
 		cb();
 	});
@@ -126,12 +137,55 @@ function toJSON(data) {
 	return res;
 }
 
-function StaticData(src) {
-	this._src = src;
+function mapIndex(data, indexNames) {
+	var map = {};
+	for (var c = 0, length = data.length; c < length; c++) {
+		var item = data[c];
+		for (var i = 0, len = indexNames.length; i < len; i++) {
+			var index = indexNames[i];
+			if (item[index] !== undefined) {
+				if (!map[index]) {
+					map[index] = {};
+				}
+				map[index][item[index]] = item;
+			}
+		}
+	}
+	return map;
 }
 
+function StaticData(src) {
+	this._src = src.data;
+	this._indexMap = src.indexMap;
+}
+
+StaticData.prototype.getOneByIndex = function (indexName, key) {
+	if (this._indexMap[indexName]) {
+		if (this._indexMap[indexName][key] !== undefined) {
+			if (typeof this._indexMap[indexName][key] === 'object') {
+				return getObjValue(this._indexMap[indexName][key]);
+			}
+			return this._indexMap[indexName][key];
+		}
+	}
+	return null;
+};
+
+StaticData.prototype.getManyByIndex = function (indexName, keyList) {
+	var res = {};
+	for (var i = 0, len = keyList.length; i < len; i++) {
+		var key = keyList[i];
+		res[key] = this.getOneByIndex(indexName, key);
+	}
+	return res;
+};
+
 StaticData.prototype.getOne = function (index) {
-	if (this._src[index]) {
+	if (this._src[index]) {	
+		if (typeof this._src[index] === 'object') {
+			// javascript gives you a pointer to the object not a copy, so to avoid poisning the source object, we create a copy by hand
+			return getObjValue(this._src[index]);
+		}
 		return this._src[index];
 	}
 	return null;
@@ -160,3 +214,19 @@ StaticData.prototype.getAll = function () {
 	}
 	return res;
 };
+
+function getObjValue(data) {
+	var obj;
+	if (Array.isArray(data)) {
+		obj = [];
+		for (var i = 0, len = data.length; i < len; i++) {
+			obj.push(data[i]);
+		}
+	} else {
+		obj = {};
+		for (var key in data) {
+			obj[key] = data[key];
+		}
+	}
+	return obj;
+}
