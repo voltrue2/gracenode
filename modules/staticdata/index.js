@@ -88,8 +88,14 @@ function readFile(file, cb) {
 		var data = dataBuffer.toString('utf-8');
 
 		var bytes = dataBuffer.length;
-		log.verbose('static data loaded:', path + ' (' + bytes + ' bytes, ' + (bytes / 1024) + ' kb)');
-		
+		var kb = bytes / 1024;
+		var size = bytes + ' bytes';
+		if (kb >= 1) {
+			size = kb + 'kb';
+		}
+		log.verbose('static data loaded:', path + ' (' + size + ')');
+
+		// convert to JSON		
 		if (type === 'csv') {
 			data = toJSON(data);
 		}
@@ -104,7 +110,8 @@ function readFile(file, cb) {
 		if (config.index && config.index[fileName]) {
 			indexMap = mapIndex(data, config.index[fileName]);
 		}	
-
+		
+		// add it to cache
 		staticData[name] = { data: data, indexMap: indexMap };
 
 		cb();
