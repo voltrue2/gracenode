@@ -46,17 +46,8 @@ module.exports.readConfig = function (configIn) {
 };
 
 module.exports.setup = function (cb) {
-	fs.readdir(config.path, function (error, list) {
-		if (error) {
-			return cb(error);
-		}
-		
-		log.verbose('load static data: ', config);
-		
-		async.forEach(list, function (file, nextCallback) {
-				readFile(file, nextCallback);
-		}, cb);
-	});
+	log.verbose('setting up static data module...');
+	readPath(config.path, cb);
 };
 
 module.exports.getOne = function (dataName) {
@@ -76,11 +67,37 @@ module.exports.getMany = function (dataNameList) {
 	return res;
 };
 
-function readFile(file, cb) {
-	var path = config.path + file;
-	var lastDot = file.lastIndexOf('.');
-	var type = file.substring(lastDot + 1);
-	var name = file.substring(file.lastIndexOf('/') + 1, lastDot);
+function readPath(path, cb) {
+	fs.lstat(path, function (error, stat) {
+		if (error) {
+			return cb(error);
+		}
+		// check if it is a directory or not
+		if (stat.isDirectory()) {
+			// it is a directory
+			return readDir(path, cb);
+		}
+		// it is a file
+		readFile(path, cb);
+	});
+}
+
+function readDir(path, cb) {
+	fs.readdir(path, function (error, list) {
+		if (error) {
+			return cb(error);
+		}
+		async.forEach(list, function (file, nextCallback) {
+			var nextPath = path + (path.substring(path.length - 1) === '/' ? '' : '/') + file;
+			readPath(nextPath, nextCallback);
+		}, cb);
+	});	
+}
+
+function readFile(path, cb) {
+	var lastDot = path.lastIndexOf('.');
+	var type = path.substring(lastDot + 1);
+	var name = path.substring(path.lastIndexOf('/') + 1, lastDot);
 	fs.readFile(path, function (error, dataBuffer) {
 		if (error) {
 			return cb(error);
