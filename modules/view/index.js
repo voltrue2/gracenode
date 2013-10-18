@@ -7,6 +7,10 @@ var log = gracenode.log.create('view');
 var parserSource = require('./parser');
 
 /*
+* configurations
+* view: { // optional
+* 	preloads: ["filepath"...]
+*}
 *
 * <:var:> embed clientData in the html as javascript variables
 * 
@@ -18,6 +22,45 @@ var parserSource = require('./parser');
 
 var viewList = {};
 var clientData = {};
+var config = null;
+
+module.exports.readConfig = function (configIn) {
+	config = configIn;
+};
+
+module.exports.setup = function (cb) {
+	if (config && config.preloads && config.preloads.length) {
+		log.verbose('preload view files');
+		return async.forEach(config.preloads, function (path, nextCallback) {
+			gracenode.lib.walkDir(path, function (error, list) {
+				if (error) {
+					return cb(error);
+				}
+				async.forEach(list, function (item, next) {
+					var path = item.file;
+					// get file modtime in unix timestamp
+					var dateObj = new Date(item.stat.mtime);
+					var mtime = dateObj.getTime();
+					// create memory cache key
+					var key = path + mtime;
+					fs.readFile(path, { encoding: 'utf8' }, function (error, file) {
+						if (error) {
+							return cb(new Error('[' + path + '] ' + error));
+						}
+						var fileType = path.substring(path.lastIndexOf('.') + 1);
+						// process file to optimize the output
+						content = processFile(fileType, file);
+						// store in memory cache
+						viewList[key] = content;
+						log.verbose('view output data stored in cache: ', key);
+						next();
+					});	
+				}, nextCallback);
+			});
+		}, cb);
+	}
+	cb();
+};
 
 module.exports.assign = function (name, value) {
 	clientData[name] = value;
@@ -35,54 +78,75 @@ module.exports.load = function (viewFilePath, cb) {
 	log.verbose('loading a view file: ', path);
 
 	var parser = parserSource.create(clientData);
-
-	// check memory cache with file modtime
-	fs.lstat(path, function (error, stat) {
+	
+	// start loading
+	//readPath(path, parser, cb);
+	var outputData = '';
+	gracenode.lib.walkDir(path, function (error, list) {
 		if (error) {
-			return cb(new Error('failed to read the file stat: [' + path + ']\n' + JSON.stringify(error, null, 4)));
+			return cb(error);
 		}
-		// content data
-		var content = null;
-		// get file modtime in unix timestamp
-		var dateObj = new Date(stat.mtime);
-		var mtime = dateObj.getTime();
-		// create memory cache key
-		var key = path + mtime;
-		// check for cache in memory
-		content = viewList[key] || null;		
-		if (content) {
-			// cache found > use it
-			log.verbose('view output data found in cache: ', key);
-			// handle included files
-			return parseContent(content, parser, function (error, contentData) {
-				if (error) {
-					return cb(error);
-				}	
-				cb(null, contentData);
-			});
-		}	
-
-		// no cached data found > read the file
-		fs.readFile(path, { encoding: 'utf8' }, function (error, file) {
+		async.forEachSeries(list, function (item, nextCallback) {
+				readFile(item.file, item.stat, parser, function (error, data) {
+					if (error) {
+						return cb(error);
+					}
+					outputData += data;
+					nextCallback();
+				});
+		},
+		 function (error) {
 			if (error) {
-				return cb(new Error('failed to load view file: [' + path + ']\n' + JSON.stringify(error, null, 4)));
+				return cb(error);
 			}
-			var fileType = path.substring(path.lastIndexOf('.') + 1);
-			// process file to optimize the output
-			content = processFile(fileType, file);
-			// store in memory cache
-			viewList[key] = file;
-			log.verbose('view output data stored in cache: ', key);
-			// handle included files
-			parseContent(content, parser, function (error, contentData) {
-				if (error) {
-					return cb(error);
-				}	
-				cb(null, contentData);
-			});
+			cb(null, outputData);
+		});
+	});	
+};
+
+function readFile(path, stat, parser, cb) {
+	// content data
+	var content = null;
+	// get file modtime in unix timestamp
+	var dateObj = new Date(stat.mtime);
+	var mtime = dateObj.getTime();
+	// create memory cache key
+	var key = path + mtime;
+	
+	// check for cache in memory
+	content = viewList[key] || null;		
+	if (content) {
+		// cache found > use it
+		log.verbose('view output data found in cache: ', key);
+		// handle included files
+		return parseContent(content, parser, function (error, contentData) {
+			if (error) {
+				return cb(error);
+			}	
+			cb(null, contentData);
+		});
+	}	
+
+	// no cached data found > read the file
+	fs.readFile(path, { encoding: 'utf8' }, function (error, file) {
+		if (error) {
+			return cb(new Error('failed to load view file: [' + path + ']\n' + JSON.stringify(error, null, 4)));
+		}
+		var fileType = path.substring(path.lastIndexOf('.') + 1);
+		// process file to optimize the output
+		content = processFile(fileType, file);
+		// store in memory cache
+		viewList[key] = content;
+		log.verbose('view output data stored in cache: ', key);
+		// handle included files
+		parseContent(content, parser, function (error, contentData) {
+			if (error) {
+				return cb(error);
+			}	
+			cb(null, contentData);
 		});
 	});
-};
+}
 
 function embedData(outputData) {
 	// prepare for embedding all the variables in the view template
@@ -146,7 +210,7 @@ function processFile(type, data) {
 			break;	
 		case 'css':
 			// remove line breaks and tabs
-			data = data.replace(/(\r\n|\n|\r|\t|\ )/gm, '');	
+			data = data.replace(/(\r\n|\n|\r|\t)/gm, '');	
 			break;
 		case 'png':
 		case 'gif':

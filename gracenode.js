@@ -157,8 +157,6 @@ function setupModules(callback) {
 				}
 			}
 
-			profiler.mark('module [' + name + '] load');
-
 			log.verbose('module [' + name + '] loaded');
 
 			// if the module has setup function, call it
@@ -169,10 +167,15 @@ function setupModules(callback) {
 				exports[name].setup(function (error) {
 					
 					log.verbose('module [' + name + '] set up complete');
+
+					profiler.mark('module [' + name + '] load');
 					
 					nextCallback(error);
 				});
 			} else {
+
+				profiler.mark('module [' + name + '] load');
+				
 				nextCallback();
 			}
 		},

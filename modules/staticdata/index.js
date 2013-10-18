@@ -47,7 +47,14 @@ module.exports.readConfig = function (configIn) {
 
 module.exports.setup = function (cb) {
 	log.verbose('setting up static data module...');
-	readPath(config.path, cb);
+	gracenode.lib.walkDir(config.path, function (error, list) {
+		if (error) {
+			return cb(error);
+		}
+		async.forEach(list, function (item, nextCallback) {
+			readFile(item.file, nextCallback);
+		}, cb);
+	});
 };
 
 module.exports.getOne = function (dataName) {
@@ -66,33 +73,6 @@ module.exports.getMany = function (dataNameList) {
 	}
 	return res;
 };
-
-function readPath(path, cb) {
-	fs.lstat(path, function (error, stat) {
-		if (error) {
-			return cb(error);
-		}
-		// check if it is a directory or not
-		if (stat.isDirectory()) {
-			// it is a directory
-			return readDir(path, cb);
-		}
-		// it is a file
-		readFile(path, cb);
-	});
-}
-
-function readDir(path, cb) {
-	fs.readdir(path, function (error, list) {
-		if (error) {
-			return cb(error);
-		}
-		async.forEach(list, function (file, nextCallback) {
-			var nextPath = path + (path.substring(path.length - 1) === '/' ? '' : '/') + file;
-			readPath(nextPath, nextCallback);
-		}, cb);
-	});	
-}
 
 function readFile(path, cb) {
 	var lastDot = path.lastIndexOf('.');
