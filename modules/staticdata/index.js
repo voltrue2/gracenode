@@ -47,7 +47,7 @@ module.exports.readConfig = function (configIn) {
 
 module.exports.setup = function (cb) {
 	log.verbose('setting up static data module...');
-	gracenode.lib.walkDir(config.path, function (error, list) {
+	gracenode.lib.walkDir(gracenode.getRootPath() + config.path, function (error, list) {
 		if (error) {
 			return cb(error);
 		}

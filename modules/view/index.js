@@ -32,7 +32,7 @@ module.exports.setup = function (cb) {
 	if (config && config.preloads && config.preloads.length) {
 		log.verbose('preload view files');
 		return async.forEach(config.preloads, function (path, nextCallback) {
-			gracenode.lib.walkDir(path, function (error, list) {
+			gracenode.lib.walkDir(gracenode.getRootPath() + path, function (error, list) {
 				if (error) {
 					return cb(error);
 				}
@@ -203,6 +203,7 @@ function processFile(type, data) {
 	switch (type) {
 		case 'js':
 			try {
+				// FIX ME: too slow
 				data = uglify.minify(data, { fromString: true }).code;
 			} catch (exp) {
 				log.error('failed to minify a js file:', exp);
@@ -221,4 +222,34 @@ function processFile(type, data) {
 			break;
 	}
 	return data;
+}
+
+// FIX ME: doesn't work well....
+function removeJsComments(str) {
+	var uid = '_' + +new Date();
+	var primatives = [];
+	var primIndex = 0;
+	// remove strings
+	str = str.replace(/(['"])(\\\1|.)+?\1/g, function (match) {
+		primatives[primIndex] = match;
+		primIndex++;
+		return (uid + '') + primIndex;
+	});
+	// remove regex
+	str = str.replace(/([^\/])(\/(?!\*|\/)(\\\/|.)+?\/[gim]{0,3})/g, function(match, $1, $2){
+		primatives[primIndex] = $2;
+		return $1 + (uid + '') + primIndex++;
+	});
+	// remove single-line comments with would-be multiline delimiters // blah /* <--
+	// remove multi-line comments with would-be single-line delimiters /* // <--
+	str = str.replace(/\/\/.*?\/?\*.+?(?=\n|\r|$)|\/\*[\s\S]*?\/\/[\s\S]*?\*\//g, '');
+	// remove single and multi-line comments
+	str = str.replace(/\/\/.+?(?=\n|\r|$)|\/\*[\s\S]+?\*\//g, '');
+	// remove multi-line comments with a replace ending (string/regex)
+	str = str.replace(RegExp('\\/\\*[\\s\\S]+' + uid + '\\d+', 'g'), '');
+	// bring back the strings and regex
+	str = str.replace(RegExp(uid + '(\\d+)', 'g'), function(match, index) {
+		return primatives[index];
+	});
+	return str;
 }

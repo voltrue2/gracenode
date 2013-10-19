@@ -92,7 +92,7 @@ module.exports.start = function () {
 	} else {
 		// listen to a socket file
 		log.verbose('listening to a socket file:', config.socket);
-		server.listen(config.socket, config.host);
+		server.listen(gracenode.getRootPath() + config.socket, config.host);
 	}
 
 	log.verbose('server started: ', config.host + ':' + config.port);
@@ -203,7 +203,7 @@ function extractQuery(request, cb) {
 function execController(data, reqData, request, response, forcedResCode) {
 	try {
 		// verify the controller file
-		var path = config.controllerPath + data.controller;
+		var path = gracenode.getRootPath() + config.controllerPath + data.controller;
 		if (controllerMap[data.controller]) {
 			// parse cookie
 			var cookies = parseCookie(request.headers);

@@ -21,6 +21,7 @@
 var config = null;
 
 var fs = require('fs');
+var gracenode = require('../../gracenode');
 
 module.exports.readConfig = function (configIn) {
 	config = configIn;
@@ -123,7 +124,7 @@ function print(name, msg) {
 		console.log.apply(console, msg);
 	} else if (config.level && config.level[name] && config.level[name].path) {
 		// write to a file
-		var path = config.level[name].path + name + '.log';
+		var path = gracenode.getRootPath() + config.level[name].path + name + '.log';
 		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
 			if (error) {
 				throw new Error('failed to write a log to a file: ' + error);
