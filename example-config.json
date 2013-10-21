@@ -33,7 +33,7 @@
 		"server": {
 			"protocol": "http",
 			"port": 80,
-			"host": "gracenode.org",
+			"host": "yourdomain.com",
 			"controllerPath": "controller/",
 			"ignored": [
 				"favicon.ico"
