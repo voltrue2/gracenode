@@ -310,7 +310,7 @@ function parseCookie(headers) {
 }
 
 function respond(request, response, resCode, data, contentType) {
-	log.verbose('resonding content type: ', contentType);
+	log.verbose('responding content type: ', contentType);
 
 	var callback = function (code) {
 		if (code >= 200 && code <= 399) {
