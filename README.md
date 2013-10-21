@@ -1,6 +1,6 @@
 *Author: Nobuyori Takahashi
-> since 2010 to present
-> contact: voltrue2@yahoo.com
+-since 2013 to present
+-contact: voltrue2@yahoo.com
 
 GraceNode
 ===========

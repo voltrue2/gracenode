@@ -1,0 +1,85 @@
+{
+	"modules": {
+		"log": {
+			"type": "stdout",
+			"color": true,
+			"level": {
+				"verbose": {
+					"enabled": true,
+					"path": "logs/"
+				},	
+				"debug": {
+					"enabled": true,
+					"path": "logs/"
+				},	
+				"info": {
+					"enabled": true,
+					"path": "logs/"
+				},	
+				"warning": {
+					"enabled": true,
+					"path": "logs/"
+				},	
+				"error": {
+					"enabled": true,
+					"path": "logs/"
+				},	
+				"fatal": {
+					"enabled": true,
+					"path": "logs/"
+				}
+			}
+		}
+		"server": {
+			"protocol": "http",
+			"port": 80,
+			"host": "gracenode.org",
+			"controllerPath": "controller/",
+			"ignored": [
+				"favicon.ico"
+			],
+			"error": {
+				"404": {
+					"controller": "error",
+					"method": "notFound"
+				},
+				"500": {
+					"controller": "error",
+					"method": "busy"
+				}
+			},
+			"reroute": [
+				{ "from": "/", "to": "/intro/index/" }
+			]
+		},
+		"view": {
+			"minify": true,
+			"preloads": [
+				"view/",
+				"GraceNode/client/js/"
+			]
+		},
+		"staticdata": {
+			"path": "staticdata/",
+			"linebreak": "\n",
+			"delimiter": ",",
+			"quote": "\""
+		}
+	},
+	"mysql": {
+		"read": {
+			"database": "gracenode",
+			"host": "hostname",
+			"user": "user",
+			"password": "pass",
+			"type": "ro"
+		},
+		"write": {
+			"database": "gracenode",
+			"host": "hostname",
+			"user": "user",
+			"password": "pass",
+			"type": "rw"
+		}
+	}
+}

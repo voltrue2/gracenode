@@ -59,7 +59,7 @@ module.exports.setup = function (cb) {
 
 module.exports.getOne = function (dataName) {
 	if (staticData[dataName]) {
-		return new StaticData(staticData[dataName]);
+		return new StaticData(dataName, staticData[dataName]);
 	}
 	return null;
 };
@@ -78,40 +78,46 @@ function readFile(path, cb) {
 	var lastDot = path.lastIndexOf('.');
 	var type = path.substring(lastDot + 1);
 	var name = path.substring(path.lastIndexOf('/') + 1, lastDot);
-	fs.readFile(path, function (error, dataBuffer) {
+	fs.lstat(path, function (error, stat) {
 		if (error) {
 			return cb(error);
 		}
-		var data = dataBuffer.toString('utf-8');
+		fs.readFile(path, function (error, dataBuffer) {
+			if (error) {
+				return cb(error);
+			}
+			var data = dataBuffer.toString('utf-8');
 
-		var bytes = dataBuffer.length;
-		var kb = bytes / 1024;
-		var size = bytes + ' bytes';
-		if (kb >= 1) {
-			size = kb + 'kb';
-		}
-		log.verbose('static data loaded:', path + ' (' + size + ')');
+			var bytes = dataBuffer.length;
+			var kb = bytes / 1024;
+			var size = bytes + ' bytes';
+			if (kb >= 1) {
+				size = kb + 'kb';
+			}
+			log.verbose('static data loaded:', path + ' (' + size + ')');
 
-		// convert to JSON		
-		if (type === 'csv') {
-			data = toJSON(data);
-		}
-		// check for error
-		if (data instanceof Error) {
-			return cb(data);
-		}
-		
-		// create index map(s) if asked
-		var indexMap = null;
-		var fileName = name + '.' + type;
-		if (config.index && config.index[fileName]) {
-			indexMap = mapIndex(data, config.index[fileName]);
-		}	
-		
-		// add it to cache
-		staticData[name] = { data: data, indexMap: indexMap };
+			// convert to JSON		
+			if (type === 'csv') {
+				data = toJSON(data);
+			}
+			// check for error
+			if (data instanceof Error) {
+				return cb(data);
+			}
+			
+			// create index map(s) if asked
+			var indexMap = null;
+			var fileName = name + '.' + type;
+			if (config.index && config.index[fileName]) {
+				indexMap = mapIndex(data, config.index[fileName]);
+			}	
+			// add it to cache
+			var d = new Date(stat.mtime);
+			var mtime = d.getTime();
+			staticData[name] = { data: data, indexMap: indexMap, path: path, mtime: mtime };
 
-		cb();
+			cb();
+		});
 	});
 }
 
@@ -163,56 +169,133 @@ function mapIndex(data, indexNames) {
 	return map;
 }
 
-function StaticData(src) {
+function validateCachedData(name, cb) {
+	if (staticData[name]) {
+		var data = staticData[name];
+		return fs.lstat(data.path, function (error, stat) {
+			if (error) {
+				return cb(error);
+			}
+			var d = new Date(stat.mtime);
+			var mtime = d.getTime();
+			if (mtime !== data.mtime) {
+				// file has been modified > update cache
+				return readFile(data.path, function (error) {
+					if (error) {
+						return cb(error);
+					}
+					// pass the updated cached data
+					cb(null, staticData[name]);
+				});
+			}
+			// cached data is still the latest
+			cb();
+		});
+	}
+	cb(new Error('cached data not found'));
+}
+
+function StaticData(name, src) {
+	this._name = name;
 	this._src = src.data;
 	this._indexMap = src.indexMap;
 }
 
-StaticData.prototype.getOneByIndex = function (indexName, key) {
-	if (this._indexMap[indexName]) {
-		if (this._indexMap[indexName][key] !== undefined) {
-			if (typeof this._indexMap[indexName][key] === 'object') {
-				return getObjValue(this._indexMap[indexName][key]);
+StaticData.prototype.validateCachedData = function (cb) {
+	var that = this;
+	validateCachedData(this._name, function (error, updatedData) {
+		if (error) {
+			return cb(error);
+		}
+		if (updatedData) {
+			that.update(updatedData);
+		}
+		cb();
+	});
+};
+
+StaticData.prototype.update = function (src) {
+	log.verbose('static data [' + this._name + '] has been updated');
+	this._src = src.data;
+	this._indexMap = src.indexMap;
+};
+
+StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
+	var that = this;
+	this.validateCachedData(function (error) {
+		if (error) {
+			return cb(error);
+		}
+		if (that._indexMap[indexName]) {
+			if (that._indexMap[indexName][key] !== undefined) {
+				if (typeof that._indexMap[indexName][key] === 'object') {
+					return cb(null, getObjValue(that._indexMap[indexName][key]));
+				}
+				return cb(null, that._indexMap[indexName][key]);
 			}
-			return this._indexMap[indexName][key];
 		}
-	}
-	return null;
+		cb(null, null);
+	});
 };
 
-StaticData.prototype.getManyByIndex = function (indexName, keyList) {
+StaticData.prototype.getManyByIndex = function (indexName, keyList, cb) {
 	var res = {};
-	for (var i = 0, len = keyList.length; i < len; i++) {
-		var key = keyList[i];
-		res[key] = this.getOneByIndex(indexName, key);
-	}
-	return res;
+	var that = this;
+	async.forEach(keyList, function (key, nextCallback) {
+		that.getOneByIndex(indexName, key, function (error, data) {
+			if (error) {
+				return cb(error);
+			}
+			res[key] = data;
+			nextCallback();
+		});
+	}, 
+	function (error) {
+		cb(error, res);
+	});
 };
 
-StaticData.prototype.getOne = function (index) {
-	if (this._src[index]) {	
-		if (typeof this._src[index] === 'object') {
-			// javascript gives you a pointer to the object not a copy, so to avoid poisning the source object, we create a copy by hand
-			return getObjValue(this._src[index]);
+StaticData.prototype.getOne = function (index, cb) {
+	var that = this;
+	this.validateCachedData(function (error) {
+		if (error) {
+			return cb(error);
 		}
-		return this._src[index];
-	}
-	return null;
+		if (that._src[index]) {	
+			if (typeof that._src[index] === 'object') {
+				return cb(null, getObjValue(that._src[index]));
+			}
+			return cb(null, that._src[index]);
+		}
+		cb(null, null);
+	});
 };
 
 StaticData.prototype.getMany = function (indexList) {
 	var res = {};
-	for (var i = 0, len = indexList.length; i < len; i++) {
-		var index = indexList[i];
-		var data = this.getOne(index);
-		res[index] = data;
-	}
-	return res;
+	var that = this;
+	async.forEach(indexList, function (index, nextCallback) {
+		that.getOne(index, function (error, data) {
+			if (error) {
+				return cb(error);
+			}
+			res[index] = data;
+			nextCallback();
+		});
+	},
+	function (error) {
+		cb(error, res);
+	});
 };
 
-StaticData.prototype.getAll = function () {
-	// javascript gives you a pointer to the object not a copy, so to avoid poisning the source object, we create a copy by hand
-	return getObjValue(this._src);
+StaticData.prototype.getAll = function (cb) {
+	var that = this;
+	this.validateCachedData(function (error) {
+		if (error) {
+			return cb(error);
+		}
+		cb(null, getObjValue(that._src));
+	});
 };
 
 function getObjValue(data) {
