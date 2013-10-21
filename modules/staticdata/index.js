@@ -201,25 +201,6 @@ function StaticData(name, src) {
 	this._indexMap = src.indexMap;
 }
 
-StaticData.prototype.validateCachedData = function (cb) {
-	var that = this;
-	validateCachedData(this._name, function (error, updatedData) {
-		if (error) {
-			return cb(error);
-		}
-		if (updatedData) {
-			that.update(updatedData);
-		}
-		cb();
-	});
-};
-
-StaticData.prototype.update = function (src) {
-	log.verbose('static data [' + this._name + '] has been updated');
-	this._src = src.data;
-	this._indexMap = src.indexMap;
-};
-
 StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 	var that = this;
 	this.validateCachedData(function (error) {
@@ -296,6 +277,25 @@ StaticData.prototype.getAll = function (cb) {
 		}
 		cb(null, getObjValue(that._src));
 	});
+};
+
+StaticData.prototype.validateCachedData = function (cb) {
+	var that = this;
+	validateCachedData(this._name, function (error, updatedData) {
+		if (error) {
+			return cb(error);
+		}
+		if (updatedData) {
+			that.update(updatedData);
+		}
+		cb();
+	});
+};
+
+StaticData.prototype.update = function (src) {
+	log.verbose('static data [' + this._name + '] has been updated');
+	this._src = src.data;
+	this._indexMap = src.indexMap;
 };
 
 function getObjValue(data) {

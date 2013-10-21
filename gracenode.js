@@ -55,13 +55,13 @@ module.exports.setConfigFiles = function (configFileList) {
 /**
  * @param {String} name of the module to be used. example: modName = myServer -> GraceNode.myServer
  * @param {String} original name of the module to be used. example modSourceName = server -> load module called "server"
- * @param {Object} { altConfigName: alternative configuration name of be used, altPath: alternative path to the module }
+ * @param {Object} { configName: alternative configuration name of be used, path: alternative path to the module }
  * */
 module.exports.use = function (modName, sourceModName, params) {
 	if (!params) {
 		params = {};
 	}	
-	modules.push({ name: modName, sourceName: sourceModName, config: params.altConfigName || null, path: params.altPath || null });
+	modules.push({ name: modName, sourceName: sourceModName, config: params.configName || null, path: params.path || null });
 };
 
 module.exports.setup = function (cb) {
