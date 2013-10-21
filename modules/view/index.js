@@ -10,6 +10,7 @@ var parserSource = require('./parser');
 * configurations
 * view: { // optional
 *	preloads: ["filepath"...]
+*	minify: true/false // optional > default is true
 *}
 * 
 * Parser class handles these
@@ -160,21 +161,13 @@ function readFile(path, stat, parser, seen, cb) {
 
 function embedData(outputData) {
 	// prepare for embedding all the variables in the view template
-	var clientVars = '<script type="text/javascript">window.gracenode = {};';
-	for (var key in clientData) {
-		clientVars += 'window.gracenode["' + key + '"]=' + JSON.stringify(clientData[key]) + ';';
-	}
-	clientVars += '</script>';
+	var clientVars = '<script type="text/javascript">window.gracenode = ' + JSON.stringify(clientData) + ';</script>';
 	
 	// remove HTML comments
-	outputData = removeHTMLComments(outputData);
+	outputData = outputData.replace(/<!--[\s\S]*?-->/g, '');
 
 	// embed
 	return outputData.replace('</head>', clientVars + '\n</head>', 'i');
-}
-
-function removeHTMLComments(outputData) {
-	return outputData.replace(/<!--[\s\S]*?-->/g, '');
 }
 
 function parseContent(outputData, parser, seen, cb) {
@@ -213,15 +206,19 @@ function processFile(type, data) {
 	switch (type) {
 		case 'js':
 			try {
-				// FIX ME: too slow
-				data = uglify.minify(data, { fromString: true }).code;
+				if (config.minify !== false) {
+					// FIX ME: too slow
+					data = uglify.minify(data, { fromString: true }).code;
+				}
 			} catch (exp) {
 				log.error('failed to minify a js file:', exp);
 			}
 			break;	
 		case 'css':
-			// remove line breaks and tabs
-			data = data.replace(/(\r\n|\n|\r|\t)/gm, '');	
+			if (config.minify !== false) {
+				// remove line breaks and tabs
+				data = data.replace(/(\r\n|\n|\r|\t)/gm, '');
+			}
 			break;
 		case 'png':
 		case 'gif':
