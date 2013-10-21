@@ -169,7 +169,7 @@ User.prototype.setName = function (value) {
 	if (typeof this._props.name === typeof value) {
 		if (value.length <= this._conf.maxNameLen) {
 			this._props.name = value;
-			this,emit('setName', value);
+			this.emit('setName', value);
 			return true;
 		}
 	}
@@ -278,7 +278,7 @@ function validateState(state) {
 		}
 	}
 	return true;
-};
+}
 
 function calcState(lv, prop) {
 	var state = prop.state;

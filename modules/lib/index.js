@@ -25,7 +25,7 @@ module.exports.randomInt = function (min, max) {
 
 module.exports.getArguments = function (func) {
 	var names = func.toString().match(/^[\s\(]*function[^(]*\(([^)]*)\)/);
-	var args = names[1].replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
+	var args = names[1].replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '');
 	args = args.replace(/\s+/g, '').split(',');
 	return args.length == 1 && !args[0] ? [] : args;
 };

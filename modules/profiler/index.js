@@ -44,7 +44,7 @@ module.exports.stop = function () {
 		logList.push(str);
 	}
 	var line = '+';
-	for (var i = 0; i < longest; i++) {
+	for (var a = 0; a < longest; a++) {
 		line += '-';
 	}
 	line += '+';
@@ -60,7 +60,7 @@ module.exports.stop = function () {
 	}
 	gap = longest - msgLen;
 	space = '';
-	for (var n = 0; n < gap; n++) {
+	for (var b = 0; b < gap; b++) {
 		space += ' ';
 	}
 	log.verbose('|' + msg + space + '|');

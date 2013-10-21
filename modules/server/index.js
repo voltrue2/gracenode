@@ -296,7 +296,7 @@ function execController(data, reqData, request, response, forcedResCode) {
 }
 
 function parseCookie(headers) {
-	var cookieStr = headers['cookie'] || '';
+	var cookieStr = headers.cookie || '';
 	var chunks = cookieStr.split('; ');
 	var cookies = {};
 	for (var i = 0, len = chunks.length; i < len; i++) {

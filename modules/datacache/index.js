@@ -57,8 +57,6 @@ Cache.prototype.get = function (rawKey, cb) {
 				cb(null, null);
 			});
 		}
-		// no cache found
-		log.verbose('cache found [false]: ' + key);
 		cb(null, null);
 	});
 };

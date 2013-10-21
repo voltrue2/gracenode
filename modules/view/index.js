@@ -9,7 +9,7 @@ var parserSource = require('./parser');
 /*
 * configurations
 * view: { // optional
-* 	preloads: ["filepath"...]
+*	preloads: ["filepath"...]
 *}
 *
 * <:var:> embed clientData in the html as javascript variables
@@ -67,6 +67,11 @@ module.exports.assign = function (name, value) {
 };
 
 module.exports.load = function (viewFilePath, cb) {
+	var seen = [];
+	load(viewFilePath, seen, cb);
+};
+
+function load (viewFilePath, seen, cb) {
 	// validate callback
 	if (typeof cb !== 'function') {
 		log.error('function load is missing callback');
@@ -77,17 +82,17 @@ module.exports.load = function (viewFilePath, cb) {
 	
 	log.verbose('loading a view file: ', path);
 
+	// view file parser
 	var parser = parserSource.create(clientData);
 	
 	// start loading
-	//readPath(path, parser, cb);
 	var outputData = '';
 	gracenode.lib.walkDir(path, function (error, list) {
 		if (error) {
 			return cb(error);
 		}
 		async.forEachSeries(list, function (item, nextCallback) {
-				readFile(item.file, item.stat, parser, function (error, data) {
+				readFile(item.file, item.stat, parser, seen, function (error, data) {
 					if (error) {
 						return cb(error);
 					}
@@ -95,16 +100,16 @@ module.exports.load = function (viewFilePath, cb) {
 					nextCallback();
 				});
 		},
-		 function (error) {
+		function (error) {
 			if (error) {
 				return cb(error);
 			}
 			cb(null, outputData);
 		});
 	});	
-};
+}
 
-function readFile(path, stat, parser, cb) {
+function readFile(path, stat, parser, seen, cb) {
 	// content data
 	var content = null;
 	// get file modtime in unix timestamp
@@ -112,6 +117,13 @@ function readFile(path, stat, parser, cb) {
 	var mtime = dateObj.getTime();
 	// create memory cache key
 	var key = path + mtime;
+
+	// check if we have included this file for this view
+	if (seen.indexOf(key) !== -1) {
+		log.verbose('file already included [' + key + ']: ignored');
+		return cb(null, '');
+	}
+	seen.push(key);
 	
 	// check for cache in memory
 	content = viewList[key] || null;		
@@ -119,7 +131,7 @@ function readFile(path, stat, parser, cb) {
 		// cache found > use it
 		log.verbose('view output data found in cache: ', key);
 		// handle included files
-		return parseContent(content, parser, function (error, contentData) {
+		return parseContent(content, parser, seen, function (error, contentData) {
 			if (error) {
 				return cb(error);
 			}	
@@ -139,7 +151,7 @@ function readFile(path, stat, parser, cb) {
 		viewList[key] = content;
 		log.verbose('view output data stored in cache: ', key);
 		// handle included files
-		parseContent(content, parser, function (error, contentData) {
+		parseContent(content, parser, seen, function (error, contentData) {
 			if (error) {
 				return cb(error);
 			}	
@@ -161,13 +173,13 @@ function embedData(outputData) {
 
 	// embed
 	return outputData.replace('<:var:>', clientVars);
-};
+}
 
 function removeHTMLComments(outputData) {
 	return outputData.replace(/<!--[\s\S]*?-->/g, '');
 }
 
-function parseContent(outputData, parser, cb) {
+function parseContent(outputData, parser, seen, cb) {
 	outputData = embedData(outputData);
 	var result = parser.parseData(outputData);
 	var list = result.includeList;
@@ -179,7 +191,7 @@ function parseContent(outputData, parser, cb) {
 			
 		gracenode.profiler.mark('start include: ' + path);
 		
-		module.exports.load(path, function (error, data) {
+		load(path, seen, function (error, data) {
 			if (error) {
 				return cb(error);
 			}
@@ -222,34 +234,4 @@ function processFile(type, data) {
 			break;
 	}
 	return data;
-}
-
-// FIX ME: doesn't work well....
-function removeJsComments(str) {
-	var uid = '_' + +new Date();
-	var primatives = [];
-	var primIndex = 0;
-	// remove strings
-	str = str.replace(/(['"])(\\\1|.)+?\1/g, function (match) {
-		primatives[primIndex] = match;
-		primIndex++;
-		return (uid + '') + primIndex;
-	});
-	// remove regex
-	str = str.replace(/([^\/])(\/(?!\*|\/)(\\\/|.)+?\/[gim]{0,3})/g, function(match, $1, $2){
-		primatives[primIndex] = $2;
-		return $1 + (uid + '') + primIndex++;
-	});
-	// remove single-line comments with would-be multiline delimiters // blah /* <--
-	// remove multi-line comments with would-be single-line delimiters /* // <--
-	str = str.replace(/\/\/.*?\/?\*.+?(?=\n|\r|$)|\/\*[\s\S]*?\/\/[\s\S]*?\*\//g, '');
-	// remove single and multi-line comments
-	str = str.replace(/\/\/.+?(?=\n|\r|$)|\/\*[\s\S]+?\*\//g, '');
-	// remove multi-line comments with a replace ending (string/regex)
-	str = str.replace(RegExp('\\/\\*[\\s\\S]+' + uid + '\\d+', 'g'), '');
-	// bring back the strings and regex
-	str = str.replace(RegExp(uid + '(\\d+)', 'g'), function(match, index) {
-		return primatives[index];
-	});
-	return str;
 }
