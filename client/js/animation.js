@@ -75,7 +75,7 @@
 			var timing = dur + item.time;
 			var percentage = timing / duration;
 			var css = parseCss(item.css);
-			def += percentage + '% {' + css + '}'
+			def += percentage + '% {' + css + '}';
 		}
 		def += ' } ';
 		// create animation
@@ -87,8 +87,8 @@
 		for (var key in params) {
 			config[key] = params[key];
 		}
-		for (var name in config) {
-			anim += 'animation-' + name + ': ' + config[name] + ';';
+		for (var nameKey in config) {
+			anim += 'animation-' + nameKey + ': ' + config[nameKey] + ';';
 		}
 		anim += ' } ';
 		// append animation css to DOM

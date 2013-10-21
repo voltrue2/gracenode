@@ -158,7 +158,7 @@
 				that._ready = true;
 				that.emit('loaded');
 			}
-		}
+		};
 		// start preloading
 		next(this._obj, next);
 	};
@@ -226,7 +226,7 @@
 	 *	id: String unique identifier for each obj
 	 *	type: rect/image/text
 	 *	width: Number,
-	 * 	height: Number
+	 *	height: Number
 	 *	x: Number
 	 *	y: Number
 	 *	src: String for image or text
@@ -245,7 +245,6 @@
 				obj[prop] = tmp[prop];
 			}
 		}
-		delete tmp;
 		this._context.save();
 		switch (obj.type) {
 			case 'rect':
@@ -419,9 +418,9 @@
 				x = event.clientX;
 				y = event.clientY;
 			}
+			var tapped = null;
 			if (that._frames[that._currentFrame]) {
 				var list = that._frames[that._currentFrame];
-				var tapped = null;
 				for (var i = 0, len = list.length; i < len; i++) {
 					var objData = list[i];
 					var obj = that._obj[objData.id] || null;
@@ -495,7 +494,7 @@
 			this._drawRect(obj);
 			this._context.restore();
 		}
-	}
+	};
 
 	Paint.prototype._tapDebugPause = function (pause) {
 		if (pause) {

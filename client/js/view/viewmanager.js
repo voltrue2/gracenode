@@ -43,27 +43,27 @@
 	};
 
 	ViewManager.prototype.open = function (name) {
+		var that = this;
+		var prevView = this.getCurrentView();
+		var openNewView = function () {
+			var newView = that.getViewByName(name);
+			if (newView) {
+				newView.once('opened', function () {
+					// new view has finished opening > now open the view
+					that._current = name;
+					// make the new view visible
+					newView.show();
+				});	
+				// view must call view.emit('opened') on this event;
+				newView.emit('open');
+			}
+			// no view by the given name found
+			that.error('view not found: ' + name);
+		};
 		if (this._current) {
 			// open AFTER closing
-			var that = this;
-			var prevView = this.getCurrentView();
-			var openNewView = function () {
-				var newView = that.getViewByName(name);
-				if (newView) {
-					newView.once('opened', function () {
-						// new view has finished opening > now open the view
-						that._current = name;
-						// make the new view visible
-						newView.show();
-					});	
-					// view must call view.emit('opened') on this event;
-					newView.emit('open');
-				}
-				// no view by the given name found
-				that.error('view not found: ' + name);
-			};
 			// close the current view
-			return prevView.once('closed', function () {
+			prevView.once('closed', function () {
 				that.emit('close', that._current);
 				prevView.hide();
 				// previouse view has finished closing > now prepare to open the new view

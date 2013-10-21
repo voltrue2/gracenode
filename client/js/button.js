@@ -29,7 +29,7 @@
 	 * myButton.disable();
 	 *
 	 * myButton.on('enable', function () {
-	 * 	console.log('enable');
+	 *	console.log('enable');
 	 * });
 	 * myButton.enable();
 	 *
@@ -171,9 +171,9 @@
 		if (event.touches) {
 			touch = event.touches[0] || { pageX: 0, pageY: 0 };
 		} else {
-			touch = { pageX: event.x || 0, pageY: event.y || 0 }
+			touch = { pageX: event.x || 0, pageY: event.y || 0 };
 		}
-		return { x: touch.pageX, y: touch.pageY }
+		return { x: touch.pageX, y: touch.pageY };
 	}
 
 }());

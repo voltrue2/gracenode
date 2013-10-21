@@ -63,9 +63,9 @@ FrameAnimation.prototype.addKeyFrame = function (frame, css) {
 /* params.direction, params.iteration, params.easing, params.delay, params.fps */
 FrameAnimation.prototype.setup = function (params) {
 	if (params.direction){
-		this.settings['direction'] = params.direction;
+		this.settings.direction = params.direction;
 	}
-	if (params.iteration != undefined){
+	if (params.iteration !== undefined){
 		if (params.iteration <= 0){
 			params.iteration = 'infinite';
 		}
@@ -76,11 +76,11 @@ FrameAnimation.prototype.setup = function (params) {
 	}
 	if (params.delay){
 		this.calcDurationPerFrame();
-		this.settings['delay'] = params.delay;
+		this.settings.delay = params.delay;
 		this.delay = params.delay * this.durationPerFrame;
 	}
-	if (params.keepLastState != undefined) {
-		this.settings['keepLastState'] = params.keepLastState;
+	if (params.keepLastState !== undefined) {
+		this.settings.keepLastState = params.keepLastState;
 	}
 	if (params.fps){
 		this.framerate = params.fps;
@@ -154,13 +154,14 @@ FrameAnimation.prototype.initialize = function (reverse) {
 	var last = false;
 	for (var i = 0; i < this.agents.length; i++){
 		def += '@' + this.agents[i] + 'keyframes key' + this.name + ' {';
+		var frame;
 		for (var f in keyframes){
 			/* calculte the frame position */
-			if (f == 0){
-				var frame = 0;
+			if (f === 0){
+				frame = 0;
 			}
 			else {
-				var frame = Math.floor((f / total) * 100);
+				frame = Math.floor((f / total) * 100);
 			}
 			if (reverse == 100){
 				frame = reverse - frame;
@@ -182,14 +183,14 @@ FrameAnimation.prototype.initialize = function (reverse) {
 	// create the animation duration
 	this.calcDurationPerFrame();
 	var dur = total * this.durationPerFrame;
-	this.settings['duration'] = dur + 'ms';
-	this.settings['delay'] = this.delay + 'ms';
-	this.settings['name'] = 'key' + this.name;
+	this.settings.duration = dur + 'ms';
+	this.settings.delay = this.delay + 'ms';
+	this.settings.name = 'key' + this.name;
 	var settings = this.settings;
 	var anim = '.' + this.name + ' { ';
-	for (var i = 0; i < this.agents.length; i++){
+	for (var k = 0; k < this.agents.length; k++){
 		for (var name in this.settings){
-			anim += this.agents[i] + 'animation-' + name + ': ' + this.settings[name] + '; ';
+			anim += this.agents[k] + 'animation-' + name + ': ' + this.settings[name] + '; ';
 		}
 	}
 	anim += '}';
@@ -200,15 +201,14 @@ FrameAnimation.prototype.initialize = function (reverse) {
 	css.innerHTML = def + ' ' + anim;
 	document.head.appendChild(css);
 	// start the animation
+	var self = this;
 	this.target.className = this.targetClass + ' ' + this.name;
 	// set up timer for callback
 	if (!isNaN(this.settings['iteration-count']) && !this.timer){
-		var self = this;
 		this.timer = window.setTimeout(function () {
 			self.stop();
 		}, (dur * this.settings['iteration-count']) + this.delay);
 	}
-	var self = this;
 	window.setTimeout(function () {
 		if (reverse){
 			self.emit('reverse');
