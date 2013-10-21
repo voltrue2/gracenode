@@ -11,8 +11,6 @@ var parserSource = require('./parser');
 * view: { // optional
 *	preloads: ["filepath"...]
 *}
-*
-* <:var:> embed clientData in the html as javascript variables
 * 
 * Parser class handles these
 * (:include filePath:) included in the html
@@ -162,9 +160,9 @@ function readFile(path, stat, parser, seen, cb) {
 
 function embedData(outputData) {
 	// prepare for embedding all the variables in the view template
-	var clientVars = '<script type="text/javascript">';
+	var clientVars = '<script type="text/javascript">window.gracenode = {};';
 	for (var key in clientData) {
-		clientVars += 'window.' + key + '=' + JSON.stringify(clientData[key]) + ';';
+		clientVars += 'window.gracenode["' + key + '"]=' + JSON.stringify(clientData[key]) + ';';
 	}
 	clientVars += '</script>';
 	
@@ -172,7 +170,7 @@ function embedData(outputData) {
 	outputData = removeHTMLComments(outputData);
 
 	// embed
-	return outputData.replace('<:var:>', clientVars);
+	return outputData.replace('</head>', clientVars + '\n</head>', 'i');
 }
 
 function removeHTMLComments(outputData) {
