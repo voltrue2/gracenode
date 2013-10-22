@@ -299,7 +299,7 @@ Object getMany(Array dataNameList)
 
 ##### StaticData class
 
-**getOneByIndex**
+> **getOneByIndex**
 <pre>
 Mixed getOneByIndex(String indexName, String indexKey, Function callback)
 </pre>
