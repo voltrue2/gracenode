@@ -89,7 +89,7 @@ GraceNode.prototype.setup = function (cb) {
 
 		log.verbose('GraceNode set up complete');
 
-		that.emit('setup');
+		that.emit('setup.complete');
 		
 		cb();
 
@@ -107,6 +107,8 @@ function setupConfig(that, cb) {
 
 		log.verbose('config is ready');
 
+		that.emit('setup.config');
+
 		cb(null, that);
 	});
 }
@@ -117,6 +119,8 @@ function setupLog(that, cb) {
 
 	log.verbose('log is ready');
 
+	that.emit('setup.log');
+
 	cb(null, that);
 }
 
@@ -125,6 +129,8 @@ function setupProfiler(that, cb) {
 	that.profiler.start();	
 
 	log.verbose('profiler ready');
+
+	that.emit('setup.profiler');
 
 	cb(null, that);	
 }
@@ -158,11 +164,13 @@ function setupModules(that, cb) {
 					if (error) {
 						return cb(error);
 					}
-					that.profiler.mark('moduke[' + name + '] loaded');
+					that.profiler.mark('module[' + name + '] loaded');
+					that.emit('setup.' + name);
 					nextCallback();
 				});
 			} else {
-				that.profiler.mark('moduke[' + name + '] loaded');
+				that.profiler.mark('module[' + name + '] loaded');
+				that.emit('setup.' + name);
 				nextCallback();
 			}
 		}, cb);
