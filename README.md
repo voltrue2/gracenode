@@ -79,14 +79,13 @@ gracenode.config
 Configurations
 *N/A*
 
-####API
+#####API getOne
 
 <pre>
 mixed getOne(string propName)
 </pre>
 > Returns the value of configuration property
 >> Example
-<pre>
 
 ```php
 // configuration JSON
@@ -103,6 +102,8 @@ $foo = gracenode.config.getOne("foo");
 $boo = gracenode.config.getOne("foo.boo");
 // $boo = 1
 ```
+
+#####API getMany
 
 <pre>
 array getMany(array propNameList)
