@@ -69,7 +69,8 @@ gracenode.setup(function (error) {
 
 ### Built-in Modules
 
-#### config 
+#### config module
+*** 
 
 Access
 <pre>
@@ -111,6 +112,7 @@ array getMany(array propNameList)
 > Returns the values of configuration properties
 
 ####log module
+***
 
 Access
 <pre>
