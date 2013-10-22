@@ -79,7 +79,7 @@ gracenode.config
 Configurations
 *N/A*
 
-#####API getOne
+#####API: *getOne*
 
 <pre>
 mixed getOne(string propName)
@@ -103,7 +103,7 @@ $boo = gracenode.config.getOne("foo.boo");
 // $boo = 1
 ```
 
-#####API getMany
+#####API: *getMany*
 
 <pre>
 array getMany(array propNameList)
@@ -135,3 +135,39 @@ Configurations
 		}
 }
 ```
+
+#####API: *verbose*
+
+<pre>
+void verbose(mixed data, [...])
+</pre>
+
+#####API: *debug*
+
+<pre>
+void debug(mixed data, [...])
+</pre>
+
+#####API: *info*
+
+<pre>
+void info(mixed data, [...])
+</pre>
+
+#####API: *warning*
+
+<pre>
+void warning(mixed data, [...])
+</pre>
+
+#####API: *error*
+
+<pre>
+void error(mixed data, [...])
+</pre>
+
+#####API: *fatal*
+
+<pre>
+void fatal(mixed data, [...])
+</pre>
