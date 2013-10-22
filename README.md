@@ -84,7 +84,7 @@ Configurations
 #####API: *getOne*
 
 <pre>
-mixed getOne(string propName)
+mixed getOne(String propName)
 </pre>
 > Returns the value of configuration property
 >> Example
@@ -108,7 +108,7 @@ var boo = gracenode.config.getOne("foo.boo");
 #####API: *getMany*
 
 <pre>
-object getMany(array propNameList)
+Object getMany(Array propNameList)
 </pre>
 > Returns the values of configuration properties
 
@@ -197,7 +197,7 @@ void start()
 #####API: *mark*
 
 <pre>
-void mark(string benchmarkPointName)
+void mark(String benchmarkPointName)
 </pre>
 > Calculate elapsed time between marks and output on profiler.stop()
 
@@ -221,13 +221,13 @@ Configurations *N/A*
 
 #####API: *randomInt*
 <pre>
-int randomInt(int min, int max)
+Int randomInt(Int min, Int max)
 </pre>
 > Returns pseudo-random integer between min and max
 
 #####API: *getArguments*
 <pre>
-array getArguments(function func)
+Array getArguments(Function func)
 </pre>
 > Returns an array of arguments for the given function
 
@@ -243,7 +243,7 @@ var args = gracenode.lib.getArguments(foo);
 
 #####API: *walkDir*
 <pre>
-void walkDir(string path, function callback)
+void walkDir(String path, Function callback)
 </pre>
 > Recursively walks the given path and passes an array of file paths to the callback function
 
@@ -280,13 +280,13 @@ Configurations
 
 #####API: *getOne*
 <pre>
-StaticData getOne(string dataName)
+StaticData getOne(String dataName)
 </pre>
 > Returns and instance of StaticData class
 >> Example:
 ```javascript
 /* 
-In order to create a static data object from a static data file call "example.csv"
+In order to create a static data object from a static data file called "example.csv",
 do the following:
 */
 var example = gracenode.staticdata.getOne('example');
@@ -294,9 +294,12 @@ var example = gracenode.staticdata.getOne('example');
 
 #####API: *getMany*
 <pre>
-object getMany(array dataNameList)
+Object getMany(Array dataNameList)
 </pre>
 
 ##### StaticData class
 
-
+**getOneByIndex**
+<pre>
+Mixed getOneByIndex(String indexName, String indexKey, Function callback)
+</pre>
