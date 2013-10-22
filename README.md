@@ -27,19 +27,13 @@ $ GraceNode/
 > GraceNode needs to be set up for it to run correctly.
 >> Below is the example code to set up GraceNode
 
-<pre>
+````javascript
 var gracenode = require('../GraceNode/gracenode');
 // tell GraceNode where to look for configuration file(s)
 // we will explain the effect of the function "gracenode.getRootPath()" later.
 gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
 // tell GraceNode the name(s) of configuration files to load
-w to set it up
-<pre>
-$ cd yourApp/
-$ git clone https://github.com/voltrue2/GraceNode GraceNode
-$ cd GraceNode/
-$ npm install
-</pre>
+gracenode.setConfigFiles(['base.json', 'modules.json']);
 
 > If you execute the above commands and every thing goes fine, GraceNode is successfully installed along with its dependencies
 
