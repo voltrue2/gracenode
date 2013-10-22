@@ -4,7 +4,7 @@
  *
  * {
  *		"staticdata": {
- *			"path": "directory path to the source statif files",
+ *			"path": "directory path to the source static files",
  *			"linebreak": optional,
  *			"delimiter": optional,
  *			"qoute": optional,

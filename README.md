@@ -59,13 +59,13 @@ gracenode.setup(function (error) {
 - lib
 
 #### Other optional modules
-- datacache
-- mysql
 - staticdata
 - request
 - server
 - view
 - session
+- mysql
+- datacache
 
 ### Built-in Modules
 
@@ -108,7 +108,7 @@ var boo = gracenode.config.getOne("foo.boo");
 #####API: *getMany*
 
 <pre>
-array getMany(array propNameList)
+object getMany(array propNameList)
 </pre>
 > Returns the values of configuration properties
 
@@ -245,7 +245,58 @@ var args = gracenode.lib.getArguments(foo);
 <pre>
 void walkDir(string path, function callback)
 </pre>
-> Recursively walk the given path and passes an array of file paths to the callback function
+> Recursively walks the given path and passes an array of file paths to the callback function
 
+
+***
+#### staticdata module
+***
+
+Access
+<pre>
+// do this in your bootstrap file (index.js) before invoking gracenode.setup().
+gracenode.use('gracenode', 'gracenode');
+// once gracenode.setup is finished. you can access the module as following:
+gracenode.staticdata
+</pre>
+
+Configurations
+```javascript
+// staticdata module supports CSV and JSON format
+{
+	"modules": {
+		"staticdata": {
+			"path": "directory path to the static files",
+			"linebreak": optional and defaults to '\n', // for parsing CSV files
+			"delimiter": optional and defaults to ',', // for parsing CSV files
+			"quote": optional and defaults to '"' // for parsing CSV files
+			"index": { // optional // for getOneByIndex and getManyByIndex
+				"staticFileName": ["indexName", [...]]
+			}
+		}
+	}
+}
+```
+
+#####API: *getOne*
+<pre>
+StaticData getOne(string dataName)
+</pre>
+> Returns and instance of StaticData class
+>> Example:
+```javascript
+/* 
+In order to create a static data object from a static data file call "example.csv"
+do the following:
+*/
+var example = gracenode.staticdata.getOne('example');
+```
+
+#####API: *getMany*
+<pre>
+object getMany(array dataNameList)
+</pre>
+
+##### StaticData class
 
 
