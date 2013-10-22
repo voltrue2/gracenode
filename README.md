@@ -24,6 +24,7 @@ $  .
 $ index.js
 $ GraceNode/
 </pre>
+
 > GraceNode needs to be set up for it to run correctly.
 >> Below is the example code to set up GraceNode
 
@@ -36,14 +37,12 @@ gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
 gracenode.setConfigFiles(['base.json', 'modules.json']);
 ```
 
-> If you execute the above commands and every thing goes fine, GraceNode is successfully installed along with its dependencies
-
 ##Create configuration files
 <pre>
 $ cd yourApp/
 $ mkdir configs/
 </pre>
-> You will then create your configuration file(s) under configs/ directory. The format is JSON. For reference please refer to GraceNode/example-config.
+> You will then create your configuration file(s) under configs/ directory. The format is JSON. For reference please refer to GraceNode/example-config.json
 
 ##index.js file for bootstrapping
 <pre>
@@ -55,7 +54,7 @@ $ index.js
 $ GraceNode/
 </pre>
 > GraceNode needs to be set up for it to run correctly.
->> Below is the example code to set up GraceNode
+>> Below is the example code to set up GraceNode in index.js
 
 ```javascript
 var gracenode = require('../GraceNode/gracenode');
