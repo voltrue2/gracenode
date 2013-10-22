@@ -207,3 +207,45 @@ void mark(string benchmarkPointName)
 void stop()
 </pre>
 > Stops profiler and output the profiling results
+
+***
+#### lib module
+***
+
+Access
+<pre>
+gracenode.lib
+</pre>
+
+Configurations *N/A*
+
+#####API: *randomInt*
+<pre>
+int randomInt(int min, int max)
+</pre>
+> Returns pseudo-random integer between min and max
+
+#####API: *getArguments*
+<pre>
+array getArguments(function func)
+</pre>
+> Returns an array of arguments for the given function
+
+```javascript
+
+function foo(num1, num2) {
+	return num1 + num2;
+}
+
+var args = gracenode.lib.getArguments(foo);
+// args = ["num1", "num2"];
+```
+
+#####API: *walkDir*
+<pre>
+void walkDir(string path, function callback)
+</pre>
+> Recursively walk the given path and passes an array of file paths to the callback function
+
+
+
