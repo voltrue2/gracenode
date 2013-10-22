@@ -13,7 +13,7 @@ $ npm install
 $ cd yourApp/
 $ mkdir configs/
 </pre>
-> You will then create your configuration file(s) under configs/ directory. The format is JSON. For reference please refer to GraceNode/example-config.
+> You will then create your configuration file(s) under configs/ directory. The format is JSON. For reference please refer to GraceNode/example-config.json
 
 ##index.js file for bootstrapping
 <pre>
@@ -36,13 +36,6 @@ gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
 // tell GraceNode the name(s) of configuration files to load
 gracenode.setConfigFiles(['base.json', 'modules.json']);
 ```
-
-##Create configuration files
-<pre>
-$ cd yourApp/
-$ mkdir configs/
-</pre>
-> You will then create your configuration file(s) under configs/ directory. The format is JSON. For reference please refer to GraceNode/example-config.json
 
 ##index.js file for bootstrapping
 <pre>
