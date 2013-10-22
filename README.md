@@ -309,13 +309,13 @@ mixed getManyByIndex(String indexName, Array indexKeyList, Function callback)
 </pre>
 **getOne**
 <pre>
-mixed getOne(mixed key)
+mixed getOne(mixed key, Function callback)
 </pre>
 **getMany**
 <pre>
-mixed getMany(Array keyList)
+mixed getMany(Array keyList, Function callback)
 </pre>
 **getAll**
 <pre>
-mixed getAll()
+mixed getAll(Function calback)
 </pre>
