@@ -175,3 +175,35 @@ void error(mixed data, [...])
 <pre>
 void fatal(mixed data, [...])
 </pre>
+
+***
+#### profiler module
+***
+
+Access
+<pre>
+gracenote.profiler
+</pre>
+
+Configurations
+*N/A*
+
+#####API: *start*
+<pre>
+void start()
+</pre>
+> Starts profiling
+
+#####API: *mark*
+
+<pre>
+void mark(string benchmarkPointName)
+</pre>
+> Calculate elapsed time between marks and output on profiler.stop()
+
+#####API: *stop*
+
+<pre>
+void stop()
+</pre>
+> Stops profiler and output the profiling results

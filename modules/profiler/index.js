@@ -2,14 +2,19 @@
 var startTime;
 var nowTime;
 var marks = [];
+var running = false;
 
 var gracenode = require('../../gracenode');
 var log = gracenode.log.create('profiler');
 
 module.exports.start = function () {
+	if (running) {
+		return log.warning('profiler is currently running. invoke "stop" before calling "start"');
+	}
 	var date = new Date();
 	startTime = date.getTime();
 	nowTime = startTime;
+	running = true;
 };
 
 module.exports.mark = function (name) {
@@ -24,6 +29,9 @@ module.exports.mark = function (name) {
 };
 
 module.exports.stop = function () {
+	if (!running) {
+		return log.warning('profiler is not running');
+	}
 	var date = new Date();
 	var now = date.getTime();
 	var totalTime = now - startTime;
@@ -69,4 +77,5 @@ module.exports.stop = function () {
 	startTime = 0;
 	nowTime = 0;
 	marks = [];
+	running = false;
 };
