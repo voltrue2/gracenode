@@ -1,6 +1,6 @@
 
 var fs = require('fs');
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 var log = gracenode.log.create('lib');
 
 module.exports.errorMsg = function () {

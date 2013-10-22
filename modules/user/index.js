@@ -32,7 +32,7 @@ var formula = require('./formula.js');
 var propDef = null;
 var confDef = null;
 
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 var log = gracenode.log.create('user');
 
 module.exports.readConfig = function (config) {

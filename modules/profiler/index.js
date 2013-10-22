@@ -4,7 +4,7 @@ var nowTime;
 var marks = [];
 var running = false;
 
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 var log = gracenode.log.create('profiler');
 
 module.exports.start = function () {

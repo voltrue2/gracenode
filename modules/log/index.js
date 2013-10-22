@@ -21,7 +21,7 @@
 var config = null;
 
 var fs = require('fs');
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 
 module.exports.readConfig = function (configIn) {
 	config = configIn;

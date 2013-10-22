@@ -26,7 +26,7 @@ var EventEmitter = require('events').EventEmitter;
 var http = require('http');
 var https = require('https');
 
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 var log = gracenode.log.create('server');
 var queryData = require('./queryData.js');
 var headers = require('./requestHeaders.js');

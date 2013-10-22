@@ -2,7 +2,7 @@
 var uglify = require('uglify-js');
 var fs = require('fs');
 var async = require('async');
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 var log = gracenode.log.create('view');
 var parserSource = require('./parser');
 

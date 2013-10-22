@@ -1,7 +1,7 @@
 
 var crypto = require('crypto');
 var Memcache = require('memcached');
-var gracenode = require('../../gracenode.js');
+var gracenode = require('../../');
 var log = gracenode.log.create('datacache');
 
 var config = null;

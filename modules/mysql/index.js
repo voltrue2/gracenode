@@ -27,7 +27,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var mysql = require('mysql');
 
-var gracenode = require('../../gracenode');
+var gracenode = require('../../');
 var log = gracenode.log.create('mysql');
 
 var configs = {};
