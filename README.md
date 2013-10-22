@@ -83,7 +83,6 @@ mixed getOne(string propName)
 </pre>
 > Returns the value of configuration property
 >> Example
-<pre>
 ```php
 // configuration JSON
 { "foo": 
@@ -98,4 +97,3 @@ $foo = gracenode.config.getOne("foo");
 // query the value of "boo"
 $boo = gracenode.config.getOne("foo.boo");
 // $boo = 1
-</pre>
