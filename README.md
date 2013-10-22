@@ -93,7 +93,11 @@ mixed getOne(string propName)
 // query the value of "foo"
 $foo = gracenode.config.getOne("foo");
 // $foo = array("boo" => 1)
-
 // query the value of "boo"
 $boo = gracenode.config.getOne("foo.boo");
 // $boo = 1
+
+<pre>
+array getMany(array propNameList)
+</pre>
+> Returns the values of configuration properties
