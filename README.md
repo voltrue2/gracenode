@@ -117,9 +117,9 @@ array getMany(array propNameList)
 ***
 
 Access
-<pre>
-gracenode.log
-</pre>
+```javascript
+var log = gracenode.log.create('nameToBeDisplayed');
+```
 
 Configurations
 ```javascript
