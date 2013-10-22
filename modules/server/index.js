@@ -98,7 +98,7 @@ module.exports.start = function () {
 	log.verbose('server started: ', config.host + ':' + config.port);
 
 	// listener for GraceNode shutdown
-	gracenode.event.on('shutdown', function () {
+	gracenode.on('shutdown', function () {
 		log.info('stopping server...');
 		server.close();
 		log.info('server stopped gracefully');

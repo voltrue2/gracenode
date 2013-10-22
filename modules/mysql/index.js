@@ -93,7 +93,7 @@ function MySql(name, connection, config) {
 	});
 	// listen to gracenode exit
 	var that = this;
-	gracenode.event.on('exit', function () {
+	gracenode.on('exit', function () {
 		log.info('disconnect from mysql (' + name + ')');
 		that._resource.end();
 	});
