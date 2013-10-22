@@ -301,5 +301,21 @@ Object getMany(Array dataNameList)
 
 > **getOneByIndex**
 <pre>
-Mixed getOneByIndex(String indexName, String indexKey, Function callback)
+mixed getOneByIndex(String indexName, String indexKey, Function callback)
+</pre>
+**getManyByIndex**
+<pre>
+mixed getManyByIndex(String indexName, Array indexKeyList, Function callback)
+</pre>
+**getOne**
+<pre>
+mixed getOne(mixed key)
+</pre>
+**getMany**
+<pre>
+mixed getMany(Array keyList)
+</pre>
+**getAll**
+<pre>
+mixed getAll()
 </pre>
