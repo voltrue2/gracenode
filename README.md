@@ -24,28 +24,6 @@ $  .
 $ index.js
 $ GraceNode/
 </pre>
-
-> GraceNode needs to be set up for it to run correctly.
->> Below is the example code to set up GraceNode
-
-```javascript
-var gracenode = require('../GraceNode/gracenode');
-// tell GraceNode where to look for configuration file(s)
-// we will explain the effect of the function "gracenode.getRootPath()" later.
-gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
-// tell GraceNode the name(s) of configuration files to load
-gracenode.setConfigFiles(['base.json', 'modules.json']);
-```
-
-##index.js file for bootstrapping
-<pre>
-$ cd yourApp/
-$ ls -la
-$ ..
-$  .
-$ index.js
-$ GraceNode/
-</pre>
 > GraceNode needs to be set up for it to run correctly.
 >> Below is the example code to set up GraceNode in index.js
 
