@@ -13,7 +13,8 @@
 		"password-hash": ">= 1.2.1",
 		"memcached": ">= 0.2.5",
 		"mysql": ">= 2.0.0-alpha9",
-		"jshint": ">= 2.2.0"
+		"jshint": ">= 2.2.0",
+		"bcrypt": ">= 0.7.7"
 	},
 	"engine": "node >= 1.00"
 }
