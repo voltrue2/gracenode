@@ -377,23 +377,23 @@ gracenode.server
 
 Configurations
 ```javascript
-modules: {
-	server: {
-		port: port number,
-		host: host name or IP address,
-		controllerPath: path to controller directory,
-		ignored: ['name of ignored URI'...],
-		error: {
-			404: {
-				controller: controller name,
-				method: public controller method
+"modules": {
+	"server": {
+		"port": port number,
+		"host": host name or IP address,
+		"controllerPath": path to controller directory,
+		"ignored": ['name of ignored URI'...],
+		"error": {
+			"404": {
+				"controller": controller name,
+				"method": public controller method
 			},
-			500: ...
+			"500": ...
 		},
-		reroute: [
+		"reroute": [
 			{
-				from: '/',
-				to: 'another/place'
+				"from": '/',
+				"to": 'another/place'
 			},
 			...
 		]
@@ -443,4 +443,23 @@ module.exports.foo = function (serverCallback) {
 	cb(null. 'foo', 'JSON');
 };
 // /example/foo/ will display "foo" on your browser
+```
+
+***
+#### <span id="view-module">view module</span>
+***
+
+Access
+<pre>
+gracenode.view
+</pre>
+
+Configurations
+```javascript
+"modules": {
+	"view": {
+		"preload": ["file path"...], // optional
+		"minify": true or false // default is true
+	}
+}
 ```
