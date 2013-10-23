@@ -474,10 +474,8 @@ void assign(String name, mixed value)
 <pre>
 // controller
 gracenode.view.assign('foo', 'hello world');
-
 // view file
 (:= foo :)
-
 // output
 hello world
 </pre>
