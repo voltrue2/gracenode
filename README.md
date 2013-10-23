@@ -426,11 +426,8 @@ void error(mixed error, mixed response, Function callback)
 > Example of how to set up a server
 ```javascript
 // index.js file of an application
-
 var gracenode = require('./GraceNode/');
-
 gracenode.use('server', 'server');
-
 gracenode.setup(function (error) {
 	if (error) {
 		throw new Error('failed to set up GraceNode');
@@ -438,11 +435,8 @@ gracenode.setup(function (error) {
 	// we start the server as soon as GraceNode is ready
 	gracenode.server.start();
 });
-
 // controller/example/index.js > /example/foo/
-
 var gracenode = require('../GraceNode/');
-
 // this will become part of the URI
 module.exports.foo = function (serverCallback) {
 	// serverCallback is created by server module automatically
