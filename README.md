@@ -521,3 +521,7 @@ module.exports.index = function (cb) {
 ```
 >> All included files have access to the variables assigned by **assign** function.
 >>> All assigned variables are also available as Javascript variables in the client under window.gracenode object
+
+###### Notes
+> There is no **if** nor **for-loop** in view module because view template files are just template files and should not contain any sort of logic.
+>> If you need to generate a list of items or change the display depending on certain conditions, please use *Javascript* to do so. After all we are using Nodejs.
