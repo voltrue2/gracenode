@@ -823,6 +823,7 @@ peopleCache.get(sql + params.json(''), function (error, value) {
 });
 ```
 
+> How to flush old cache
 ```javascript
 // flush old cache value on updated mysql data
 var peopleTable = gracenode.mysql.create('people');
