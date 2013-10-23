@@ -448,6 +448,83 @@ module.exports.foo = function (serverCallback) {
 // /example/foo/ will display "foo" on your browser
 ```
 
+> How to read GET and POST
+```javascript
+// controller file
+module.exrpots.index = function (cb) {
+	// server module automatically gives every controller the following functions:
+	// module.exports.getData and module.exports.postData
+	var getFoo = module.exports.getData('foo');
+	var postFoo = module.exports.postData('foo');
+	cb(null, null, 'JSON');
+};
+```
+
+> How to read request headers
+```javascript
+// controller file
+module.exports.index = function (cb) {
+	// server module automatically gives every contrller the following function:
+	// module.exports.getHeaders > this function returns an instance of Headers class
+	var requestHeaders = module.exports.getHeaders();
+};
+```
+
+> #### Headers class
+
+>> **get**
+<pre>
+String get(String headerName)
+</pre>
+
+>> **getOs**
+<pre>
+String getOs()
+</pre>
+
+>> **getBrowser**
+<pre>
+String getBrowser()
+</pre>
+
+>> **getDefaultLang**
+<pre>
+String getDefaultLang
+</pre>
+
+> How to set response headers
+```javascript
+// controller
+module.exports.index = function (cb) {
+	// server module automatically gives every contrller the following function:
+	// module.exports.setHeader
+	module.exports.setHeader('myHeader', 'foo');
+};
+```
+
+> How to read and set cookie
+```javascript
+// controller
+module.exports.index = function (cb) {
+	// server module automatically gives every contrller the following functions:
+	// module.exports.getCookie and module.exports.setCookie
+	var sessionCookie = module.exports.getCookie('session');
+	module.exports.setCookie('myCookie', 'foo');
+	// for handling session please use session module
+};
+```
+
+> How to handle and pass parameters
+```javascript
+// controller
+// request URI /foo/index/one/two/
+module.exports.index = function (one, two, cb) {
+	// one and two are  the values in the request URI
+	// by having these parameters and the arguments, these arguments will become requirements
+	// missing arguments will cause and error
+};
+```
+
 ***
 #### <span id="view-module">view module</span>
 ***
