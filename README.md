@@ -59,25 +59,25 @@ gracenode.setup(function (error) {
 > GraceNode has some built-in modules.
 
 #### Automatically loaded by GraceNode on setup
-- config
-- log
-- profiler
-- lib
+- <a href="#config-module">config</a>
+- <a href="#log-module">log</a>
+- <a href="#profiler-module">profiler</a>
+- <a href="#lib-module">lib</a>
 
 #### Other optional modules
-- staticdata
+- <a href="#staticdata-module">staticdata</a>
 - <a href="#request-module">request</a>
-- server
-- view
-- session
-- encrypt
-- mysql
-- datacache
+- <a href="#server-module">server</a>
+- <a href="#view-module">view</a>
+- <a href="#session-module">session</a>
+- <a href="#encrypt-module">encrypt</a>
+- <a href="#mysql-module">mysql</a>
+- <a href="#datacache-module">datacache</a>
 
 ### Built-in Modules
 
 ***
-#### config module
+#### <span id="config-module">config module</a>
 *** 
 
 Access
@@ -120,7 +120,7 @@ Object getMany(Array propNameList)
 > Returns the values of configuration properties
 
 ***
-####log module
+#### <span id="log-module">log module</span>
 ***
 
 Access
@@ -184,7 +184,7 @@ void fatal(mixed data, [...])
 </pre>
 
 ***
-#### profiler module
+#### <span id="profiler-module">profiler module</span>
 ***
 
 Access
@@ -216,7 +216,7 @@ void stop()
 > Stops profiler and output the profiling results
 
 ***
-#### lib module
+#### <span id="lib-module">lib module</span>
 ***
 
 Access
@@ -256,7 +256,7 @@ void walkDir(String path, Function callback)
 
 
 ***
-#### staticdata module
+#### <span id="staticdata-module">staticdata module</span>
 ***
 
 Access
