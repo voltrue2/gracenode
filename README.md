@@ -487,8 +487,7 @@ hello world
 <pre>
 void load(String vilewFilePath, Function callback)
 </pre>
-> Loads a view file
-> Example: 
+> Loads a view file.
 ```javascript
 // controller file
 module.exports.index = function (cb) {
