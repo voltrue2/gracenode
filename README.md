@@ -64,6 +64,7 @@ gracenode.setup(function (error) {
 - server
 - view
 - session
+- encrypt
 - mysql
 - datacache
 
