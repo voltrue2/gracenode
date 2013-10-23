@@ -92,7 +92,7 @@ function readFile(path, cb) {
 			var kb = bytes / 1024;
 			var size = bytes + ' bytes';
 			if (kb >= 1) {
-				size = kb + 'kb';
+				size = Math.round(kb) + ' kb';
 			}
 			log.verbose('static data loaded:', path + ' (' + size + ')');
 

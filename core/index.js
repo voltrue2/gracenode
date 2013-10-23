@@ -128,7 +128,7 @@ function setupProfiler(that, cb) {
 	that.profiler = require('../modules/profiler');
 	that.profiler.start();	
 
-	log.verbose('profiler ready');
+	log.verbose('profiler is ready');
 
 	that.emit('setup.profiler');
 
@@ -149,10 +149,10 @@ function setupModules(that, cb) {
 		
 			that[name] = module;			
 
-			log.verbose('module[' + name + '] loading...');
+			log.verbose('module [' + name + '] loading...');
 
 			if (typeof module.readConfig === 'function') {
-				log.verbose('module[' + name + '] reading configurations: ' + configName);
+				log.verbose('module [' + name + '] reading configurations: ' + configName);
 				var status = module.readConfig(config.getOne(configName));
 				if (status instanceof Error) {
 					return cb(status);
@@ -164,12 +164,14 @@ function setupModules(that, cb) {
 					if (error) {
 						return cb(error);
 					}
-					that.profiler.mark('module[' + name + '] loaded');
+					that.profiler.mark('module [' + name + '] loaded');
+					log.verbose('module [' + name + '] loaded');
 					that.emit('setup.' + name);
 					nextCallback();
 				});
 			} else {
-				that.profiler.mark('module[' + name + '] loaded');
+				that.profiler.mark('module [' + name + '] loaded');
+				log.verbose('module [' + name + '] loaded');
 				that.emit('setup.' + name);
 				nextCallback();
 			}
