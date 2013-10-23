@@ -66,7 +66,7 @@ gracenode.setup(function (error) {
 
 #### Other optional modules
 - staticdata
-- request
+- <a href="#request-module">request</a>
 - server
 - view
 - session
@@ -328,7 +328,7 @@ mixed getAll(Function calback)
 </pre>
 
 ***
-#### request module
+#### <span id="request-module">request module</span>
 ***
 
 #####API: *send*
