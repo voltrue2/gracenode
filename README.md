@@ -437,6 +437,7 @@ gracenode.setup(function (error) {
 });
 ```
 > Controller
+```javascript
 // controller/example/index.js > /example/foo/
 var gracenode = require('../GraceNode/');
 // this will become part of the URI
