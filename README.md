@@ -598,7 +598,7 @@ void createSalt(Int cost, Function callback)
 <pre>
 String uuid(Int version, Object options, Buffer buffer, Array offset)
 </pre>
-> Creates a uuid. This module uses <a href=://github.com/broofa/node-uuid">node-uuid</a> module.
+> Creates a uuid. This module uses <a href="https://github.com/broofa/node-uuid">node-uuid</a> module.
 >> Possible values for **version** are *1* or *4*
 >>> Version 1 is timestamp-base and version 4 is random-base
 
