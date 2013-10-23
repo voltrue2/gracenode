@@ -34,7 +34,7 @@
 
 		req.onreadystatechange = function () {
 			if (req.readyState === 4) {
-				//hideSpinner();
+				ee.emit('response', req);
 				var error = null;
 				var response = null;
 				if (req.status >= 200 && req.status <= 299 || req.status == 304) {
@@ -48,6 +48,7 @@
 						};
 						console.error('ajax, JSON.parse: ', Exception.toString());
 						console.trace();
+						ee.emit('response.error', error);
 					}
 				} else {
 					error = {
@@ -55,10 +56,13 @@
 						path: path,
 						response: response
 					};
+					ee.emit('response.error', error);
 				}
+				ee.emit('response.complete', error, response);
 				cb(error, response);
 			}
 		};
+		ee.emit('send');
 		req.send(paramStr);
 		return ee;
 	}
