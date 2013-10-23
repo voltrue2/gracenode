@@ -720,7 +720,10 @@ Array placeHolder(Array params)
 var mysql = gracenode.create('people');
 var params = ['jenny', 'ben', 'krista', 'ken'];
 mysql.searchMany('SELECT * FROM people WHERE name IN (' + mylsq.placeHolder(params) + ')', params, function (error, res) {
-	
+	if (error) {
+		throw new Error(error);
+	}	
+	// do something here
 });
 ```
 
