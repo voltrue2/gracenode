@@ -435,6 +435,8 @@ gracenode.setup(function (error) {
 	// we start the server as soon as GraceNode is ready
 	gracenode.server.start();
 });
+```
+> Controller
 // controller/example/index.js > /example/foo/
 var gracenode = require('../GraceNode/');
 // this will become part of the URI
