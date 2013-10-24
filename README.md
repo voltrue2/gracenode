@@ -454,10 +454,8 @@ module.exports.foo = function (serverCallback) {
 module.exrpots.index = function (cb) {
 	// server module automatically gives every controller the following functions:
 	// module.exports.getData and module.exports.postData
-	var getData = module.exports.getData();
-	var getFoo = getData.get('foo');
-	var postData = module.exports.postData();
-	var postFoo = postData.get('foot');
+	var getFoo = module.exports.getData.get('foo');
+	var postFoo = module.exports.postData.get('foot');
 	cb(null, null, 'JSON');
 };
 ```
