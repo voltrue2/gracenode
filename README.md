@@ -471,8 +471,8 @@ module.exrpots.index = function (cb) {
 // controller file
 module.exports.index = function (cb) {
 	// server module automatically gives every contrller the following function:
-	// module.exports.requestHeaders > this function returns an instance of Headers class
-	var requestHeaders = module.exports.requestHeaders();
+	// module.exports.requestHeaders > an instance of Headers class
+	var os = module.exports.requestHeaders.getOs();
 };
 ```
 
