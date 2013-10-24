@@ -175,19 +175,21 @@ function parseContent(outputData, parser, seen, cb) {
 	var result = parser.parseData(outputData);
 	var list = result.includeList;
 	outputData = result.data;
+	
+	var profiler = gracenode.profiler.create('include');
+	profiler.start();
+	
 	// include files asynchronously
 	async.forEachSeries(list, function (item, next) {
 		var tag = item.tag;
 		var path = item.path;
-			
-		gracenode.profiler.mark('start include: ' + path);
-		
+	
 		load(path, seen, function (error, data) {
 			if (error) {
 				return cb(error);
 			}
 			
-			gracenode.profiler.mark('include complete: ' + path);
+			profiler.mark('include complete: ' + path);
 		
 			outputData = outputData.replace(tag, data);
 			
@@ -198,6 +200,9 @@ function parseContent(outputData, parser, seen, cb) {
 		if (error) {
 			return cb(error);
 		}
+
+		profiler.stop();
+
 		cb(null, outputData);
 	});
 }

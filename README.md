@@ -195,25 +195,31 @@ gracenote.profiler
 Configurations
 *N/A*
 
-#####API: *start*
+####API: *create*
+<pre>
+Profiler create(String name)
+</pre>
+> Returns an instance of Profiler class
+
+##### Profiler class
+
+> **start**
 <pre>
 void start()
 </pre>
-> Starts profiling
+Starts profiling
 
-#####API: *mark*
-
+> **mark**
 <pre>
 void mark(String benchmarkPointName)
 </pre>
-> Calculate elapsed time between marks and output on profiler.stop()
+Calculate elapsed time between marks and output on profiler.stop()
 
-#####API: *stop*
-
+> **stop**
 <pre>
 void stop()
 </pre>
-> Stops profiler and output the profiling results
+Stops profiler and output the profiling results
 
 ***
 #### <span id="lib-module">lib module</span>
@@ -465,8 +471,8 @@ module.exrpots.index = function (cb) {
 // controller file
 module.exports.index = function (cb) {
 	// server module automatically gives every contrller the following function:
-	// module.exports.getHeaders > this function returns an instance of Headers class
-	var requestHeaders = module.exports.getHeaders();
+	// module.exports.requestHeaders > this function returns an instance of Headers class
+	var requestHeaders = module.exports.requestHeaders();
 };
 ```
 

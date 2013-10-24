@@ -16,12 +16,16 @@ module.exports.send = function (params, options, cb) {
 	if (!params) {
 		return cb(new Error('missing required arguement 1'));
 	}
+
 	var protocol = params.protocol || 'http';
 	var host = params.host || null;
 	var path = params.path || null;
 	if (!host || !path) {
 		return cb(new Error('missing host or path: \n' + JSON.stringify(params, null, 4)));
 	}
+	
+	var profiler = gracenode.create('send:[' + host + '/ ' + path + ']');
+	
 	var port = params.port || null;
 	var method = params.method || 'GET';
 	var data = params.data || null;
@@ -62,7 +66,7 @@ module.exports.send = function (params, options, cb) {
 	var serverResponse = null;
 	var callback = function (res) {
 	
-		gracenode.profiler.mark('recieving response');
+		profiler.mark('recieving response');
 
 		serverResponse = res;
 
@@ -84,7 +88,9 @@ module.exports.send = function (params, options, cb) {
 
 			log.verbose('request complete  > disconnected from ' + protocol + '://' + host + path);
 			
-			gracenode.profiler.mark('request completion');
+			profiler.mark('request completion');
+
+			profiler.stop();
 
 			cb(null, { status: res.statusCode, headers: res.headers, data: responseData });
 		});
@@ -94,7 +100,9 @@ module.exports.send = function (params, options, cb) {
 
 			log.error('request response error: ', error);
 			
-			gracenode.profiler.mark('request aborted');
+			profiler.mark('request aborted');
+
+			profiler.stop();
 
 			cb(error, { status: res.statusCode, headers: res.headers, data: responseData });
 		});
@@ -112,7 +120,7 @@ module.exports.send = function (params, options, cb) {
 	// send request
 	try {
 	
-		gracenode.profiler.mark('ready to sent request');
+		profiler.mark('ready to sent request');
 
 		var req = sender.request(args, callback);
 		
@@ -122,7 +130,9 @@ module.exports.send = function (params, options, cb) {
 
 			log.error('request error:');
 		
-			gracenode.profiler.mark('request failure');
+			profiler.mark('request failure');
+
+			profiler.stop();			
 
 			cb(error, { status: null, headers: null, data: responseData });
 		});
@@ -132,7 +142,7 @@ module.exports.send = function (params, options, cb) {
 		}
 		req.end();
 
-		gracenode.profiler.mark('sent request');
+		profiler.mark('sent request');
 		
 		// set up time out
 		var timeout = 3000; // 3 econds by default
@@ -155,6 +165,8 @@ module.exports.send = function (params, options, cb) {
 	} catch (exception) {
 		
 		log.error(exception);
+
+		profiler.stop();
 
 		cb(exception, { status: null, headers: null, data: responseData });
 	}

@@ -7,44 +7,66 @@ var running = false;
 var gracenode = require('../../');
 var log = gracenode.log.create('profiler');
 
-module.exports.start = function () {
-	if (running) {
-		return log.warning('profiler is currently running. invoke "stop" before calling "start"');
-	}
-	var date = new Date();
-	startTime = date.getTime();
-	nowTime = startTime;
-	running = true;
+module.exports.create = function (name) {
+	return new Profiler(name);
 };
 
-module.exports.mark = function (name) {
+function Profiler(name) {
+	this._name = name;
+	this._startTime;
+	this._nowTime;
+	this._marks = [];
+	this._running = false;
+}
+
+Profiler.prototype.start = function () {
+	if (this._running) {
+		return log.warning('profiler is currently running. invoke "stop" before calling "start"');
+	}
+	
+	log.verbose('profiling of "' + this._name + '" started');
+
+	var date = new Date();
+	this._startTime = date.getTime();
+	this._nowTime = this._startTime;
+	this._running = true;
+};
+
+Profiler.prototype.mark = function (name) {
+	if (!this._running) {
+		return log.warning('profiler "' + this._name + '" is not running');
+	}
+	
 	var date = new Date();
 	var now = date.getTime();
-	var time = now - nowTime;
-	nowTime = now;
-	marks.push({
+	var time = now - this._nowTime;
+	this._nowTime = now;
+	this._marks.push({
 		name: name,
 		time: time 
 	});
 };
 
-module.exports.stop = function () {
-	if (!running) {
-		return log.warning('profiler is not running');
+Profiler.prototype.stop = function () {
+	if (!this._running) {
+		return log.warning('profiler "' + this._name + '" is not running');
 	}
+
+	log.verbose('profiling of "' + this._name + '" stopped');
+
 	var date = new Date();
 	var now = date.getTime();
-	var totalTime = now - startTime;
+	var totalTime = now - this._startTime;
 	var logList = [];
-	var len = marks.length;
+	var len = this._marks.length;
 	var gap = 0;
 	var space = '';
-	var msg = ' Application took [' + totalTime + ' ms] ';
+	var msg = ' ' + this._name + ' took [' + totalTime + ' ms] ';
 	var msgLen = msg.length;
 	var longest = msgLen;
 	// degenrate profiling logs
 	for (var i = 0; i < len; i++) {
-		var item = marks[i];
+		var item = this._marks[i];
 		var str = ' > ' + item.name + ' took [' + item.time + ' ms] ';
 		if (longest < str.length) {
 			longest = str.length;
@@ -74,8 +96,8 @@ module.exports.stop = function () {
 	log.verbose('|' + msg + space + '|');
 	log.verbose(line);
 	// flush out and reset
-	startTime = 0;
-	nowTime = 0;
-	marks = [];
-	running = false;
+	this._startTime = 0;
+	this._nowTime = 0;
+	this._marks = [];
+	this._running = false;
 };

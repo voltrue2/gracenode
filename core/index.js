@@ -93,7 +93,7 @@ GraceNode.prototype.setup = function (cb) {
 		
 		cb();
 
-		that.profiler.stop();
+		that._profiler.stop();
 	});
 };
 
@@ -125,12 +125,18 @@ function setupLog(that, cb) {
 }
 
 function setupProfiler(that, cb) {
-	that.profiler = require('../modules/profiler');
-	that.profiler.start();	
+	var profiler = require('../modules/profiler');
+
+	// GraceNode profiler
+	that._profiler = profiler.create(rootDirName);
+	that._profiler.start();	
+
+	// profiler for others
+	that.profiler = profiler;
 
 	log.verbose('profiler is ready');
 
-	that.emit('setup.profiler');
+	that.emit('setup._profiler');
 
 	cb(null, that);	
 }
@@ -164,13 +170,13 @@ function setupModules(that, cb) {
 					if (error) {
 						return cb(error);
 					}
-					that.profiler.mark('module [' + name + '] loaded');
+					that._profiler.mark('module [' + name + '] loaded');
 					log.verbose('module [' + name + '] loaded');
 					that.emit('setup.' + name);
 					nextCallback();
 				});
 			} else {
-				that.profiler.mark('module [' + name + '] loaded');
+				that._profiler.mark('module [' + name + '] loaded');
 				log.verbose('module [' + name + '] loaded');
 				that.emit('setup.' + name);
 				nextCallback();

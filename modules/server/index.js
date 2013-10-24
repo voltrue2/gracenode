@@ -121,8 +121,9 @@ module.exports.error = function (error, res, cb) {
 
 
 function requestHandler(request, response) {
-	
-	gracenode.profiler.start();
+
+	var profiler = gracenode.profiler.create(request.url);	
+	profiler.start();
 
 	var reqHeader = request.headers;
 	var controllerData = parseUri(request.url);
@@ -150,15 +151,15 @@ function requestHandler(request, response) {
 	if (ignored.indexOf(controllerData.controller) !== -1) {
 		// ignored request detected
 		log.verbose('ignored request: ', request.url);
-		return respond(request, response, 200, '', 'JSON');
+		return respond(request, response, 200, '', 'JSON', profiler);
 	}
 
 	log.verbose('request resolved: ', controllerData);
-	gracenode.profiler.mark('request resolved [' + request.url + ']');
+	profiler.mark('request resolved [' + request.url + ']');
 
 	// extract post/get
 	extractQuery(request, function (data) {
-		execController(controllerData, data, request, response);
+		execController(controllerData, data, request, response, null, profiler);
 	});
 }
 
@@ -200,7 +201,7 @@ function extractQuery(request, cb) {
 	}
 }
 
-function execController(data, reqData, request, response, forcedResCode) {
+function execController(data, reqData, request, response, forcedResCode, profiler) {
 	try {
 		// verify the controller file
 		var path = gracenode.getRootPath() + config.controllerPath + data.controller;
@@ -240,13 +241,13 @@ function execController(data, reqData, request, response, forcedResCode) {
 					}
 					log.error(error);
 					
-					if (handleError(request, response, resCode)) {
+					if (handleError(request, response, resCode, profiler)) {
 						// stop
 						return;
 					}
 				}
 				// final response to client
-				respond(request, response, resCode, resData, contentType);
+				respond(request, response, resCode, resData, contentType, profiler);
 			};
 			// validate method
 			if (!controller[data.method]) {
@@ -254,12 +255,12 @@ function execController(data, reqData, request, response, forcedResCode) {
 
 				log.error(new Error(errorMsg));
 				
-				if (handleError(request, response, 404)) {
+				if (handleError(request, response, 404, profiler)) {
 					// stop
 					return;
 				}
 
-				return respond(request, response, 404, JSON.stringify({ error: errorMsg }));
+				return respond(request, response, 404, JSON.stringify({ error: errorMsg }), 'JSON', profiler);
 			}
 			// append the last callback
 			data.args.push(callback);
@@ -267,7 +268,7 @@ function execController(data, reqData, request, response, forcedResCode) {
 			var args = gracenode.lib.getArguments(controller[data.method]);
 			if (data.args.length !== args.length) {
 				log.error('number of arguments does not match: \ngiven', data.args, '\nexpected:', args);
-				if (handleError(request, response, 404)) {
+				if (handleError(request, response, 404, profiler)) {
 					// stop
 					return;
 				}
@@ -276,22 +277,22 @@ function execController(data, reqData, request, response, forcedResCode) {
 			controller[data.method].apply(controller, data.args);
 		} else {
 			log.error('controller not found: ', path);
-			if (handleError(request, response, 404)) {
+			if (handleError(request, response, 404, profiler)) {
 				// stop
 				return;
 			}
-			return respond(request, response, 404, JSON.stringify({ error: error }));
+			return respond(request, response, 404, JSON.stringify({ error: error }), 'JSON', profiler);
 		} 
 	} catch (exception) {
 		
 		log.error(exception);
 		
-		if (handleError(request, response, 500)) {
+		if (handleError(request, response, 500, profiler)) {
 			// stop
 			return;
 		}
 		var errData = JSON.stringify({ error: exception });
-		respond(request, response, 500, errData);
+		respond(request, response, 500, errData, 'JSON', profiler);
 	}
 }
 
@@ -309,7 +310,7 @@ function parseCookie(headers) {
 	return cookies;
 }
 
-function respond(request, response, resCode, data, contentType) {
+function respond(request, response, resCode, data, contentType, profiler) {
 	log.verbose('responding content type: ', contentType);
 
 	var callback = function (code) {
@@ -320,8 +321,8 @@ function respond(request, response, resCode, data, contentType) {
 		} else if (code >= 500) {
 			log.fatal('responded to request: ', request.url, code);
 		}
-		gracenode.profiler.mark(request.url);
-		gracenode.profiler.stop();
+		profiler.mark(request.url);
+		profiler.stop();
 	};
 
 	switch (contentType) {
@@ -398,14 +399,14 @@ function respondImage(request, response, resCode, data, cb) {
 	cb(resCode);
 }
 
-function handleError(request, response, resCode) {
+function handleError(request, response, resCode, profiler) {
 	// check for error handlers
 	if (config.error) {
 		var errorHandler = config.error[resCode.toString()] || null;
 		if (errorHandler) {
 			errorHandler.args = [];
 			log.verbose('error handler(' + resCode + ') found:', errorHandler);
-			execController(errorHandler, {}, request, response, resCode);
+			execController(errorHandler, {}, request, response, resCode, profiler);
 			return true;
 		}
 	}
