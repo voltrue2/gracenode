@@ -42,8 +42,11 @@ var controllerMap = {};
 
 // called automatically from gracenode on start
 module.exports.readConfig = function (configIn) {
-	if (!configIn || !configIn.port || !configIn.host || !configIn.controllerPath) {
+	if (!configIn || !configIn.host || !configIn.controllerPath) {
 		return new Error('invalid configurations: \n' + JSON.stringify(configIn, null, 4));
+	}
+	if (!configIn.port && !configIn.socket) {
+		return new Error('either port or UNIX socket file is required:\n' + JSON.stringify(configIn, null, 4));
 	}
 	config = configIn;
 };
@@ -91,11 +94,11 @@ module.exports.start = function () {
 		server.listen(config.port, config.host);
 	} else {
 		// listen to a socket file
-		log.verbose('listening to a socket file:', config.socket);
+		log.verbose('listening to a socket file:', gracenode.getRootPath() + config.socket);
 		server.listen(gracenode.getRootPath() + config.socket, config.host);
 	}
 
-	log.verbose('server started: ', config.host + ':' + config.port);
+	log.verbose('server started: ', config.host + ':' + (config.port || config.socket));
 
 	// listener for GraceNode shutdown
 	gracenode.on('shutdown', function () {

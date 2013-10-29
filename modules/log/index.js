@@ -4,7 +4,7 @@
  *
  * {
  *		"log": {
- *			"type": "std" or "file",
+ *			"type": "stdout" or "file",
  *			"color": true/false,
  *			"level": {
  *				"verbose": { "enabled": true/false, "path": "file path (required only if type is file)" },
@@ -21,10 +21,13 @@
 var config = null;
 
 var fs = require('fs');
-var gracenode = require('../../');
 
 module.exports.readConfig = function (configIn) {
+	if (!configIn || !configIn.type) {
+		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
+	}
 	config = configIn;
+	rooPath = require('../../').getRootPath();
 	return true;
 };
 
@@ -124,7 +127,7 @@ function print(name, msg) {
 		console.log.apply(console, msg);
 	} else if (config.level && config.level[name] && config.level[name].path) {
 		// write to a file
-		var path = gracenode.getRootPath() + config.level[name].path + name + '.log';
+		var path = config.level[name].path + name + '.log';
 		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
 			if (error) {
 				throw new Error('failed to write a log to a file: ' + error);

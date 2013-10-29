@@ -16,8 +16,9 @@ function Message() {
 util.inherits(Message, EventEmitter);
 
 Message.prototype.wait = function (data) {
-	this._pending.push(data);
-	this.emit('wait', data);
+	var msgData = { data: data };
+	this._pending.push(msgData);
+	this.emit('wait', msgData);
 };
 
 Message.prototype.send = function (data) {
