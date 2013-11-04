@@ -24,7 +24,7 @@ module.exports.send = function (params, options, cb) {
 		return cb(new Error('missing host or path: \n' + JSON.stringify(params, null, 4)));
 	}
 	
-	var profiler = gracenode.create('send:[' + host + '/ ' + path + ']');
+	var profiler = gracenode.profiler.create('send:[' + host + '/ ' + path + ']');
 	
 	var port = params.port || null;
 	var method = params.method || 'GET';
