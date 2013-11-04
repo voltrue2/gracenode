@@ -37,14 +37,14 @@ Parser.prototype.parseData = function (data) {
 
 Parser.prototype.parse = function (opening, closing, data, callbackEach) {
 	var openIndex = data.indexOf(opening);
-    var closeIndex = data.indexOf(closing);
-    var tmp = data;
+	var closeIndex = data.indexOf(closing);
+	var tmp = data;
 	while (openIndex !== -1 && closeIndex !== -1) {
-        //extract tag for replacement
+		//extract tag for replacement
 		var closer = closeIndex + 2;
 		var tag = tmp.substring(openIndex, closer);
 		var indicator = tag.substring(2, tag.indexOf(' '));
-        var keyTag = tag.substring(2 + indicator.length, tag.length - 2).trim(' ');
+		var keyTag = tag.substring(2 + indicator.length, tag.length - 2).trim(' ');
 		// update tmp
 		tmp = tmp.substring(closer);	
 		
@@ -53,9 +53,9 @@ Parser.prototype.parse = function (opening, closing, data, callbackEach) {
         
 		// move forward
 		openIndex = tmp.indexOf(opening);
-        closeIndex = tmp.indexOf(closing);
-    }
-    return data;
+		closeIndex = tmp.indexOf(closing);
+	}
+	return data;
 };
 
 Parser.prototype.replace = function (that, tag, keyTag, indicator, data) {
