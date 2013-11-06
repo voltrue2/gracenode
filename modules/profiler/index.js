@@ -1,9 +1,4 @@
 
-var startTime;
-var nowTime;
-var marks = [];
-var running = false;
-
 var gracenode = require('../../');
 var log = gracenode.log.create('profiler');
 
@@ -13,8 +8,8 @@ module.exports.create = function (name) {
 
 function Profiler(name) {
 	this._name = name;
-	this._startTime;
-	this._nowTime;
+	this._startTime = 0;
+	this._nowTime = 0;
 	this._marks = [];
 	this._running = false;
 }
