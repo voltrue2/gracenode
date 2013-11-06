@@ -57,21 +57,11 @@ module.exports.setup = function (cb) {
 	});
 };
 
-module.exports.getOne = function (dataName) {
+module.exports.create = function (dataName) {
 	if (staticData[dataName]) {
 		return new StaticData(dataName, staticData[dataName]);
 	}
 	return null;
-};
-
-module.exports.getMany = function (dataNameList) {
-	var res = {};
-	for (var i = 0, len = dataNameList.length; i < len; i++) {
-		var dataName = dataNameList[i];
-		var data = this.getOne(dataName);
-		res[dataName] = data;
-	}
-	return res;
 };
 
 function readFile(path, cb) {

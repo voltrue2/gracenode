@@ -292,9 +292,9 @@ Configurations
 }
 ```
 
-#####API: *getOne*
+#####API: *create*
 <pre>
-StaticData getOne(String dataName)
+StaticData create(String dataName)
 </pre>
 > Returns and instance of StaticData class
 >> Example:
@@ -303,13 +303,8 @@ StaticData getOne(String dataName)
 In order to create a static data object from a static data file called "example.csv",
 do the following:
 */
-var example = gracenode.staticdata.getOne('example');
+var example = gracenode.staticdata.create('example');
 ```
-
-#####API: *getMany*
-<pre>
-Object getMany(Array dataNameList)
-</pre>
 
 ##### StaticData class
 
