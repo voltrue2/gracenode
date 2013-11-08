@@ -6,7 +6,9 @@ var fs = require('fs');
 var async = require('async');
 
 var config;
-var map = {};
+// tree map
+var map = {}; // stores asset path, hash, ahd type
+var dataMap = {}; // stores binary with the same key as map
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.path) {
@@ -29,26 +31,56 @@ module.exports.setup = function (cb) {
 				}
 				var dotIndex = item.file.lastIndexOf('.');
 				var type = item.file.substring(dotIndex + 1);
-				var key = item.file.replace('.' + type, '').replace(path, '');
-				var md5 = crypto.createHash('md5');
-				var hash = md5.update(fileData).digest('base64'); 
+				var keySource = item.file.replace('.' + type, '').replace(path, '');
+				var hash = createFileHash(fileData);
 				var data = {
-					path: item.file,
+					key: keySource,
 					type: type,
-					hash: hash,
-					data: fileData			
+					hash: hash
 				};
-				map[key] = data;
-				log.verbose('mapped asset file:', key);
+				var keys = keySource.split('/');
+				var mapObj = map;
+				var len = keys.length - 1;
+				for (var i = 0; i <= len; i++) {
+					var key = keys[i];
+					if (mapObj[key] === undefined) {
+						if (i === len) {
+							mapObj[key] = data;
+						} else {
+							mapObj[key] = {};
+						}
+					}
+					mapObj = mapObj[key];
+				}
+				var dataKey = keySource;
+				dataMap[dataKey] = { 
+					data: fileData,
+					path: item.file
+				};
+				log.verbose('mapped asset file:', keySource);
 				callback();
 			});
-		}, cb);
+		}, function () {
+			log.verbose('asset map:', map);
+			cb();
+		});
 	});
 };
 
-module.exports.getOne = function (key) {
-	if (map) {
-		return map[key];
+// supports "/" separated key > img/example/example.png etc...
+module.exports.getOne = function (keySource) {
+	var keys = keySource.split('/');
+	var res = map;
+	var matched = false;
+	for (var i = 0, len = keys.length; i < len; i++) {
+		var key = keys[i];
+		if (res[key]) {
+			matched = true;
+			res = res[key];
+		}
+	}
+	if (matched) {
+		return gracenode.lib.cloneObj(res);
 	}
 	return null;
 };
@@ -60,3 +92,15 @@ module.exports.getMany = function (keyList) {
 	}
 	return res;
 };
+
+module.exports.getDataByKey = function (key) {
+	if (dataMap[key]) {
+		return dataMap[key];
+	}
+	return null;
+};
+
+function createFileHash(fileData) {
+	var md5 = crypto.createHash('md5');
+	return md5.update(fileData).digest('base64'); 
+}

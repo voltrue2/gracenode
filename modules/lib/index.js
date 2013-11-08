@@ -30,6 +30,23 @@ module.exports.getArguments = function (func) {
 	return args.length === 1 && !args[0] ? [] : args;
 };
 
+module.exports.cloneObj = function (obj) {
+	var res = null;
+	if (Array.isArray(obj)) {
+		res = [];
+	} else {
+		res = {};
+	}
+	for (var key in obj) {
+		if (typeof obj[key] === 'object') {
+			res[key] = module.exports.cloneObj(obj[key]);
+		} else {
+			res[key] = obj[key];
+		}
+	}
+	return res;
+};
+
 module.exports.walkDir = function (path, cb) {
 	var res = [];
 	fs.lstat(path, function (error, stat) {
