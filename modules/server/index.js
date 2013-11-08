@@ -35,7 +35,7 @@ var config = null;
 var contentTypes = {
 	JSON: 'JSON',
 	HTML: 'HTML',
-	image: 'image'
+	image: 'IMAGE'
 };
 
 var controllerMap = {};
@@ -73,32 +73,37 @@ module.exports.start = function () {
 	var server = null;
 
 	// create server
-	if (config.protocol === 'https') {
-		// https
-		var options = {
-			key: fs.readFileSync(config.pemKey),
-			cert: fs.readFileSync(config.pemCert)
-		};
-		server = https.createServer(options, requestHandler);
-	} else {
-		// http
-		server = http.createServer(requestHandler);
+	try {
+		if (config.protocol === 'https') {
+			// https
+			var options = {
+				key: fs.readFileSync(config.pemKey),
+				cert: fs.readFileSync(config.pemCert)
+			};
+			server = https.createServer(options, requestHandler);
+		} else {
+			// http
+			server = http.createServer(requestHandler);
+		}
+
+		log.info('server protocol:', (config.ptotocol || 'http'));
+
+		// port/socket listener
+		if (!config.socket) {
+			// listen to a port
+			log.verbose('listening to a port:', config.port);
+			server.listen(config.port, config.host);
+		} else {
+			// listen to a socket file
+			log.verbose('listening to a socket file:', gracenode.getRootPath() + config.socket);
+			server.listen(gracenode.getRootPath() + config.socket, config.host);
+		}
+
+		log.verbose('server started: ', config.host + ':' + (config.port || config.socket));
+	
+	} catch (error) {
+		return gracenode.exit(error);		
 	}
-
-	log.info('server protocol:', (config.ptotocol || 'http'));
-
-	// port/socket listener
-	if (!config.socket) {
-		// listen to a port
-		log.verbose('listening to a port:', config.port);
-		server.listen(config.port, config.host);
-	} else {
-		// listen to a socket file
-		log.verbose('listening to a socket file:', gracenode.getRootPath() + config.socket);
-		server.listen(gracenode.getRootPath() + config.socket, config.host);
-	}
-
-	log.verbose('server started: ', config.host + ':' + (config.port || config.socket));
 
 	// listener for GraceNode shutdown
 	gracenode.on('shutdown', function () {
