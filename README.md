@@ -73,6 +73,7 @@ gracenode.setup(function (error) {
 - <a href="#encrypt-module">encrypt</a>
 - <a href="#mysql-module">mysql</a>
 - <a href="#datacache-module">datacache</a>
+- <a href="#asset-module">asset</a>
 - <a href="#message-module">message</a>
 
 ### Built-in Modules
