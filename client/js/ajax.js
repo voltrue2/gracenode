@@ -3,6 +3,8 @@
 	var domain = window.location.origin + '/';
 	var block = null;
 
+	var ajaxEvents = new EventEmitter();
+
 	/*
 	 *@url (String)
 	 *@params (Object)
@@ -35,6 +37,7 @@
 		req.onreadystatechange = function () {
 			if (req.readyState === 4) {
 				ee.emit('response', req);
+				ajaxEvents.emit('response', req);
 				var error = null;
 				var response = null;
 				if (req.status >= 200 && req.status <= 299 || req.status == 304) {
@@ -49,6 +52,7 @@
 						console.error('ajax, JSON.parse: ', Exception.toString());
 						console.trace();
 						ee.emit('response.error', error);
+						ajaxEvents.emit('response.error', error);
 					}
 				} else {
 					error = {
@@ -57,12 +61,15 @@
 						response: response
 					};
 					ee.emit('response.error', error);
+					ajaxEvents.emit('response.error', error);
 				}
 				ee.emit('response.complete', error, response);
+				ajaxEvents.emit('response.complete', error, response);
 				cb(error, response);
 			}
 		};
 		ee.emit('send');
+		ajaxEvents.emit('send');
 		req.send(paramStr);
 		return ee;
 	}
@@ -88,7 +95,9 @@
 	window.setAjaxDomain = function (d) {
 		domain = d;
 	};
-	
+
+	// expose
+	window.ajaxEvents = ajaxEvents;	
 	window.ajax = ajax;
 
 }());
