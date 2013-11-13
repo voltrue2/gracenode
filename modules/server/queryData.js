@@ -9,13 +9,20 @@ function Data(dataIn) {
 }
 
 Data.prototype.get = function (key) {
+	var res = null;
 	if (!key) {
 		// get all
-		var res = {};
+		res = {};
 		for (var prop in this._data) {
 			res[prop] = this._data[prop];
 		}
-		return res;
+	} else {
+		res = this._data[key] !== undefined ? this._data[key] : null;
 	}
-	return this._data[key] !== undefined ? this._data[key] : null;
+	try {
+		res = JSON.parse(res);
+	} catch (error) {
+		// res is not a JSON
+	}
+	return res;
 };

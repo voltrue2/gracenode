@@ -1,24 +1,5 @@
 // dependencies: EventEmitter.js, button.js
 (function () {
-	
-	function View(parentElm) {
-		window.Dom.call(this);
-		this._elm = parentElm;
-		this._viewMap = {};
-	}
-
-	window.inherits(View, window.Dom);
-	window.View = View;
-
-	View.prototype.show = function () {
-		this.setStyle({ display: '' });
-		this.emit('show');
-	};
-	
-	View.prototype.hide = function () {
-		this.setStyle({ display: 'none' });
-		this.emit('hide');
-	};
 
 	/*
 	* DOM manipulation class
@@ -28,6 +9,11 @@
 	}
 
 	window.inherits(Dom, window.EventEmitter);
+	window.Dom = Dom;
+
+	Dom.prototype.getElm = function () {
+		return this._elm;
+	};
 
 	Dom.prototype.getById = function (id) {
 		var elm = document.getElementById(id);
@@ -94,6 +80,25 @@
 
 	Dom.prototype.button = function () {
 		return window.createButton(this._elm);		
+	};
+	
+	function View(parentElm) {
+		Dom.call(this);
+		this._elm = parentElm;
+		this._viewMap = {};
+	}
+
+	window.inherits(View, Dom);
+	window.View = View;
+
+	View.prototype.show = function () {
+		this.setStyle({ display: '' });
+		this.emit('show');
+	};
+	
+	View.prototype.hide = function () {
+		this.setStyle({ display: 'none' });
+		this.emit('hide');
 	};
 
 }());
