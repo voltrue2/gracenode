@@ -56,6 +56,11 @@
 		return child;
 	};
 
+	Dom.prototype.appendChild = function (dom) {
+		this._elm.appendChild(dom._elm);
+		this.emit('appendChild', dom);
+	};
+
 	Dom.prototype.setStyle = function (style) {
 		for (var name in style) {
 			this._elm.style[name] = style[name];
@@ -68,6 +73,16 @@
 		this.emit('setClassName', cls);
 	};  
 
+	Dom.prototype.setAttribute = function (att) {
+		for (var name in att) {
+			this._elm.setAttribute(name, att[name]);
+		}
+	};
+
+	Dom.prototype.getAttribute = function (name) {
+		return this._elm.getAttribute(name);
+	};
+
 	Dom.prototype.textContent = function (str) {
 		this._elm.textContent = str;
 		this.emit('textContent', str);
@@ -78,6 +93,10 @@
 		this.emit('innerHTML', html);
 	};
 
+	Dom.prototype.getElm = function () {
+		return this._elm;
+	};
+
 	Dom.prototype.button = function () {
 		return window.createButton(this._elm);		
 	};
@@ -86,10 +105,15 @@
 		Dom.call(this);
 		this._elm = parentElm;
 		this._viewMap = {};
+		this.name = null;
 	}
 
 	window.inherits(View, Dom);
 	window.View = View;
+
+	View.prototype.ready = function () {
+		this.emit('ready', this.name, this);
+	};
 
 	View.prototype.show = function () {
 		this.setStyle({ display: '' });

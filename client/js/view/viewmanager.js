@@ -1,6 +1,9 @@
 // dependency EventEmitter
 (function () {
 
+	/***
+	* Events: resize, add, ready, open, close, error 
+	***/
 	function ViewManager(parentElm) {
 		window.EventEmitter.call(this);
         var that = this;
@@ -8,35 +11,42 @@
 		this._stack = []; // list of popup view names currently in display
 		this._current = null;
 		this._parentElm = parentElm;
+		this._index = 0;
 		// on resize/orientation change
         var resizeEvent = 'resize';
         if ('onorientationchange' in window) {
             resizeEvent = 'orientationchange';
         }
         window.addEventListener(resizeEvent, function () {
-            that.emit('resize');
-            if (that._current) {
-                that.getViewByName(that._current).emit('resize');
-            }
-            for (var i = 0, len = that._stack.length; i < len; i++) {
-                var view = that.getViewByName(that._stack[i]);
+			that.emit('resize');
+			if (that._current) {
+				that.getViewByName(that._current).emit('resize');
+			}
+			for (var i = 0, len = that._stack.length; i < len; i++) {
+				var view = that.getViewByName(that._stack[i]);
 				if (view) {
 					view.emit('resize');
 				}
-            }
-        }, false);
-        // hide address bar
-        window.addEventListener('load', function () {
-            window.setTimeout(function () {
-                window.scrollTo(0, 0);
-            }, 0);
-        }, false);
+			}
+			// reset scroll position on orientation change
+			window.setTimeout(function () {
+				window.scrollTo(0, 0);
+			}, 0);
+		}, false);
+		// hide address bar
+		window.addEventListener('load', function () {
+			window.setTimeout(function () {
+				window.scrollTo(0, 0);
+			}, 0);
+		}, false);
 		// disable scroll
-		var parent = new window.Dom(parentElm);
-		var btn = parent.button();
-		btn.on('tapstart', function (event) {
+		parentElm.addEventListener('touchmove', function (event) {
 			event.preventDefault();
-		});		
+		}, false);
+		// disable text selection
+		parentElm.style.WebkitTouchCallout = 'none';
+		parentElm.style.WebkitUserSelect = 'none';
+		parentElm.style.userSelect = 'none';
 	}
 
 	window.inherits(ViewManager, window.EventEmitter);
@@ -53,12 +63,26 @@
 	ViewManager.prototype.add = function (name, view) {
 		if (!this._viewMap[name]) {
 			this._viewMap[name] = view;
+			view.name = name;
 			view.hide();
+			view.setStyle({
+				zIndex: 0,
+				width: '100%',
+				height: '100%',
+				position: 'absolute',
+				top: 0,
+				left: 0
+			});
 			this.emit('add', name, view);
+			// view emits this event when it is ready
+			var that = this;
+			view.once('ready', function () {
+				that.emit('ready', name, view);
+			});
 		}
 	};
 
-	ViewManager.prototype.open = function (name) {
+	ViewManager.prototype.open = function (name, params) {
 		var that = this;
 		var openNewView = function () {
 			var newView = that.getViewByName(name);
@@ -72,7 +96,7 @@
 					that.emit('open', newView);
 				});	
 				// view must call view.emit('opened') on this event;
-				newView.emit('open');
+				newView.emit('open', params);
 			}
 			// no view by the given name found
 			that.error('view not found: ' + name);
@@ -80,7 +104,7 @@
 		if (this._current) {
 			// open AFTER closing
 			// close the current view
-			var prev = this.getViewByName(this._current)
+			var prev = this.getViewByName(this._current);
 			prev.once('closed', function () {
 				this.hide();
 				// previouse view has finished closing > now prepare to open the new view
@@ -94,7 +118,7 @@
 		openNewView();
 	};
 
-	ViewManager.prototype.openPopup = function (name) {
+	ViewManager.prototype.openPopup = function (name, params) {
 		var view = this.getViewByName(name);
 		if (!view) {
 			return this.error('view not found: ' + name);
@@ -103,9 +127,14 @@
 		if (this._crrent !== name && this._stack.indexOf(name) === -1) {
 			view.once('opened', function () {
 				that._stack.push(name);
+				that._index++;
+				view.setStyle({
+					zIndex: that._index
+				});
 				view.show();		
+				that.emit('open', view);
 			});
-			view.emit('open');
+			view.emit('open', params);
 		}	
 	};
 
@@ -117,7 +146,12 @@
 				var that = this;
 				view.once('closed', function () {
 					that.emit('close', popup);
+					that._index--;
+					view.setStyle({
+						zIndex: 0
+					});
 					view.hide();
+					that.emit('close', view);
 				});
 				view.emit('close');
 			}
@@ -132,7 +166,7 @@
 			if (view) {
 				var that = this;
 				view.once('closed', function () {
-					that.emit('close', popup);
+					that.emit('close', this);
 					view.hide();
 				});
 				view.emit('close');
