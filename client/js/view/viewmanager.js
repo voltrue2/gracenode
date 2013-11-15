@@ -73,6 +73,7 @@
 				top: 0,
 				left: 0
 			});
+			view.setClassName('view ' + name);
 			this.emit('add', name, view);
 			// view emits this event when it is ready
 			var that = this;

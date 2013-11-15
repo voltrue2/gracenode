@@ -60,8 +60,13 @@
 						path: path,
 						response: response
 					};
-					ee.emit('response.error', error);
-					ajaxEvents.emit('response.error', error);
+					var resendObj = {
+						path: path, 
+						params: params,
+						callback: cb
+					};
+					ee.emit('response.error', error, resendObj);
+					ajaxEvents.emit('response.error', error, resendObj);
 				}
 				ee.emit('response.complete', error, response);
 				ajaxEvents.emit('response.complete', error, response);
