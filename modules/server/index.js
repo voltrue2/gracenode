@@ -218,6 +218,8 @@ function execController(data, reqData, request, response, forcedResCode, profile
 			var cookies = parseCookie(request.headers);
 			// require the found controller
 			var controller = require(path);
+			
+			// FIXME: this is very bad. wrap them all up in an object and pass it as one of the arguments of the controller method
 			// pass post and get
 			controller.postData = queryData.createGetter(reqData.post || {});
 			controller.getData = queryData.createGetter(reqData.get || {});
@@ -239,6 +241,8 @@ function execController(data, reqData, request, response, forcedResCode, profile
 			controller.getCookie = function (name) {
 				return cookies[name] || null;
 			};
+			
+
 			// final callback to the method
 			var callback = function (error, res, contentType, statusCode) {
 				var resCode = forcedResCode ? forcedResCode : statusCode || 200;
