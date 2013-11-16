@@ -218,30 +218,33 @@ function execController(data, reqData, request, response, forcedResCode, profile
 			var cookies = parseCookie(request.headers);
 			// require the found controller
 			var controller = require(path);
-			
-			// FIXME: this is very bad. wrap them all up in an object and pass it as one of the arguments of the controller method
+		
+			// create request object to be passed to controller method
+			var reqObj = {};	
 			// pass post and get
-			controller.postData = queryData.createGetter(reqData.post || {});
-			controller.getData = queryData.createGetter(reqData.get || {});
+			reqObj.postData = queryData.createGetter(reqData.post || {});
+			reqObj.getData = queryData.createGetter(reqData.get || {});
 			// pass request headers
-			controller.requestHeaders = headers.create(request.headers);
+			reqObj.requestHeaders = headers.create(request.headers);
 			// give setHeader() to controller
-			controller.setHeader = function (name, value) {
+			reqObj.setHeader = function (name, value) {
 				response.setHeader(name, value);
 			};
 			// give setCookie to controller
-			controller.setCookie = function (obj) {
+			reqObj.setCookie = function (obj) {
 				var cookie = '';
 				for (var name in obj) {
 					cookie += name + '=' + obj[name] + '; ';
 				}
-				controller.setHeader('Set-Cookie', cookie);
+				reqObj.setHeader('Set-Cookie', cookie);
 			};
 			// give get Cookie to controller
-			controller.getCookie = function (name) {
+			reqObj.getCookie = function (name) {
 				return cookies[name] || null;
 			};
-			
+			// pass reqObj as the first argument of controller method
+			var reqArray = [reqObj];
+			data.args = reqArray.concat(data.args);
 
 			// final callback to the method
 			var callback = function (error, res, contentType, statusCode) {
@@ -417,9 +420,17 @@ function handleError(request, response, resCode, profiler) {
 		var errorHandler = config.error[resCode.toString()] || null;
 		if (errorHandler) {
 			errorHandler.args = [];
-			log.verbose('error handler(' + resCode + ') found:', errorHandler);
-			execController(errorHandler, {}, request, response, resCode, profiler);
-			return true;
+			log.verbose('error handler(' + resCode + ') configured:', errorHandler);
+			if (controllerMap[errorHandler.controller]) {
+				log.verbose('error handler(' + resCode + ') found:', errorHandler);
+				execController(errorHandler, {}, request, response, resCode, profiler);
+				return true;
+			}
+			log.verbose('error handler(' + resCode + ') not found');
+			response.writeHeader(resCode, {});
+			response.end(resCode, 'string');
+			log.error('responded with ' + resCode);
+			return false;
 		}
 	}
 	return false;

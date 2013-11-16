@@ -444,7 +444,8 @@ gracenode.setup(function (error) {
 // controller/example/index.js > /example/foo/
 var gracenode = require('../GraceNode/');
 // this will become part of the URI
-module.exports.foo = function (serverCallback) {
+// the first argument is **ALWAYS** requestObject
+module.exports.foo = function (requestObject, serverCallback) {
 	// serverCallback is created by server module automatically
 	cb(null. 'foo', 'JSON');
 };
@@ -454,11 +455,11 @@ module.exports.foo = function (serverCallback) {
 > How to read GET and POST
 ```javascript
 // controller file
-module.exrpots.index = function (cb) {
+module.exrpots.index = function (requestObject, cb) {
 	// server module automatically gives every controller the following functions:
-	// module.exports.getData and module.exports.postData
-	var getFoo = module.exports.getData.get('foo');
-	var postFoo = module.exports.postData.get('foot');
+	// requestObject.getData and requestObject.postData
+	var getFoo = requestObject.getData.get('foo');
+	var postFoo = requestObject.postData.get('foot');
 	cb(null, null, 'JSON');
 };
 ```
@@ -466,10 +467,10 @@ module.exrpots.index = function (cb) {
 > How to read request headers
 ```javascript
 // controller file
-module.exports.index = function (cb) {
+module.exports.index = function (requestObject, cb) {
 	// server module automatically gives every contrller the following function:
-	// module.exports.requestHeaders > an instance of Headers class
-	var os = module.exports.requestHeaders.getOs();
+	// requestObject.requestHeaders > an instance of Headers class
+	var os = requestObject.requestHeaders.getOs();
 };
 ```
 
@@ -498,9 +499,9 @@ String getDefaultLang
 > How to set response headers
 ```javascript
 // controller
-module.exports.index = function (cb) {
+module.exports.index = function (requestObject, cb) {
 	// server module automatically gives every contrller the following function:
-	// module.exports.setHeader
+	// requestObject.setHeader
 	module.exports.setHeader('myHeader', 'foo');
 };
 ```
@@ -508,11 +509,11 @@ module.exports.index = function (cb) {
 > How to read and set cookie
 ```javascript
 // controller
-module.exports.index = function (cb) {
+module.exports.index = function (requestObject, cb) {
 	// server module automatically gives every contrller the following functions:
-	// module.exports.getCookie and module.exports.setCookie
-	var sessionCookie = module.exports.getCookie('session');
-	module.exports.setCookie('myCookie', 'foo');
+	// requestObject.getCookie and module.exports.setCookie
+	var sessionCookie = requestObject.getCookie('session');
+	requestObject.setCookie('myCookie', 'foo');
 	// for handling session please use session module
 };
 ```
@@ -521,7 +522,7 @@ module.exports.index = function (cb) {
 ```javascript
 // controller
 // request URI /foo/index/one/two/
-module.exports.index = function (one, two, cb) {
+module.exports.index = function (requestObject, one, two, cb) {
 	// one and two are  the values in the request URI
 	// by having these parameters and the arguments, these arguments will become requirements
 	// missing arguments will cause and error
@@ -989,4 +990,22 @@ var bg001Data = gracenode.asset.getDataByKey(bg001.key);
 * bg001Data will be:
 * { data: binary data of the file, path: '~asset/img/backgrounds/bg001.png' }
 */
+```
+
+#####API: getDataByKeyAndHash
+
+<pre>
+Object getDataByKeyAndHash(String assetFileKey, String assetFileHash, Function callback)
+</pre>
+> Returns an asset data object.
+>> If the file hash is old, the function will read the file and update the cache map before returning the data object
+
+```javascript
+var bg001 = gracenode.asset.getOne('img/backgrounds/bg001');
+gracenode.asset.getDataByKeyAndHash(bg001.key, bg001.hash, function (error, bg001Data) {
+	if (error) {
+		// handle error
+	}
+	// do something here
+});
 ```
