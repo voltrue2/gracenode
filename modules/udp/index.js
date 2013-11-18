@@ -40,6 +40,25 @@ module.exports.getServerByName = function (name) {
 	}
 	return null;
 };
+
+/*
+* options: { offset: int }
+*/
+module.exports.send = function (reqName, msg, options, cb) {
+	var clientInfo = config.requests && config.requests[reqName];
+	if (!clientInfo) {
+		return cb(new Error('no request configuration for "' + reqName + '"'));
+	}
+	var client = dgram('udp4');
+	var offset = (options && options.offset) ? options.offset : 0;
+	client.send(msg, offset, msg.length, clientInfo.port, clientInfo.host, function (error, bytes) {
+		if (error) {
+			return cb(error);
+		}	
+		cb(null, bytes);
+		client.close();		
+	});
+};
  
 function setupServer(serverInfo, cb) {
 	
