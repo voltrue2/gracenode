@@ -45,7 +45,7 @@ GraceNode.prototype.setConfigFiles = function (fileList) {
 };
 
 GraceNode.prototype.exit = function (error) {
-	this.emit('exit', error || null);
+	//this.emit('exit', error || null);
 	process.exit(error || 0);
 };
 
