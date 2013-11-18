@@ -49,13 +49,13 @@ GraceNode.prototype.exit = function (error) {
 	process.exit(error || 0);
 };
 
-GraceNode.prototype.use = function (modName, sourceModName, params) {
+GraceNode.prototype.use = function (modName, params) {
 	if (!params) {
 		params = {};
 	}
 	this._modules.push({
 		name: modName,
-		sourceName: sourceModName,
+		sourceName: modName,
 		config: params.configName || null,
 		path: params.path || null
 	});

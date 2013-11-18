@@ -41,10 +41,10 @@ gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
 // tell GraceNode the name(s) of configuration files to load
 gracenode.setConfigFiles(['base.json', 'modules.json']);
 // decide what module(s) of GraceNode to use in your application.
-// we will explain this in more detail later.
-gracenode.use('server', 'server');
-gracenode.use('view', 'view');
-gracenode.use('mysql', 'mysql');
+// this will be explained in more detail later.
+gracenode.use('server');
+gracenode.use('view');
+gracenode.use('mysql');
 // now start the set up process
 gracenode.setup(function (error) {
     if (error) {
@@ -54,6 +54,98 @@ gracenode.setup(function (error) {
 
 });
 ```
+
+## GraceNode Methods
+
+##### setConfigPath
+<pre>
+void setConfigPath(String configDirectoryPath)
+</pre>
+> Give GraceNode the directory path to the configuration files
+
+##### setConfigFiles
+<pre>
+void setConfigFiles(Array configFileList)
+</pre>
+> Give GraceNode the list of configuration files to be used (the files must be in the directory given to setConfigFiles)
+
+##### use
+<pre>
+void use(String moduleName, Object optionalParams)
+</pre>
+> Indicate what module to use (this function can be used to load both built-in and custom modules)
+>> optionalParams
+```javascript
+{ 
+	path: 'path to the source code of the custom module',
+	configName: 'name of configuration to be used'
+}
+```
+
+> Example
+```javascript
+// load and use GraceNode mysql built-in module
+gracenode.use('mysql');
+// load and use custom module
+gracenode.use('myMod', { path: 'app/customModules/myMod' });
+```
+
+##### setup
+<pre>
+void setup(Function callback)
+</pre>
+> Start the set-up process of GraceNode
+
+##### exit
+<pre>
+void exit(String errorMessage)
+</pre>
+> Stop GraceNode process
+>> errorMessage is optional and if given GraceNode will stop with an error
+
+## GraceNode Events
+
+##### setup.config
+<pre>
+gracenode.on('setup.config', callbackFunction)
+</pre>
+> Emitted when config module has been set up
+
+##### setup.log
+<pre>
+gracenode.on('setup.log', callbackFunction)
+</pre>
+> Emitted when log module has been set up
+
+##### setup.complete
+<pre>
+gracenode.on('setup.complete', callbackFunction)
+</pre>
+> Emitted when setup method finishes
+
+##### setup.moduleName
+<pre>
+gracenode.on('setup.moduleName', callbackFunction);
+</pre>
+> Emitted when a module has been set up
+
+##### uncaughtException
+<pre>
+gracenode.on('uncaughtException', callbackFunction)
+</pre>
+> Emitted when GraceNode catches uncaught exception
+
+##### exit
+<pre>
+gracenode.on('exit')
+</pre>
+> Emitted when GraceNode process exits
+
+##### shutdown
+<pre>
+gracenode.on('shutdown')
+</pre>
+> Emitted when GraceNode detects SIGINT
 
 ## GraceNode Built-in Modules
 > GraceNode has some built-in modules.
@@ -68,6 +160,7 @@ gracenode.setup(function (error) {
 - <a href="#staticdata-module">staticdata</a>
 - <a href="#request-module">request</a>
 - <a href="#server-module">server</a>
+- <a href="#udp-module">udp</a>
 - <a href="#view-module">view</a>
 - <a href="#session-module">session</a>
 - <a href="#encrypt-module">encrypt</a>

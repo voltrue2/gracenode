@@ -189,8 +189,6 @@ function parseContent(outputData, parser, seen, cb) {
 				return cb(error);
 			}
 			
-			profiler.mark('include complete: ' + path);
-		
 			outputData = outputData.replace(tag, data);
 			
 			next();
@@ -200,9 +198,6 @@ function parseContent(outputData, parser, seen, cb) {
 		if (error) {
 			return cb(error);
 		}
-
-		profiler.stop();
-
 		cb(null, outputData);
 	});
 }
