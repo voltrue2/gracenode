@@ -151,11 +151,20 @@ function setupModules(that, cb) {
 			var path = dir + name;
 			var configName = 'modules.' + (mod.config || name);
 			
-			var module = require(path);
+			var module = null;
+			
+			try {
+				// try GraceNode first
+				module = require(path);
+			} catch (exception) {
+				// now try application
+				path = that.getRootPath() + (mod.path || 'modules/');
+				module = require(path);
+			}
 		
 			that[name] = module;			
 
-			log.verbose('module [' + name + '] loading...');
+			log.verbose('module [' + name + '] loading: ', path);
 
 			if (typeof module.readConfig === 'function') {
 				log.verbose('module [' + name + '] reading configurations: ' + configName);
