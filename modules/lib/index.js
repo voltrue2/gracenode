@@ -2,6 +2,11 @@
 var fs = require('fs');
 var gracenode = require('../../');
 var log = gracenode.log.create('lib');
+var validationPatterns = {
+	numeric: /^\d+$/,
+    alphaNumeric: /^[a-z0-9]+$/i,
+    password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
+};
 
 module.exports.errorMsg = function () {
 	var msg = '';
@@ -45,6 +50,39 @@ module.exports.cloneObj = function (obj) {
 		}
 	}
 	return res;
+};
+
+/*
+* params: { pattern: 'numeric' or 'alphaNumeric', alloweSpace: true or false, allowHTML: true or false }
+*
+**/
+module.exports.validateInput = function (input, minLen, maxLen, params) {
+    var allowHTML = params && params.allowHTML || false;
+    var allowSpace = params && params.allowSpace || false;
+    var pattern = params && params.pattern && validationPatterns[params.pattern] || null;
+    var len = input.length;
+
+    // length check
+    if (len < minLen || len > maxLen) {
+        return false;
+    }
+
+    // HTML check
+    if (!allowHTML && input.match(/(<([^>]+)>)/ig)) {
+        return false;
+    }
+
+    // space check
+    if (!allowSpace && input.match(' ')) {
+            return false;
+    }
+
+    // pattern check
+    if (pattern && !input.match(pattern)) {
+        return false;
+    }
+
+    return true;
 };
 
 module.exports.walkDir = function (path, cb) {

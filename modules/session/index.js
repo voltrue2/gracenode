@@ -22,7 +22,7 @@ module.exports.readConfig = function (configIn) {
 
 module.exports.getSession = function (sessionId, cb) {
 	if (!sessionId) {
-		log.verbose('found session [false]: null');
+		log.verbose('no session id');
 		return cb(null, null);
 	}
 	var key = getKey(sessionId);
@@ -32,7 +32,7 @@ module.exports.getSession = function (sessionId, cb) {
 		if (error) {
 			return cb(error);
 		}
-		log.verbose('found session [' + (value ? true : false) + ']:', value);
+		log.verbose('found session (id: ' + sessinId + ') [' + (value ? true : false) + ']:', value);
 		cb(null, value);
 	});
 };
