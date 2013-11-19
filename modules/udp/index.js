@@ -45,18 +45,30 @@ module.exports.getServerByName = function (name) {
 * options: { offset: int }
 */
 module.exports.send = function (reqName, msg, options, cb) {
+	
+	var profiler = gracenode.profiler.create('udp-sender');
+	profiler.start();
+
+	// check the data type of msg
+	msg = prepareData(msg);
+	// request data from config
 	var clientInfo = config.requests && config.requests[reqName];
 	if (!clientInfo) {
-		return cb(new Error('no request configuration for "' + reqName + '"'));
+		return cb(new Error('no request configuration for "' + reqName + '"\n' + JSON.stringify(config.requests)));
 	}
-	var client = dgram('udp4');
+	// set up UDP sender
+	var client = dgram.createSocket('udp4');
 	var offset = (options && options.offset) ? options.offset : 0;
+	// send
 	client.send(msg, offset, msg.length, clientInfo.port, clientInfo.host, function (error, bytes) {
 		if (error) {
 			return cb(error);
 		}	
 		cb(null, bytes);
+		// close socket
 		client.close();		
+
+		profiler.stop();
 	});
 };
  
@@ -69,7 +81,7 @@ function setupServer(serverInfo, cb) {
 	
 	// the application will be listening on this "message" event to handle the requests
 	server.on('message', function (msg, req) {
-		log.verbose('request recieved: ' + req.address + ':' + req.port);
+		log.verbose('request recieved from: ' + req.address + ':' + req.port);
 	});
 
 	// events
@@ -93,4 +105,18 @@ function setupServer(serverInfo, cb) {
 
 	// map
 	servers[serverInfo.name] = server;
+}
+
+function prepareData(msg) {
+	switch (typeof msg) {
+		case 'string':
+			return new Buffer(msg);
+		case 'object':
+			return new Buffer(JSON.stringify(msg));
+		case 'number':
+			return new Buffer(msg.toString());
+		default:
+			log.error('data type MUST be either "String" or "Object/Array"');
+			return null;
+	}
 }
