@@ -32,7 +32,7 @@ module.exports.getSession = function (sessionId, cb) {
 		if (error) {
 			return cb(error);
 		}
-		log.verbose('found session (id: ' + sessinId + ') [' + (value ? true : false) + ']:', value);
+		log.verbose('found session (id: ' + sessionId + ') [' + (value ? true : false) + ']:', value);
 		cb(null, value);
 	});
 };
@@ -41,7 +41,7 @@ module.exports.setSession = function (unique, value, cb) {
 	var sessionId = createSessionId(unique);
 	var key = getKey(sessionId);
 	var mem = new Memcache(config.hosts, config.options || null);
-	log.verbose('setting session: ' + key);	
+	log.verbose('setting session: ' + key, config.ttl, value);	
 	mem.set(key, value, config.ttl, function (error) {
 		if (error) {
 			return cb(error);
