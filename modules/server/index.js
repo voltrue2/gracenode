@@ -375,6 +375,9 @@ function respondJSON(request, response, resCode, data, cb) {
 			'Pragma': 'no-cache',
 			'Vary': 'Accept-Encoding'
 		});
+
+		log.verbose('response size: [' + (compressedData.length / 1024) + ' kb]');
+
 		response.end(compressedData);
 		cb(resCode);
 	});
@@ -398,6 +401,8 @@ function respondHTML(request, response, resCode, data, cb) {
 			'Vary': 'Accept-Encoding'
 		});
 
+		log.verbose('response size: [' + (compressedData.length / 1024) + ' kb]');
+
 		response.end(compressedData, 'binary');
 		cb(resCode);
 	});
@@ -409,6 +414,8 @@ function respondImage(request, response, resCode, data, cb) {
 		'Content-Length': data.length,
 		'Content-Type': 'image/' + type
 	});
+
+	log.verbose('response size: [' + (data.length / 1024) + ' kb]');
 
 	response.end(data, 'binary');
 	cb(resCode);

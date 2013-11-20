@@ -79,6 +79,9 @@ module.exports.getDataByKeyAndHash = function (key, hash, cb) {
 		return cb(new Error('file not found: ' + key + ', ' + hash), null);
 	}
 	if (data.hash === hash) {
+	
+		log.verbose('get asset data: ' + key + ' ' + hash + ' [cache found]');
+
 		return cb(null, data);
 	}
 	// file is not up-to-date > read the file again
@@ -97,6 +100,9 @@ module.exports.getDataByKeyAndHash = function (key, hash, cb) {
 			// update the map
 			mapFileData(data.path, item, fileData);
 			// get the new data
+	
+			log.verbose('get asset data: ' + key + ' ' + hash + ' [read file] > map updated');
+
 			cb(null, module.exports.getDataByKey(key));
 		});
 	});

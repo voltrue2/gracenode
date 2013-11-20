@@ -98,6 +98,7 @@
 				});	
 				// view must call view.emit('opened') on this event;
 				newView.emit('open', params);
+				return;
 			}
 			// no view by the given name found
 			that.error('view not found: ' + name);
