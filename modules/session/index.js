@@ -51,6 +51,20 @@ module.exports.setSession = function (unique, value, cb) {
 	});
 };
 
+module.exports.delSession = function (sessionId, cb) {
+	var key = getKey(sessionId);
+	var mem = new Memcache(config.hosts, config.options || null);
+	log.verbose('deleting session: ' + key);	
+	mem.del(key, function (error) {
+		if (error) {
+			return cb(error);
+		}
+		log.verbose('delete session: (key: ' + key + '):');
+		cb(null);
+	});
+
+};
+
 function getKey(sessionId) {
 	return 'sess/' + sessionId;	
 }

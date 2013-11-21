@@ -75,11 +75,30 @@ function parseCookie() {
 	for (var i = 0, len = list.length; i < len; i++) {
 		var item = list[i].split('=');
 		if (item[0] !== undefined && item[1] !== undefined) {
-			res[item[0]] = item[1];
+			res[item[0]] = enforceDataType(item[1]);
 		}
 	}
 	return res;
 } 
+
+function enforceDataType(data) {
+	switch (data) {
+		case 'true':
+			return true;
+		case 'false':
+			return false;
+		case 'null':
+			return null;
+		case 'undefined':
+			return undefined;
+		default:
+			try {
+				return JSON.parse(data);
+			} catch (error) {
+				return data;
+			}
+	}
+}
 
 }());
 

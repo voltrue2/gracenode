@@ -265,7 +265,6 @@ MySql.prototype.roGet = function (sql, params, mustExist, cb) {
 				var eDate = new Date();
 				var end = eDate.getTime();
 				log.verbose(sql, ' took [' + (end - start) + ' ms]');
-				
 				cb(error, res);
 			});
 		});
@@ -281,6 +280,10 @@ MySql.prototype.rwGet = function (sql, params, mustExist, cb) {
 	if (!validateQuery(sql, this._type)) {
 		var err = new Error('cannot execute the query (read only): ' + sql);
 		return cb(err, []);
+	}
+
+	if (!this._connection) {
+		return cb(new Error('cannot execute the query outside of transaction: ' + sql), []);
 	}
 
 	this._connection.query(sql, params, function (error, res) {
@@ -311,6 +314,28 @@ MySql.prototype.exec = function (sql, params, cb) {
 		return cb(err, {});
 	}
 
+	if (!this._connection) {
+		// execute the query outside of transaction
+		log.verbose('executing write query outside of transaction');
+		var that = this;
+		return this.connect(function (error) {
+			if (error) {
+				return cb(error);
+			}
+			that._connection.query(sql, params, function (error, res) {
+				if (error) {
+					log.error(error);
+				}
+				var eDate = new Date();
+				var end = eDate.getTime();
+				log.verbose(sql, ' took [' + (end - start) + ' ms]');
+				
+				cb(error, res);
+			});
+		});
+	}
+
+	// execute the query in transaction
 	this._connection.query(sql, params, function (error, res) {
 		if (error) {
 			log.error(error);
