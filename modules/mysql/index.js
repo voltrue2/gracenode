@@ -177,7 +177,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 };
 
 MySql.prototype.write = function (sql, params, cb) {
-	log.verbose(sql, params);
 	this.exec(sql, params, cb);
 };
 
@@ -194,7 +193,7 @@ MySql.prototype.startTransaction = function (cb) {
 			return cb(error);
 		}
 		
-		log.verbose('start transaction');
+		log.info('start transaction');
 		
 		that.exec('START TRANSACTION', null, cb);
 	});
@@ -202,7 +201,7 @@ MySql.prototype.startTransaction = function (cb) {
 
 MySql.prototype.commit = function (cb) {
 	
-	log.verbose('commit');
+	log.info('commit');
 
 	var that = this;
 	this.exec('COMMIT', null, function (error) {
@@ -215,7 +214,7 @@ MySql.prototype.commit = function (cb) {
 
 MySql.prototype.rollBack = function (cb) {
 	
-	log.verbose('rollback');		
+	log.info('rollback');		
 
 	var that = this;
 	this.exec('ROLLBACK', null, function (error) {
@@ -316,11 +315,13 @@ MySql.prototype.exec = function (sql, params, cb) {
 
 	if (!this._connection) {
 		// execute the query outside of transaction
-		log.verbose('executing write query outside of transaction');
+		log.info('executing write query outside of transaction');
 		var that = this;
 		return this.connect(function (error) {
 			if (error) {
-				return cb(error);
+				return that.end(function () {
+					cb(error);
+				});
 			}
 			that._connection.query(sql, params, function (error, res) {
 				if (error) {
@@ -328,9 +329,11 @@ MySql.prototype.exec = function (sql, params, cb) {
 				}
 				var eDate = new Date();
 				var end = eDate.getTime();
-				log.verbose(sql, ' took [' + (end - start) + ' ms]');
+				log.info(sql, params, ' took [' + (end - start) + ' ms]');
 				
-				cb(error, res);
+				that.end(function () {
+					cb(error, res);
+				});
 			});
 		});
 	}
@@ -342,7 +345,7 @@ MySql.prototype.exec = function (sql, params, cb) {
 		}
 		var eDate = new Date();
 		var end = eDate.getTime();
-		log.verbose(sql, ' took [' + (end - start) + ' ms]');
+		log.info(sql, params, ' took [' + (end - start) + ' ms]');
 		
 		cb(error, res);
 	});

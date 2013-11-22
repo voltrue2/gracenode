@@ -57,6 +57,11 @@ module.exports.setup = function (cb) {
 	});
 };
 
+/*
+* dataName rule:
+* configuration path: staticdata/
+* example: staticdata/example/test.csv = example/test
+*/
 module.exports.create = function (dataName) {
 	if (staticData[dataName]) {
 		return new StaticData(dataName, staticData[dataName]);
@@ -67,7 +72,7 @@ module.exports.create = function (dataName) {
 function readFile(path, cb) {
 	var lastDot = path.lastIndexOf('.');
 	var type = path.substring(lastDot + 1);
-	var name = path.substring(path.lastIndexOf('/') + 1, lastDot);
+	var name = path.substring(path.lastIndexOf(config.path) + config.path.length, lastDot);
 	fs.lstat(path, function (error, stat) {
 		if (error) {
 			return cb(error);
@@ -100,11 +105,16 @@ function readFile(path, cb) {
 			var fileName = name + '.' + type;
 			if (config.index && config.index[fileName]) {
 				indexMap = mapIndex(data, config.index[fileName]);
+				
+				log.verbose('indexed: ', config.index[fileName]);
 			}	
+			
 			// add it to cache
 			var d = new Date(stat.mtime);
 			var mtime = d.getTime();
 			staticData[name] = { data: data, indexMap: indexMap, path: path, mtime: mtime };
+
+			log.verbose('mapped: ' + path + ' > ' + name);
 
 			cb();
 		});
@@ -130,11 +140,31 @@ function toJSON(data) {
 			return new Error('data is corrupt: \ncolumns: \n' + JSON.stringify(columns, null, 4) + '\ndata: \n' + JSON.stringify(cols, null, 4));
 		}
 		for (var j = 0; j < columnLen; j++) {
-			item[columns[j]] = cols[j];
+			var value = getValue(cols[j]);
+			item[columns[j]] = value;
 		}
 		res.push(item);
 	}
 	return res;
+}
+
+function getValue(value) {
+	if (!value) {
+		return value;
+	}
+	if (!isNaN(value)) {
+		return Number(value);
+	} else if (value.toLowerCase() === 'true') {
+		return true;
+	} else if (value.toLowerCase() === 'false') {
+		return false;
+	} else if (value.toLowerCase() === 'null') {
+		return null;
+	} else if (value.toLowerCase() === 'undefined') {
+		return undefined;
+	} else {
+		return value;
+	}
 }
 
 function mapIndex(data, indexNames) {
@@ -142,16 +172,25 @@ function mapIndex(data, indexNames) {
 	for (var c = 0, length = data.length; c < length; c++) {
 		var item = data[c];
 		for (var i = 0, len = indexNames.length; i < len; i++) {
-			var index = indexNames[i];
-			if (item[index] !== undefined) {
-				if (!map[index]) {
-					map[index] = {};
+			var indexName = indexNames[i];
+			if (item[indexName] !== undefined) {
+				if (!map[indexName]) {
+					map[indexName] = {};
 				}
-				map[index][item[index]] = {};
+				var index = item[indexName];
+				var itemObj = {};
 				for (var key in item) {
-					if (key !== index) {
-						map[index][item[index]][key] = item[key];
+					itemObj[key] = item[key];
+				}
+				if (map[indexName][index]) {
+					// index is not unique
+					if (!Array.isArray(map[indexName][index])) {
+						map[indexName][index] = [map[indexName][index]];
 					}
+					map[indexName][index].push(itemObj);
+				} else {
+					// index is unique or this is the first item or the index
+					map[indexName][index] = itemObj;
 				}
 			}
 		}
@@ -197,7 +236,7 @@ StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 		if (error) {
 			return cb(error);
 		}
-		if (that._indexMap[indexName]) {
+		if (that._indexMap[indexName] && that._indexMap[indexName]) {
 			if (that._indexMap[indexName][key] !== undefined) {
 				if (typeof that._indexMap[indexName][key] === 'object') {
 					return cb(null, getObjValue(that._indexMap[indexName][key]));
