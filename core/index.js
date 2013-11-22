@@ -153,6 +153,8 @@ function setupModules(that, cb) {
 			
 			var module = null;
 			
+			that._profiler.mark('module [' + name + '] start loading');		
+	
 			try {
 				// try GraceNode first
 				module = require(path);

@@ -94,7 +94,9 @@
 					// make the new view visible
 					newView.show();
 					// emit open
-					that.emit('open', newView);
+					window.setTimeout(function () {
+						that.emit('open', newView);
+					}, 0);
 				});	
 				// view must call view.emit('opened') on this event;
 				newView.emit('open', params);
@@ -113,7 +115,9 @@
 				openNewView();
 			});
 			prev.emit('close');
-			this.emit('close', prev);
+			window.setTimeout(function () {
+				that.emit('close', prev);
+			}, 0);
 			return;
 		}
 		// there is no previously opened view > open a new view
@@ -134,7 +138,9 @@
 					zIndex: that._index
 				});
 				view.show();		
-				that.emit('open', view);
+				window.setTimeout(function () {
+					that.emit('open', view);
+				}, 0);
 			});
 			view.emit('open', params);
 		}	

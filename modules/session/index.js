@@ -32,8 +32,24 @@ module.exports.getSession = function (sessionId, cb) {
 		if (error) {
 			return cb(error);
 		}
-		log.verbose('found session (id: ' + sessionId + ') [' + (value ? true : false) + ']:', value);
-		cb(null, value);
+		
+		log.verbose('found session (id: ' + sessionId + ') [' + (value ? true : false) + ']');
+		
+		if (value) {
+			// session value found > update session
+			return mem.set(key, value, config.ttl, function (error) {
+				if (error) {
+					return cb(error);
+				}
+	
+				log.verbose('session updated: ' + key);
+
+				cb(null, value);
+			});
+		}		
+
+		// no session value found
+		cb(null, null);
 	});
 };
 
