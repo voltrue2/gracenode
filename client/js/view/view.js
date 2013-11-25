@@ -132,7 +132,10 @@
 	window.View = View;
 
 	View.prototype.ready = function () {
-		this.emit('ready', this.name, this);
+		var that = this;
+		window.setTimeout(function () {
+		that.emit('ready', that.name, that);
+		}, 0);
 	};
 
 }());

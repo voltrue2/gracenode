@@ -35,7 +35,8 @@ var config = null;
 var contentTypes = {
 	JSON: 'JSON',
 	HTML: 'HTML',
-	image: 'IMAGE'
+	image: 'IMAGE',
+	zipImage: 'ZIPIMAGE'
 };
 
 var controllerMap = {};
@@ -210,6 +211,12 @@ function extractQuery(request, cb) {
 }
 
 function execController(data, reqData, request, response, forcedResCode, profiler) {
+
+	// end of server response
+	request.on('end', function () {
+		profiler.stop();	
+	});
+	
 	try {
 		// verify the controller file
 		var path = gracenode.getRootPath() + config.controllerPath + data.controller;
@@ -337,7 +344,6 @@ function respond(request, response, resCode, data, contentType, profiler) {
 			log.fatal('responded to request: ', request.url, code);
 		}
 		profiler.mark(request.url);
-		profiler.stop();
 	};
 
 	switch (contentType) {
@@ -349,6 +355,9 @@ function respond(request, response, resCode, data, contentType, profiler) {
 			break;
 		case contentTypes.image:
 			respondImage(request, response, resCode, data, callback);
+			break;
+		case contentTypes.zipImage:
+			respondZipImage(request, response, resCode, data, callback);
 			break;
 		default: 
 			log.error('invalid content type given: ' + contentType);
@@ -419,6 +428,32 @@ function respondImage(request, response, resCode, data, cb) {
 
 	response.end(data, 'binary');
 	cb(resCode);
+}
+
+function respondZipImage(request, response, resCode, data, cb) {
+	zlib.gzip(data, function (error, compressedData) {
+		if (error) {
+			log.error(error);
+			
+			resCode = 500;
+			compressedData = JSON.stringify({ error: error });
+		}
+		var type = request.url.substring(request.url.lastIndexOf('.') + 1);
+		response.writeHead(resCode, {
+			'Cache-Control': 'no-cache, must-revalidate',
+			'Connection': 'Keep-Alive',
+			'Content-Encoding': 'gzip',
+			'Content-Length': compressedData.length,
+			'Content-Type': 'image/' + type,
+			'Pragma': 'no-cache',
+			'Vary': 'Accept-Encoding'
+		});
+
+		log.verbose('response size: [' + (compressedData.length / 1024) + ' kb]');
+
+		response.end(compressedData, 'binary');
+		cb(resCode);
+	});
 }
 
 function handleError(request, response, resCode, profiler) {

@@ -236,7 +236,7 @@ StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 		if (error) {
 			return cb(error);
 		}
-		if (that._indexMap[indexName] && that._indexMap[indexName]) {
+		if (that._indexMap && that._indexMap[indexName]) {
 			if (that._indexMap[indexName][key] !== undefined) {
 				if (typeof that._indexMap[indexName][key] === 'object') {
 					return cb(null, getObjValue(that._indexMap[indexName][key]));

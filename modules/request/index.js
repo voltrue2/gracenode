@@ -24,21 +24,20 @@ module.exports.send = function (params, options, cb) {
 		return cb(new Error('missing host or path: \n' + JSON.stringify(params, null, 4)));
 	}
 	
-	var profiler = gracenode.profiler.create('send:[' + host + '/ ' + path + ']');
-	
 	var port = params.port || null;
 	var method = params.method || 'GET';
 	var data = params.data || null;
 	// construct GET/POST data if given
 	if (data) {
-		data = qs.stringify(data);
+		data = JSON.stringify(data);
 		if (!options) {
 			options = {};
 		}
 		if (!options.headers) {
 			options.headers = {};
 		}
-		options.headers['Content-Length'] = data.length;
+		options.headers['Content-Length'] = Buffer.byteLength(data);
+
 		// check method
 		if (method === 'GET') {
 			path += '?' + data;
@@ -65,8 +64,6 @@ module.exports.send = function (params, options, cb) {
 	var responseData = '';
 	var serverResponse = null;
 	var callback = function (res) {
-	
-		profiler.mark('recieving response');
 
 		serverResponse = res;
 
@@ -87,22 +84,12 @@ module.exports.send = function (params, options, cb) {
 			clearTimeout(timer);
 
 			log.verbose('request complete  > disconnected from ' + protocol + '://' + host + path);
-			
-			profiler.mark('request completion');
-
-			profiler.stop();
 
 			cb(null, { status: res.statusCode, headers: res.headers, data: responseData });
 		});
 		res.on('error', function (error) {
 			
 			clearTimeout(timer);
-
-			log.error('request response error: ', error);
-			
-			profiler.mark('request aborted');
-
-			profiler.stop();
 
 			cb(error, { status: res.statusCode, headers: res.headers, data: responseData });
 		});
@@ -119,8 +106,6 @@ module.exports.send = function (params, options, cb) {
 	}
 	// send request
 	try {
-	
-		profiler.mark('ready to sent request');
 
 		var req = sender.request(args, callback);
 		
@@ -129,10 +114,6 @@ module.exports.send = function (params, options, cb) {
 			clearTimeout(timer);
 
 			log.error('request error:');
-		
-			profiler.mark('request failure');
-
-			profiler.stop();			
 
 			cb(error, { status: null, headers: null, data: responseData });
 		});
@@ -141,8 +122,6 @@ module.exports.send = function (params, options, cb) {
 			req.write(data);
 		}
 		req.end();
-
-		profiler.mark('sent request');
 		
 		// set up time out
 		var timeout = 3000; // 3 econds by default
@@ -165,8 +144,6 @@ module.exports.send = function (params, options, cb) {
 	} catch (exception) {
 		
 		log.error(exception);
-
-		profiler.stop();
 
 		cb(exception, { status: null, headers: null, data: responseData });
 	}
