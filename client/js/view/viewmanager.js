@@ -124,7 +124,7 @@
 		openNewView();
 	};
 
-	ViewManager.prototype.openPopup = function (name, params) {
+	ViewManager.prototype.openPopup = function (name, params, forceTop) {
 		var view = this.getViewByName(name);
 		if (!view) {
 			return this.error('view not found: ' + name);
@@ -137,6 +137,10 @@
 				view.setStyle({
 					zIndex: that._index
 				});
+				// force this popup to be the top
+				if (forceTop) {
+					view.setStyle({ zIndex: 999 });
+				}
 				view.show();		
 				window.setTimeout(function () {
 					that.emit('open', view);

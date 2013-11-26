@@ -419,12 +419,13 @@ function respondHTML(request, response, resCode, data, cb) {
 
 function respondImage(request, response, resCode, data, cb) {
 	var type = request.url.substring(request.url.lastIndexOf('.') + 1);
+	var dataSize = data.length;
 	response.writeHead(resCode, {
-		'Content-Length': data.length,
+		'Content-Length': dataSize,
 		'Content-Type': 'image/' + type
 	});
 
-	log.verbose('response size: [' + (data.length / 1024) + ' kb]');
+	log.verbose('response size: [' + (dataSize / 1024) + ' kb]');
 
 	response.end(data, 'binary');
 	cb(resCode);

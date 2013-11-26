@@ -25,12 +25,17 @@ module.exports.setup = function (cb) {
 			return cb(error);
 		}
 		async.forEachSeries(list, function (item, callback) {
-			fs.readFile(item.file, function (error, fileData) {
+			fs.lstat(item.file, function (error, stat) {
 				if (error) {
 					return cb(error);
 				}
-				mapFileData(path, item, fileData);
-				callback();
+				fs.readFile(item.file, function (error, fileData) {
+					if (error) {
+						return cb(error);
+					}
+					mapFileData(path, item, fileData, stat);
+					callback();
+				});
 			});
 		}, function () {
 			log.verbose('asset map:', map);
@@ -93,22 +98,27 @@ module.exports.getDataByKeyAndHash = function (key, hash, cb) {
 		if (!item) {
 			return cb(new Error('file not found: ' + data.path), null);
 		}
-		fs.readFile(item.file, function (error, fileData) {
+		fs.lstat(item.file, function (error, stat) {
 			if (error) {
 				return cb(error);
 			}
-			// update the map
-			mapFileData(data.path, item, fileData);
-			// get the new data
-	
-			log.verbose('get asset data: ' + key + ' ' + hash + ' [read file] > map updated');
+			fs.readFile(item.file, function (error, fileData) {
+				if (error) {
+					return cb(error);
+				}
+				// update the map
+				mapFileData(data.path, item, fileData, stat);
+				// get the new data
+		
+				log.verbose('get asset data: ' + key + ' ' + hash + ' [read file] > map updated');
 
-			cb(null, module.exports.getDataByKey(key));
+				cb(null, module.exports.getDataByKey(key));
+			});
 		});
 	});
 };
 
-function mapFileData(path, item, fileData) {
+function mapFileData(path, item, fileData, stat) {
 	var data = createMapData(path, item, fileData);
 	var keys = data.key.split('/');
 	var mapObj = map;
@@ -128,7 +138,8 @@ function mapFileData(path, item, fileData) {
 	dataMap[dataKey] = { 
 		data: fileData,
 		path: item.file,
-		hash: data.hash
+		hash: data.hash,
+		mtime: stat.mtime
 	};
 	log.verbose('mapped asset file:', data.key);
 }
