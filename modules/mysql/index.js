@@ -315,7 +315,7 @@ MySql.prototype.exec = function (sql, params, cb) {
 
 	if (!this._connection) {
 		// execute the query outside of transaction
-		log.info('executing write query outside of transaction');
+		log.info('executing write query without of transaction');
 		var that = this;
 		return this.connect(function (error) {
 			if (error) {
@@ -330,6 +330,8 @@ MySql.prototype.exec = function (sql, params, cb) {
 				var eDate = new Date();
 				var end = eDate.getTime();
 				log.info(sql, params, ' took [' + (end - start) + ' ms]');
+
+				log.info('query result:', res);
 				
 				that.end(function () {
 					cb(error, res);
@@ -346,6 +348,8 @@ MySql.prototype.exec = function (sql, params, cb) {
 		var eDate = new Date();
 		var end = eDate.getTime();
 		log.info(sql, params, ' took [' + (end - start) + ' ms]');
+
+		log.info('query result:', res);
 		
 		cb(error, res);
 	});

@@ -185,3 +185,12 @@ module.exports.walkDirEach = function (path, eachCallback, cb) {
 		});
 	});
 };
+
+module.exports.chunkSplit = function (str, len, end) {
+	len = parseInt(len, 10) || 76;
+	if (len < 1) {
+		return false;
+	}
+	end = end || '\r\n';
+	return str.match(new RegExp('.{0,' + len + '}', 'g')).join(end);
+};

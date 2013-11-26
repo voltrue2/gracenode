@@ -6,7 +6,7 @@
 */
 
 var gracenode = require('../../');
-var log = gracenode.log.create('apple-in-app-purchase');
+var log = gracenode.log.create('iap-apple');
 var async = require('async');
 
 var errorMap = {
@@ -28,9 +28,6 @@ var path = '/verifyReceipt';
 var host = null;
 
 module.exports.readConfig = function (configIn) {
-	if (!configIn || !configIn.sql || !configIn.sql.write || !configIn.sql.read) {
-		throw new Error('invalid configurations given:\n' + JSON.stringify(configIn, null, 4));
-	}
 	config = configIn;
 	if (config.sandbox) {
 		host = sandboxHost;
@@ -38,7 +35,7 @@ module.exports.readConfig = function (configIn) {
 		host = liveHost;
 	}
 	log.verbose('mode: [' + (config.sandbox ? 'sandbox' : 'live' ) + ']');
-	log.verbose('request URL: https://' + host + '/' + path);
+	log.verbose('request URL: https://' + host + path);
 };
 
 module.exports.validatePurchase = function (receipt, cb) {
