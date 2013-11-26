@@ -221,56 +221,17 @@ function execController(data, reqData, request, response, forcedResCode, profile
 		// verify the controller file
 		var path = gracenode.getRootPath() + config.controllerPath + data.controller;
 		if (controllerMap[data.controller]) {
-			// parse cookie
-			var cookies = parseCookie(request.headers);
+		
 			// require the found controller
 			var controller = require(path);
-		
+			
 			// create request object to be passed to controller method
-			var reqObj = {};	
-			// pass post and get
-			reqObj.postData = queryData.createGetter(reqData.post || {});
-			reqObj.getData = queryData.createGetter(reqData.get || {});
-			// pass request headers
-			reqObj.requestHeaders = headers.create(request.headers);
-			// give setHeader() to controller
-			reqObj.setHeader = function (name, value) {
-				response.setHeader(name, value);
-			};
-			// give setCookie to controller
-			reqObj.setCookie = function (obj) {
-				var cookie = '';
-				for (var name in obj) {
-					cookie += name + '=' + obj[name] + '; ';
-				}
-				reqObj.setHeader('Set-Cookie', cookie);
-			};
-			// give get Cookie to controller
-			reqObj.getCookie = function (name) {
-				return cookies[name] || null;
-			};
-			// pass reqObj as the first argument of controller method
-			var reqArray = [reqObj];
+			var reqArray = [createRequestObj(request, reqData, response)];
 			data.args = reqArray.concat(data.args);
 
 			// final callback to the method
-			var callback = function (error, res, contentType, statusCode) {
-				var resCode = forcedResCode ? forcedResCode : statusCode || 200;
-				var resData = res;
-				if (error) {
-					if (!statusCode) {
-						resCode = 404;
-					}
-					log.error(error);
-					
-					if (handleError(request, response, resCode, profiler)) {
-						// stop
-						return;
-					}
-				}
-				// final response to client
-				respond(request, response, resCode, resData, contentType, profiler);
-			};
+			var callback = createFinalCallback(request, response, forcedResCode, profiler);			
+
 			// validate method
 			if (!controller[data.method]) {
 				var errorMsg = 'invalid method ' + data.controller + '.' + data.method + '()';
@@ -278,14 +239,16 @@ function execController(data, reqData, request, response, forcedResCode, profile
 				log.error(new Error(errorMsg));
 				
 				if (handleError(request, response, 404, profiler)) {
-					// stop
+					// stop and let error handler deal with it
 					return;
 				}
 
 				return respond(request, response, 404, JSON.stringify({ error: errorMsg }), 'JSON', profiler);
 			}
+			
 			// append the last callback
 			data.args.push(callback);
+			
 			// validate method requirements
 			var args = gracenode.lib.getArguments(controller[data.method]);
 			if (data.args.length !== args.length) {
@@ -295,6 +258,7 @@ function execController(data, reqData, request, response, forcedResCode, profile
 					return;
 				}
 			}	
+			
 			// call method 
 			controller[data.method].apply(controller, data.args);
 		} else {
@@ -310,12 +274,61 @@ function execController(data, reqData, request, response, forcedResCode, profile
 		log.error(exception);
 		
 		if (handleError(request, response, 500, profiler)) {
-			// stop
+			// stop and let error handler deal with it
 			return;
 		}
 		var errData = JSON.stringify({ error: exception });
 		respond(request, response, 500, errData, 'JSON', profiler);
 	}
+}
+
+function createRequestObj(request, reqData, response) {
+	var reqObj = {};	
+	// pass post and get
+	reqObj.postData = queryData.createGetter(reqData.post || {});
+	reqObj.getData = queryData.createGetter(reqData.get || {});
+	// pass request headers
+	reqObj.requestHeaders = headers.create(request.headers);
+	// give setHeader() to controller
+	reqObj.setHeader = function (name, value) {
+		response.setHeader(name, value);
+	};
+	// give setCookie to controller
+	reqObj.setCookie = function (obj) {
+		var cookie = '';
+		for (var name in obj) {
+			cookie += name + '=' + obj[name] + '; ';
+		}
+		reqObj.setHeader('Set-Cookie', cookie);
+	};
+	// parse cookie
+	var cookies = parseCookie(request.headers);
+	// give get Cookie to controller
+	reqObj.getCookie = function (name) {
+		return cookies[name] || null;
+	};
+	return reqObj;
+}
+
+function createFinalCallback(request, response, forcedResCode, profiler) {
+	return function (error, res, contentType, statusCode) {
+		var resCode = forcedResCode ? forcedResCode : statusCode || 200;
+		var resData = res;
+		if (error) {
+			if (!statusCode) {
+				resCode = 404;
+			}
+			
+			log.error(error);
+			
+			if (handleError(request, response, resCode, profiler)) {
+				// stop
+				return;
+			}
+		}
+		// final response to client
+		respond(request, response, resCode, resData, contentType, profiler);
+	};
 }
 
 function parseCookie(headers) {
@@ -333,6 +346,7 @@ function parseCookie(headers) {
 }
 
 function respond(request, response, resCode, data, contentType, profiler) {
+	
 	log.verbose('responding content type: ', contentType);
 
 	var callback = function (code) {
