@@ -2,8 +2,6 @@ Author: Nobuyori Takahashi
 
 Since 2013 to present
 
-Contact: voltrue2@yahoo.com
-
 ##How to set it up
 <pre>
 $ cd yourApp/
