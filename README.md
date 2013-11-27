@@ -167,7 +167,7 @@ gracenode.on('shutdown')
 - <a href="#mysql-module">mysql</a>
 - <a href="#datacache-module">datacache</a>
 - <a href="#asset-module">asset</a>
-- <a href="#iap-module">iap(In-App-Purchase with Apple and Google Play)</a>
+- <a href="#iap-module">iap (In-App-Purchase with Apple and Google Play)</a>
 - <a href="#message-module">message</a>
 
 ### Built-in Modules
