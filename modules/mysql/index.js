@@ -32,12 +32,12 @@ var log = gracenode.log.create('mysql');
 
 var configs = {};
 var writeQueries = [
-	'insert',
-	'update',
-	'alter',
-	'delete',
-	'drop',
-	'create',
+	'insert ',
+	'update ',
+	'alter ',
+	'delete ',
+	'drop ',
+	'create ',
 	'transaction',
 	'rollback',
 	'commit'

@@ -167,6 +167,7 @@ gracenode.on('shutdown')
 - <a href="#mysql-module">mysql</a>
 - <a href="#datacache-module">datacache</a>
 - <a href="#asset-module">asset</a>
+- <a href="#iap-module">iap(In-App-Purchase with Apple and Google Play)</a>
 - <a href="#message-module">message</a>
 
 ### Built-in Modules
@@ -1163,3 +1164,47 @@ void send(String requestName, Mixed message, Object options, Function callback)
 </pre>
 > Sends a UDP packet message to destination named in the configurations
 >> The callback returns error as the first argument and bytes sent as the second argument
+
+***
+#### <span id="iap-module">iap module (In-App-Purchase with Apple and Google Play)</span>
+***
+
+Access
+<pre>
+gracenode.iap
+</pre>
+
+Configurations
+```javascript
+"modules": {
+	"iap": {
+		"sandbox": true or false,
+		"sql": {
+			"read": "mysql module configuration name",
+			"write": "mysql module configuration name"
+		},
+		"googlePublicKeyPath": "path to google play public key files" // the file names MUST be specific (for live: iap-live, for sandbox: iap-sandbox)
+	}
+}
+```
+
+#####API: validateApplePurchase
+
+<pre>
+void validateApplePurchase(String receipt, Function cb)
+</pre>
+> Sends an HTTPS request to Apple to validate the given receipt and responds back an object { validateState: 'validated' or 'error', status: 'pending' or 'handled' or 'canceled' }
+
+#####API: validateGooglePurchase
+
+<pre>
+void validateGooglePurchase(Object receipt, Function cb)
+</pre>
+> Validates the receipt with public key using open SSL
+
+#####API: updateStatus
+
+<pre>
+void updateStatus(Mixed receipt, String status, Function cb)
+</pre>
+> Updates the status of the given receipt. the valid status are: pending, handled, canceled.
