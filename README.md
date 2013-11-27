@@ -1166,7 +1166,7 @@ void send(String requestName, Mixed message, Object options, Function callback)
 >> The callback returns error as the first argument and bytes sent as the second argument
 
 ***
-#### <span id="iap-module">iap module (In-App-Purchase with Apple and Google Play)</span>
+#### <span id="iap-module">iap module</span>
 ***
 
 Access
