@@ -121,7 +121,9 @@
 			return;
 		}
 		// there is no previously opened view > open a new view
-		openNewView();
+		window.setTimeout(function () {
+			openNewView();
+		}, 0);
 	};
 
 	ViewManager.prototype.openPopup = function (name, params, forceTop) {
@@ -146,7 +148,9 @@
 					that.emit('open', view);
 				}, 0);
 			});
-			view.emit('open', params);
+			window.setTimeout(function () {
+				view.emit('open', params);
+			});
 		}	
 	};
 

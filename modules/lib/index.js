@@ -135,6 +135,7 @@ module.exports.walkDir = function (path, cb) {
 	});
 };
 
+// may not be used at all... 
 module.exports.walkDirEach = function (path, eachCallback, cb) {
 	var res = [];
 	fs.lstat(path, function (error, stat) {
