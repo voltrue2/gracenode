@@ -367,7 +367,7 @@ MySql.prototype.connect = function (cb) {
 		}
 		
 		log.info('connect to mysql (' + that._name + ') [connection pooled]');
-		
+	
 		that._connection = pooledConnection;
 		cb(null);
 	};

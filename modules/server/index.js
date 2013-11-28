@@ -3,6 +3,7 @@
  * configurations
  * {
  *		"server": {
+			"cluster": true or false,
  *			"port": port number,
  *			"host": "host name or ip address",
  *			"controllerPath": "path to controller directory"
@@ -25,6 +26,9 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var http = require('http');
 var https = require('https');
+
+var cluster = require('cluster');
+var numOfCPU = require('os').cpus.length;
 
 var gracenode = require('../../');
 var log = gracenode.log.create('server');
@@ -68,6 +72,14 @@ module.exports.setup = function (cb) {
 };
 
 module.exports.start = function () {
+	if (config.cluster) {
+		
+		log.info('cluster mode enabled...');	
+
+		if (cluster.isMaster && numOfCPU) {
+			return startInClusterMode();
+		}
+	}
 	
 	log.info('starting server...');
 
@@ -128,6 +140,35 @@ module.exports.error = function (error, res, cb) {
 	cb(error, res, 500);
 };
 
+function startInClusterMode() {
+
+	log.info('number of CPU: ' + numOfCPU);
+	
+	cluster.on('fork', function (worker) {
+		log.info('process forked: (worker ID: ' + worker.id + ', ' + worker.process.pid + ')');
+	});
+	cluster.on('online', function (worker) {
+		log.info('worker (ID: ' + worker.id + ', pid: ' + worker.process.pid + ') is now online...');
+	});
+	cluster.on('listening', function (worker, address) {
+		log.info('worker (ID: ' + worker.id + ', pid: ' + worker.process.pid + ') is now listening to ' + address.address + ':' + address.port);
+	});	
+	cluster.on('disconnect', function (worker) {
+		log.info('worker (ID: ' + worker.id + ', pid: ' + worker.process.pid + ') has been disconnected...');
+	});	
+	cluster.on('exit', function (worker, code, signal) {
+		log.info('worker (ID: ' + worker.id + ', pid: ' + worker.process.pid + ') has exited with (signal: ' + signal + ', code: ' + code+ ')');
+		log.info('restarting...');
+		cluster.fork();
+	});	
+
+	for (var i = 0; numOfCPU; i++) {
+		cluster.fork();
+	}
+
+	log.info('server started in cluster mode...');
+
+}
 
 function requestHandler(request, response) {
 

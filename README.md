@@ -474,6 +474,7 @@ Configurations
 ```javascript
 "modules": {
 	"server": {
+		"cluster": true or false,
 		"port": port number,
 		"host": host name or IP address,
 		"controllerPath": path to controller directory,
