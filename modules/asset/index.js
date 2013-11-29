@@ -24,7 +24,7 @@ module.exports.setup = function (cb) {
 		if (error) {
 			return cb(error);
 		}
-		async.forEachSeries(list, function (item, callback) {
+		async.eachSeries(list, function (item, callback) {
 			fs.lstat(item.file, function (error, stat) {
 				if (error) {
 					return cb(error);

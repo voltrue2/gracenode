@@ -36,6 +36,9 @@ module.exports.getArguments = function (func) {
 };
 
 module.exports.cloneObj = function (obj) {
+	if (typeof obj !== 'object') {
+		return obj;
+	}
 	var res = null;
 	if (Array.isArray(obj)) {
 		res = [];

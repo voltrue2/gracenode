@@ -51,7 +51,7 @@ module.exports.setup = function (cb) {
 		if (error) {
 			return cb(error);
 		}
-		async.forEach(list, function (item, nextCallback) {
+		async.eachSeries(list, function (item, nextCallback) {
 			readFile(item.file, nextCallback);
 		}, cb);
 	});
@@ -251,7 +251,7 @@ StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 StaticData.prototype.getManyByIndex = function (indexName, keyList, cb) {
 	var res = {};
 	var that = this;
-	async.forEach(keyList, function (key, nextCallback) {
+	async.eachSeries(keyList, function (key, nextCallback) {
 		that.getOneByIndex(indexName, key, function (error, data) {
 			if (error) {
 				return cb(error);
@@ -284,7 +284,7 @@ StaticData.prototype.getOne = function (index, cb) {
 StaticData.prototype.getMany = function (indexList) {
 	var res = {};
 	var that = this;
-	async.forEach(indexList, function (index, nextCallback) {
+	async.eachSeries(indexList, function (index, nextCallback) {
 		that.getOne(index, function (error, data) {
 			if (error) {
 				return cb(error);

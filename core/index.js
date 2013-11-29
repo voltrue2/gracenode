@@ -45,7 +45,6 @@ GraceNode.prototype.setConfigFiles = function (fileList) {
 };
 
 GraceNode.prototype.exit = function (error) {
-	//this.emit('exit', error || null);
 	process.exit(error || 0);
 };
 
@@ -153,7 +152,9 @@ function setupModules(that, cb) {
 			
 			var module = null;
 			
-			that._profiler.mark('module [' + name + '] start loading');		
+			that._profiler.mark('module [' + name + '] start loading');
+
+			log.verbose('look for module [' + name + '] in ' + path);		
 	
 			try {
 				// try GraceNode first
@@ -161,7 +162,16 @@ function setupModules(that, cb) {
 			} catch (exception) {
 				// now try application
 				path = that.getRootPath() + (mod.path || 'modules/');
-				module = require(path);
+
+				log.verbose('module [' + name + ']: ' + exception);
+				log.verbose('> look for module [' + name + '] in ' + path);
+
+				try {
+					module = require(path);
+				} catch (exception) {
+					log.error('failed to load module [' + name + ']: ' + path);
+					return cb(exception);	
+				}
 			}
 		
 			that[name] = module;			

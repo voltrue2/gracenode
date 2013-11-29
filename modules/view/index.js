@@ -30,12 +30,12 @@ module.exports.readConfig = function (configIn) {
 module.exports.setup = function (cb) {
 	if (config && config.preloads && config.preloads.length) {
 		log.verbose('preload view files');
-		return async.forEach(config.preloads, function (path, nextCallback) {
+		return async.eachSeries(config.preloads, function (path, nextCallback) {
 			gracenode.lib.walkDir(gracenode.getRootPath() + path, function (error, list) {
 				if (error) {
 					return cb(error);
 				}
-				async.forEach(list, function (item, next) {
+				async.eachSeries(list, function (item, next) {
 					var path = item.file;
 					// get file modtime in unix timestamp
 					var dateObj = new Date(item.stat.mtime);
@@ -90,7 +90,7 @@ function load (viewFilePath, seen, cb) {
 		if (error) {
 			return cb(error);
 		}
-		async.forEachSeries(list, function (item, nextCallback) {
+		async.eachSeries(list, function (item, nextCallback) {
 				readFile(item.file, item.stat, parser, seen, function (error, data) {
 					if (error) {
 						return cb(error);
@@ -180,7 +180,7 @@ function parseContent(outputData, parser, seen, cb) {
 	profiler.start();
 	
 	// include files asynchronously
-	async.forEachSeries(list, function (item, next) {
+	async.eachSeries(list, function (item, next) {
 		var tag = item.tag;
 		var path = item.path;
 	

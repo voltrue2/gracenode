@@ -22,7 +22,7 @@ module.exports.load = function (configList, cb) {
 	if (configPath === undefined) {
 		return cb(new Error('configPath has not been set. you must call setConfigPath() method'));
 	}
-	async.forEach(configList, function (config, callback) {
+	async.eachSeries(configList, function (config, callback) {
 		fs.readFile(configPath + config, function (error, dataSource) {
 			if (!error) {
 				try {
