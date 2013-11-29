@@ -49,8 +49,16 @@ TimedNumber.prototype.getValue = function () {
 };
 
 TimedNumber.prototype.getNextUpdateTime = function () {
-	var timeLeftTilNextUpdate = (Date.now() - this._props.lastUpdated) % this._props.interval;
+	var timeLeftTilNextUpdate = Math.max(0, this._props.interval - (Date.now() - this._props.lastUpdated));
 	return timeLeftTilNextUpdate;
+};
+
+TimedNumber.prototype.getMinValue = function () {
+	return this._props.min;
+};
+
+TimedNumber.prototype.getMaxValue = function () {
+	return this._props.max;
 };
 
 TimedNumber.prototype.getInterval = function () {
