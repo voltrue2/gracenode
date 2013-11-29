@@ -173,6 +173,7 @@ Data.prototype.set = function (propName, value) {
 		if (this._props[propName].size) {
 			var pass = evaluateSize(this._props[propName].size, value);
 			if (!pass) {
+				log.error('set "' + propName + '" failed with invalid value size: allowed betwee ' + JSON.stringify(this._propsp[propName].size) + ' > given: ' + value);
 				this.emit('error.set', propName, value);
 				return false;
 			}	
@@ -181,6 +182,7 @@ Data.prototype.set = function (propName, value) {
 		this.emit('set', propName, value);
 		return true;
 	}
+	log.error('set "' + propName + '" failed with invalid value: ' + value + '(' + (typeof value) + ') > expected type: ' + this._props[propName].type);
 	this.emit('error.set', propName, value);
 	return false;
 };
