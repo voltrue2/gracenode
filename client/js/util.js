@@ -61,7 +61,7 @@ window.util.getCookies = function (keyList) {
 			res[key] = cookie[key];
 		}
 	}
-	return key;
+	return res;
 };
 
 window.util.getAllCookies = function () {

@@ -168,9 +168,9 @@ function setupModules(that, cb) {
 
 				try {
 					module = require(path);
-				} catch (exception) {
+				} catch (exception2) {
 					log.error('failed to load module [' + name + ']: ' + path);
-					return cb(exception);	
+					return cb(exception2);	
 				}
 			}
 		
