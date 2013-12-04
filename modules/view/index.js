@@ -65,6 +65,13 @@ module.exports.assign = function (name, value) {
 	clientData[name] = value;
 };
 
+module.exports.get = function (name) {
+	if (clientData[name]) {
+		return gracenode.lib.cloneObj(clientData[name]);
+	}
+	return null;
+};
+
 module.exports.load = function (viewFilePath, cb) {
 	var seen = [];
 	load(viewFilePath, seen, cb);

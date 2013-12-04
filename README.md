@@ -666,6 +666,13 @@ gracenode.view.assign('foo', 'hello world');
 hello world
 </pre>
 
+#####API: *get*
+
+<pre>
+mixed get(String name)
+</pre>
+> Get assigned value
+
 #####API: *load*
 
 <pre>
