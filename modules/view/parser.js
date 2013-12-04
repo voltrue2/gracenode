@@ -39,11 +39,13 @@ Parser.prototype.parseData = function (data) {
 
 Parser.prototype.parse = function (data, callbackEach) {
 	var pattern = /\(:([^:\)]+)?:\)/g;	
-	while (match = pattern.exec(data)) {
+	var match = pattern.exec(data);
+	while (match) {
 		var tag = match[0];
 		var indicator = tag.substring(2, tag.indexOf(' '));
 		var keyTag = tag.substring(2 + indicator.length, tag.length - 2).trim(' ');
 		data = callbackEach(this, tag, keyTag, indicator, data);
+		match = pattern.exec(data);
 	}
 	return data;
 };

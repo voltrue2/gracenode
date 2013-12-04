@@ -126,8 +126,8 @@ function respondFILE(req, res, content, status) {
 	var type = req.url.substring(req.url.lastIndexOf('.') + 1);
 	var contentSize = content.length;
 	res.writeHead(status, {
-    	'Content-Length': contentSize,
-    	'Content-Type': getFileType(type)
+		'Content-Length': contentSize,
+		'Content-Type': getFileType(type)
 	});
 	
 	log.verbose('response content size: ' + (contentSize / 1024) + ' KB');

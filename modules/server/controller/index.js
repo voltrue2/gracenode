@@ -74,12 +74,13 @@ function handle(req, res, parsedUrl, queryData) {
 	req.on('end', function () {
 		
 	});
+	
+	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller;
 
 	try {
 		if (controllerMap[parsedUrl.controller]) {
 			
 			// load controller
-			var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller;
 			var controller = require(path);
 			log.verbose('controller "' + parsedUrl.controller + '" loaded');
 
