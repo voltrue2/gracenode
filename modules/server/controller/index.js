@@ -12,6 +12,7 @@ var fs = require('fs');
 
 var config = null;
 var controllerMap = {};
+var requestHook = null;
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.controllerPath) {
@@ -32,6 +33,10 @@ module.exports.setup = function (cb) {
 		}
 		cb();
 	});
+};
+
+module.exports.setRequestHook = function (hookFunction) {
+	requestHook = hookFunction;
 };
 
 module.exports.exec = function (req, res, parsedUrl) {
@@ -102,6 +107,30 @@ function handle(req, res, parsedUrl, queryData) {
 				return errorHandler('number of arguments does not match > given:\n' + JSON.stringify(parsedUrl.args) + '\nexpected:\n' +JSON.stringify(args));
 			}
 
+			// check for request hook
+			if (requestHook) {
+
+				log.verbose('request hook found');
+
+				var requestObj = parsedUrl.args[0];
+				return requestHook(requestObj, parsedUrl, function (error, status) {
+					
+					if (error) {
+					
+						log.error('request hook exeuted with an error:', error, '(status: ' + status + ')');
+
+						return errorHandler(req, res, error, status);
+					}
+
+					log.verbose('request hook executed');
+					
+					controller[parsedUrl.method].apply(controller, parsedUrl.args);			
+
+				});
+			}
+		
+			// there is no request hook
+
 			// invoke the controller method
 			controller[parsedUrl.method].apply(controller, parsedUrl.args);			
 
@@ -119,17 +148,19 @@ function handle(req, res, parsedUrl, queryData) {
 
 }
 
-function errorHandler(req, res, errorMsg) {
-	
+function errorHandler(req, res, errorMsg, status) {
+
+	status = status || 404;	
+
 	log.error(errorMsg);
 	
-	if (handleError(req, res, 404)) {
+	if (handleError(req, res, status)) {
 		// stop here and let handleError deal with it
 		return;
 	}
 	
 	// we can not have handleError deal with it
-	response.respond(req, res, JSON.stringify({ error: errorMsg }), 'ERROR', 404);
+	response.respond(req, res, JSON.stringify({ error: errorMsg }), 'ERROR', status);
 }
 
 function handleError(req, res, status) {

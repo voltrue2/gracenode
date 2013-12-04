@@ -474,6 +474,9 @@ Configurations
 ```javascript
 "modules": {
 	"server": {
+		"protocol: "http" or "https",
+		"pemKey": "file path to pem key file" // https only
+		"pemCert": "file path to pem cert file" // https only
 		"port": port number,
 		"host": host name or IP address,
 		"controllerPath": path to controller directory,
@@ -503,19 +506,26 @@ void start()
 </pre>
 > Starts an HTTP or HTTPS server
 
-#####API: *userError*
+######API: *setRequestHook*
 
 <pre>
-void userError(mixed error, mixed response, Function callback)
+void setRequestHook(Function callback)
 </pre>
-> Responds to the client with status code **404**
-
-#####API: *error*
-
-<pre>
-void error(mixed error, mixed response, Function callback)
-</pre>
-> Responds to the client with status code **500**
+> assign a function to be invoked on every request.
+>> Should be used for session validatation etc
+>>> Callback will have 3 arguments: request object, parsedUrl object, and callback
+>>> The callback that is invoked at the end of hook callback can pass 2 arguments: error and status code
+Example:
+```javascript
+gracenode.server.setRequestHook(function (reqObj, callback) {
+	// do something
+	var session = getSession(reqObj);
+	if (!session) {
+		return callback(new Error('no session'), 403);
+	}
+	callback(null, 200);
+});
+```
 
 ###### Example:
 > Example of how to set up a server

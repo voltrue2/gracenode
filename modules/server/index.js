@@ -33,7 +33,6 @@ var EventEmitter = require('events').EventEmitter;
 var config = null;
 var serverEngine = null;
 var server = null;
-var requestHook = null;
 
 module.exports.readConfig = function (configIn) {
 	
@@ -67,7 +66,7 @@ module.exports.setup = function (cb) {
 // if set, controller.exec will not be invoked until requestHook is successfully executed
 // use case example: session check etc
 module.exports.setRequestHook = function (cb) {
-	requestHook = cb;
+	controller.setRequestHook(cb);
 };
 
 module.exports.start = function () {
@@ -94,29 +93,6 @@ function setupRequestHandler() {
 
 	// router request listener
 	router.on('handled', function (request, response, parsedUrl) {
-		
-		if (requestHook) {
-
-			log.verbose('request hook found');
-
-			return requestHook(function (error) {
-				
-				log.verbose('request hook executed');
-
-				if (error) {
-					log.error('request hook executed with an error:', error);
-					return controller.execError(request, response, parsedUrl);
-				}
-
-				log.verbose('execute controller');
-				contorller.exec(request, response, parsedUrl);
-
-			});
-
-		}
-
-		// there is no request hook set
 		controller.exec(request, response, parsedUrl);
-	
 	});
 }
