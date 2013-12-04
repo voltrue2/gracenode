@@ -62,6 +62,8 @@ module.exports.create = function (configName) {
 		return new Error('invalid configuration configuration name given: ' + configName + ' > \n' + JSON.stringify(configs, null, 4));
 	}
 	
+	log.info('create a new mysql connection pool (' + configName + ')');
+	
 	var connection = mysql.createPool({
 		host: config.host,
 		database: config.database,
@@ -69,11 +71,25 @@ module.exports.create = function (configName) {
 		password: config.password,
 		port: config.port || undefined,
 	});
+	
+	// error on connection...
+	connection.on('error', function (error) {
+		
+		log.error(error);
+		
+		log.info('remove failed connection from pooled connection map: ' + configName);
+		
+		pooledConnections[configName] = null;
+	});
 
 	log.verbose('create mysql with: ', configName, config);
 	
 	return new MySql(configName, connection, config);
 };
+
+// listen to gracenode exit
+gracenode.on('exit', function () {
+});
 
 function MySql(name, connection, config) {
 	EventEmitter.call(this);
@@ -81,25 +97,16 @@ function MySql(name, connection, config) {
 	this._type = config.type;
 	this._resource = connection;
 	this._connection = null;
-	// error listener
-	this._resource.on('error', function (error) {
-		
-		log.error(error);
-	
-		log.info('terminate connection to mysql (' + name + ')');
-
-		// terminate the connection right now!
-		this.end();
-	});
-	// listen to gracenode exit
-	var that = this;
-	gracenode.on('exit', function () {
-		log.info('disconnect from mysql (' + name + ')');
-		that._resource.end();
-	});
 }
 
 util.inherits(MySql, EventEmitter);
+
+MySql.prototype.close = function () {
+	var that = this;
+	this._resource.end(function () {
+		log.info('mysql connection closed (' + that._name + ')');
+	});
+};
 
 MySql.prototype.getOne = function (sql, params, cb) {
 	this.get(sql, params, true, function (error, res) {

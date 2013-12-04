@@ -30,6 +30,8 @@ var controller = require('./controller');
 
 var EventEmitter = require('events').EventEmitter;
 
+var events = new EventEmitter();
+
 var config = null;
 var serverEngine = null;
 var server = null;
@@ -63,6 +65,10 @@ module.exports.setup = function (cb) {
 	controller.setup(cb);
 };
 
+// event emitter
+// events: requestStart, requestEnd
+module.exports.events = events;
+
 // if set, controller.exec will not be invoked until requestHook is successfully executed
 // use case example: session check etc
 module.exports.setRequestHook = function (cb) {
@@ -93,8 +99,13 @@ function setupRequestHandler() {
 		var profiler = gracenode.profiler.create('request: ' + request.url);
 		profiler.start();
 
+		events.emit('requestStart');
+
 		// set up the listener on response end
 		response.on('end', function () {
+
+			events.emit('requestEnd');
+
 			profiler.stop();
 		});
 
