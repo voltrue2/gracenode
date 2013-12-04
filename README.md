@@ -850,6 +850,7 @@ mysql.getOne('SELECT age, gender FROM people WHERE name = ?', ['bob'], function 
 	// do something here
 });
 ```
+
 > **close**
 <pre>
 void close()
