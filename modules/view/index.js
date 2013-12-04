@@ -176,9 +176,6 @@ function parseContent(outputData, parser, seen, cb) {
 	var list = result.includeList;
 	outputData = result.data;
 	
-	var profiler = gracenode.profiler.create('include');
-	profiler.start();
-	
 	// include files asynchronously
 	async.eachSeries(list, function (item, next) {
 		var tag = item.tag;

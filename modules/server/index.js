@@ -3,6 +3,7 @@
  * configurations
  * {
  *		"server": {
+ *			"protocol": "http" or "https",
  *			"port": port number,
  *			"host": "host name or ip address",
  *			"controllerPath": "path to controller directory"
@@ -17,6 +18,95 @@
 		}
  * }
  * */
+
+var gracenode = require('../../');
+var log = gracenode.log.create('server');
+var http = require('./http');
+var router = require('./router');
+var controller = require('./controller');
+
+var EventEmitter = require('events').EventEmitter;
+
+var config = null;
+var serverEngine = null;
+var server = null;
+var requestHook = null;
+
+module.exports.readConfig = function (configIn) {
+	
+	config = configIn;
+	
+	if (config.protocol === 'https') {
+		// TODO: implement https		
+	} else {
+		serverEngine = http;
+	}
+	
+	serverEngine.readConfig(config);
+	router.readConfig(config);
+	controller.readConfig(config);
+};
+
+module.exports.setup = function (cb) {
+	controller.setup(cb);
+};
+
+// if set, controller.exec will not be invoked until requestHook is successfully executed
+// use case example: session check etc
+module.exports.setRequestHook = function (cb) {
+	requestHook = cb;
+};
+
+module.exports.start = function () {
+	server = serverEngine.start();	
+	setupRequestHandler();
+};
+
+// request listener
+function setupRequestHandler() {
+
+	log.verbose('set up server request handlers');
+
+	// server request listener
+	server.on('request', function (request, response) {
+		router.handle(request, response);
+	});
+
+	// router request listener
+	router.on('handled', function (request, response, parsedUrl) {
+		
+		if (requestHook) {
+
+			log.verbose('request hook found');
+
+			return requestHook(function (error) {
+				
+				log.verbose('request hook executed');
+
+				if (error) {
+					log.error('request hook executed with an error:', error);
+					return controller.execError(request, response, parsedUrl);
+				}
+
+				log.verbose('execute controller');
+				contorller.exec(request, response, parsedUrl);
+
+			});
+
+		}
+
+		// there is no request hook set
+		controller.exec(request, response, parsedUrl);
+	
+	});
+}
+
+
+
+
+
+
+/*
 var fs = require('fs');
 var sq = require('querystring');
 var url = require('url');
@@ -114,16 +204,10 @@ module.exports.start = function () {
 	});
 };
 
-/**
- * used to respond to the client with 404 error from controller
- * */
 module.exports.userError = function (error, res, cb) {
 	cb(error, res, 404);
 };
 
-/**
- * used to respond to the client with 500 error from controller
- * */
 module.exports.error = function (error, res, cb) {
 	cb(error, res, 500);
 };
@@ -171,10 +255,8 @@ function requestHandler(request, response) {
 	});
 }
 
-/**
- * parse URL and get controller name and method
- * example: http://yourdomain.com/<controller name>/<method>/[parameters]
- * */
+// parse URL and get controller name and method
+// example: http://yourdomain.com/<controller name>/<method>/[parameters]
 function parseUri(uri) {
 	var queryIndex = uri.lastIndexOf('?');
 	if (queryIndex !== -1) {
@@ -260,6 +342,7 @@ function execController(data, reqData, request, response, forcedResCode, profile
 			
 			// call method 
 			controller[data.method].apply(controller, data.args);
+		
 		} else {
 			log.error('controller not found: ', path);
 			if (handleError(request, response, 404, profiler)) {
@@ -491,3 +574,4 @@ function handleError(request, response, resCode, profiler) {
 	}
 	return false;
 }
+*/
