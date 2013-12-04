@@ -29,11 +29,6 @@ var dynamicContentHeaders = {
 
 module.exports.respond = function (req, res, content, contentType, status) {
 
-	res.on('end', function () {
-		log.debug(arguments);
-		log.info('responded to ' + req.url);
-	});
-
 	log.verbose('response content type:', contentType);
 
 	switch (contentType) {
@@ -91,7 +86,7 @@ function respondJSON(req, res, content, status) {
 			'Content-Length': data.length
 		});
 
-		log.info('response: ' + req.url + ' ' + status);
+		responseLog(req, status);		
 
 		res.end(data, 'binary');		
 
@@ -119,28 +114,11 @@ function respondHTML(req, res, content, status) {
 			'Content-Length': data.length
 		});
 
-		log.info('response: ' + req.url + ' ' + status);
+		responseLog(req, status);		
 
 		res.end(data, 'binary');		
 
 	});
-
-	/*
-	var contentSize= Buffer.byteLength(content);
-
-	res.writeHead(status, {
-		'Cache-Control': 'no-cache, must-revalidate',
-		'Connection': 'Keep-Alive',
-		'Content-Type': 'text/html; charset=UTF-8',
-		'Pragma': 'no-cache',
-		'Vary': 'Accept-Encoding',
-		'Content-Length': contentSize
-	});
-	
-	log.verbose('response content size: ' + (contentSize / 1024) + ' KB');
-
-	res.end(content, 'binary');
-	*/
 }
 
 function respondFILE(req, res, content, status) {
@@ -154,7 +132,7 @@ function respondFILE(req, res, content, status) {
 	
 	log.verbose('response content size: ' + (contentSize / 1024) + ' KB');
 
-	log.info('response: ' + req.url + ' ' + status);
+	responseLog(req, status);		
 
 	res.end(content, 'binary');
 
@@ -172,19 +150,32 @@ function respondERROR(req, res, content, status) {
 
 		var contentSize = data.length;
 		res.writeHead(status, {
-			'Content-Length': contentSize,
-			'Content-Type': 'text/plain;charset=UTF-8',
+			'Cache-Control': 'no-cache, must-revalidate',
+			'Connection': 'Keep-Alive',
+			'Content-Encoding': 'gzip',
+			'Content-Type': 'text/plain; charset=UTF-8',
+			'Pragma': 'no-cache',
+			'Vary': 'Accept-Encoding',
+			'Content-Length': data.length
 		});
 		
 		log.error('response content size: ' + (contentSize / 1024) + ' KB');
-
-		log.info('response: ' + req.url + ' ' + status);
-		
-		res.end(content, 'binary');
+	
+		responseLog(req, status);		
+	
+		res.end(data, 'binary');
 
 	});
 }
 
+function responseLog(req, status) {
+	var msg = 'response: ' + req.url + ' (status: ' + status + ')';
+	if (status >= 400) {
+		log.error('error ' + msg);
+	} else {
+		log.info(msg);
+	}
+}
 
 function getFileType(type) {
 	if (imageFiles.indexOf(type) !== -1) {
