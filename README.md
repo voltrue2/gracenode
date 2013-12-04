@@ -506,6 +506,14 @@ void start()
 </pre>
 > Starts an HTTP or HTTPS server
 
+#####API: *events*
+
+<pre>
+EventEmitter events()
+</pre>
+> Returns an instance of EventEmitter
+>> Events: requestStart, requestEnd
+
 ######API: *setRequestHook*
 
 <pre>
@@ -842,6 +850,11 @@ mysql.getOne('SELECT age, gender FROM people WHERE name = ?', ['bob'], function 
 	// do something here
 });
 ```
+> **close**
+<pre>
+void close()
+</pre>
+> Closes a connection gracefully
 
 > **getMany**
 <pre>
