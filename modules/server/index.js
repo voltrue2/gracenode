@@ -88,6 +88,16 @@ function setupRequestHandler() {
 
 	// server request listener
 	server.on('request', function (request, response) {
+
+		// start profiler		
+		var profiler = gracenode.profiler.create('request: ' + request.url);
+		profiler.start();
+
+		// set up the listener on response end
+		response.on('end', function () {
+			profiler.stop();
+		});
+
 		router.handle(request, response);
 	});
 

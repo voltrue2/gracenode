@@ -47,7 +47,9 @@ function Http() {
 util.inherits(Http, EventEmitter);
 
 Http.prototype.handleRequest = function (req, res) {
+
 	log.info('request recieved:', req.url);
+	
 	this.emit('request', req, res);	
 };
 

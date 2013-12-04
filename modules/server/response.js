@@ -51,7 +51,9 @@ module.exports.respond = function (req, res, content, contentType, status) {
 
 			respondERROR(req, res, content, status);
 			break;
-	}	
+	}
+
+	res.emit('end');	
 };
 
 function compressContent(content, cb) {
