@@ -219,7 +219,7 @@ function setupListeners(that) {
 	process.on('exit', function (error) {
 		that.emit('exit', error);
 		if (error) {
-			return log.fatal('exit GraceNode with an error');
+			return log.fatal('exit GraceNode with an error:', error);
 		}
 		log.info('exit GraceNode');
 	});
