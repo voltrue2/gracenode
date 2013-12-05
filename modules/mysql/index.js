@@ -72,16 +72,6 @@ module.exports.create = function (configName) {
 		port: config.port || undefined,
 	});
 	
-	// error on connection...
-	connection.on('error', function (error) {
-		
-		log.error(error);
-		
-		log.info('remove failed connection from pooled connection map: ' + configName);
-		
-		pooledConnections[configName] = null;
-	});
-
 	log.verbose('create mysql with: ', configName, config);
 	
 	return new MySql(configName, connection, config);
@@ -97,15 +87,34 @@ function MySql(name, connection, config) {
 	this._type = config.type;
 	this._resource = connection;
 	this._connection = null;
+
+	var that = this;
+	
+	// error on connection...
+	connection.on('error', function (error) {
+		that.close();
+	});
+
+	gracenode.on('uncaughtException', function () {
+		that.close();
+	});
+
+	gracenode.on('exit', function () {
+		that.close();
+	});
+
 }
 
 util.inherits(MySql, EventEmitter);
 
 MySql.prototype.close = function () {
-	var that = this;
-	this._resource.end(function () {
-		log.info('mysql connection closed (' + that._name + ')');
-	});
+	if (this._resource) {
+		var that = this;
+		this._resource.end(function () {
+			log.info('mysql connection closed (' + that._name + ')');
+		});
+		this._resource = null;
+	}
 };
 
 MySql.prototype.getOne = function (sql, params, cb) {

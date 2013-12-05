@@ -30,8 +30,6 @@ module.exports.readConfig = function (configIn) {
 
 	apple.readConfig(config);
 	google.readConfig(config);
-	mysql.reader = gracenode.mysql.create(config.sql.read);
-	mysql.writer = gracenode.mysql.create(config.sql.write);
 };
 
 module.exports.validateApplePurchase = function (receipt, cb) {
@@ -68,10 +66,12 @@ module.exports.updateStatus = function (receipt, status, cb) {
 		createReceiptHash(receipt),
 		service
 	];
-	mysql.writer.write(sql, params, function (error, res) {
+	var writer = gracenode.mysql.create(config.sql.write);
+	writer.write(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
+		writer.close();
 		cb();
 	});
 };
@@ -80,7 +80,8 @@ function checkDb(receipt, finalCallback, cb) {
 	var sql = 'SELECT validateState, status, service FROM iap WHERE receiptHashId = ?';
 	var hash = createReceiptHash(receipt);
 	var params = [hash];
-	mysql.reader.searchOne(sql, params, function (error, res) {
+	var reader = gracenode.mysql.create(config.sql.read);
+	reader.searchOne(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
@@ -89,7 +90,7 @@ function checkDb(receipt, finalCallback, cb) {
 			// this receipt has been validated by the service provider already
 			return finalCallback(null, res);
 		}
-
+		reader.close();
 		cb(null, receipt);
 	});	
 }
@@ -114,10 +115,12 @@ function storeResponse(receipt, response, validated, cb) {
 		validateState,
 		now
 	];
-	mysql.writer.write(sql, params, function (error) {
+	var writer = gracenode.mysql.create(config.sql.write);
+	writer.write(sql, params, function (error) {
 		if (error) {
 			return cb(error);
 		}
+		writer.close();
 		cb(null, { validateState: validateState, status: PENDING });
 	});
 }

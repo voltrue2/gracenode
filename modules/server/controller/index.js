@@ -142,7 +142,9 @@ function handle(req, res, parsedUrl, queryData) {
 
 	} catch (exception) {
 
-		errorHandler(req, res, exception);		
+		log.fatal('exception caught:', exception);
+
+		errorHandler(req, res, exception, 500);		
 
 	}
 
@@ -152,7 +154,7 @@ function errorHandler(req, res, errorMsg, status) {
 
 	status = status || 404;	
 
-	log.error(errorMsg);
+	log.error('errorHandler:', errorMsg);
 	
 	if (handleError(req, res, status)) {
 		// stop here and let handleError deal with it
@@ -171,7 +173,7 @@ function handleError(req, res, status) {
 			log.verbose('error handler(' + status + ') configured:', errorHandler);
 			if (controllerMap[errorHandler.controller]) {
 				handle(req, res, errorHandler, {});
-				return;
+				return true;
 			}
 			log.verbose('error handler for ' + status + ' not found');
 			response.respond(req, res, null, 'ERROR', status);
