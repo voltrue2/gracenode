@@ -19,6 +19,7 @@
  *
  * */
 var config = null;
+var prefix = '';
 
 var fs = require('fs');
 
@@ -31,12 +32,16 @@ module.exports.readConfig = function (configIn) {
 	return true;
 };
 
-module.exports.create = function (name) {
-	return new Log(name);
+module.exports.setPrefix = function (prefixIn) {
+	prefix = prefixIn;
 };
 
-function Log(name) {
-	this._name = '[' + name + ']';
+module.exports.create = function (name) {
+	return new Log(prefix, name);
+};
+
+function Log(prefix, name) {
+	this._name = '[' + (prefix ? prefix + ': ' : '') + name + ']';
 }
 
 Log.prototype.verbose = function () {

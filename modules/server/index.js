@@ -23,6 +23,7 @@
 
 var gracenode = require('../../');
 var log = gracenode.log.create('server');
+
 var http = require('./http');
 var https = require('./https');
 var router = require('./router');

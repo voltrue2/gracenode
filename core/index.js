@@ -6,6 +6,9 @@ var config = require('../modules/config');
 var logger = require('../modules/log');
 var log = logger.create('GraceNode');
 var util = require('util');
+var cluster = require('cluster');
+
+var workerList = []; // master only
 
 module.exports.GraceNode = GraceNode;
 
@@ -14,6 +17,7 @@ function GraceNode() {
 	// listeners
 	setupListeners(this);
 	// variables
+	this._isMaster = false;
 	this._configPath = '';
 	this._configFiles = [];
 	this._modules = [
@@ -32,6 +36,10 @@ util.inherits(GraceNode, EventEmitter);
 
 GraceNode.prototype.getRootPath = function () {
 	return this._root;
+};
+
+GraceNode.prototype.isMaster = function () {
+	return this._isMaster;
 };
 
 GraceNode.prototype.setConfigPath = function (configPath) {
@@ -68,15 +76,16 @@ GraceNode.prototype.setup = function (cb) {
 		return this.exit(new Error('configuration files not set'));
 	}
 	var that = this;
-	var starter = function (cb) {
+	var starter = function (callback) {
 		log.verbose('GraceNode is starting...');
-		cb(null, that);
+		callback(null, that, cb);
 	};
 	var setupList = [
 		starter, 
 		setupConfig, 
 		setupLog, 
-		setupProfiler, 
+		setupProfiler,
+		setupProcess, 
 		setupModules
 	];
 	async.waterfall(setupList, function (error) {
@@ -96,7 +105,7 @@ GraceNode.prototype.setup = function (cb) {
 	});
 };
 
-function setupConfig(that, cb) {
+function setupConfig(that, lastCallback, cb) {
 	config.setPath(that._configPath);
 	config.load(that._configFiles, function (error) {
 		if (error) {
@@ -108,11 +117,11 @@ function setupConfig(that, cb) {
 
 		that.emit('setup.config');
 
-		cb(null, that);
+		cb(null, that, lastCallback);
 	});
 }
 
-function setupLog(that, cb) {
+function setupLog(that, lastCallback, cb) {
 	logger.readConfig(config.getOne('modules.log'));
 	that.log = logger;
 
@@ -120,10 +129,10 @@ function setupLog(that, cb) {
 
 	that.emit('setup.log');
 
-	cb(null, that);
+	cb(null, that, lastCallback);
 }
 
-function setupProfiler(that, cb) {
+function setupProfiler(that, lastCallback, cb) {
 	var profiler = require('../modules/profiler');
 
 	// GraceNode profiler
@@ -137,7 +146,68 @@ function setupProfiler(that, cb) {
 
 	that.emit('setup._profiler');
 
-	cb(null, that);	
+	cb(null, that, lastCallback);	
+}
+
+function setupProcess(that, lastCallback, cb) {
+
+	log.verbose('setting up process...');
+	
+	var CPUNum = require('os').cpus().length;
+	var maxClusterNum = that.config.getOne('cluster.max') || 0;
+	var max = Math.min(maxClusterNum, CPUNum);
+	
+	if (cluster.isMaster && max) {
+		
+		// master process	
+
+		that.log.setPrefix('MASTER');	
+		log.info('in cluster mode [master]: number of CPU > ' + CPUNum + ' >> number of workers to be spawned: ' + max);
+		log.info('(pid: ' + process.pid + ')');
+
+		for (var i = 0; i < max; i++) {
+			var worker = cluster.fork();
+			workerList.push(worker);
+			log.info('worker spawned: (pid: ' + worker.process.pid + ')');
+		}
+
+		that._isMaster = true;
+
+		// set up termination listener
+		cluster.on('exit', function (worker, code, sig) {
+			workerList.splice(workerList.indexOf(worker), 1);
+			log.error('worker has died: (pid: ' + worker.process.pid + ') [signal: ' + sig + '] ' + code);
+		});
+
+		that.on('shutdown', function (signal) {
+			log.info('shutdown all workers');
+			for (var i = 0, len = workerList.length; i < len; i++) {
+				process.kill(worker.process.pid, signal);
+				log.info('worker has been killed: (pid: ' + worker.pid + ')');
+			}
+		});
+	
+		// we stop here
+		lastCallback();
+	
+	} else if (max) {
+		
+		// worker process
+
+		that.log.setPrefix('WORKER');
+		log.info('in cluster mode [worker] (pid: ' + process.pid + ')');
+	
+		cb(null, that);
+
+	} else {
+	
+		// none-cluster mode
+		log.info('in singleton mode: (pid: ' + process.pid + ')');		
+
+		cb(null, that);
+
+	}
+	
 }
 
 function setupModules(that, cb) {
@@ -226,6 +296,18 @@ function setupListeners(that) {
 
 	process.on('SIGINT', function () {
 		log.verbose('shutdown GraceNode');
+		that.emit('shutdown');
+		that.exit();
+	});
+
+	process.on('SIGQUIT', function () {
+		log.verbose('quit GraceNode');
+		that.emit('shutdown');
+		that.exit();
+	});
+
+	process.on('SIGTERM', function () {
+		log.verbose('terminate GraceNode');
 		that.emit('shutdown');
 		that.exit();
 	});
