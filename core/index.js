@@ -156,6 +156,8 @@ function setupProcess(that, lastCallback, cb) {
 	var CPUNum = require('os').cpus().length;
 	var maxClusterNum = that.config.getOne('cluster.max') || 0;
 	var max = Math.min(maxClusterNum, CPUNum);
+
+	log.verbose('spawn process number: ' + max);
 	
 	if (cluster.isMaster && max) {
 		
@@ -182,8 +184,8 @@ function setupProcess(that, lastCallback, cb) {
 		that.on('shutdown', function (signal) {
 			log.info('shutdown all workers');
 			for (var i = 0, len = workerList.length; i < len; i++) {
-				process.kill(worker.process.pid, signal);
-				log.info('worker has been killed: (pid: ' + worker.pid + ')');
+				process.kill(workerList[i].process.pid, signal);
+				log.info('worker has been killed: (pid: ' + workerList[i].process.pid + ')');
 			}
 		});
 	
@@ -194,7 +196,7 @@ function setupProcess(that, lastCallback, cb) {
 		
 		// worker process
 
-		that.log.setPrefix('WORKER');
+		that.log.setPrefix('WORKER (pid: '  + process.pid + ')');
 		log.info('in cluster mode [worker] (pid: ' + process.pid + ')');
 	
 		cb(null, that);
