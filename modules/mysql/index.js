@@ -30,6 +30,7 @@ var mysql = require('mysql');
 var gracenode = require('../../');
 var log = gracenode.log.create('mysql');
 
+var pooledConnections = {};
 var configs = {};
 var writeQueries = [
 	'insert ',
@@ -53,6 +54,42 @@ module.exports.readConfig = function (configIn) {
 	return true;
 };
 
+module.exports.setup = function (cb) {
+	
+	log.info('establishing connection pools to mysql...');
+
+	// graceful exit clean up
+	gracenode.on('exit', function () {
+		for (var name in configs) {
+			var conf = configs[name];
+			var pool = pooledConnections[name] || null;
+			if (pool) {
+				pool.end(function () {
+					log.info('connection pool closed:', name, conf);
+				});
+			}
+		}
+	});
+
+	// create connection pools
+	for (var name in configs) {
+		var conf = configs[name];
+
+		pooledConnections[name] = mysql.createPool({
+			host: conf.host,
+			database: conf.database,
+			maxPoolNum: conf.maxPoolNum || 10,
+			user: conf.user,
+			password: conf.password,
+			port: conf.port || undefined,
+		});
+		
+		log.info('connection pool ceated: ', name, conf);
+	}
+
+	cb();
+};
+
 /**
  * @param {String} 
  * */
@@ -62,24 +99,15 @@ module.exports.create = function (configName) {
 		return new Error('invalid configuration configuration name given: ' + configName + ' > \n' + JSON.stringify(configs, null, 4));
 	}
 	
-	log.info('create a new mysql connection pool (' + configName + ')');
+	log.verbose('create mysql with: ', configName);
 	
-	var connection = mysql.createPool({
-		host: config.host,
-		database: config.database,
-		user: config.user,
-		password: config.password,
-		port: config.port || undefined,
-	});
-	
-	log.verbose('create mysql with: ', configName, config);
-	
+	var connection = pooledConnections[configName] || null;
+	if (!connection) {
+		return new Error('connection not found:' + configName);
+	}
+
 	return new MySql(configName, connection, config);
 };
-
-// listen to gracenode exit
-gracenode.on('exit', function () {
-});
 
 function MySql(name, connection, config) {
 	EventEmitter.call(this);
@@ -87,35 +115,9 @@ function MySql(name, connection, config) {
 	this._type = config.type;
 	this._resource = connection;
 	this._connection = null;
-
-	var that = this;
-	
-	// error on connection...
-	connection.on('error', function (error) {
-		that.close();
-	});
-
-	gracenode.on('uncaughtException', function () {
-		that.close();
-	});
-
-	gracenode.on('exit', function () {
-		that.close();
-	});
-
 }
 
 util.inherits(MySql, EventEmitter);
-
-MySql.prototype.close = function () {
-	if (this._resource) {
-		var that = this;
-		this._resource.end(function () {
-			log.info('mysql connection closed (' + that._name + ')');
-		});
-		this._resource = null;
-	}
-};
 
 MySql.prototype.getOne = function (sql, params, cb) {
 	this.get(sql, params, true, function (error, res) {
@@ -382,20 +384,20 @@ MySql.prototype.connect = function (cb) {
 			return cb(error);
 		}
 		
-		log.info('connect to mysql (' + that._name + ') [connection pooled]');
+		log.info('connection obtained from pool (' + that._name + ')');
 	
 		that._connection = pooledConnection;
 		cb(null);
 	};
 
-	log.info('obtaining connection to mysql (' + this._name + ')...');
+	log.info('obtaining connection to pool (' + this._name + ')...');
 
 	this._resource.getConnection(callback);
 };
 
 MySql.prototype.end = function (cb) {
 	
-	log.info('release connection to mysql (' + this._name + ')');
+	log.info('release connection to pool (' + this._name + ')');
 	
 	this._connection.release();
 	return cb(null);

@@ -819,6 +819,7 @@ Configurations
 		"configNameOfYourChoice": {
 			"database": "databaseName",
 			"host": "host or IP address",
+			"maxPoolNum": number <optional> default is 10
 			"user": "databaseUser",
 			"password": "databasePassword",
 			"type": "ro" or "rw" // "ro" for Read Only and "rw" for Read and Write
@@ -850,12 +851,6 @@ mysql.getOne('SELECT age, gender FROM people WHERE name = ?', ['bob'], function 
 	// do something here
 });
 ```
-
-> **close**
-<pre>
-void close()
-</pre>
-> Closes a connection gracefully
 
 > **getMany**
 <pre>
