@@ -153,13 +153,14 @@ function setupProcess(that, lastCallback, cb) {
 
 	log.verbose('setting up process...');
 	
+	var enabled = that.config.getOne('cluster.enable');
 	var CPUNum = require('os').cpus().length;
 	var maxClusterNum = that.config.getOne('cluster.max') || 0;
 	var max = Math.min(maxClusterNum, CPUNum);
 
 	log.verbose('spawn process number: ' + max);
 	
-	if (cluster.isMaster && max) {
+	if (cluster.isMaster && max && enabled) {
 		
 		// master process	
 
@@ -192,7 +193,7 @@ function setupProcess(that, lastCallback, cb) {
 		// we stop here
 		lastCallback();
 	
-	} else if (max) {
+	} else if (max && enabled) {
 		
 		// worker process
 

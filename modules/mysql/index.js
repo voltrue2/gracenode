@@ -333,7 +333,7 @@ MySql.prototype.exec = function (sql, params, cb) {
 
 	if (!this._connection) {
 		// execute the query outside of transaction
-		log.info('executing write query without of transaction');
+		log.info('executing write query without transaction');
 		var that = this;
 		return this.connect(function (error) {
 			if (error) {

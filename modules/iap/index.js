@@ -71,7 +71,6 @@ module.exports.updateStatus = function (receipt, status, cb) {
 		if (error) {
 			return cb(error);
 		}
-		writer.close();
 		cb();
 	});
 };
@@ -90,7 +89,6 @@ function checkDb(receipt, finalCallback, cb) {
 			// this receipt has been validated by the service provider already
 			return finalCallback(null, res);
 		}
-		reader.close();
 		cb(null, receipt);
 	});	
 }
@@ -120,7 +118,6 @@ function storeResponse(receipt, response, validated, cb) {
 		if (error) {
 			return cb(error);
 		}
-		writer.close();
 		cb(null, { validateState: validateState, status: PENDING });
 	});
 }
