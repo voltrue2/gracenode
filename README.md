@@ -145,7 +145,7 @@ gracenode.on('shutdown')
 </pre>
 > Emitted when GraceNode detects SIGINT
 
-##### *Cluster Mode*
+## Cluster Mode
 > GraceNode can spwan multiple processes to go in cluster-mode if used in multi-core system
 ```javascript
 // Configurations
