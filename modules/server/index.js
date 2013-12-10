@@ -62,6 +62,9 @@ module.exports.setup = function (cb) {
 			controller.setup(cb);
 		});
 	}
+	
+	log.info('server protocol: ' + config.protocol);
+
 	// http
 	controller.setup(cb);
 };

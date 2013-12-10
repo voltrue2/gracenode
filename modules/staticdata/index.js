@@ -189,7 +189,7 @@ function mapIndex(data, indexNames) {
 					}
 					map[indexName][index].push(itemObj);
 				} else {
-					// index is unique or this is the first item or the index
+					// index is unique or this is the first item of the index
 					map[indexName][index] = itemObj;
 				}
 			}

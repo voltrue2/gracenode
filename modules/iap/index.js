@@ -93,6 +93,25 @@ function checkDb(receipt, finalCallback, cb) {
 	});	
 }
 
+function validateApple(reciept, storedAsError, cb) {
+	apple.validatePurchase(reciept, function (error, receipt, response, validated) {
+		if (error) {
+			return cb(error);
+		}
+		cb(null, receipt, response, validated, storedAsError);
+	});
+}
+
+function validateGoogle(reciept, storedAsError, cb) {
+	google.validatePurchase(reciept, function (error, receipt, response, validated) {
+		if (error) {
+			return cb(error);
+		}
+		cb(null, receipt, response, validated, storedAsError);
+	});
+}
+
+// FIXME: on duplicate update... not really good. come up with a better way to handle this
 function storeResponse(receipt, response, validated, cb) {
 	var sql = 'INSERT INTO iap (receiptHashId, receipt, response, validateState, status, service, created, modtime) VALUES(?, ?, ?, ?, ?, ?, ?, ?)';	
 	sql += ' ON DUPLICATE KEY UPDATE response = ?, validateState = ?, modtime = ?';

@@ -509,6 +509,11 @@ Configurations
 }
 ```
 
+####SSL server
+> GraceNode has bash scripts to help set up HTTPS server
+>> GraceNode/scripts/sslcertgen.sh for production
+>> GraceNode/scripts/sslcertgen-dev.sh for development
+
 ######API: *start*
 
 <pre>

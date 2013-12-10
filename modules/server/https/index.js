@@ -21,11 +21,15 @@ module.exports.readConfig = function (configIn) {
 module.exports.setup = function (cb) {
 	var list = [config.pemKey, config.pemCert];
 	var index = 0;
+
+	log.verbose('setting up ssl server:', list);
+
+	/*
 	async.eachSeries(list, function (path, callback) {
 		
 		log.verbose('pem file loading:', path);
 
-		fs.readFile(path, function (error, data) {
+		fs.readFile(path, 'utf8', function (error, data) {
 			if (error) {
 				return cb(error);
 			}
@@ -40,6 +44,25 @@ module.exports.setup = function (cb) {
 			callback();
 		});
 	}, cb);
+	*/
+	log.verbose('loading key pem file:', config.pemKey);
+	fs.readFile(config.pemKey, 'utf8', function (error, keyData) {
+		if (error) {
+			return cb(error);
+		}
+		options.key = keyData;
+		log.verbose('key pem file loaded:', options.key);
+		log.verbose('loading cert pem file:', config.pemCert);
+		fs.readFile(config.pemCert, 'utf8', function (error, certData) {
+			if (error) {
+				return cb(error);
+			}
+			options.cert = certData;
+			log.verbose('cert pem fiile loaded:', options.cert);
+			
+			cb();
+		});
+	});
 };
 
 module.exports.start = function () {
@@ -51,6 +74,8 @@ function Https() {
 	var that = this;
 
 	try {
+
+		log.verbose('starting the server with:', options);
 
 		this.server = https.createServer(options, function (req, res) {
 			that.handleRequest(req, res);
