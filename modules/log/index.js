@@ -41,7 +41,7 @@ module.exports.create = function (name) {
 };
 
 function Log(prefix, name) {
-	this._name = '[' + (prefix ? prefix + ': ' : '') + name + ']';
+	this._name = (prefix ? '(' + prefix + ')' : '') + '[' + name + ']';
 }
 
 Log.prototype.verbose = function () {

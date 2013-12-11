@@ -164,7 +164,7 @@ function setupProcess(that, lastCallback, cb) {
 		
 		// master process	
 
-		that.log.setPrefix('MASTER');	
+		that.log.setPrefix('MASTER: ' + process.pid);	
 		log.info('in cluster mode [master]: number of CPU > ' + CPUNum + ' >> number of workers to be spawned: ' + max);
 		log.info('(pid: ' + process.pid + ')');
 
@@ -197,7 +197,7 @@ function setupProcess(that, lastCallback, cb) {
 		
 		// worker process
 
-		that.log.setPrefix('WORKER (pid: '  + process.pid + ')');
+		that.log.setPrefix('WORKER: ' + process.pid);
 		log.info('in cluster mode [worker] (pid: ' + process.pid + ')');
 	
 		cb(null, that);
