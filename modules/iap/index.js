@@ -75,6 +75,10 @@ module.exports.updateStatus = function (receipt, status, cb) {
 	});
 };
 
+module.exports.createHashId = function (receipt) {
+	return createReceiptHash(receipt);
+};
+
 function checkDb(receipt, finalCallback, cb) {
 	var sql = 'SELECT validateState, status, service FROM iap WHERE receiptHashId = ?';
 	var hash = createReceiptHash(receipt);

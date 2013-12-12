@@ -176,6 +176,7 @@ gracenode.on('shutdown')
 - <a href="#datacache-module">datacache</a>
 - <a href="#asset-module">asset</a>
 - <a href="#iap-module">iap (In-App-Purchase with Apple and Google Play)</a>
+- <a href="#wallet-module">wallet</a>
 - <a href="#message-module">message</a>
 
 ### Built-in Modules
@@ -341,6 +342,18 @@ Configurations *N/A*
 Int randomInt(Int min, Int max)
 </pre>
 > Returns pseudo-random integer between min and max
+
+#####API: *randomArray*
+<pre>
+Mixed randomArray(Array list)
+</pre>
+> returns a randomly selected element from the given array
+
+#####API: *cloneObj*
+<pre>
+Mixed cloneObj(Mixed original)
+</pre>
+> creates a copy of the given value
 
 #####API: *getArguments*
 <pre>
@@ -1168,14 +1181,14 @@ Configurations
 }
 ```
 
-#####API: startServers
+#####API: *startServers*
 
 <pre>
 void startServers(Function callback)
 </pre>
 > Starts all UDP servers and calls the callback function when all the servers are up
 
-#####API: getServerByName
+#####API: *getServerByName*
 
 <pre>
 Object getServerByName(String serverName)
@@ -1229,23 +1242,81 @@ Configurations
 }
 ```
 
-#####API: validateApplePurchase
+#####API: *validateApplePurchase*
 
 <pre>
 void validateApplePurchase(String receipt, Function cb)
 </pre>
 > Sends an HTTPS request to Apple to validate the given receipt and responds back an object { validateState: 'validated' or 'error', status: 'pending' or 'handled' or 'canceled' }
 
-#####API: validateGooglePurchase
+#####API: *validateGooglePurchase*
 
 <pre>
 void validateGooglePurchase(Object receipt, Function cb)
 </pre>
 > Validates the receipt with public key using open SSL
 
-#####API: updateStatus
+#####API: *updateStatus*
 
 <pre>
 void updateStatus(Mixed receipt, String status, Function cb)
 </pre>
 > Updates the status of the given receipt. the valid status are: pending, handled, canceled.
+
+
+***
+#### <span id="wallet-module">wallet module</span>
+***
+
+Access
+<pre>
+gracenode.wallet
+</pre>
+
+Configurations
+```javascript
+"modules": {
+	"names": [an array of wallet names],
+	"sql": {
+		"read": "mysql module configuration name",
+		"write": "mysql module configuration name"
+	} 
+}
+```
+
+#####API: *create*
+
+<pre>
+Wallet create(String walletName)
+</pre>
+> Returns an instance of Wallet class by a wallet name
+>> The wallet name needs to be defined in the configuration file
+
+##### Wallet class
+
+> **getBalanceByUserId**
+<pre>
+void getBalanceByUserId(String uniqueUserId, Function callback)
+</pre>
+> Rerturns the current balance of a wallet in the callback as a second argument
+
+> **addPaid**
+<pre>
+void addPaid(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function callback)
+</pre>
+> Adds the value to a wallet as "paid"
+>> "paid" represents that the user has paid real money
+
+> **addFree**
+<pre>
+void addFree(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function callback)
+</pre>
+> Adds the value to a wallet as "free"
+>> "free" represents that the user has been given the value as free gift
+
+> **spend**
+<pre>
+void spend(String uniqueUserId, Int value, String spendFor, Function callback)
+</pre>
+> Spends value from a wallet if allowed
+>> spendFor should represent what the user has spend the value for

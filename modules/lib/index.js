@@ -28,6 +28,12 @@ module.exports.randomInt = function (min, max) {
 	return rand;
 };
 
+module.exports.randomArray = function (list) {
+	var max = list.length - 1;
+	var index = module.exports.randomInt(0, max);
+	return list[index];
+};
+
 module.exports.getArguments = function (func) {
 	var names = func.toString().match(/^[\s\(]*function[^(]*\(([^)]*)\)/);
 	var args = names[1].replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '');
