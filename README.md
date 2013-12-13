@@ -1302,17 +1302,19 @@ void getBalanceByUserId(String uniqueUserId, Function callback)
 
 > **addPaid**
 <pre>
-void addPaid(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function callback)
+void addPaid(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function onCallback<optional>, Function callback)
 </pre>
 > Adds the value to a wallet as "paid"
 >> "paid" represents that the user has paid real money
+>> If onCallback is given: the function will be called BEFORE committing the "add" transaction, if an error occuries in onCallback, the transaction can be rolled back
 
 > **addFree**
 <pre>
-void addFree(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function callback)
+void addFree(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function onCallback<optional>, Function callback)
 </pre>
 > Adds the value to a wallet as "free"
 >> "free" represents that the user has been given the value as free gift
+>> If onCallback is given: the function will be called BEFORE committing the "add" transaction, if an error occuries in onCallback, the transaction can be rolled back
 
 > **spend**
 <pre>
