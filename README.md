@@ -688,8 +688,16 @@ Configurations
 }
 ```
 
-#####API: *assign*
+#####API: *create*
 
+<pre>
+View create()
+</pre>
+> Returns an instance of View object
+
+##### View class
+
+> **assign**
 <pre>
 void assign(String name, mixed value)
 </pre>
@@ -704,15 +712,13 @@ gracenode.view.assign('foo', 'hello world');
 hello world
 </pre>
 
-#####API: *get*
-
+> **get**
 <pre>
 mixed get(String name)
 </pre>
 > Get assigned value
 
-#####API: *load*
-
+> **load**
 <pre>
 void load(String vilewFilePath, Function callback)
 </pre>

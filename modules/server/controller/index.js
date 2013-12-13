@@ -75,11 +75,6 @@ function extractQueries(req, cb) {
 
 function handle(req, res, parsedUrl, queryData) {
 	
-	// listener for the end of server response
-	req.on('end', function () {
-		
-	});
-	
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller;
 
 	try {
@@ -185,7 +180,7 @@ function handleError(req, res, status) {
 }
 
 function createFinalCallback(req, res) {
-	return function (error, content, contentType, statusCode) {
+	return function (error, content, contentType, statusCode, contentModtime) {
 		if (error) {
 			
 			log.error(error);
@@ -195,17 +190,29 @@ function createFinalCallback(req, res) {
 				return;
 			}
 
-			return response.respond(req, res, error, 'JSON', statusCode);
+			return response.respond(req, res, error, 'JSON', statusCode, contentModtime);
 		}
 
 		// final response to the request
-		response.respond(req, res, content, contentType, statusCode);
+		response.respond(req, res, content, contentType, statusCode, contentModtime);
 	};
 }
 
 function createRequestObj(req, res, queryData) {
 	var reqObj = {};
-	
+
+	// properties
+	reqObj._props = {};
+	reqObj.set = function (name, value) {
+		this._props[name] = value;
+	};
+	reqObj.get = function (name) {
+		if (this._props[name]) {
+			return gracenode.lib.cloneObj(this._props[name]);
+		}
+		return null;
+	};
+
 	// pass post and get
 	reqObj.postData = queryDataHandler.createGetter(queryData.post || {});
 	reqObj.getData = queryDataHandler.createGetter(queryData.get || {});

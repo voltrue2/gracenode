@@ -25,6 +25,10 @@ Headers.prototype.get = function (name) {
 	return this._headers[name] || null;
 };
 
+Headers.prototype.getAll = function () {
+	return gracenode.lib.cloneObj(this._headers);
+};
+
 Headers.prototype.getOs = function () {
 	return this._os;	
 };

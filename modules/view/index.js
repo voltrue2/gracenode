@@ -20,7 +20,6 @@ var parserSource = require('./parser');
 */
 
 var viewList = {};
-var clientData = {};
 var config = null;
 
 module.exports.readConfig = function (configIn) {
@@ -61,23 +60,31 @@ module.exports.setup = function (cb) {
 	cb();
 };
 
-module.exports.assign = function (name, value) {
-	clientData[name] = value;
+module.exports.create = function () {
+	return new View();
 };
 
-module.exports.get = function (name) {
-	if (clientData[name]) {
-		return gracenode.lib.cloneObj(clientData[name]);
+function View() {
+	this._data = {};
+}
+
+View.prototype.assign = function (name, value) {
+	this._data[name] = value;
+};
+
+View.prototype.get = function (name) {
+	if (this._data[name]) {
+		return gracenode.lib.cloneObj(this._data[name]);
 	}
 	return null;
 };
 
-module.exports.load = function (viewFilePath, cb) {
+View.prototype.load = function (viewFilePath, cb) {
 	var seen = [];
-	load(viewFilePath, seen, cb);
+	load(viewFilePath, seen, this._data, cb);
 };
 
-function load (viewFilePath, seen, cb) {
+function load (viewFilePath, seen, clientData, cb) {
 	// validate callback
 	if (typeof cb !== 'function') {
 		log.error('function load is missing callback');
@@ -98,7 +105,7 @@ function load (viewFilePath, seen, cb) {
 			return cb(error);
 		}
 		async.eachSeries(list, function (item, nextCallback) {
-				readFile(item.file, item.stat, parser, seen, function (error, data) {
+				readFile(item.file, item.stat, parser, seen, clientData, function (error, data) {
 					if (error) {
 						return cb(error);
 					}
@@ -115,7 +122,7 @@ function load (viewFilePath, seen, cb) {
 	});	
 }
 
-function readFile(path, stat, parser, seen, cb) {
+function readFile(path, stat, parser, seen, clientData, cb) {
 	// content data
 	var content = null;
 	// get file modtime in unix timestamp
@@ -137,7 +144,7 @@ function readFile(path, stat, parser, seen, cb) {
 		// cache found > use it
 		log.verbose('view output data found in cache: ', key);
 		// handle included files
-		return parseContent(content, parser, seen, function (error, contentData) {
+		return parseContent(content, parser, seen, clientData, function (error, contentData) {
 			if (error) {
 				return cb(error);
 			}	
@@ -157,7 +164,7 @@ function readFile(path, stat, parser, seen, cb) {
 		viewList[key] = content;
 		log.verbose('view output data stored in cache: ', key);
 		// handle included files
-		parseContent(content, parser, seen, function (error, contentData) {
+		parseContent(content, parser, seen, clientData, function (error, contentData) {
 			if (error) {
 				return cb(error);
 			}	
@@ -166,7 +173,7 @@ function readFile(path, stat, parser, seen, cb) {
 	});
 }
 
-function embedData(outputData) {
+function embedData(outputData, clientData) {
 	// prepare for embedding all the variables in the view template
 	var clientVars = '<script type="text/javascript">window.gracenode = ' + JSON.stringify(clientData) + ';</script>';
 	
@@ -177,8 +184,8 @@ function embedData(outputData) {
 	return outputData.replace('</head>', clientVars + '\n</head>', 'i');
 }
 
-function parseContent(outputData, parser, seen, cb) {
-	outputData = embedData(outputData);
+function parseContent(outputData, parser, seen, clientData, cb) {
+	outputData = embedData(outputData, clientData);
 	var result = parser.parseData(outputData);
 	var list = result.includeList;
 	outputData = result.data;
@@ -188,7 +195,7 @@ function parseContent(outputData, parser, seen, cb) {
 		var tag = item.tag;
 		var path = item.path;
 	
-		load(path, seen, function (error, data) {
+		load(path, seen, clientData, function (error, data) {
 			if (error) {
 				return cb(error);
 			}

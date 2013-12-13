@@ -27,9 +27,21 @@ var dynamicContentHeaders = {
 	'Vary': 'Accept-Encoding'
 };
 
-module.exports.respond = function (req, res, content, contentType, status) {
+module.exports.respond = function (req, res, content, contentType, status, contentModtime) {
 
 	log.verbose('response content type:', contentType);
+
+	/* FIXME: it does not work properly at the moment probably missing some required headers
+	contentModtime = handleContentModtime(res, contentModtime);
+
+	notModified = checkNotModified(req, res, contentModtime);
+
+	if (notModified) {
+		respondNotModified(req, res);
+		res.emit('end');
+		return;
+	}
+	*/
 
 	switch (contentType) {
 		case contentTypes.JSON:
@@ -56,6 +68,32 @@ module.exports.respond = function (req, res, content, contentType, status) {
 	res.emit('end');	
 };
 
+// if content has not been modified, respond with 304
+function checkNotModified(req, res, contentModtime) {
+	var ifMod = req.headers['if-modified-since'] || null;
+	if (ifMod) {
+		var lastMod = new Date(contentModtime).getTime();
+		var clientMod = new Date(ifMod).getTime();
+		if (lastMod <= clientMod) {
+			log.verbose('content has not been modified [' + req.url + ']: 304');
+			return true;
+		}
+	}
+	return false;	
+}
+
+function handleContentModtime(res, contentModtime) {
+	if (contentModtime) {
+		contentModtime = new Date(contentModtime);
+		contentModtime = contentModtime.toGMTString();
+	
+		log.verbose('content GMT modtime:', contentModtime);
+		
+		res.setHeader('Last-Modified', contentModtime);
+	}
+	return contentModtime;
+}
+
 function compressContent(content, cb) {
 	zlib.gzip(content, function (error, compressedData) {
 		if (error) {
@@ -66,6 +104,12 @@ function compressContent(content, cb) {
 
 		cb(null, compressedData);
 	});
+}
+
+function respondNotModified(req, res) {
+	res.statusCode = 304;
+	responseLog(req, 304);
+	res.end();
 }
 
 function respondJSON(req, res, content, status) {
@@ -180,6 +224,40 @@ function responseLog(req, status) {
 }
 
 function getFileType(type) {
+	switch (type) {
+		case 'png':
+		case 'gif':
+		case 'jpg':
+		case 'jpeg':
+			return 'image/' + type;
+		case 'mp3':
+			return 'audio/mpeg';
+		case 'wav':
+			return 'audio/wav';
+		case 'ogg':
+			return 'application/ogg';
+		case 'oga':
+		case 'ogv':
+			return 'audio/ogg';
+		case 'midi':
+			return 'audio/midi';
+		case 'pdf':
+			return 'application/pdf';
+		case 'mpeg4':
+		case 'mpeg2':
+			return 'video/mpeg';
+		case 'css':
+			return 'text/css';
+		case 'js':
+			return 'text/javascript';
+		case 'html':
+			return 'text/html';
+		case 'xml':
+			return 'text/xml';
+		default:
+			return 'text/plain';	
+	}
+	/*
 	if (imageFiles.indexOf(type) !== -1) {
 		// image file
 		return 'image/' + type;
@@ -187,4 +265,5 @@ function getFileType(type) {
 	// other file types
 	// TODO: implement...
 	return null;
+	*/
 }
