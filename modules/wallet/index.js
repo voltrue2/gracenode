@@ -74,15 +74,19 @@ Wallet.prototype.getBalanceByUserId = function (userId, cb) {
 	});
 };
 
-Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, cb) {
-	this.add(receiptHashId, userId, price, value, 'paid', cb);
+Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, onCallback, cb) {
+	this.add(receiptHashId, userId, price, value, 'paid', onCallback, cb);
 };
 
-Wallet.prototype.addFree = function (receiptHashId, userId, price, value, cb) {
-	this.add(receiptHashId, userId, price, value, 'free', cb);
+Wallet.prototype.addFree = function (receiptHashId, userId, price, value, onCallback, cb) {
+	this.add(receiptHashId, userId, price, value, 'free', onCallback, cb);
 };
 
 Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
+
+	if (typeof valueToSpend !== 'number' || valueToSpend <= 0) {
+		return cb(new Error('invalid value to spend given:' + valueToSpend + ':' + (typeof valueToSpend)));
+	}
 	
 	var that = this;
 	
@@ -93,7 +97,7 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
 				return callback(error);
 			}
 
-			log.info('tring to spend ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
+			log.info('trying to spend ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
 			
 			// check if the user has enough value to spend
 			if (balance < valueToSpend) {
@@ -136,7 +140,11 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
 };
 
 // used in privately ONLY
-Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType, cb) {
+Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType, onCallback, cb) {
+	
+	if (typeof value !== 'number' || value <= 0) {
+		return cb(new Error('invalid value to add given:' + value + ':' + (typeof value)));
+	}
 	
 	var name = this._name;
 
@@ -161,6 +169,16 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 			}
 
 			log.info('added to wallet:', value + ' ' + valueType + 'receiptHashId ' + receiptHashId + ' user ' + userId);
+
+			if (typeof onCallback === 'function') {
+				return onCallback(function (error) {
+					if (error) {
+						log.error(error);
+						return callback(error);
+					}
+					callback(null, res);
+				});
+			}
 
 			callback(null, res);
 
