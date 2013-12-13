@@ -1306,6 +1306,7 @@ void addPaid(String uniqueReceiptHash, String uniqueUserId, Int price, Int value
 </pre>
 > Adds the value to a wallet as "paid"
 >> "paid" represents that the user has paid real money
+
 >> If onCallback is given: the function will be called BEFORE committing the "add" transaction, if an error occuries in onCallback, the transaction can be rolled back
 
 > **addFree**
@@ -1314,7 +1315,57 @@ void addFree(String uniqueReceiptHash, String uniqueUserId, Int price, Int value
 </pre>
 > Adds the value to a wallet as "free"
 >> "free" represents that the user has been given the value as free gift
+
 >> If onCallback is given: the function will be called BEFORE committing the "add" transaction, if an error occuries in onCallback, the transaction can be rolled back
+
+Example:
+```javascript
+// example code with iap module
+gracenode.iap.validateApplePurchase(receipt, function (error, response) {
+	if (error) {
+		// handle error here
+	}
+	
+	// check the validated state
+	if (response.validateState === 'validated') {
+		// Apple has validated the purchase
+
+		gracenode.wallet.addPaid(receipt, userId, itemPrice, itemValue, 
+			
+			// this callback will be called BEFORE the commit of "addPaid"
+			function (continueCallback) {
+				
+				// update iap status to mark the receipt as "handled"
+				gracenode.iap.updateStatus(receipt, 'handled', function (error) {
+					if (error) {
+						// error on updating the status to "handled"
+						return continueCallback(error); // this will make "addPaid" to auto-rollback
+					}
+
+					// iap receipt status updated to "handled" now commit
+					continueCallback();			
+
+				})
+			
+			},
+			
+			// this callback is to finalize "addPaid" transaction
+			function (error) {
+				if (error) {
+					// error on finalizing the transaction
+				}
+
+				// we are done!
+			}	
+	
+		);
+		
+	}
+
+});
+
+
+```
 
 > **spend**
 <pre>
