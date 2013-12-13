@@ -82,7 +82,7 @@ Wallet.prototype.addFree = function (receiptHashId, userId, price, value, onCall
 	this.add(receiptHashId, userId, price, value, 'free', onCallback, cb);
 };
 
-Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
+Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, cb) {
 
 	if (typeof valueToSpend !== 'number' || valueToSpend <= 0) {
 		return cb(new Error('invalid value to spend given:' + valueToSpend + ':' + (typeof valueToSpend)));
@@ -120,6 +120,19 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
 				if (!res || res.affectedRows !== 1) {
 					return callback('spend failed');
 				}
+				
+				if (typeof onCallback === 'function') {
+					return onCallback(function (error) {
+						if (error) {
+							log.error(error);
+							return callback(error);
+						}
+						
+						log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
+						
+						callback(null, res);
+					});
+				}
 
 				log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
 
@@ -139,7 +152,7 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
 
 };
 
-// used in privately ONLY
+// used privately ONLY
 Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType, onCallback, cb) {
 	
 	if (typeof value !== 'number' || value <= 0) {
@@ -168,17 +181,20 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 				return callback('add failed');
 			}
 
-			log.info('added to wallet:', value + ' ' + valueType + 'receiptHashId ' + receiptHashId + ' user ' + userId);
-
 			if (typeof onCallback === 'function') {
 				return onCallback(function (error) {
 					if (error) {
 						log.error(error);
 						return callback(error);
 					}
+					
+					log.info('added to wallet:', value + ' ' + valueType + 'receiptHashId: ' + receiptHashId + ' user: ' + userId);
+					
 					callback(null, res);
 				});
 			}
+
+			log.info('added to wallet:', value + ' ' + valueType + 'receiptHashId: ' + receiptHashId + ' user: ' + userId);
 
 			callback(null, res);
 

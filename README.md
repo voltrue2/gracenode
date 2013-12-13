@@ -1335,8 +1335,9 @@ gracenode.iap.validateApplePurchase(receipt, function (error, response) {
 	// check the validated state
 	if (response.validateState === 'validated') {
 		// Apple has validated the purchase
-
-		gracenode.wallet.addPaid(receipt, userId, itemPrice, itemValue, 
+		
+		var hc = gracenode.wallet.create('hc');
+		hc.addPaid(receipt, userId, itemPrice, itemValue, 
 			
 			// this callback will be called BEFORE the commit of "addPaid"
 			function (continueCallback) {
@@ -1375,7 +1376,46 @@ gracenode.iap.validateApplePurchase(receipt, function (error, response) {
 
 > **spend**
 <pre>
-void spend(String uniqueUserId, Int value, String spendFor, Function callback)
+void spend(String uniqueUserId, Int value, String spendFor, Function onCallback, Function callback)
 </pre>
 > Spends value from a wallet if allowed
 >> spendFor should represent what the user has spend the value for
+
+>> If onCallback is given: the function will be called BEFORE committing the "spend" transaction, if an error occuries in onCallback, the transaction can be rolled back
+
+Example:
+```javascript
+// example of how to use wallet.spend
+var itemToBePurchased = 'test.item.1000';
+var cost = 1000; // this is the amount that will be taken out of wallet 'hc'
+var hc = gracenode.wallet.create('hc');
+hc.spend(userId, cost, itemIdToBePurchase,
+	
+	// this callback will be called BEFORE the commit of "spend"
+	function (continueCallback) {
+
+		// give the user what the user is spending value for
+		user.giveItemByUserId(userId, itemToBePurchased, function (error) {
+			if (error) {
+				// failed to give the user the item
+				return continueCallback(error); // rollback
+			}
+			
+			// succuessfully gave the user the item
+			continueCallback();
+
+		});	
+	},
+
+	// this callback is to finalize "spend" transaction
+	function (error) {
+		if (error) {
+			// error on finalizing the transaction
+		}
+
+		// we are done!
+	}
+
+);
+
+```
