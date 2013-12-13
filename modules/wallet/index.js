@@ -42,7 +42,7 @@ function Wallet(name) {
 
 Wallet.prototype.getBalanceByUserId = function (userId, cb) {
 	var that = this;
-	var balanceSql = 'SELECT SUM(value) AS amount FROM wallet_balance WHERE userId = ? AND name = ?';
+	var balanceSql = 'SELECT SUM(value) AS amount FROM wallet_in WHERE userId = ? AND name = ?';
 	reader.searchOne(balanceSql, [userId, this._name], function (error, balance) {
 		if (error) {
 			return cb(error);
@@ -52,7 +52,7 @@ Wallet.prototype.getBalanceByUserId = function (userId, cb) {
 		
 		log.verbose('balance amount w/o spent amount: ' + balanceAmount + ' (user: ' + userId + ')');
 		
-		var spentSql = 'SELECT SUM(value) AS amount FROM wallet_spent WHERE userId = ? AND name = ?';
+		var spentSql = 'SELECT SUM(value) AS amount FROM wallet_out WHERE userId = ? AND name = ?';
 		reader.searchOne(spentSql, [userId, that._name], function (error, spent) {
 			if (error) {
 				return cb(error);
@@ -104,7 +104,7 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, cb) {
 				return callback(new Error('not enough balance'));
 			}
 
-			var sql = 'INSERT INTO wallet_spent (userId, name, value, spentFor, created) VALUES(?, ?, ?, ?, ?)';
+			var sql = 'INSERT INTO wallet_out (userId, name, value, spentFor, created) VALUES(?, ?, ?, ?, ?)';
 			var params = [
 				userId,
 				that._name,
@@ -149,7 +149,7 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 	var name = this._name;
 
 	writer.transaction(function (callback) {
-		var sql = 'INSERT INTO wallet_balance (receiptHashId, userId, name, price, value, valueType, created) VALUES(?, ?, ?, ?, ?, ?, ?)';
+		var sql = 'INSERT INTO wallet_in (receiptHashId, userId, name, price, value, valueType, created) VALUES(?, ?, ?, ?, ?, ?, ?)';
 		var params = [
 			receiptHashId,
 			userId,

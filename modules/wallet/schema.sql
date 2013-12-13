@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS wallet_balance;
+DROP TABLE IF EXISTS wallet_in;
 
-DROP TABLE IF EXISTS wallet_spent;
+DROP TABLE IF EXISTS wallet_out;
 
-CREATE TABLE wallet_balance (
+CREATE TABLE wallet_in (
     receiptHashId VARCHAR(64) NOT NULL,
     userId VARCHAR(100) NOT NULL,
     name VARCHAR(20) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE wallet_balance (
     PRIMARY KEY(receiptHashId)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE wallet_spent (
+CREATE TABLE wallet_out (
 	userId VARCHAR(100) NOT NULL,
     name VARCHAR(20) NOT NULL,
 	value INT(7) NOT NULL,
