@@ -28,6 +28,7 @@ var http = require('./http');
 var https = require('./https');
 var router = require('./router');
 var controller = require('./controller');
+var responser = require('./response');
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -118,6 +119,10 @@ function setupRequestHandler() {
 
 	// router request listener
 	router.on('handled', function (request, response, parsedUrl) {
+		
+		// set up response module to listen for exception handler and response
+		responser.standby(request, response);
+
 		controller.exec(request, response, parsedUrl);
 	});
 }

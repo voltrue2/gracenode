@@ -286,7 +286,7 @@ function setupListeners(that) {
 	process.on('uncaughtException', function (error) {
 		log.fatal('GraceNode detected an uncaught exception');
 		log.fatal(error);
-		that.emit('uncaughtException');
+		that.emit('uncaughtException', error);
 	});
 
 	process.on('exit', function (error) {

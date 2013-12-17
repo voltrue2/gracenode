@@ -27,6 +27,29 @@ var dynamicContentHeaders = {
 	'Vary': 'Accept-Encoding'
 };
 
+// set up exception catcher and handle if an exception is caught
+module.exports.standby = function (req, res) {
+
+	var errorCallback = function (error) {
+		
+		log.error('exception caught:', error);
+
+		module.exports.respond(req, res, '500', contentTypes.ERROR, 500);
+	};
+
+	// if the server responded w/o an exception > remove the error listener
+	res.once('end', function () {
+		
+		log.verbose('server responded');
+
+		gracenode.removeListener('uncaughtException', errorCallback);
+	});
+
+	// listener for an exception
+	gracenode.once('uncaughtException', errorCallback);
+
+};
+
 module.exports.respond = function (req, res, content, contentType, status, contentModtime) {
 
 	log.verbose('response content type:', contentType);
