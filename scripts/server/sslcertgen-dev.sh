@@ -1,8 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 path=$1;
 
 echo "Generate SSL certificates for development";
+
+if [ "$path" == "" ]; then
+	path="../";
+fi
 
 echo "pem files will be created in $path";
 
