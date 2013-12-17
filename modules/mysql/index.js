@@ -1,4 +1,5 @@
 
+// FIXME: refactor this code.... very ugly
 /***
  * configurations
  *
@@ -64,9 +65,8 @@ module.exports.setup = function (cb) {
 			var conf = configs[name];
 			var pool = pooledConnections[name] || null;
 			if (pool) {
-				pool.end(function () {
-					log.info('connection pool closed:', name, conf);
-				});
+				log.info('closing connection:', name, conf);
+				pool.end(connectionClosed);
 			}
 		}
 	});
@@ -417,4 +417,8 @@ function validateQuery(sql, type) {
 		}
 	}
 	return true;
+}
+
+function connectionClosed() {
+	log.info('connection pool closed');
 }
