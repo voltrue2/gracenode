@@ -84,3 +84,5 @@ else
 fi
 
 echo "Done";
+
+exit 0;
