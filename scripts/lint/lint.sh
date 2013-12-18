@@ -26,7 +26,7 @@ echo "Root path: $path";
 #################
 # lint index.js
 #################
-echo "checking "$path"index.js";
+echo "linting "$path"index.js";
 
 failed=`jshint "$path"index.js`;
 
@@ -41,7 +41,7 @@ fi
 #############
 # lint core/
 #############
-echo "checking "$path"core/";
+echo "linting "$path"core/";
 
 failed=`jshint "$path"core/`;
 
@@ -56,7 +56,7 @@ fi
 ##################
 # lint modules/
 ##################
-echo "Checking "$path"modules/";
+echo "liniting "$path"modules/";
 
 failed=`jshint "$path"modules/`;
 
@@ -71,7 +71,7 @@ fi
 #################
 # lint lib/
 #################
-echo "checking "$path"lib/";
+echo "linting "$path"lib/";
 
 failed=`jshint "$path"lib/`;
 
