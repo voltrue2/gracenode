@@ -17,6 +17,7 @@ else
 	path="./";
 fi 
 
+# start linting
 echo "Execute jshint...";
 
 echo "Current working directory: $cwd";
