@@ -1,4 +1,9 @@
 pre-commit:
+
+	echo install dependencies
+
+	npm install	
+
 	echo Create git pre-commit hook
 	
 	ln -s ../../scripts/lint/lint.sh .git/hooks/pre-commit
