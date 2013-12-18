@@ -1,0 +1,44 @@
+#!/bin/bash
+
+name="scripts/lint";
+cwd=`pwd`;
+# function to find string index
+indexOf() {
+	pos="${1%%$2*}";
+	[[ $pos = $1 ]] && echo - 1 || echo ${#pos};
+}
+index=`indexOf "$cwd" "$name"`;
+path=`expr substr $cwd 1 $index`;
+
+echo "Execute jshint...";
+
+echo "Current working directory: $cwd";
+
+echo "$index";
+echo "$path";
+
+echo "Checking core...";
+
+failed=`jshint ../../core/`;
+
+if [ "$failed" ]; then
+	echo "*** [ERROR] lint error(s) in core directory";
+	echo $failed;
+	exit 1;
+else
+	echo "Passed OK";
+fi
+
+echo "Checking modules...";
+
+failed=`jshint ../../modules/`;
+
+if [ "$failed" ]; then
+	echo "*** [ERROR] lint error(s) in core directory";
+	echo $failed;
+	exit 1;
+else
+	echo "Passed OK";
+fi
+
+echo "Done";
