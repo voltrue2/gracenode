@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 nomatch="-1";
 name="GraceNode";
