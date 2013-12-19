@@ -173,7 +173,7 @@ Data.prototype.set = function (propName, value) {
 		if (this._props[propName].size) {
 			var pass = evaluateSize(this._props[propName].size, value);
 			if (!pass) {
-				log.error('set "' + propName + '" failed with invalid value size: allowed betwee ' + JSON.stringify(this._props[propName].size) + ' > given: ' + value);
+				log.error('set "' + propName + '" failed with invalid value size: allowed between ' + JSON.stringify(this._props[propName].size) + ' > given: ' + value);
 				this.emit('error.set', propName, value);
 				return false;
 			}	

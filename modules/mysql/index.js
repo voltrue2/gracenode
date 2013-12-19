@@ -281,7 +281,7 @@ MySql.prototype.roGet = function (sql, params, mustExist, cb) {
 			that.end(function () {
 				var eDate = new Date();
 				var end = eDate.getTime();
-				log.verbose(sql, ' took [' + (end - start) + ' ms]');
+				log.verbose(sql, ' took (ready only) [' + (end - start) + ' ms]');
 				cb(error, res);
 			});
 		});
@@ -316,7 +316,7 @@ MySql.prototype.rwGet = function (sql, params, mustExist, cb) {
 		
 		var eDate = new Date();
 		var end = eDate.getTime();
-		log.verbose(sql, ' took [' + (end - start) + ' ms]');
+		log.verbose(sql, ' took (read & write) [' + (end - start) + ' ms]');
 		
 		cb(error, res);
 	});
@@ -390,7 +390,7 @@ MySql.prototype.connect = function (cb) {
 		cb(null);
 	};
 
-	log.info('obtaining connection to pool (' + this._name + ')...');
+	//log.info('obtaining connection from pool (' + this._name + ')...');
 
 	this._resource.getConnection(callback);
 };

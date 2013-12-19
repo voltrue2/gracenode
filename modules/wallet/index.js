@@ -41,19 +41,7 @@ function Wallet(name) {
 }
 
 Wallet.prototype.getBalanceByUserId = function (userId, cb) {
-	var that = this;
-	var sql = 'SELECT value FROM wallet_balance WHERE userId = ? AND name = ?';
-	var params = [userId, this._name];
-	reader.searchOne(sql, params, function (error, res) {
-		if (error) {
-			return cb(error);
-		}
-		var balance = 0;
-		if (res && res.value) {
-			balance = res.value;
-		}
-		cb(null, balance);
-	});
+	getBalanceByUserId(this, reader, userId, cb);
 };
 
 Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, onCallback, cb) {
@@ -74,7 +62,7 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 
 	writer.transaction(function (callback) {
 		
-		that.getBalanceByUserId(userId, function (error, balance) {
+		getBalanceByUserId(that, writer, userId, function (error, balance) {
 			if (error) {
 				return callback(error);
 			}
@@ -83,7 +71,7 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 			
 			// check if the user has enough value to spend
 			if (balance < valueToSpend) {
-				return callback(new Error('not enough balance'));
+				return callback('not enough balance: user(' + userId + ')');
 			}
 
 			var newBalance = balance - valueToSpend;
@@ -183,7 +171,60 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 
 };
 
+function getBalanceByUserId(that, db, userId, cb) {
+	/*
+	var sql = 'SELECT value FROM wallet_balance WHERE userId = ? AND name = ?';
+	var params = [userId, that._name];
+	db.searchOne(sql, params, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		var balance = 0;
+		if (res && res.value) {
+			balance = res.value;
+		}
+		cb(null, balance);
+	});
+	*/
+	var inSql = 'SELECT SUM(value) AS balance FROM wallet_in WHERE userId = ? AND name = ?';
+	db.searchOne(inSql, [userId, that._name], function (error, walletIn) {
+		if (error) {
+			return cb(error);
+		}
+		
+		var balanceIn = 0;
+		if (walletIn && walletIn.balance) {
+			balanceIn = walletIn.balance;
+		}
+
+		var outSql = 'SELECT SUM(value) AS balance FROM wallet_out WHERE userId = ? AND name = ?';
+		db.searchOne(outSql, [userId, that._name], function (error, walletOut) {
+			if (error) {
+				return cb(error);
+			}
+
+			var balanceOut = 0;
+			if (walletOut && walletOut.balance) {
+				balanceOut = walletOut.balance;
+			}
+
+			// calculate the current balance
+			var balance = balanceIn - balanceOut;
+			if (balance < 0) {
+				log.error('user\'s balance must not be lower than 0: (user: ' + userId + ') > ' + balance);
+			}		
+
+			cb(null, balance);
+
+		});
+
+	});
+}
+
 function updateBalance(userId, name, balance, cb) {
+	if (balance < 0) {
+		return cb(new Error('updateBalance >> balance cannot be lower than 0: user('  + userId + ') > ' + balance));
+	}
 	var sql = 'INSERT INTO wallet_balance (userId, name, value, created, modtime) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = ?, modtime = ?';
 	var now = Date.now();
 	var params = [
