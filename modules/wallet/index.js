@@ -42,35 +42,17 @@ function Wallet(name) {
 
 Wallet.prototype.getBalanceByUserId = function (userId, cb) {
 	var that = this;
-	var balanceSql = 'SELECT SUM(value) AS amount FROM wallet_in WHERE userId = ? AND name = ?';
-	reader.searchOne(balanceSql, [userId, this._name], function (error, balance) {
+	var sql = 'SELECT value FROM wallet_balance WHERE userId = ? AND name = ?';
+	var params = [userId, this._name];
+	reader.searchOne(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
-
-		var balanceAmount = balance.amount || 0;
-		
-		log.verbose('balance amount w/o spent amount: ' + balanceAmount + ' (user: ' + userId + ')');
-		
-		var spentSql = 'SELECT SUM(value) AS amount FROM wallet_out WHERE userId = ? AND name = ?';
-		reader.searchOne(spentSql, [userId, that._name], function (error, spent) {
-			if (error) {
-				return cb(error);
-			}
-			
-			var spentAmount = spent.amount || 0;
-
-			log.verbose('spent amount: ' + spentAmount + ' (user: ' + userId + ')');
-	
-			var currentBalance = balanceAmount - spentAmount;
-
-			if (currentBalance < 0) {
-				log.error('current balance should never be smaller than 0 (userId: ' + userId + ')');
-			}	
-	
-			cb(null, currentBalance);
-
-		});
+		var balance = 0;
+		if (res && res.value) {
+			balance = res.value;
+		}
+		cb(null, balance);
 	});
 };
 
@@ -89,9 +71,9 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 	}
 	
 	var that = this;
-	
-	writer.transaction(function (callback) {
 
+	writer.transaction(function (callback) {
+		
 		that.getBalanceByUserId(userId, function (error, balance) {
 			if (error) {
 				return callback(error);
@@ -104,46 +86,43 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 				return callback(new Error('not enough balance'));
 			}
 
-			var sql = 'INSERT INTO wallet_out (userId, name, value, spentFor, created) VALUES(?, ?, ?, ?, ?)';
-			var params = [
-				userId,
-				that._name,
-				valueToSpend,
-				spendFor,
-				Date.now()
-			];
-			writer.write(sql, params, function (error, res) {
+			var newBalance = balance - valueToSpend;
+
+			updateBalance(userId, that._name, newBalance, function (error) {
 				if (error) {
 					return callback(error);
 				}
-		
-				if (!res || res.affectedRows !== 1) {
-					return callback('spend failed');
-				}
 				
-				if (typeof onCallback === 'function') {
-					return onCallback(function (error) {
-						if (error) {
-							log.error(error);
-							return callback(error);
-						}
-						
-						log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
-						
-						callback(null, res);
-					});
-				}
+				updateBalanceHistoryOut(userId, that._name, valueToSpend, spendFor, function (error) {
+					if (error) {
+						return callback(error);
+					}
+					
+					if (typeof onCallback === 'function') {
+						return onCallback(function (error) {
+							if (error) {
+								log.error(error);
+								return callback(error);
+							}
+							
+							log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
+							
+							callback(null);
+						});
+					}
 
-				log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
+					log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
 
-				callback(null, res);
+					callback();
 
+				});
+		
 			});
 
 		});
 
-	},
-	function (error, res) {
+	}, 
+	function (error) {
 		if (error) {
 			return cb(error);
 		}
@@ -162,43 +141,38 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 	var name = this._name;
 
 	writer.transaction(function (callback) {
-		var sql = 'INSERT INTO wallet_in (receiptHashId, userId, name, price, value, valueType, created) VALUES(?, ?, ?, ?, ?, ?, ?)';
-		var params = [
-			receiptHashId,
-			userId,
-			name,
-			price,
-			value,
-			'paid',
-			Date.now()
-		];
-		writer.write(sql, params, function (error, res) {
+
+		addBalance(userId, name, value, function (error) {
 			if (error) {
 				return callback(error);
 			}
-			
-			if (!res || res.affectedRows !== 1) {
-				return callback('add failed');
-			}
+		
+			updateBalanceHistoryIn(receiptHashId, userId, name, price, value, valueType, function (error) {
+				if (error) {
+					return callback(error);
+				}
+				
+				if (typeof onCallback === 'function') {
+					return onCallback(function (error) {
+						if (error) {
+							log.error(error);
+							return callback(error);
+						}
+						
+						log.info('balance added as [' + valueType + '] added amount to [' + name + ']:', value, '(user: ' + userId + ')');					
+	
+						callback(null, res);
+					});
+				}
+						
+				log.info('balance added as [' + valueType + '] added amount to [' + name + ']:', value, '(user: ' + userId + ')');					
+				
+				callback();
 
-			if (typeof onCallback === 'function') {
-				return onCallback(function (error) {
-					if (error) {
-						log.error(error);
-						return callback(error);
-					}
-					
-					log.info('added to wallet:', value + ' ' + valueType + 'receiptHashId: ' + receiptHashId + ' user: ' + userId);
-					
-					callback(null, res);
-				});
-			}
+			});
 
-			log.info('added to wallet:', value + ' ' + valueType + 'receiptHashId: ' + receiptHashId + ' user: ' + userId);
+		});		
 
-			callback(null, res);
-
-		});
 	},
 	function (error, res) {
 		if (error) {
@@ -208,3 +182,102 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 	});
 
 };
+
+function updateBalance(userId, name, balance, cb) {
+	var sql = 'INSERT INTO wallet_balance (userId, name, value, created, modtime) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = ?, modtime = ?';
+	var now = Date.now();
+	var params = [
+		// insert with
+		userId,
+		name,
+		balance,
+		now,
+		now,
+		// update with
+		balance,
+		now
+	];
+	writer.write(sql, params, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+	
+		if (!res || !res.affectedRows) {
+			return cb(new Error('updateBalance failed'));
+		}
+		
+		cb();
+	});
+}
+
+function addBalance(userId, name, balance, cb) {
+	var sql = 'INSERT INTO wallet_balance (userId, name, value, created, modtime) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = value + ?, modtime = ?';
+	var now = Date.now();
+	var params = [
+		// insert with
+		userId,
+		name,
+		balance,
+		now,
+		now,
+		// update with
+		balance,
+		now
+	];
+	writer.write(sql, params, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		
+		if (!res || !res.affectedRows) {
+			return cb(new Error('addBalance failed'));
+		}
+		
+		cb();
+	});
+}
+function updateBalanceHistoryIn(receiptHashId, userId, name, price, value, valueType, cb) {
+	var sql = 'INSERT INTO wallet_in (receiptHashId, userId, name, price, value, valueType, created) VALUES(?, ?, ?, ?, ?, ?, ?)';
+	var params = [
+		receiptHashId,
+		userId,
+		name,
+		price,
+		value,
+		valueType,
+		Date.now()
+	];
+	writer.write(sql, params, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		
+		if (!res || !res.affectedRows) {
+			return cb(new Error('updateBalanceHistoryIn failed'));
+		}
+		
+		cb();
+	});
+}
+
+function updateBalanceHistoryOut(userId, name, valueToSpend, spendFor, cb) {
+	var sql = 'INSERT INTO wallet_out (userId, name, value, spentFor, created) VALUES(?, ?, ?, ?, ?)';
+	var params = [
+		userId,
+		name,
+		valueToSpend,
+		spendFor,
+		Date.now()
+	];
+	writer.write(sql, params, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		
+		if (!res || !res.affectedRows) {
+			return cb(new Error('updateBalanceHistoryOut failed'));
+		}
+
+		cb();
+	});
+}
