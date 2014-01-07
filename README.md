@@ -1317,7 +1317,7 @@ void addPaid(String uniqueReceiptHash, String uniqueUserId, Int price, Int value
 
 > **addFree**
 <pre>
-void addFree(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function onCallback<optional>, Function callback)
+void addFree(String uniqueReceiptHash, String uniqueUserId, Int value, Function onCallback<optional>, Function callback)
 </pre>
 > Adds the value to a wallet as "free"
 >> "free" represents that the user has been given the value as free gift

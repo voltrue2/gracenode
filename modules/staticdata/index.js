@@ -149,21 +149,20 @@ function toJSON(data) {
 }
 
 function getValue(value) {
-	if (!value) {
-		return value;
-	}
 	if (!isNaN(value)) {
 		return Number(value);
-	} else if (value.toLowerCase() === 'true') {
-		return true;
-	} else if (value.toLowerCase() === 'false') {
-		return false;
-	} else if (value.toLowerCase() === 'null') {
-		return null;
-	} else if (value.toLowerCase() === 'undefined') {
-		return undefined;
-	} else {
-		return value;
+	}
+	switch (value.toLowerCase()) {
+		case 'true':
+			return true;
+		case 'false':
+			return false;
+		case 'null':
+			return null;
+		case 'undefined':
+			return undefined;
+		default:
+			return value;
 	}
 }
 
