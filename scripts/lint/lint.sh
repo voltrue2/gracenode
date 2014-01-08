@@ -76,7 +76,7 @@ else
 	list=($defaultDirList);
 fi
 
-echoYellow "dorectories/files to lint:";
+echoYellow "directories/files to lint:";
 for item in "${list[@]}"; do
 	echoBlue "${item}";
 done
