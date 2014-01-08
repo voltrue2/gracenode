@@ -4,6 +4,9 @@ nomatch="-1";
 name="GraceNode";
 cwd=`pwd`;
 
+# optional comma separated list of directories to lint
+dirList=$1;
+
 indexOf() {
 	pos="${1%%$2*}";
 	[[ $pos = $1 ]] && echo -1 || echo ${#pos};
@@ -25,6 +28,29 @@ echoRed() {
 	echo -en '\E[31m'"\033[1m$1\033[0m\n\r";
 }
 
+lint() {
+	targetPath="$path$1";
+
+	if [ -d "$targetPath" ] || [ -f "$targetPath" ]; then
+
+		echo "linting $targetPath";
+
+		failed=`jshint "$targetPath"`;
+		if [ "$failed" ]; then
+			echoRed "*** [error] lint error(s) in $1";
+			echoRed "$failed";
+			exit 1;
+		else
+			echoGreen "Passed [OK]";
+		fi
+		
+	else
+		echoRed "*** [error] $targetPath";
+		echoRed "No such file or directory ($targetPath)";
+		exit 1;		
+	fi
+}
+
 # find root path
 index=`indexOf "$cwd" "$name"`;
 if [ "$index" -ne -1 ]; then
@@ -40,65 +66,31 @@ echoBlue "Current working directory: $cwd";
 
 echoBlue "Root path: $path";
 
+### lint default directories
+
 #################
 # lint index.js
 #################
-echo "linting "$path"index.js";
 
-failed=`jshint "$path"index.js`;
-
-if [ "$failed" ]; then
-	echoRed "*** [error] lint error(s) in core directory";
-	echoRed $failed;
-	exit 1;
-else
-	echoGreen "Passed [OK]";
-fi
+lint "index.js";
 
 #############
 # lint core/
 #############
-echo "linting "$path"core/";
 
-failed=`jshint "$path"core/`;
-
-if [ "$failed" ]; then
-	echoRed "*** [error] lint error(s) in core directory";
-	echoRed $failed;
-	exit 1;
-else
-	echoGreen "Passed [OK]";
-fi
+lint "core/";
 
 ##################
 # lint modules/
 ##################
-echo "liniting "$path"modules/";
 
-failed=`jshint "$path"modules/`;
-
-if [ "$failed" ]; then
-	echoRed "*** [ERROR] lint error(s) in core directory";
-	echoRed $failed;
-	exit 1;
-else
-	echoGreen "Passed [OK]";
-fi
+lint "modules/";
 
 #################
 # lint lib/
 #################
-echo "linting "$path"lib/";
 
-failed=`jshint "$path"lib/`;
-
-if [ "$failed" ]; then
-	echoRed "*** [error] lint error(s) in core directory";
-	echoRed $failed;
-	exit 1;
-else
-	echoGreen "Passed OK";
-fi
+lint "lib/";
 
 echoYellow "Done";
 
