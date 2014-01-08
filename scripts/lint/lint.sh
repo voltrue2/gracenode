@@ -9,6 +9,22 @@ indexOf() {
 	[[ $pos = $1 ]] && echo -1 || echo ${#pos};
 }
 
+echoGreen() {
+	echo -en '\E[32m'"\033[1m$1\033[0m\n\r";
+}
+
+echoYellow() {
+	echo -en '\E[33m'"\033[1m$1\033[0m\n\r";
+}
+
+echoBlue() {
+	echo -en '\E[34m'"\033[1m$1\033[0m\n\r";
+}
+
+echoRed() {
+	echo -en '\E[31m'"\033[1m$1\033[0m\n\r";
+}
+
 # find root path
 index=`indexOf "$cwd" "$name"`;
 if [ "$index" -ne -1 ]; then
@@ -18,11 +34,11 @@ else
 fi 
 
 # start linting
-echo "Execute jshint...";
+echoYellow "Executing jshint...";
 
-echo "Current working directory: $cwd";
+echoBlue "Current working directory: $cwd";
 
-echo "Root path: $path";
+echoBlue "Root path: $path";
 
 #################
 # lint index.js
@@ -32,11 +48,11 @@ echo "linting "$path"index.js";
 failed=`jshint "$path"index.js`;
 
 if [ "$failed" ]; then
-	echo "*** [error] lint error(s) in core directory";
-	echo $failed;
+	echoRed "*** [error] lint error(s) in core directory";
+	echoRed $failed;
 	exit 1;
 else
-	echo "Passed OK";
+	echoGreen "Passed [OK]";
 fi
 
 #############
@@ -47,11 +63,11 @@ echo "linting "$path"core/";
 failed=`jshint "$path"core/`;
 
 if [ "$failed" ]; then
-	echo "*** [error] lint error(s) in core directory";
-	echo $failed;
+	echoRed "*** [error] lint error(s) in core directory";
+	echoRed $failed;
 	exit 1;
 else
-	echo "Passed OK";
+	echoGreen "Passed [OK]";
 fi
 
 ##################
@@ -62,11 +78,11 @@ echo "liniting "$path"modules/";
 failed=`jshint "$path"modules/`;
 
 if [ "$failed" ]; then
-	echo "*** [ERROR] lint error(s) in core directory";
-	echo $failed;
+	echoRed "*** [ERROR] lint error(s) in core directory";
+	echoRed $failed;
 	exit 1;
 else
-	echo "Passed OK";
+	echoGreen "Passed [OK]";
 fi
 
 #################
@@ -77,13 +93,13 @@ echo "linting "$path"lib/";
 failed=`jshint "$path"lib/`;
 
 if [ "$failed" ]; then
-	echo "*** [error] lint error(s) in core directory";
-	echo $failed;
+	echoRed "*** [error] lint error(s) in core directory";
+	echoRed $failed;
 	exit 1;
 else
-	echo "Passed OK";
+	echoGreen "Passed OK";
 fi
 
-echo "Done";
+echoYellow "Done";
 
 exit 0;
