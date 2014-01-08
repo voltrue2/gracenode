@@ -1,17 +1,23 @@
 #!/bin/sh
 
+###################
+# variables
+###################
+
 nomatch="-1";
 name="GraceNode";
 cwd=`pwd`;
-
 # list directories/files to lint
 list=();
-
 defaultDirList="index.js core/ modules/ lib/";
-
 # optional space separated list of directories/files to lint
 # Example: ./lint.sh "mydir/ myFile" > this will lint all files in mydir/ and lint myFile
 dirList=$1;
+
+
+##################
+# functions
+##################
 
 indexOf() {
 	pos="${1%%$2*}";
@@ -56,6 +62,11 @@ lint() {
 		exit 1;		
 	fi
 }
+
+
+##########################
+# procedural codes
+##########################
 
 # find root path
 index=`indexOf "$cwd" "$name"`;
