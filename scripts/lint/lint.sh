@@ -4,7 +4,13 @@ nomatch="-1";
 name="GraceNode";
 cwd=`pwd`;
 
-# optional comma separated list of directories to lint
+# list directories/files to lint
+list=();
+
+defaultDirList="index.js core/ modules/ lib/";
+
+# optional space separated list of directories/files to lint
+# Example: ./lint.sh "mydir/ myFile" > this will lint all files in mydir/ and lint myFile
 dirList=$1;
 
 indexOf() {
@@ -59,38 +65,29 @@ else
 	path="./";
 fi 
 
-# start linting
-echoYellow "Executing jshint...";
-
 echoBlue "Current working directory: $cwd";
 
 echoBlue "Root path: $path";
 
-### lint default directories
+# find directories/files to lint
+if [ "$dirList" ]; then
+	list=($dirList);
+else
+	list=($defaultDirList);
+fi
 
-#################
-# lint index.js
-#################
+echoYellow "dorectories/files to lint:";
+for item in "${list[@]}"; do
+	echoBlue "${item}";
+done
 
-lint "index.js";
+# start linting
+echoYellow "Executing jshint...";
 
-#############
-# lint core/
-#############
-
-lint "core/";
-
-##################
-# lint modules/
-##################
-
-lint "modules/";
-
-#################
-# lint lib/
-#################
-
-lint "lib/";
+# lint
+for item in "${list[@]}"; do
+	lint "${item}";
+done
 
 echoYellow "Done";
 
