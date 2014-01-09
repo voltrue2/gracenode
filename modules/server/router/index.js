@@ -16,9 +16,12 @@ module.exports.handle = function (req, res) {
 	var parsedUrl = parseUrl(req.url);
 	
 	// check rerouting
-	if (config.rerouting) {
+	if (config.reroute) {
 		// overwrite it with reroute if found
-		parsedUrl = handleReroute(config.reroute, parsedUrl);
+		var rerouted = handleReroute(config.reroute, parsedUrl);
+		if (rerouted) {
+			parsedUrl = rerouted;
+		}
 	}
 	
 	// check for ignored request
@@ -62,10 +65,13 @@ function handleReroute(reroute, parsedUrl) {
 	for (var i = 0, len = reroute.length; i < len; i++) {
 		if (reroute[i].from === from) {
 			var rerouteTo = reroute[i].to;
+			// reroute
 			log.verbose('rerouting: from "' + from + '" to "' + rerouteTo + '"');
 			return parseUrl(rerouteTo);
 		}
 	}
+	// no rerouting
+	return null;
 }
 
 function handleIgnoredRequest(ignored, parsedUrl) {
