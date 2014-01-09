@@ -3,6 +3,9 @@ var sys = require('sys');
 var fs = require('fs');
 var async = require('async');
 
+var logger = require('../modules/log');
+var sysLog = null;
+
 var args = process.argv;
 var filePath = args[1];
 var path = filePath.replace('setup.js', '');
@@ -62,6 +65,15 @@ function extractModules(config, callback) {
 		error('no modules found');
 		process.exit(1);
 	}
+	
+	// set up logger
+	try {
+		logger.readConfig(modules.log || null);
+		sysLog = logger.create('setup');
+	} catch (e) {
+		error(e);
+	}
+	
 	for (var name in modules) {
 		log('module [' + name + '] found');
 	}
@@ -127,12 +139,12 @@ function execScripts(scripts, cb) {
 }
 
 function execScript(script, cb) {
-	log('executing: ' + script.path);
+	log('ready to execute: ' + script.path);
 	switch (script.type) {
 		case 'sh':
-			return execBash(script,cb);
+			return execBash(script, cb);
 		case 'sql':
-			return execSql(script,cb);
+			return execSql(script, cb);
 		case 'js':
 			return execJs(script, cb);
 		default:
@@ -143,29 +155,8 @@ function execScript(script, cb) {
 }
 
 function execBash(script, cb) {
-	
 	// prompt for execution first
-	var readline = require('readline');
-	var rl = readline.createInterface(process.stdin, process.stdout);	
-	rl.setPrompt('\nBASH > Execute ' + script.path + '? [y/n]\n');
-	rl.prompt();
-
-	var question = rl.on('line', function (line) {
-		this.removeAllListeners('line');
-		switch (line.trim()) {
-			case 'y':
-				exec();
-				break;
-			case 'n':
-				log('skipped: ' + script.path);
-				cb();
-				break;
-			default:
-				log('skipped: ' + script.path);
-				cb();
-				break;
-		}
-	});
+	handlePrompt(script, exec, cb);
 
 	function exec() {
 		var spawn = require('child_process').spawn;
@@ -188,27 +179,7 @@ function execBash(script, cb) {
 
 function execSql(script, cb) {
 	// prompt for execution first
-	var readline = require('readline');
-	var rl = readline.createInterface(process.stdin, process.stdout);	
-	rl.setPrompt('\nSQL > Execute ' + script.path + '? [y/n]\n');
-	rl.prompt();
-
-	var question = rl.on('line', function (line) {
-		this.removeAllListeners('line');
-		switch (line.trim()) {
-			case 'y':
-				exec();
-				break;
-			case 'n':
-				log('skipped: ' + script.path);
-				cb();
-				break;
-			default:
-				log('skipped: ' + script.path);
-				cb();
-				break;
-		}
-	});
+	handlePrompt(script, exec, cb);
 
 	function exec() {
 		var mysqlConfig = configData.modules.mysql;
@@ -248,10 +219,40 @@ function execJs(script, cb) {
 	cb();
 }
 
+function handlePrompt(script, exec, cb) {
+	var readline = require('readline');
+	var rl = readline.createInterface(process.stdin, process.stdout);	
+	rl.setPrompt('\nExecute ' + script.path + '? [y/n]\n');
+	rl.prompt();
+
+	var question = rl.on('line', function (line) {
+		this.removeAllListeners('line');
+		switch (line.trim()) {
+			case 'y':
+				exec();
+				break;
+			case 'n':
+				log('skipped: ' + script.path);
+				cb();
+				break;
+			default:
+				log('skipped: ' + script.path);
+				cb();
+				break;
+		}
+	});
+}
+
 function log(msg) {
-	console.log('<log> ' + msg);
+	if (!sysLog) {
+		return console.log('<log>', msg);
+	}
+	sysLog.info('<log> ', msg);
 }
 
 function error(msg) {
-	console.error('<error> ' + msg);
+	if (!sysLog) {
+		return console.error('<error>', msg);
+	}
+	sysLog.error('<error> ' + msg);
 }
