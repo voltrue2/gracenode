@@ -307,6 +307,19 @@ StaticData.prototype.getAll = function (cb) {
 	});
 };
 
+StaticData.prototype.getAllByIndexName = function (indexName, cb) {
+	var that = this;
+	this.validateCachedData(function (error) {
+		if (error) {
+			return cb(error);
+		}
+		if (that._indexMap[indexName]) {
+			return cb(null, getObjValue(that._indexMap[indexName]));
+		}
+		cb(null, null);
+	});
+};
+
 StaticData.prototype.validateCachedData = function (cb) {
 	var that = this;
 	validateCachedData(this._name, function (error, updatedData) {
