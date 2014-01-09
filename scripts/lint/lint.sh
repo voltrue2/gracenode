@@ -8,7 +8,7 @@ name="GraceNode";
 cwd=`pwd`;
 # list directories/files to lint
 list=();
-defaultDirList="index.js core/ modules/ lib/";
+defaultDirList="index.js core/ modules/";
 # optional space separated list of directories/files to lint
 # Example: ./lint.sh "mydir/ myFile" > this will lint all files in mydir/ and lint myFile
 dirList=$1;

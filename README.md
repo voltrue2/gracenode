@@ -444,6 +444,10 @@ mixed getMany(Array keyList, Function callback)
 <pre>
 mixed getAll(Function calback)
 </pre>
+**getAllByIndexName**
+<pre>
+mixed getAllByIndexName(String indexName)
+</pre>
 
 ***
 #### <span id="request-module">request module</span>
