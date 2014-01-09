@@ -4,7 +4,6 @@
 # variables
 ###################
 
-nomatch="-1";
 name="GraceNode";
 cwd=`pwd`;
 # list directories/files to lint
@@ -88,6 +87,7 @@ else
 fi
 
 echoYellow "directories/files to lint:";
+
 for item in "${list[@]}"; do
 	echoBlue "${item}";
 done
