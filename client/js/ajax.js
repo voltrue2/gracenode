@@ -40,21 +40,20 @@
 				ajaxEvents.emit('response', req);
 				var error = null;
 				var response = null;
-				if (req.status >= 200 && req.status <= 299 || req.status == 304) {
-					try {
-						response = JSON.parse(req.responseText);
-					} catch (Exception) {
-						error = {
-							status: req.status,
-							path: path,
-							response: response
-						};
-						console.error('ajax, JSON.parse: ', Exception.toString());
-						console.trace();
-						ee.emit('response.error', error);
-						ajaxEvents.emit('response.error', error);
-					}
-				} else {
+				try {
+					response = JSON.parse(req.responseText);
+				} catch (Exception) {
+					error = {
+						status: req.status,
+						path: path,
+						response: response
+					};
+					console.error('ajax, JSON.parse: ', Exception.toString());
+					console.trace();
+					ee.emit('response.error', error);
+					ajaxEvents.emit('response.error', error);
+				}
+				if (req.status >= 400) {
 					error = {
 						status: req.status,
 						path: path,
