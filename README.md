@@ -673,6 +673,15 @@ module.exports.index = function (requestObject, one, two, cb) {
 };
 ```
 
+> How to redirect to another URL
+```javascript
+// controller
+// request URI /foo/index/
+module.exports.index = function (requestObject, cb) {
+	cb(null, '/anotherPage/', 'REDIRECT');
+};
+```
+
 ***
 #### <span id="view-module">view module</span>
 ***

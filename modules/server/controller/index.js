@@ -85,7 +85,7 @@ function handle(req, res, parsedUrl, queryData) {
 			log.verbose('controller "' + parsedUrl.controller + '" loaded');
 
 			// create arguments for the controller method
-			var reqArray = [createRequestObj(req, res, queryData)];
+			var reqArray = [new RequestObj(req, res, queryData)];
 			parsedUrl.args = reqArray.concat(parsedUrl.args);
 						
 			// validate controller method
@@ -198,52 +198,46 @@ function createFinalCallback(req, res) {
 	};
 }
 
-function createRequestObj(req, res, queryData) {
-	var reqObj = {};
-
-	// properties
-	reqObj._props = {};
-	reqObj.set = function (name, value) {
-		this._props[name] = value;
-	};
-	reqObj.get = function (name) {
-		if (this._props[name]) {
-			return gracenode.lib.cloneObj(this._props[name]);
-		}
-		return null;
-	};
-
-	// pass post and get
-	reqObj.postData = queryDataHandler.createGetter(queryData.post || {});
-	reqObj.getData = queryDataHandler.createGetter(queryData.get || {});
+function RequestObj(request, response, reqData) {
+	this._props = {};
+	this._response = response;
+	this._cookies = parseCookie(request.headers);
 	
-	// pass request headers
-	reqObj.requestHeaders = headers.create(req.headers);
-	
-	// give setHeader() to controller
-	reqObj.setHeader = function (name, value) {
-			res.setHeader(name, value);
-	};
-	
-	// give setCookie to controller
-	reqObj.setCookie = function (obj) {
-			var cookie = '';
-			for (var name in obj) {
-					cookie += name + '=' + obj[name] + '; ';
-			}
-			reqObj.setHeader('Set-Cookie', cookie);
-	};
-	
-	// parse cookie
-	var cookies = parseCookie(req.headers);
-	
-	// give get Cookie to controller
-	reqObj.getCookie = function (name) {
-			return cookies[name] || null;
-	};
-	
-	return reqObj;	
+	// public
+	this.postData = queryDataHandler.createGetter(reqData.post || {});
+	this.getData = queryDataHandler.createGetter(reqData.get || {});
+	this.requestHeaders = headers.create(request.headers);
 }
+
+RequestObj.prototype.set = function (name, value) {
+	this._props[name] = value;
+};
+
+RequestObj.prototype.get = function (name) {
+	if (this._props[name] === undefined) {
+		return null;
+	}
+	return gracenode.lib.cloneObj(this._props[name]);
+};
+
+RequestObj.prototype.setHeader = function (name, value) {
+	this._response.setHeader(name, value);
+};
+
+RequestObj.prototype.setCookie = function (obj) {
+	var cookie = '';
+	for (var name in obj) {
+		cookie += name + '=' + obj[name] + '; ';
+	}
+	this.setHeader('Set-Cookie', cookie);
+};
+
+RequestObj.prototype.getCookie = function (name) {
+	if (this._cookies[name] === undefined) {
+		return null;
+	}
+	return gracenode.lib.cloneObj(this._cookies[name]);
+};
 
 function parseCookie(headers) {
 	var cookieStr = headers.cookie || '';

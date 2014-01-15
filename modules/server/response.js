@@ -8,6 +8,7 @@ var contentTypes = {
 	JSON: 'JSON',
 	HTML: 'HTML',
 	FILE: 'FILE',
+	REDIRECT: 'REDIRECT',
 	ERROR: 'ERROR'
 };
 
@@ -78,6 +79,9 @@ module.exports.respond = function (req, res, content, contentType, status, conte
 			break;
 		case contentTypes.ERROR:
 			respondERROR(req, res, content, status);
+			break;
+		case contentTypes.REDIRECT:
+			respondRedirect(req, res, content, status);
 			break;
 		default:
 			// TODO: consider better way to handle this...
@@ -188,6 +192,20 @@ function respondHTML(req, res, content, status) {
 		res.end(data, 'binary');		
 
 	});
+}
+
+function respondRedirect(req, res, content, status) {
+	status = status || 301;
+	// content needs to be redirect URL
+	res.writeHead(status, {
+		Location: content
+	});
+	
+	log.verbose('redirect to: ', content);
+
+	responseLog(req, status);
+
+	res.end();
 }
 
 function respondFILE(req, res, content, status) {

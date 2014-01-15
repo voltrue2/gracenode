@@ -227,18 +227,16 @@ function setupModules(that, cb) {
 			
 			that._profiler.mark('module [' + name + '] start loading');
 
-			log.verbose('look for module [' + name + '] in ' + path);		
-	
+			var appModulePath = that.getRootPath() + (mod.path || 'modules/' + name);
+			log.verbose('> look for module [' + name + '] in ' + appModulePath);
 			try {
-				// try GraceNode first
-				module = require(path);
+				// try application first
+				module = require(appModulePath);
 			} catch (exception) {
-				// now try application
-				path = that.getRootPath() + (mod.path || 'modules/');
+				log.info('module [' + name + '] not found: ' + appModulePath);
 
-				log.verbose('module [' + name + ']: ' + exception);
+				// now look for it in GraceNode
 				log.verbose('> look for module [' + name + '] in ' + path);
-
 				try {
 					module = require(path);
 				} catch (exception2) {
