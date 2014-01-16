@@ -6,6 +6,9 @@ var crypto = require('crypto');
 
 var config = null;
 
+// timestamp taken at the start of GraceNode > this will make all session invalid on every restart
+var sessionVersion = 0;
+
 /*
 * session: {
 *	hosts: [],
@@ -18,6 +21,11 @@ module.exports.readConfig = function (configIn) {
 		throw new Error('missing configurations: \n' + JSON.stringify(configIn));
 	}
 	config = configIn;
+};
+
+module.exports.setup = function (cb) {
+	sessionVersion = Date.now() + ':';
+	cb();
 };
 
 module.exports.getSession = function (sessionId, cb) {
@@ -82,7 +90,7 @@ module.exports.delSession = function (sessionId, cb) {
 };
 
 function getKey(sessionId) {
-	return 'sess/' + sessionId;	
+	return 'sess/' + sessionId + sessionVersion;	
 }
 
 function createSessionId(unique) {
