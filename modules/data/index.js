@@ -5,8 +5,22 @@ var EventEmitter = require('events').EventEmitter;
 var gracenode = require('../../');
 var log = gracenode.log.create('data');
 
-// used for Obj class
-var propTypes = ['number', 'string', 'object', 'Obj', 'boolean', 'TimeNumber'];
+// constant
+module.exports.NUMBER = 'number';
+module.exports.STRING = 'string';
+module.exports.OBJECT = 'object';
+module.exports.BOOLEAN = 'boolean';
+module.exports.TIMEDNUMBER = 'timedNumber';
+
+// used in Data class
+var propTypes = [
+	module.exports.NUMBER,
+	module.exports.STRING,
+	module.exports.OBJECT,
+	module.exports.BOOLEAN,
+	module.exports.TIMEDNUMBER
+];
+
 
 /*******************************************************
 what is it?:
@@ -16,8 +30,8 @@ data module lets you define and enforce data object schema
 module.exports.TimedNumber = TimedNumber;
 
 // create a new Data object
-module.exports.create = function () {
-	return new Data();
+module.exports.create = function (properties) {
+	return new Data(properties);
 };
 
 /*************************
@@ -69,6 +83,7 @@ TimedNumber.prototype.getUpdateStep = function () {
 	return this._props.updateStep;
 };
 
+// get properties to be stored
 TimedNumber.prototype.getProperties = function () {
 	return gracenode.lib.cloneObj(this._props);
 };
@@ -86,7 +101,9 @@ TimedNumber.prototype.setProperties = function (props) {
 	}
 	this._props = props;
 	// set the last updated time in milliseconds
-	this._props.lastUpdated = Date.now();
+	if (!this._props.lastUpdated) {
+		this._props.lastUpdated = Date.now();
+	}
 	this.emit('setProperties', gracenode.lib.cloneObj(this._props));
 };
 
@@ -113,7 +130,7 @@ schema: {
 Data.prototype.define = function (schema) {
 	// very basic sanity check
 	if (this._props) {
-		this.emmit('error.define');
+		this.emit('error.define');
 		log.error('properties already defined');
 		return false;
 	}
@@ -133,7 +150,7 @@ Data.prototype.define = function (schema) {
 			}
 		}
 		if (prop.default !== undefined) {
-			if (typeof prop.default !== prop.type) {
+			if (prop.type !== module.exports.TIMEDNUMBER && typeof prop.default !== prop.type) {
 				this.emit('error.define', propName, prop);
 				log.error('default data type does not match the property type: expected "' + (prop.type) + '", but given "' + (typeof prop.default) + '"');
 				return false;
@@ -147,20 +164,35 @@ Data.prototype.define = function (schema) {
 Data.prototype.get = function (propName) {
 	if (this._props[propName] !== undefined) {
 		var prop = this._props[propName];
-		switch (typeof prop) {
-			case 'number':
+		var propType = prop.type;
+		switch (propType) {
+			case module.exports.NUMBER:
 				return this._getValueOf(prop, 0);
-			case 'string':
+			case module.exports.STRING:
 				return this._getValueOf(prop, '');
-			case 'boolean':
+			case module.exports.BOOLEAN:
 				return this._getValueOf(prop, false);
-			case 'object':
+			case module.exports.OBJECT:
 				return this._getValueOf(prop, null);
+			case module.exports.TIMEDNUMBER:
+				var val = this._getValueOf(prop, null);
+				if (val) {
+					return new TimedNumber(val);
+				}
+				return null;
 			default:
 				return null;
 		}
 	}
 	return null;
+};
+
+Data.prototype.getAll = function () {
+	var res = {};
+	for (var name in this._props) {
+		res[name] = this.get(name);
+	}
+	return res;
 };
 
 // get the raw property objects to be stored somewhere such as database
@@ -169,6 +201,14 @@ Data.prototype.getProperties = function () {
 };
 
 Data.prototype.set = function (propName, value) {
+	// timed number object is an exception
+	if (this._props[propName] !== undefined && this._props[propName].type === module.exports.TIMEDNUMBER) {
+		value = value.getProperties();
+		this._props[propName].value = value;
+		this.emit('set', propName, value);
+		return true;
+	}
+
 	if (this._props[propName] !== undefined && typeof value === this._props[propName].type) {
 		if (this._props[propName].size) {
 			var pass = evaluateSize(this._props[propName].size, value);
