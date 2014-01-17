@@ -245,12 +245,12 @@ MySql.prototype.rollBack = function (cb) {
 
 MySql.prototype.get = function (sql, params, mustExist, cb) {
 	if (this._type === 'ro') {
-		return this.roGet(sql, params, mustExist, cb);
+		return this.readOnlyGet(sql, params, mustExist, cb);
 	}
-	this.rwGet(sql, params, mustExist, cb);
+	this.readAndWriteGet(sql, params, mustExist, cb);
 };
 
-MySql.prototype.roGet = function (sql, params, mustExist, cb) {
+MySql.prototype.readOnlyGet = function (sql, params, mustExist, cb) {
 	var sDate = new Date();
 	var start = sDate.getTime();
 	
@@ -288,7 +288,7 @@ MySql.prototype.roGet = function (sql, params, mustExist, cb) {
 	});
 };
 
-MySql.prototype.rwGet = function (sql, params, mustExist, cb) {
+MySql.prototype.readAndWriteGet = function (sql, params, mustExist, cb) {
 	var sDate = new Date();
 	var start = sDate.getTime();
 	
