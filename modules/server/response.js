@@ -18,8 +18,9 @@ module.exports.standby = function (req, res) {
 	var errorCallback = function (error) {
 		
 		log.error('exception caught:', error);
-
-		module.exports.respond(req, res, '500', contentTypes.ERROR, 500);
+		
+		var response = new Response(req, res);
+		response.error('500', 500);
 	};
 
 	// if the server responded w/o an exception > remove the error listener
@@ -178,6 +179,9 @@ function respondFILE(req, res, content, status) {
 
 function respondERROR(req, res, content, status) {
 	content = content || null;
+	if (typeof content === 'object') {
+		content = JSON.stringify(content);
+	}
 	status = status || 404;
 	compressContent(content, function (error, data) {
 		
