@@ -155,7 +155,7 @@ gracenode.on('shutdown')
 }
 ```
 
-## GraceNode Built-in Modules
+## <span id="module-list">GraceNode Built-in Modules</span>
 > GraceNode has some built-in modules.
 
 #### Automatically loaded by GraceNode on setup
@@ -182,7 +182,7 @@ gracenode.on('shutdown')
 ### Built-in Modules
 
 ***
-#### <span id="config-module">config module</a>
+#### <span id="config-module">config module</span><a href="#module-list">Back to the list of built-in modules</a>
 *** 
 
 Access
