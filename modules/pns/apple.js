@@ -2,13 +2,13 @@
 var gracenode = require('../..');
 var log = gracenode.log.create('pns-apple');
 
-var tls = require('tls');
+//var tls = require('tls');
 var fs = require('fs');
-var crypto = require('crypto');
+//var crypto = require('crypto');
 var async = require('async');
 
 var urlDef = { 'sandbox': 'ssl://gateway.sandbox.push.apple.com', 'live': 'ssl://gateway.push.apple.com' };
-var port = 2195;
+//var port = 2195;
 var config = null;
 var certPath = null;
 var url = null;

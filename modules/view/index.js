@@ -47,7 +47,7 @@ module.exports.setup = function (cb) {
 						}
 						var fileType = path.substring(path.lastIndexOf('.') + 1);
 						// process file to optimize the output
-						content = processFile(fileType, file);
+						var content = processFile(fileType, file);
 						// store in memory cache
 						viewList[key] = content;
 						log.verbose('view output data stored in cache: ', key);
@@ -84,7 +84,7 @@ View.prototype.load = function (viewFilePath, cb) {
 	load(viewFilePath, seen, this._data, cb);
 };
 
-function load (viewFilePath, seen, clientData, cb) {
+function load(viewFilePath, seen, clientData, cb) {
 	// validate callback
 	if (typeof cb !== 'function') {
 		log.error('function load is missing callback');
@@ -105,13 +105,13 @@ function load (viewFilePath, seen, clientData, cb) {
 			return cb(error);
 		}
 		async.eachSeries(list, function (item, nextCallback) {
-				readFile(item.file, item.stat, parser, seen, clientData, function (error, data) {
-					if (error) {
-						return cb(error);
-					}
-					outputData += data;
-					nextCallback();
-				});
+			readFile(item.file, item.stat, parser, seen, clientData, function (error, data) {
+				if (error) {
+					return cb(error);
+				}
+				outputData += data;
+				nextCallback();
+			});
 		},
 		function (error) {
 			if (error) {

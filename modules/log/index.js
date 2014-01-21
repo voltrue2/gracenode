@@ -28,7 +28,6 @@ module.exports.readConfig = function (configIn) {
 		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
 	}
 	config = configIn;
-	rooPath = require('../../').getRootPath();
 	return true;
 };
 
@@ -141,7 +140,7 @@ function print(name, msg) {
 	}
 }
 
-function color(name, msgItem, space) {
+function color(name, msgItem) {
 	var res = '';
 	if (typeof msgItem === 'object') {
 		if (msgItem instanceof Error) {

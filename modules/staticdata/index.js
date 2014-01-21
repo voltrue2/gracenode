@@ -280,7 +280,7 @@ StaticData.prototype.getOne = function (index, cb) {
 	});
 };
 
-StaticData.prototype.getMany = function (indexList) {
+StaticData.prototype.getMany = function (indexList, cb) {
 	var res = {};
 	var that = this;
 	async.eachSeries(indexList, function (index, nextCallback) {

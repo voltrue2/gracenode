@@ -1,5 +1,4 @@
 
-var async = require('async');
 var fs = require('fs');
 var util = require('util');
 var https = require('https');
@@ -20,31 +19,9 @@ module.exports.readConfig = function (configIn) {
 
 module.exports.setup = function (cb) {
 	var list = [config.pemKey, config.pemCert];
-	var index = 0;
 
 	log.verbose('setting up ssl server:', list);
 
-	/*
-	async.eachSeries(list, function (path, callback) {
-		
-		log.verbose('pem file loading:', path);
-
-		fs.readFile(path, 'utf8', function (error, data) {
-			if (error) {
-				return cb(error);
-			}
-			if (index === 0) {
-				options.key = data;
-			} else {
-				options.cert = data;
-			}
-	
-			log.verbose('pem file loaded:', path);
-
-			callback();
-		});
-	}, cb);
-	*/
 	log.verbose('loading key pem file:', config.pemKey);
 	fs.readFile(config.pemKey, 'utf8', function (error, keyData) {
 		if (error) {

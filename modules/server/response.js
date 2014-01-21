@@ -12,22 +12,6 @@ var contentTypes = {
 	ERROR: 'ERROR'
 };
 
-var imageFiles = [
-	'gif',
-	'png',
-	'jpg',
-	'jpeg'
-];
-
-var dynamicContentHeaders = {
-	'Cache-Control': 'no-cache, must-revalidate',
-    'Connection': 'Keep-Alive',
-	'Content-Encoding': 'gzip',
-	'Content-Type': 'text/plain;charset=UTF-8',
-	'Pragma': 'no-cache',
-	'Vary': 'Accept-Encoding'
-};
-
 // set up exception catcher and handle if an exception is caught
 module.exports.standby = function (req, res) {
 
@@ -51,21 +35,9 @@ module.exports.standby = function (req, res) {
 
 };
 
-module.exports.respond = function (req, res, content, contentType, status, contentModtime) {
+module.exports.respond = function (req, res, content, contentType, status) {
 
 	log.verbose('response content type:', contentType);
-
-	/* FIXME: it does not work properly at the moment probably missing some required headers
-	contentModtime = handleContentModtime(res, contentModtime);
-
-	notModified = checkNotModified(req, res, contentModtime);
-
-	if (notModified) {
-		respondNotModified(req, res);
-		res.emit('end');
-		return;
-	}
-	*/
 
 	switch (contentType) {
 		case contentTypes.JSON:
@@ -95,32 +67,6 @@ module.exports.respond = function (req, res, content, contentType, status, conte
 	res.emit('end');	
 };
 
-// if content has not been modified, respond with 304
-function checkNotModified(req, res, contentModtime) {
-	var ifMod = req.headers['if-modified-since'] || null;
-	if (ifMod) {
-		var lastMod = new Date(contentModtime).getTime();
-		var clientMod = new Date(ifMod).getTime();
-		if (lastMod <= clientMod) {
-			log.verbose('content has not been modified [' + req.url + ']: 304');
-			return true;
-		}
-	}
-	return false;	
-}
-
-function handleContentModtime(res, contentModtime) {
-	if (contentModtime) {
-		contentModtime = new Date(contentModtime);
-		contentModtime = contentModtime.toGMTString();
-	
-		log.verbose('content GMT modtime:', contentModtime);
-		
-		res.setHeader('Last-Modified', contentModtime);
-	}
-	return contentModtime;
-}
-
 function compressContent(content, cb) {
 	zlib.gzip(content, function (error, compressedData) {
 		if (error) {
@@ -131,12 +77,6 @@ function compressContent(content, cb) {
 
 		cb(null, compressedData);
 	});
-}
-
-function respondNotModified(req, res) {
-	res.statusCode = 304;
-	responseLog(req, 304);
-	res.end();
 }
 
 function respondJSON(req, res, content, status) {
@@ -298,13 +238,4 @@ function getFileType(type) {
 		default:
 			return 'text/plain';	
 	}
-	/*
-	if (imageFiles.indexOf(type) !== -1) {
-		// image file
-		return 'image/' + type;
-	}
-	// other file types
-	// TODO: implement...
-	return null;
-	*/
 }

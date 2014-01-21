@@ -66,32 +66,32 @@ module.exports.cloneObj = function (obj) {
 *
 **/
 module.exports.validateInput = function (input, minLen, maxLen, params) {
-    var allowHTML = params && params.allowHTML || false;
-    var allowSpace = params && params.allowSpace || false;
-    var pattern = params && params.pattern && validationPatterns[params.pattern] || null;
-    var len = input.length;
+	var allowHTML = params && params.allowHTML || false;
+	var allowSpace = params && params.allowSpace || false;
+	var pattern = params && params.pattern && validationPatterns[params.pattern] || null;
+	var len = input.length;
 
-    // length check
-    if (len < minLen || len > maxLen) {
-        return false;
-    }
+	// length check
+	if (len < minLen || len > maxLen) {
+		return false;
+	}
 
-    // HTML check
-    if (!allowHTML && input.match(/(<([^>]+)>)/ig)) {
-        return false;
-    }
+	// HTML check
+	if (!allowHTML && input.match(/(<([^>]+)>)/ig)) {
+		return false;
+	}
 
-    // space check
-    if (!allowSpace && input.match(' ')) {
-            return false;
-    }
+	// space check
+	if (!allowSpace && input.match(' ')) {
+		return false;
+	}
 
-    // pattern check
-    if (pattern && !input.match(pattern)) {
-        return false;
-    }
+	// pattern check
+	if (pattern && !input.match(pattern)) {
+		return false;
+	}
 
-    return true;
+	return true;
 };
 
 module.exports.walkDir = function (path, cb) {
@@ -111,7 +111,7 @@ module.exports.walkDir = function (path, cb) {
 			}
 			var pending = list.length;
 			if (!pending) {
-					return cb(null, res);
+				return cb(null, res);
 			}
 			list.forEach(function (file) {
 				var slash = path.substring(path.length - 1) !== '/' ? '/' : '';
@@ -162,7 +162,7 @@ module.exports.walkDirEach = function (path, eachCallback, cb) {
 			}
 			var pending = list.length;
 			if (!pending) {
-					return cb(null, res);
+				return cb(null, res);
 			}
 			list.forEach(function (file) {
 				var slash = path.substring(path.length - 1) !== '/' ? '/' : '';

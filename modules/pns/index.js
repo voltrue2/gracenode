@@ -4,11 +4,9 @@ var log = gracenode.log.create('pns');
 var apple = require('./apple');
 var google = require('./google');
 
-var fs = require('fs');
-
 var config = null;
 var mode = null; // "sandbox" or "live"
-var service = null;
+//var service = null;
 
 /*
 {

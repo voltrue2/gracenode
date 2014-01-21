@@ -7,7 +7,6 @@
 
 var gracenode = require('../../');
 var log = gracenode.log.create('iap-apple');
-var async = require('async');
 
 var errorMap = {
 	21000: 'The App Store could not read the JSON object you provided.',
@@ -20,10 +19,11 @@ var errorMap = {
 	21008: 'This receipt is a production receipt, but it was sent to the sandbox service for verification.'
 };
 
-var sandboxMode = false; // sandbox or live
 var sandboxHost = 'sandbox.itunes.apple.com';
 var liveHost = 'buy.itunes.apple.com';
 var path = '/verifyReceipt';
+
+var config = null;
 
 var host = null;
 
@@ -34,7 +34,7 @@ module.exports.readConfig = function (configIn) {
 	} else {
 		host = liveHost;
 	}
-	log.verbose('mode: [' + (config.sandbox ? 'sandbox' : 'live' ) + ']');
+	log.verbose('mode: [' + (config.sandbox ? 'sandbox' : 'live') + ']');
 	log.verbose('request URL: https://' + host + path);
 };
 
@@ -48,7 +48,7 @@ module.exports.validatePurchase = function (receipt, cb) {
 		method: 'POST',
 		data: content
 	};
-	options = {
+	var options = {
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded'
 		}

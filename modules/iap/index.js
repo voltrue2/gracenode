@@ -9,8 +9,6 @@ var google = require('./google.js');
 
 var config = null;
 
-var mysql = {};
-
 // constants
 var VALIDATED = 'validated';
 var ERROR = 'error';
@@ -67,7 +65,7 @@ module.exports.updateStatus = function (receipt, status, cb) {
 		service
 	];
 	var writer = gracenode.mysql.create(config.sql.write);
-	writer.write(sql, params, function (error, res) {
+	writer.write(sql, params, function (error) {
 		if (error) {
 			return cb(error);
 		}
@@ -95,24 +93,6 @@ function checkDb(receipt, finalCallback, cb) {
 		}
 		cb(null, receipt);
 	});	
-}
-
-function validateApple(reciept, storedAsError, cb) {
-	apple.validatePurchase(reciept, function (error, receipt, response, validated) {
-		if (error) {
-			return cb(error);
-		}
-		cb(null, receipt, response, validated, storedAsError);
-	});
-}
-
-function validateGoogle(reciept, storedAsError, cb) {
-	google.validatePurchase(reciept, function (error, receipt, response, validated) {
-		if (error) {
-			return cb(error);
-		}
-		cb(null, receipt, response, validated, storedAsError);
-	});
 }
 
 // FIXME: on duplicate update... not really good. come up with a better way to handle this

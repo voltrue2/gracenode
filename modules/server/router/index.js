@@ -43,18 +43,18 @@ module.exports.handle = function (req, res) {
 function parseUrl(url) {
 	var queryIndex = url.lastIndexOf('?');
 	if (queryIndex !== -1) {
-			url = url.substring(0, url.lastIndexOf('?'));
+		url = url.substring(0, url.lastIndexOf('?'));
 	}
 	var splitted = url.split('/');
 	var parsed = splitted.filter(function (item) {
-			if (item !== '') {
-					return item;
-			}
+		if (item !== '') {
+			return item;
+		}
 	});
 	return {
-			controller: parsed[0] || null,
-			method: parsed[1] || null,
-			args: parsed.length > 2 ? parsed.splice(2) : []
+		controller: parsed[0] || null,
+		method: parsed[1] || null,
+		args: parsed.length > 2 ? parsed.splice(2) : []
 	};
 }
 

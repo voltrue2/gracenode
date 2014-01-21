@@ -218,7 +218,6 @@ function setupModules(that, cb) {
 	try {
 		async.eachSeries(that._modules, function (mod, nextCallback) {
 			var name = mod.name;
-			var source = mod.sourceName;
 			var dir = that.getRootPath() + rootDirName + '/' + (mod.path || 'modules/');
 			var path = dir + name;
 			var configName = 'modules.' + (mod.config || name);

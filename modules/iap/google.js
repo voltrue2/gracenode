@@ -5,9 +5,10 @@ var fs = require('fs');
 var crypto = require('crypto');
 var async = require('async');
 
-var sandboxMode = false; // sandbox or live
 var sandboxPkey = 'iap-sandbox';
 var livePkey = 'iap-live';
+
+var config = null;
 
 var pkeyPath = null;
 
@@ -21,7 +22,7 @@ module.exports.readConfig = function (configIn) {
     } else {
         pkeyPath = gracenode.getRootPath() + configIn.googlePublicKeyPath + livePkey;
     }
-    log.verbose('mode: [' + (config.sandbox ? 'sandbox' : 'live' ) + ']');
+    log.verbose('mode: [' + (config.sandbox ? 'sandbox' : 'live') + ']');
     log.verbose('validation public key path: ' + pkeyPath);
 };
 
@@ -53,9 +54,9 @@ function getPublicKey(receipt, cb) {
 			return cb(new Error('failed to read public key file: ' + pkeyPath));
 		}
 
-		var key = gracenode.lib.chunkSplit(fileData.toString().replace(/\s+$/,''), 64, '\n'); 
+		var key = gracenode.lib.chunkSplit(fileData.toString().replace(/\s+$/, ''), 64, '\n'); 
 
-		pkey = '-----BEGIN PUBLIC KEY-----\n' + key + '-----END PUBLIC KEY-----\n';
+		var pkey = '-----BEGIN PUBLIC KEY-----\n' + key + '-----END PUBLIC KEY-----\n';
 		
 		log.info('validation public key: ' + pkey);
 		

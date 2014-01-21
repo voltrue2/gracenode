@@ -291,8 +291,6 @@ MySql.prototype.readOnlyGet = function (sql, params, mustExist, cb) {
 MySql.prototype.readAndWriteGet = function (sql, params, mustExist, cb) {
 	var sDate = new Date();
 	var start = sDate.getTime();
-	
-	var that = this;	
 
 	if (!validateQuery(sql, this._type)) {
 		var err = new Error('cannot execute the query (read only): ' + sql);
