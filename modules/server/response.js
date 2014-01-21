@@ -35,36 +35,43 @@ module.exports.standby = function (req, res) {
 
 };
 
-module.exports.respond = function (req, res, content, contentType, status) {
+module.exports.create = function (request, response) {
+	return new Response(request, response);
+};
 
-	log.verbose('response content type:', contentType);
+function Response(request, response) {
+	this._request = request;
+	this._response = response;
+}
 
-	switch (contentType) {
-		case contentTypes.JSON:
-			respondJSON(req, res, content, status);
-			break;
-		case contentTypes.HTML:
-			respondHTML(req, res, content, status);
-			break;
-		case contentTypes.FILE:
-			respondFILE(req, res, content, status);
-			break;
-		case contentTypes.ERROR:
-			respondERROR(req, res, content, status);
-			break;
-		case contentTypes.REDIRECT:
-			respondRedirect(req, res, content, status);
-			break;
-		default:
-			// TODO: consider better way to handle this...
-			
-			log.error('unkown content type:', contentType);			
+Response.prototype.json = function (content, status) {
+	log.verbose('response content type: JSON');
+	respondJSON(this._request, this._response, content, status);
+	this._response.emit('end');
+};
 
-			respondERROR(req, res, content, status);
-			break;
-	}
+Response.prototype.html = function (content, status) {
+	log.verbose('response content type: HTML');
+	respondHTML(this._request, this._response, content, status);
+	this._response.emit('end');
+};
 
-	res.emit('end');	
+Response.prototype.file = function (content, status) {
+	log.verbose('response content type: File');
+	respondFILE(this._request, this._response, content, status);
+	this._response.emit('end');
+};
+
+Response.prototype.error = function (content, status) {
+	log.verbose('response content type: Error');
+	respondERROR(this._request, this._response, content, status);
+	this._response.emit('end');
+};
+
+Response.prototype.redirect = function (content, status) {
+	log.verbose('response content type: Redirect');
+	respondRedirect(this._request, this._response, content, status);
+	this._response.emit('end');
 };
 
 function compressContent(content, cb) {
@@ -80,6 +87,7 @@ function compressContent(content, cb) {
 }
 
 function respondJSON(req, res, content, status) {
+	content = content || null;
 	status = status || 200;
 	compressContent(JSON.stringify(content), function (error, data) {
 		
@@ -108,6 +116,7 @@ function respondJSON(req, res, content, status) {
 }
 
 function respondHTML(req, res, content, status) {
+	content = content || null;
 	status = status || 200;
 	compressContent(content, function (error, data) {
 		
@@ -135,6 +144,7 @@ function respondHTML(req, res, content, status) {
 }
 
 function respondRedirect(req, res, content, status) {
+	content = content || null;
 	status = status || 301;
 	// content needs to be redirect URL
 	res.writeHead(status, {
@@ -149,6 +159,7 @@ function respondRedirect(req, res, content, status) {
 }
 
 function respondFILE(req, res, content, status) {
+	content = content || null;
 	status = status || 200;
 	var type = req.url.substring(req.url.lastIndexOf('.') + 1);
 	var contentSize = content.length;
@@ -166,6 +177,7 @@ function respondFILE(req, res, content, status) {
 }
 
 function respondERROR(req, res, content, status) {
+	content = content || null;
 	status = status || 404;
 	compressContent(content, function (error, data) {
 		

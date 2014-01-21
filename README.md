@@ -589,9 +589,9 @@ gracenode.setup(function (error) {
 var gracenode = require('../GraceNode/');
 // this will become part of the URI
 // the first argument is **ALWAYS** requestObject
-module.exports.foo = function (requestObject, serverCallback) {
-	// serverCallback is created by server module automatically
-	cb(null. 'foo', 'JSON');
+module.exports.foo = function (requestObject, serverResponse) {
+	// serverResponse is created by server module per request
+	serverResponse.json({ foo: 'foo' });
 };
 // /example/foo/ will display "foo" on your browser
 ```
@@ -599,24 +599,55 @@ module.exports.foo = function (requestObject, serverCallback) {
 > How to read GET and POST
 ```javascript
 // controller file
-module.exrpots.index = function (requestObject, cb) {
+module.exrpots.index = function (requestObject, response) {
 	// server module automatically gives every controller the following functions:
 	// requestObject.getData and requestObject.postData
 	var getFoo = requestObject.getData.get('foo');
 	var postFoo = requestObject.postData.get('foot');
-	cb(null, null, 'JSON');
+	response.json(null);
 };
 ```
 
 > How to read request headers
 ```javascript
 // controller file
-module.exports.index = function (requestObject, cb) {
+module.exports.index = function (requestObject, response) {
 	// server module automatically gives every contrller the following function:
 	// requestObject.requestHeaders > an instance of Headers class
 	var os = requestObject.requestHeaders.getOs();
 };
 ```
+
+> #### response object
+
+>> **response.json**
+>> resonds to the client as JSON
+>> status code is optional and default is 200
+<pre>
+Void response.json(Mixed content, Integer status)
+</pre>
+
+>> **response.html**
+>> resonds to the client as HTML
+>> status code is optional and default is 200
+<pre>
+Void response.html(String content, Integer status)
+</pre>
+
+>> **response.file**
+>> resonds to the client as a static file
+>> status code is optional and default is 200
+<pre>
+Void response.file(Binary content, Integer status)
+</pre>
+
+>> **response.error**
+>> resonds to the client as an error. content can be JSON, String, Number
+>> status code is optional and default is 200
+<pre>
+Void response.error(Mixed content, Integer status)
+</pre>
+
 
 > #### Headers class
 

@@ -94,7 +94,7 @@ function handle(req, res, parsedUrl, queryData) {
 			}
 
 			// create final response callback and append it to the arguments
-			parsedUrl.args.push(createFinalCallback(req, res));
+			parsedUrl.args.push(response.create(req, res));
 
 			// validate controller method requirement(s)
 			var args = gracenode.lib.getArguments(controller[parsedUrl.method]);
@@ -157,7 +157,8 @@ function errorHandler(req, res, errorMsg, status) {
 	}
 	
 	// we can not have handleError deal with it
-	response.respond(req, res, JSON.stringify({ error: errorMsg }), 'ERROR', status);
+	var responder = new response.create(req, res);
+	responder.error(JSON.stringify({ error: errorMsg }), status);
 }
 
 function handleError(req, res, status) {
@@ -171,31 +172,13 @@ function handleError(req, res, status) {
 				return true;
 			}
 			log.verbose('error handler for ' + status + ' not found');
-			response.respond(req, res, null, 'ERROR', status);
+			var responder = new response.create(req, res);
+			responder.error(null, status);
 			return true;
 		}
 	}
 	// no error handling given in config
 	return false;	
-}
-
-function createFinalCallback(req, res) {
-	return function (error, content, contentType, statusCode, contentModtime) {
-		if (error) {
-			
-			log.error(error);
-			
-			if (handleError(req, res, statusCode)) {
-				// stop and let handleError deal with it
-				return;
-			}
-
-			return response.respond(req, res, error, 'JSON', statusCode, contentModtime);
-		}
-
-		// final response to the request
-		response.respond(req, res, content, contentType, statusCode, contentModtime);
-	};
 }
 
 function RequestObj(request, response, reqData) {
