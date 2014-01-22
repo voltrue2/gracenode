@@ -4,14 +4,6 @@ var log = gracenode.log.create('server-response');
 
 var zlib = require('zlib');
 
-var contentTypes = {
-	JSON: 'JSON',
-	HTML: 'HTML',
-	FILE: 'FILE',
-	REDIRECT: 'REDIRECT',
-	ERROR: 'ERROR'
-};
-
 // set up exception catcher and handle if an exception is caught
 module.exports.standby = function (req, res) {
 
