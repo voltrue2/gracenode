@@ -205,7 +205,7 @@ function setupProcess(that, lastCallback, cb) {
 	} else {
 	
 		// none-cluster mode
-		log.info('in singleton mode: (pid: ' + process.pid + ')');		
+		log.info('in none-cluster mode: (pid: ' + process.pid + ')');		
 
 		cb(null, that);
 
@@ -226,29 +226,30 @@ function setupModules(that, cb) {
 			
 			that._profiler.mark('module [' + name + '] start loading');
 
-			var appModulePath = that.getRootPath() + (mod.path || 'modules/' + name);
-			log.verbose('> look for module [' + name + '] in ' + appModulePath);
+			// look for the module in GraceNode
+			log.verbose('> look for module [' + name + '] in ' + path);
 			try {
-				// try application first
-				module = require(appModulePath);
+				module = require(path);
 
-				log.verbose('module [' + name + '] loading: ', appModulePath);
+				log.verbose('module [' + name + '] loading: ', path);
 			
 			} catch (exception) {
-				log.info('module [' + name + '] not found: ' + appModulePath);
-
-				// now look for it in GraceNode
-				log.verbose('> look for module [' + name + '] in ' + path);
+				log.verbose('module [' + name + '] not found in ' + path);
+				
+				// now look for the module in the application
 				try {
-					module = require(path);
+					var appModulePath = that.getRootPath() + (mod.path || 'modules/' + name);
+					log.verbose('> look for module [' + name + '] in ' + appModulePath);
+					module = require(appModulePath);
 
-					log.verbose('module [' + name + '] loading: ', path);
+					log.verbose('module [' + name + '] loading: ', appModulePath);
 				
 				} catch (exception2) {
 					log.error('failed to load module [' + name + ']: ' + path);
-					return cb(exception2);	
+                    return cb(exception2);	
 				}
 			}
+
 		
 			that[name] = module;			
 
