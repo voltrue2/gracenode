@@ -1,5 +1,5 @@
 // dependency EventEmitter
-(function () {
+(function (window) {
 
 	/***
 	* Events: resize, add, ready, open, close, error 
@@ -204,4 +204,4 @@
 		this.emit('error', msg);
 	};
 
-}());
+}(window));

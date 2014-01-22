@@ -74,10 +74,18 @@ module.exports.setup = function (cb) {
 // events: requestStart, requestEnd
 module.exports.events = events;
 
+/*
+hooks: {
+	"<controller name>": {
+		"<method name>": <hook function>
+	}
+}
+*/
 // if set, controller.exec will not be invoked until requestHook is successfully executed
 // use case example: session check etc
-module.exports.setRequestHook = function (cb) {
-	controller.setRequestHook(cb);
+module.exports.setupRequestHooks = function (hooks) {
+	log.verbose('setting up request hooks:', hooks);
+	controller.setupRequestHooks(hooks);
 };
 
 module.exports.start = function () {

@@ -12,7 +12,7 @@ var fs = require('fs');
 
 var config = null;
 var controllerMap = {};
-var requestHook = null;
+var requestHooks = null;
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.controllerPath) {
@@ -35,8 +35,8 @@ module.exports.setup = function (cb) {
 	});
 };
 
-module.exports.setRequestHook = function (hookFunction) {
-	requestHook = hookFunction;
+module.exports.setupRequestHooks = function (hooks) {
+	requestHooks = hooks;
 };
 
 module.exports.exec = function (req, res, parsedUrl) {
@@ -87,7 +87,7 @@ function handle(req, res, parsedUrl, queryData) {
 			// create arguments for the controller method
 			var reqArray = [new RequestObj(req, res, queryData)];
 			parsedUrl.args = reqArray.concat(parsedUrl.args);
-						
+			
 			// validate controller method
 			if (!controller[parsedUrl.method]) {
 				return errorHandler(req, res, 'invalid method ' + parsedUrl.controller + '.' + parsedUrl.method);
@@ -103,37 +103,33 @@ function handle(req, res, parsedUrl, queryData) {
 			}
 
 			// check for request hook
-			if (requestHook) {
-
-				log.verbose('request hook found');
-
-				var requestObj = parsedUrl.args[0];
-				return requestHook(requestObj, parsedUrl, function (error, status) {
-					
-					if (error) {
-					
-						log.error('request hook exeuted with an error:', error, '(status: ' + status + ')');
-
-						return errorHandler(req, res, error, status);
-					}
-
-					log.verbose('request hook executed');
-					
-					controller[parsedUrl.method].apply(controller, parsedUrl.args);			
-
-				});
+			if (requestHooks) {
+				// find hook function for the controller and method
+				var hookedController = requestHooks[parsedUrl.controller] || null;
+				if (hookedController && hookedController[parsedUrl.method]) {
+					log.verbose('request hook found for "' + parsedUrl.controller + '.' + parsedUrl.method + '"');
+					var hookedCallback = hookedController[parsedUrl.method];
+					hookedCallback(parsedUrl.args[0], function (error, status) {
+						if (error) {
+							log.error('request hook exeuted with an error:', error, '(status: ' + status + ')');
+							return errorHandler(req, res, error, status);
+						}
+						log.verbose('request hook executed');
+						controller[parsedUrl.method].apply(controller, parsedUrl.args);			
+					});
+					return;
+				}	
 			}
-		
-			// there is no request hook
 
 			// invoke the controller method
+			log.verbose(parsedUrl.controller + '.' + parsedUrl.method + ' executed');
 			controller[parsedUrl.method].apply(controller, parsedUrl.args);			
 
-		} else {
+			return;
+		}	
+		
+		return errorHandler(req, res, 'controller not found:' + path);
 			
-			return errorHandler(req, res, 'controller not found:' + path);
-			
-		}
 
 	} catch (exception) {
 
@@ -208,11 +204,11 @@ RequestObj.prototype.setHeader = function (name, value) {
 };
 
 RequestObj.prototype.setCookie = function (obj) {
-	var cookie = '';
+	var cookies = [];
 	for (var name in obj) {
-		cookie += name + '=' + obj[name] + '; ';
+		cookies.push(name + '=' + obj[name]);
 	}
-	this.setHeader('Set-Cookie', cookie);
+	this.setHeader('Set-Cookie', cookies);
 };
 
 RequestObj.prototype.getCookie = function (name) {

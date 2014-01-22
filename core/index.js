@@ -231,6 +231,9 @@ function setupModules(that, cb) {
 			try {
 				// try application first
 				module = require(appModulePath);
+
+				log.verbose('module [' + name + '] loading: ', appModulePath);
+			
 			} catch (exception) {
 				log.info('module [' + name + '] not found: ' + appModulePath);
 
@@ -238,6 +241,9 @@ function setupModules(that, cb) {
 				log.verbose('> look for module [' + name + '] in ' + path);
 				try {
 					module = require(path);
+
+					log.verbose('module [' + name + '] loading: ', path);
+				
 				} catch (exception2) {
 					log.error('failed to load module [' + name + ']: ' + path);
 					return cb(exception2);	
@@ -245,8 +251,6 @@ function setupModules(that, cb) {
 			}
 		
 			that[name] = module;			
-
-			log.verbose('module [' + name + '] loading: ', path);
 
 			if (typeof module.readConfig === 'function') {
 				log.verbose('module [' + name + '] reading configurations: ' + configName);

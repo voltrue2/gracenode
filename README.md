@@ -551,22 +551,32 @@ EventEmitter events()
 ######API: *setRequestHook*
 
 <pre>
-void setRequestHook(Function callback)
+void setRequestHook(Object hooks)
 </pre>
-> assign a function to be invoked on every request.
+> assign a function to be invoked on every request (each hook callback function is assigned to specific controller method).
 >> Should be used for session validatation etc
->>> Callback will have 3 arguments: request object, parsedUrl object, and callback
->>> The callback that is invoked at the end of hook callback can pass 2 arguments: error and status code
 Example:
 ```javascript
-gracenode.server.setRequestHook(function (reqObj, callback) {
-	// do something
-	var session = getSession(reqObj);
-	if (!session) {
-		return callback(new Error('no session'), 403);
+gracenode.server.setupRequestHooks({
+	myController: {
+		myPage: checkSession
 	}
-	callback(null, 200);
 });
+
+function checkSession(request, callback) {
+	var sessionId = request.getCookie('sessionId');
+	gracenode.session.getSession(sessionId, function (error, session) {
+		if (error) {
+			return cb(error);
+		}
+		if (!session) {
+			// no session
+			return cb(new Error('auth error', 403));
+		}
+		// session found
+		cb();
+	});
+}
 ```
 
 ###### Example:
