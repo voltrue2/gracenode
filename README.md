@@ -698,15 +698,15 @@ module.exports.index = function (requestObject, cb) {
 };
 ```
 
-> How to read and set cookie
+> How to get and set cookie
 ```javascript
 // controller
 module.exports.index = function (requestObject, cb) {
-	// server module automatically gives every contrller the following functions:
-	// requestObject.getCookie and module.exports.setCookie
-	var sessionCookie = requestObject.getCookie('session');
-	requestObject.setCookie('myCookie', 'foo');
-	// for handling session please use session module
+	var cookies = requestObject.cookies();
+	// get
+	var foo = cookies.get('foo');
+	// set
+	cookies('boo', 'boo');	
 };
 ```
 

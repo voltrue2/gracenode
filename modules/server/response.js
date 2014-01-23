@@ -37,6 +37,10 @@ function Response(request, response) {
 	this._response = response;
 }
 
+Response.prototype.header = function (name, value) {
+	this._response.setHeader(name, value);
+};
+
 Response.prototype.json = function (content, status) {
 	log.verbose('response content type: JSON');
 	respondJSON(this._request, this._response, content, status);
@@ -171,7 +175,7 @@ function respondFILE(req, res, content, status) {
 
 function respondERROR(req, res, content, status) {
 	content = content || null;
-	if (typeof content === 'object') {
+	if (content !== null && typeof content === 'object') {
 		content = JSON.stringify(content);
 	}
 	status = status || 404;

@@ -12,7 +12,7 @@ module.exports.errorMsg = function () {
 	var msg = '';
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		var arg = arguments[i];
-		if (typeof arg === 'object') {
+		if (arg !== null && typeof arg === 'object') {
 			arg = JSON.stringify(arg, null, 4);
 		}
 		msg += arg + '\n';
@@ -42,7 +42,7 @@ module.exports.getArguments = function (func) {
 };
 
 module.exports.cloneObj = function (obj) {
-	if (typeof obj !== 'object') {
+	if (obj === null || typeof obj !== 'object') {
 		return obj;
 	}
 	var res = null;
@@ -52,7 +52,7 @@ module.exports.cloneObj = function (obj) {
 		res = {};
 	}
 	for (var key in obj) {
-		if (typeof obj[key] === 'object') {
+		if (obj[key] !== null && typeof obj[key] === 'object') {
 			res[key] = module.exports.cloneObj(obj[key]);
 		} else {
 			res[key] = obj[key];

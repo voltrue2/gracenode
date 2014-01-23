@@ -6,6 +6,7 @@ var queryDataHandler = require('../queryData');
 var headers = require('../requestHeaders');
 var response = require('../response');
 
+var Cookies = require('cookies');
 var queryString = require('querystring');
 var url = require('url');
 var fs = require('fs');
@@ -180,7 +181,7 @@ function handleError(req, res, status) {
 function RequestObj(request, response, reqData) {
 	this._props = {};
 	this._response = response;
-	this._cookies = parseCookie(request.headers);
+	this._cookies = new Cookies(request, response);
 	
 	// public
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
@@ -199,35 +200,6 @@ RequestObj.prototype.get = function (name) {
 	return gracenode.lib.cloneObj(this._props[name]);
 };
 
-RequestObj.prototype.setHeader = function (name, value) {
-	this._response.setHeader(name, value);
+RequestObj.prototype.cookies = function () {
+	return this._cookies;
 };
-
-RequestObj.prototype.setCookie = function (obj) {
-	var cookies = [];
-	for (var name in obj) {
-		cookies.push(name + '=' + obj[name]);
-	}
-	this.setHeader('Set-Cookie', cookies);
-};
-
-RequestObj.prototype.getCookie = function (name) {
-	if (this._cookies[name] === undefined) {
-		return null;
-	}
-	return gracenode.lib.cloneObj(this._cookies[name]);
-};
-
-function parseCookie(headers) {
-	var cookieStr = headers.cookie || '';
-	var chunks = cookieStr.split('; ');
-	var cookies = {};
-	for (var i = 0, len = chunks.length; i < len; i++) {
-		var chunk = chunks[i];
-		if (chunk) {
-			var cookie = chunk.split('=');
-			cookies[cookie[0]] = cookie[1];
-		}
-	}
-	return cookies;
-}

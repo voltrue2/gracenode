@@ -237,7 +237,7 @@ StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 		}
 		if (that._indexMap && that._indexMap[indexName]) {
 			if (that._indexMap[indexName][key] !== undefined) {
-				if (typeof that._indexMap[indexName][key] === 'object') {
+				if (that._indexMap[indexName][key] !== null && typeof that._indexMap[indexName][key] === 'object') {
 					return cb(null, getObjValue(that._indexMap[indexName][key]));
 				}
 				return cb(null, that._indexMap[indexName][key]);
@@ -271,7 +271,7 @@ StaticData.prototype.getOne = function (index, cb) {
 			return cb(error);
 		}
 		if (that._src[index]) {	
-			if (typeof that._src[index] === 'object') {
+			if (that._src[index] !== null && typeof that._src[index] === 'object') {
 				return cb(null, getObjValue(that._src[index]));
 			}
 			return cb(null, that._src[index]);
