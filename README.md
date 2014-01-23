@@ -1497,6 +1497,7 @@ hc.spend(userId, cost, itemIdToBePurchase,
 
 ### Useing GraceNode With Apache
 > apache configuration example
+
 <pre>
 # proxy to nodejs process
 <VirtualHost *:80>
