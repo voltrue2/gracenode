@@ -667,6 +667,12 @@ Void response.error(Mixed content, Integer status)
 
 
 > #### Headers class
+>> Acces
+```javascript
+module.exports.index = function (requestObject, response) {
+	var requestHeaders = requestObject.requestHeaders;
+};
+```
 
 >> **get**
 <pre>
@@ -691,17 +697,16 @@ String getDefaultLang
 > How to set response headers
 ```javascript
 // controller
-module.exports.index = function (requestObject, cb) {
-	// server module automatically gives every contrller the following function:
-	// requestObject.setHeader
-	module.exports.setHeader('myHeader', 'foo');
+module.exports.index = function (requestObject, response) {
+	// name, value
+	response.header('foo', 'foo');
 };
 ```
 
 > How to get and set cookie
 ```javascript
 // controller
-module.exports.index = function (requestObject, cb) {
+module.exports.index = function (requestObject, response) {
 	var cookies = requestObject.cookies();
 	// get
 	var foo = cookies.get('foo');
@@ -714,7 +719,7 @@ module.exports.index = function (requestObject, cb) {
 ```javascript
 // controller
 // request URI /foo/index/one/two/
-module.exports.index = function (requestObject, one, two, cb) {
+module.exports.index = function (requestObject, one, two, response) {
 	// one and two are  the values in the request URI
 	// by having these parameters and the arguments, these arguments will become requirements
 	// missing arguments will cause and error
@@ -725,8 +730,8 @@ module.exports.index = function (requestObject, one, two, cb) {
 ```javascript
 // controller
 // request URI /foo/index/
-module.exports.index = function (requestObject, cb) {
-	cb(null, '/anotherPage/', 'REDIRECT');
+module.exports.index = function (requestObject, response) {
+	response.redirect('/anotherPage/');
 };
 ```
 
