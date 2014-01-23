@@ -667,7 +667,7 @@ Void response.error(Mixed content, Integer status)
 
 
 > #### Headers class
->> Acces
+>> Access
 ```javascript
 module.exports.index = function (requestObject, response) {
 	var requestHeaders = requestObject.requestHeaders;
@@ -1494,3 +1494,27 @@ hc.spend(userId, cost, itemIdToBePurchase,
 );
 
 ```
+
+### Useing GraceNode With Apache
+> apache configuration example
+<pre>
+# proxy to nodejs process
+<VirtualHost *:80>
+    ServerAdmin yourname@yourdomain.com
+    DocumentRoot /var/www/yourdomain.com/htdocs
+    ServerName yourdomain.com
+
+    ProxyRequests off
+
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    ProxyPreserveHost on
+    ProxyPass /asset ! # do not proxy this path
+    ProxyPass / http://yourdomain.com:8000/ # proxy everything else to GraceNode
+    ProxyPassReverse / yourdomain.com:8000/
+
+</VirtualHost>
+</pre>
