@@ -24,7 +24,7 @@ indexOf() {
 }
 
 echoGreen() {
-	echo -en '\E[32m'"\033[1m$1\033[0m\n\r";
+	echo -en '\E[32m'"\033[1m`checkMark` $1\033[0m\n\r";
 }
 
 echoYellow() {
@@ -32,11 +32,27 @@ echoYellow() {
 }
 
 echoBlue() {
-	echo -en '\E[34m'"\033[1m$1\033[0m\n\r";
+	echo -en '\E[34m'"\033[1m`mark` $1\033[0m\n\r";
 }
 
 echoRed() {
-	echo -en '\E[31m'"\033[1m$1\033[0m\n\r";
+	echo -en '\E[31m'"\033[1m`errorMark` $1\033[0m\n\r";
+}
+
+arrowMark() {
+	echo -e "\xe2\x86\x92";
+}
+
+checkMark() {
+	echo -e "\xE2\x9C\x93";
+}
+
+errorMark() {
+	echo -e "\xC7\x83";
+}
+
+mark() {
+	echo -e "\xCB\x83 ";
 }
 
 lint() {
@@ -48,7 +64,7 @@ lint() {
 
 		failed=`jshint "$targetPath"`;
 		if [ "$failed" ]; then
-			echoRed "*** [error] lint error(s) in $1";
+			echoRed "[error] lint error(s) in $1";
 			echoRed "$failed";
 			exit 1;
 		else
@@ -56,7 +72,7 @@ lint() {
 		fi
 		
 	else
-		echoRed "*** [error] $targetPath";
+		echoRed "[error] $targetPath";
 		echoRed "No such file or directory ($targetPath)";
 		exit 1;		
 	fi
