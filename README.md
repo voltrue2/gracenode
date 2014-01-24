@@ -707,11 +707,10 @@ module.exports.index = function (requestObject, response) {
 ```javascript
 // controller
 module.exports.index = function (requestObject, response) {
-	var cookies = requestObject.cookies();
 	// get
-	var foo = cookies.get('foo');
+	var foo = requestObject.cookies.get('foo');
 	// set
-	cookies('boo', 'boo');	
+	requestObject.cookies('boo', 'boo');	
 };
 ```
 

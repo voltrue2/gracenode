@@ -181,9 +181,9 @@ function handleError(req, res, status) {
 function RequestObj(request, response, reqData) {
 	this._props = {};
 	this._response = response;
-	this._cookies = new Cookies(request, response);
 	
 	// public
+	this.cookies = new Cookies(request, response);
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
 	this.getData = queryDataHandler.createGetter(reqData.get || {});
 	this.requestHeaders = headers.create(request.headers);
@@ -198,8 +198,4 @@ RequestObj.prototype.get = function (name) {
 		return null;
 	}
 	return gracenode.lib.cloneObj(this._props[name]);
-};
-
-RequestObj.prototype.cookies = function () {
-	return this._cookies;
 };
