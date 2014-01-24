@@ -684,9 +684,9 @@ String get(String headerName)
 String getOs()
 </pre>
 
->> **getBrowser**
+>> **getClient**
 <pre>
-String getBrowser()
+String getClient()
 </pre>
 
 >> **getDefaultLang**

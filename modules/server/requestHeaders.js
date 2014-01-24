@@ -13,7 +13,7 @@ module.exports.create = function (reqHeaders) {
 function Headers(reqHeaders) {
 	this._headers = reqHeaders;
 	this._os = null;
-	this._browser = null;
+	this._client = null;
 	this._lang = null;
 	// parse user agent
 	this.parseUserAgent(this.get('user-agent'));
@@ -33,8 +33,8 @@ Headers.prototype.getOs = function () {
 	return this._os;	
 };
 
-Headers.prototype.getBrowser = function () {
-	return this._browser;
+Headers.prototype.getClient = function () {
+	return this._client;
 };
 
 Headers.prototype.getDefaultLang = function () {
@@ -54,9 +54,9 @@ Headers.prototype.parseUserAgent = function (userAgent) {
 	// detect browser
 	var browserRes = userAgent.match(browserRegex);
 	if (browserRes) {
-		this._browser = browserRes[browserRes.length - 1];
+		this._client = browserRes[browserRes.length - 1];
 	}
-	log.verbose('client browser:', this._browser);
+	log.verbose('client browser:', this._client);
 };
 
 Headers.prototype.parseLanguage = function (acceptLang) {
