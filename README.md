@@ -569,7 +569,6 @@ gracenode.server.setupRequestHooks({
 		myPage: checkSession
 	}
 });
-
 function checkSession(request, callback) {
 	var sessionId = request.getCookie('sessionId');
 	gracenode.session.getSession(sessionId, function (error, session) {
