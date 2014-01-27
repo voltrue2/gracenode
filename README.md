@@ -583,6 +583,20 @@ function checkSession(request, callback) {
 		cb();
 	});
 }
+// this will apply checkSession function as a request hook to ALL controller and methods
+var hooks = checkSession;
+// this will apply checkSession function as a request hook to ALL methods of myController
+var hooks = {
+	myController: checkSession
+};
+// this will apply checkSession function as a request hook to myPage of myController only
+var hooks = {
+	myController: {
+		myPage: checkSession
+	}
+};
+// set up request hooks
+gracenode.server.seupRequestHooks(hooks);
 ```
 
 ###### Example:
