@@ -5,13 +5,28 @@ var log = gracenode.log.create('pns-google');
 var config = null;
 
 module.exports.readConfig = function (configIn) {
-    config = configIn;
+	if (!configIn.google) {
+		log.info('google is not available...');
+		return;
+	}
+	
+	config = configIn;
 };
 
-module.exports.connect = function (mode, cb) {
+module.exports.setup = function (mode, cb) {
+	if (!config) {
+		return cb();
+	}
+};
 
-    log.verbose('connecting to google...');
+module.exports.connect = function (cb) {
+	if (!config) {
+		log.warning('google is not available');
+		return cb();
+	}
 
-    cb();
+	log.verbose('connecting to google...');
+
+	cb();
 };
 

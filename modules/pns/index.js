@@ -4,6 +4,8 @@ var log = gracenode.log.create('pns');
 var apple = require('./apple');
 var google = require('./google');
 
+var async = require('async');
+
 var config = null;
 var mode = null; // "sandbox" or "live"
 //var service = null;
@@ -12,7 +14,7 @@ var mode = null; // "sandbox" or "live"
 {
 	"pns": {
 		"sandbox": true or false,
-		"apple": { "sandbox": "", "live": "" }, // paths to certificate files .pem
+		"apple": { "sandbox": {}, "live": {} }, // paths to certificate files .pem
 		"google": { "sandbox": "", "live": "" } // paths to API keys
 	}
 }
@@ -26,19 +28,32 @@ module.exports.readConfig = function (configIn) {
 
 	mode = config.sandbox ? 'sandbox' : 'live';
 
+	log.info('service mode: ' + mode);
+
 	apple.readConfig(config);
 	google.readConfig(config);
 };
 
+module.exports.setup = function (cb) {
+	async.waterfall([
+		function (callback) {
+			apple.setup(mode, callback);
+		},
+		function (callback) {
+			google.setup(mode, callback);
+		}
+	], cb);
+};
+
 module.exports.connect = function (serviceName, cb) {
 
-	log.verbose('connect:', serviceName, '[mode: ' + mode + ']');
+	log.verbose('connect to "', serviceName, '" [mode: ' + mode + ']');
 
 	switch (serviceName) {
 		case 'apple':
-			return apple.connect(mode, cb);
+			return apple.connect(cb);
 		case 'google':
-			return google.connect(mode, cb);
+			return google.connect(cb);
 		default:
 			return cb(new Error('invalid service provided: ' + serviceName));
 	}
