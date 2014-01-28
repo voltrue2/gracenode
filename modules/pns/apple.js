@@ -4,7 +4,6 @@ var log = gracenode.log.create('pns-apple');
 
 var tls = require('tls');
 var fs = require('fs');
-var crypto = require('crypto');
 var async = require('async');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
@@ -179,7 +178,7 @@ PNS.prototype.handleResponse = function (data) {
 	// msg id
 	var msgId = (data[2] << 24) + (data[3] << 16) + (data[4] << 8) + (data[5]);
 	// emit
-	this.emit('error', msgId);
+	this.emit('error', msgId, command, errorCode);
 	
 };
 
