@@ -158,7 +158,7 @@ function setupProcess(that, lastCallback, cb) {
 	var maxClusterNum = that.config.getOne('cluster.max') || 0;
 	var max = Math.min(maxClusterNum, CPUNum);
 
-	log.verbose('spawn process number: ' + max);
+	log.verbose('maximum possible number of process to spawn: ' + max);
 	
 	if (cluster.isMaster && max && enabled) {
 		
@@ -234,8 +234,10 @@ function setupModules(that, cb) {
 				log.verbose('module [' + name + '] loading: ', path);
 			
 			} catch (exception) {
-				log.verbose('module [' + name + '] not found in ' + path);
 				
+				log.verbose('module [' + name + '] not found in ' + path);
+				log.verbose(exception);				
+
 				// now look for the module in the application
 				try {
 					var appModulePath = that.getRootPath() + (mod.path || 'modules/' + name);
@@ -246,7 +248,7 @@ function setupModules(that, cb) {
 				
 				} catch (exception2) {
 					log.error('failed to load module [' + name + ']: ' + path);
-                    return cb(exception2);	
+					return cb(exception2);	
 				}
 			}
 
