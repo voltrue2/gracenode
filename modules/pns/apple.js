@@ -25,24 +25,24 @@ var certs = {
 var url = null;
 
 /*
-	pns: {
-		sandbox: true/false,
-		apple: {
-			sandbox: {
-				certPem: 'file path',
-				keyPem: 'file path',
-				ca: 'file path'
-			},
-			live: {
-				certPem: 'file path',
-				keyPem: 'file path',
-				ca: 'file path'
-			}
+pns: {
+	sandbox: true/false,
+	apple: {
+		sandbox: {
+			certPem: 'file path',
+			keyPem: 'file path',
+			ca: 'file path'
 		},
-		google: {
-
+		live: {
+			certPem: 'file path',
+			keyPem: 'file path',
+			ca: 'file path'
 		}
+	},
+	google: {
+
 	}
+}
 */
 module.exports.readConfig = function (configIn) {
 	
@@ -113,8 +113,10 @@ util.inherits(PNS, EventEmitter);
 
 PNS.prototype.connect = function (stream) {
 	this._stream = stream;
-	// set up error handler
+	// set up data handler (this includes error response from apple)
 	this._stream.on('data', this.handleResponse);
+	// set up connection error listener
+	this._stream.on('error', this.handleError);
 	// set up connection close handler
 	this._stream.on('end', this.handleConnectionEnd);
 };
@@ -180,6 +182,10 @@ PNS.prototype.handleResponse = function (data) {
 	// emit
 	this.emit('error', msgId, command, errorCode);
 	
+};
+
+PNS.prototype.handleError = function (error) {
+	this.emit('error', error);
 };
 
 PNS.prototype.handleConnectionEnd = function () {

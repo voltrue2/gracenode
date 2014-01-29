@@ -40,32 +40,34 @@
 				ajaxEvents.emit('response', req);
 				var error = null;
 				var response = null;
-				try {
-					response = JSON.parse(req.responseText);
-				} catch (Exception) {
-					error = {
-						status: req.status,
-						path: path,
-						response: response
-					};
-					console.error('ajax, JSON.parse: ', Exception.toString());
-					console.trace();
-					request.emit('response.error', error);
-					ajaxEvents.emit('response.error', error);
-				}
-				if (req.status >= 400) {
-					error = {
-						status: req.status,
-						path: path,
-						response: response
-					};
-					var resendObj = {
-						path: path, 
-						params: params,
-						callback: cb
-					};
-					request.emit('response.error', error, resendObj);
-					ajaxEvents.emit('response.error', error, resendObj);
+				if (req.responseText) {
+					try {
+						response = JSON.parse(req.responseText);
+					} catch (Exception) {
+						error = {
+							status: req.status,
+							path: path,
+							response: response
+						};
+						console.error('ajax, JSON.parse: ', Exception.toString());
+						console.trace();
+						request.emit('response.error', error);
+						ajaxEvents.emit('response.error', error);
+					}
+					if (req.status >= 400) {
+						error = {
+							status: req.status,
+							path: path,
+							response: response
+						};
+						var resendObj = {
+							path: path, 
+							params: params,
+							callback: cb
+						};
+						request.emit('response.error', error, resendObj);
+						ajaxEvents.emit('response.error', error, resendObj);
+					}
 				}
 				request.emit('response.complete', error, response);
 				ajaxEvents.emit('response.complete', error, response);
