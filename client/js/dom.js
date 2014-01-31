@@ -120,6 +120,7 @@ function button(dom) {
 				start = null;
 			}
 		}
+		this.emit('tapmove', event);
 	});
 	
 	dom.on(buttonEvents.mouseup, function (event) {
