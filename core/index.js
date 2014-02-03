@@ -236,7 +236,6 @@ function setupModules(that, cb) {
 			} catch (exception) {
 				
 				log.verbose('module [' + name + '] not found in ' + path);
-				log.verbose(exception);				
 
 				// now look for the module in the application
 				try {
@@ -247,6 +246,7 @@ function setupModules(that, cb) {
 					log.verbose('module [' + name + '] loading: ', appModulePath);
 				
 				} catch (exception2) {
+					log.verbose(exception);				
 					log.error('failed to load module [' + name + ']: ' + path);
 					return cb(exception2);	
 				}
