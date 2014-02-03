@@ -142,8 +142,8 @@ MySql.prototype.searchOne = function (sql, params, cb) {
 			// we want one record only
 			res = res[0];
 		} else {
-			//Never return array. Either object or bool.
-			res = false;
+			//Never return array. Either result object or null.
+			res = null;
 		}
 		cb(error, res);
 	});
