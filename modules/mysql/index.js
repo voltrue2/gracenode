@@ -121,6 +121,9 @@ util.inherits(MySql, EventEmitter);
 
 MySql.prototype.getOne = function (sql, params, cb) {
 	this.get(sql, params, true, function (error, res) {
+		if (!res) {
+			return cb(new Error('no result'));
+		}
 		if (res.length) {
 			// we want one record only
 			res = res[0];
