@@ -18,6 +18,8 @@
 
 var fs = require('fs');
 var async = require('async');
+var EventEmitter = require('events').EventEmitter;
+var fileWatcher = new EventEmitter();
 
 var gracenode = require('../../');
 var log = gracenode.log.create('staticdata');
@@ -73,51 +75,67 @@ function readFile(path, cb) {
 	var lastDot = path.lastIndexOf('.');
 	var type = path.substring(lastDot + 1);
 	var name = path.substring(path.lastIndexOf(config.path) + config.path.length, lastDot);
-	fs.lstat(path, function (error, stat) {
+	fs.readFile(path, function (error, dataBuffer) {
 		if (error) {
 			return cb(error);
 		}
-		fs.readFile(path, function (error, dataBuffer) {
-			if (error) {
-				return cb(error);
-			}
-			var data = dataBuffer.toString('utf-8');
+		var data = dataBuffer.toString('utf-8');
 
-			var bytes = dataBuffer.length;
-			var kb = bytes / 1024;
-			var size = bytes + ' bytes';
-			if (kb >= 1) {
-				size = Math.round(kb) + ' kb';
-			}
-			log.verbose('static data loaded:', path + ' (' + size + ')');
+		var bytes = dataBuffer.length;
+		var kb = bytes / 1024;
+		var size = bytes + ' bytes';
+		if (kb >= 1) {
+			size = Math.round(kb) + ' kb';
+		}
+		
+		log.verbose('static data loaded:', path + ' (' + size + ')');
 
-			// convert to JSON		
-			if (type === 'csv') {
-				data = toJSON(data);
-			}
-			// check for error
-			if (data instanceof Error) {
-				return cb(data);
-			}
+		// convert to JSON		
+		if (type === 'csv') {
+			data = toJSON(data);
+		}
+		// check for error
+		if (data instanceof Error) {
+			return cb(data);
+		}
+		
+		// create index map(s) if asked
+		var indexMap = null;
+		var fileName = name + '.' + type;
+		if (config.index && config.index[fileName]) {
+			indexMap = mapIndex(data, config.index[fileName]);
 			
-			// create index map(s) if asked
-			var indexMap = null;
-			var fileName = name + '.' + type;
-			if (config.index && config.index[fileName]) {
-				indexMap = mapIndex(data, config.index[fileName]);
+			log.verbose('indexed: ', config.index[fileName]);
+		}	
+		
+		// add it to cache
+		staticData[name] = { data: data, indexMap: indexMap, path: path };
+
+		log.verbose('mapped: ' + path + ' > ' + name);
+
+		// set up file watch listener
+		setupChangeListener(path);
+
+		cb();
+	});
+}
+
+function setupChangeListener(path) {
+	
+	log.verbose('file change listener setup:', path);
+
+	fs.watch(path, function (event) {
+		if (event === 'change') {
+			readFile(path, function (error) {
+				if (error) {
+					return log.error(error);
+				}
 				
-				log.verbose('indexed: ', config.index[fileName]);
-			}	
+				log.info('file updated [' +  event + ']:', path);
 			
-			// add it to cache
-			var d = new Date(stat.mtime);
-			var mtime = d.getTime();
-			staticData[name] = { data: data, indexMap: indexMap, path: path, mtime: mtime };
-
-			log.verbose('mapped: ' + path + ' > ' + name);
-
-			cb();
-		});
+				fileWatcher.emit(path);
+			});
+		}
 	});
 }
 
@@ -227,110 +245,74 @@ function StaticData(name, src) {
 	this._name = name;
 	this._src = src.data;
 	this._indexMap = src.indexMap;
+
+	// file change listener
+	var that = this;
+	fileWatcher.on(src.path, function () {
+		that.update(staticData[name]);
+	});
 }
 
-StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
-	var that = this;
-	this.validateCachedData(function (error) {
-		if (error) {
-			return cb(error);
-		}
-		if (that._indexMap && that._indexMap[indexName]) {
-			if (that._indexMap[indexName][key] !== undefined) {
-				if (that._indexMap[indexName][key] !== null && typeof that._indexMap[indexName][key] === 'object') {
-					return cb(null, getObjValue(that._indexMap[indexName][key]));
-				}
-				return cb(null, that._indexMap[indexName][key]);
-			}
-		}
-		cb(null, null);
-	});
+StaticData.prototype.getOneByIndex = function (indexName, key) {
+	if (!this._indexMap) {
+		return null;
+	}
+	var data = this._indexMap[indexName] || null;
+	if (!data || data[key] === undefined) {
+		return null;
+	}
+
+	var res = data[key];
+
+	if (typeof res === 'object') {
+		return getObjValue(res);
+	}
+
+	return res;
 };
 
-StaticData.prototype.getManyByIndex = function (indexName, keyList, cb) {
+StaticData.prototype.getManyByIndex = function (indexName, keyList) {
 	var res = {};
-	var that = this;
-	async.eachSeries(keyList, function (key, nextCallback) {
-		that.getOneByIndex(indexName, key, function (error, data) {
-			if (error) {
-				return cb(error);
-			}
-			res[key] = data;
-			nextCallback();
-		});
-	}, 
-	function (error) {
-		cb(error, res);
-	});
+	for (var i = 0, len = keyList.length; i < len; i++) {
+		var key = keyList[i];
+		res[key] = this.getOneByIndex(indexName, key);
+	}	
+	return res;
 };
 
-StaticData.prototype.getOne = function (index, cb) {
-	var that = this;
-	this.validateCachedData(function (error) {
-		if (error) {
-			return cb(error);
-		}
-		if (that._src[index]) {	
-			if (that._src[index] !== null && typeof that._src[index] === 'object') {
-				return cb(null, getObjValue(that._src[index]));
-			}
-			return cb(null, that._src[index]);
-		}
-		cb(null, null);
-	});
+StaticData.prototype.getOne = function (index) {
+	var data = this._src[index];
+	if (data === undefined) {
+		return null;
+	}
+
+	if (typeof data === 'object') {
+		return getObjValue(data);		
+	}
+	
+	return data;
 };
 
-StaticData.prototype.getMany = function (indexList, cb) {
+StaticData.prototype.getMany = function (indexList) {
 	var res = {};
-	var that = this;
-	async.eachSeries(indexList, function (index, nextCallback) {
-		that.getOne(index, function (error, data) {
-			if (error) {
-				return cb(error);
-			}
-			res[index] = data;
-			nextCallback();
-		});
-	},
-	function (error) {
-		cb(error, res);
-	});
+	for (var i = 0, len = indexList.length; i < len; i++) {
+		var key = indexList[i];
+		res[key] = this.getOne(key);
+	}
+
+	return res;
 };
 
-StaticData.prototype.getAll = function (cb) {
-	var that = this;
-	this.validateCachedData(function (error) {
-		if (error) {
-			return cb(error);
-		}
-		cb(null, getObjValue(that._src));
-	});
+StaticData.prototype.getAll = function () {
+	return getObjValue(this._src);
 };
 
-StaticData.prototype.getAllByIndexName = function (indexName, cb) {
-	var that = this;
-	this.validateCachedData(function (error) {
-		if (error) {
-			return cb(error);
-		}
-		if (that._indexMap[indexName]) {
-			return cb(null, getObjValue(that._indexMap[indexName]));
-		}
-		cb(null, null);
-	});
-};
+StaticData.prototype.getAllByIndexName = function (indexName) {
+	if (this._indexMap[indexName] === undefined) {
+		return null;
+	}
 
-StaticData.prototype.validateCachedData = function (cb) {
-	var that = this;
-	validateCachedData(this._name, function (error, updatedData) {
-		if (error) {
-			return cb(error);
-		}
-		if (updatedData) {
-			that.update(updatedData);
-		}
-		cb();
-	});
+	return getObjValue(this._indexMap[indexName]);
 };
 
 StaticData.prototype.update = function (src) {
