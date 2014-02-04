@@ -28,7 +28,8 @@ var config;
 var linebreak = '\n';
 var delimiter = ',';
 var quote = '"';
-var staticData = {};
+var staticData = {}; // static data source object
+var sdMap = {}; // static data object map
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.path) {
@@ -65,8 +66,17 @@ module.exports.setup = function (cb) {
 * example: staticdata/example/test.csv = example/test
 */
 module.exports.create = function (dataName) {
+	
+	// check for existing static data object first
+	if (sdMap[dataName]) {
+		return sdMap[dataName];
+	}	
+
+	// create a new static data object
 	if (staticData[dataName]) {
-		return new StaticData(dataName, staticData[dataName]);
+		var sd = new StaticData(dataName, staticData[dataName]);
+		sdMap[dataName] = sd;
+		return sd;
 	}
 	return null;
 };
