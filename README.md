@@ -32,7 +32,7 @@ $ GraceNode/
 >> Below is the example code to set up GraceNode in index.js
 
 ```javascript
-var gracenode = require('../GraceNode/gracenode');
+var gracenode = require('../GraceNode');
 // tell GraceNode where to look for configuration file(s)
 // we will explain the effect of the function "gracenode.getRootPath()" later.
 gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
@@ -856,7 +856,7 @@ Configurations
 ```javascript
 "modules": {
 	"session": {
-		"hosts": ["server host or IP address"...],
+		"hosts": ["host:port", "host:port"...],
 		"ttl": int (in seconds),
 		"options": object
 	}

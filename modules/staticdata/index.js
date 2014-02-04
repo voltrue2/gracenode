@@ -225,32 +225,6 @@ function mapIndex(data, indexNames) {
 	return map;
 }
 
-function validateCachedData(name, cb) {
-	if (staticData[name]) {
-		var data = staticData[name];
-		return fs.lstat(data.path, function (error, stat) {
-			if (error) {
-				return cb(error);
-			}
-			var d = new Date(stat.mtime);
-			var mtime = d.getTime();
-			if (mtime !== data.mtime) {
-				// file has been modified > update cache
-				return readFile(data.path, function (error) {
-					if (error) {
-						return cb(error);
-					}
-					// pass the updated cached data
-					cb(null, staticData[name]);
-				});
-			}
-			// cached data is still the latest
-			cb();
-		});
-	}
-	cb(new Error('cached data not found'));
-}
-
 function StaticData(name, src) {
 	this._name = name;
 	this._src = src.data;
