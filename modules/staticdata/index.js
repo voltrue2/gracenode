@@ -28,7 +28,8 @@ var config;
 var linebreak = '\n';
 var delimiter = ',';
 var quote = '"';
-var staticData = {};
+var staticData = {}; // static data source object
+var sdMap = {}; // static data object map
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.path) {
@@ -65,8 +66,17 @@ module.exports.setup = function (cb) {
 * example: staticdata/example/test.csv = example/test
 */
 module.exports.create = function (dataName) {
+	
+	// check for existing static data object first
+	if (sdMap[dataName]) {
+		return sdMap[dataName];
+	}	
+
+	// create a new static data object
 	if (staticData[dataName]) {
-		return new StaticData(dataName, staticData[dataName]);
+		var sd = new StaticData(dataName, staticData[dataName]);
+		sdMap[dataName] = sd;
+		return sd;
 	}
 	return null;
 };
@@ -214,40 +224,6 @@ function mapIndex(data, indexNames) {
 	}
 	return map;
 }
-
-/*
-Commented out because:
-ǃ [error] lint error(s) in modules/
-ǃ /home/bh/run/GraceNode/modules/staticdata/index.js: line 218, col 28, 'validateCachedData' is defined but never used.
-*/
-
-/*
-function validateCachedData(name, cb) {
-	if (staticData[name]) {
-		var data = staticData[name];
-		return fs.lstat(data.path, function (error, stat) {
-			if (error) {
-				return cb(error);
-			}
-			var d = new Date(stat.mtime);
-			var mtime = d.getTime();
-			if (mtime !== data.mtime) {
-				// file has been modified > update cache
-				return readFile(data.path, function (error) {
-					if (error) {
-						return cb(error);
-					}
-					// pass the updated cached data
-					cb(null, staticData[name]);
-				});
-			}
-			// cached data is still the latest
-			cb();
-		});
-	}
-	cb(new Error('cached data not found'));
-}
-*/
 
 function StaticData(name, src) {
 	this._name = name;
