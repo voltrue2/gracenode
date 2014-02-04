@@ -158,7 +158,7 @@ function execRequestHook(req, res, hook, controller, parsedUrl) {
 	log.verbose('request hook found for "' + parsedUrl.controller + '.' + parsedUrl.method + '"');
 	hook(parsedUrl.args[0], function (error, status) {
 		if (error) {
-			log.error('request hook exeuted with an error:', error, '(status: ' + status + ')');
+			log.error('request hook executed with an error:', error, '(status: ' + status + ')');
 			return errorHandler(req, res, error, status);
 		}
 		log.verbose('request hook executed');
@@ -180,6 +180,9 @@ function errorHandler(req, res, errorMsg, status) {
 	
 	// we can not have handleError deal with it
 	var responder = new response.create(req, res);
+	if (errorMsg instanceof Error) {
+		errorMsg = errorMsg.message;
+	}
 	responder.error(JSON.stringify({ error: errorMsg }), status);
 }
 
