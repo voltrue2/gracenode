@@ -215,6 +215,13 @@ function mapIndex(data, indexNames) {
 	return map;
 }
 
+/*
+Commented out because:
+ǃ [error] lint error(s) in modules/
+ǃ /home/bh/run/GraceNode/modules/staticdata/index.js: line 218, col 28, 'validateCachedData' is defined but never used.
+*/
+
+/*
 function validateCachedData(name, cb) {
 	if (staticData[name]) {
 		var data = staticData[name];
@@ -240,6 +247,7 @@ function validateCachedData(name, cb) {
 	}
 	cb(new Error('cached data not found'));
 }
+*/
 
 function StaticData(name, src) {
 	this._name = name;

@@ -26,8 +26,10 @@ module.exports.create = function (name) {
 };
 
 function Cache(name) {
+
 	this._cache = new Memcache(config.hosts, config.options || null);
 	this._name = name;
+	
 }
 
 Cache.prototype.get = function (rawKey, cb) {
@@ -54,10 +56,10 @@ Cache.prototype.get = function (rawKey, cb) {
 				var end = eDate.getTime();
 				log.verbose('get cache took [' + (end - start) + ' ms]');
 		
-				cb(null, null);
+				cb(null, value);
 			});
 		}
-		cb(null, null);
+		cb();
 	});
 };
 
@@ -73,6 +75,7 @@ Cache.prototype.set = function (rawKey, value, cb) {
 			callback();
 		});
 	};
+
 	this._getBaseCache(function (error, timestamp) {
 		if (error) {
 			return cb(error);
