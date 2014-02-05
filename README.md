@@ -173,6 +173,7 @@ gracenode.on('shutdown')
 - <a href="#session-module">session</a>
 - <a href="#encrypt-module">encrypt</a>
 - <a href="#mysql-module">mysql</a>
+- <a href="#memcache-module">memcache</a>
 - <a href="#asset-module">asset</a>
 - <a href="#iap-module">iap (In-App-Purchase with Apple and Google Play)</a>
 - <a href="#wallet-module">wallet</a>
@@ -1505,10 +1506,66 @@ hc.spend(userId, cost, itemIdToBePurchase,
 
 ```
 
+***
+#### <span id="memcache-module">memcache module</span>
+<a href="#top">Back to the list of built-in modules</a>
+***
+
+Access
+<pre>
+gracenode.memcache
+</pre>
+
+Configurations
+```javascript
+"modules": {
+	"memcache": {
+		"hosts": ["host:port", "host:port"...],
+		"ttl": int (in seconds),
+		"options": object
+	}
+}
+```
+
+#####API: *create*
+
+<pre>
+Cache create(String name)
+</pre>
+> Returns and instance of Cache object with "name" as a prefix of every key
+
+##### Cache class
+
+> **getOne**
+<pre>
+void getOne(String key, Function callback)
+</pre>
+
+> **getMany**
+<pre>
+void getMany(Array keyList, Function callback)
+</pre>
+
+> **set**
+<pre>
+void set(String, key, Mixed value, Function callback);
+</pre>
+
+> **replace**
+<pre>
+void relace(String key, Mixed value, Function callback)
+</pre>
+
+> **del**
+<pre>
+void del(String key, Function callback)
+</pre>
+
+
 ### Useing GraceNode With Apache
 > apache configuration example
 
-<pre>
+```xml
 # proxy to nodejs process
 <VirtualHost *:80>
     ServerAdmin yourname@yourdomain.com
@@ -1528,4 +1585,4 @@ hc.spend(userId, cost, itemIdToBePurchase,
     ProxyPassReverse / yourdomain.com:8000/
 
 </VirtualHost>
-</pre>
+```
