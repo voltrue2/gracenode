@@ -103,7 +103,7 @@ function readFile(path, cb) {
 		// convert to JSON		
 		if (type === 'csv') {
 			data = toJSON(data);
-		}
+		} 
 		// check for error
 		if (data instanceof Error) {
 			return cb(data);
@@ -118,9 +118,15 @@ function readFile(path, cb) {
 			log.verbose('indexed: ', config.index[fileName]);
 		}	
 		
+		//Turn data into an object.
+		try {
+			data = JSON.parse(data);
+		} catch (e) {
+			log.error('Could not turn', name, 'into object.');
+		}
+
 		// add it to cache
 		staticData[name] = { data: data, indexMap: indexMap, path: path };
-
 		log.verbose('mapped: ' + path + ' > ' + name);
 
 		// set up file watch listener
@@ -307,6 +313,7 @@ StaticData.prototype.update = function (src) {
 
 function getObjValue(data) {
 	var obj;
+
 	if (Array.isArray(data)) {
 		obj = [];
 		for (var i = 0, len = data.length; i < len; i++) {
