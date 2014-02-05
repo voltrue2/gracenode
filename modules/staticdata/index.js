@@ -108,6 +108,7 @@ function readFile(path, cb) {
 				data = JSON.parse(data);
 			} catch (e) {
 				log.error('Could not turn', name, 'into object.');
+				return cb(e);
 			}
 		}
 		
