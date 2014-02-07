@@ -650,7 +650,6 @@ module.exports.index = function (requestObject, response) {
 > ### How to read URL fragments:
 ```javascript
 // URL: http://mydomain.com/myControler/myMethod/one/two/three/
-
 exports.myMethod = function (requestObject, responseObject) {
 	var params = requestObject.parameters;
 	console.log(params);
@@ -663,7 +662,6 @@ exports.myMethod = function (requestObject, responseObject) {
 	]
 	*/
 };
-
 ```
 
 > #### response object
