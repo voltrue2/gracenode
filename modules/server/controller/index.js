@@ -86,8 +86,7 @@ function handle(req, res, parsedUrl, queryData) {
 			log.verbose('controller "' + parsedUrl.controller + '" loaded');
 
 			// create arguments for the controller method
-			var reqArray = [new RequestObj(req, res, queryData)];
-			parsedUrl.args = reqArray.concat(parsedUrl.args);
+			parsedUrl.args = [new RequestObj(req, res, parsedUrl.args, queryData)];
 			
 			// validate controller method
 			if (!controller[parsedUrl.method]) {
@@ -206,12 +205,13 @@ function handleError(req, res, status) {
 	return false;	
 }
 
-function RequestObj(request, response, reqData) {
+function RequestObj(request, response, params, reqData) {
 	this._props = {};
 	this._response = response;
 	
 	// public
 	this.cookies = new Cookies(request, response);
+	this.parameters = params;
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
 	this.getData = queryDataHandler.createGetter(reqData.get || {});
 	this.requestHeaders = headers.create(request.headers);
