@@ -100,7 +100,7 @@ function handle(req, res, parsedUrl, queryData) {
 			// validate controller method requirement(s)
 			var args = gracenode.lib.getArguments(controller[parsedUrl.method]);
 			if (parsedUrl.args.length !== args.length) {
-				return errorHandler('number of arguments does not match > given:\n' + JSON.stringify(parsedUrl.args) + '\nexpected:\n' + JSON.stringify(args));
+				return errorHandler('number of arguments does not match > given');
 			}
 
 			// check for request hook
