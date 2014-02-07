@@ -96,12 +96,6 @@ function handle(req, res, parsedUrl, queryData) {
 			// create final response callback and append it to the arguments
 			parsedUrl.args.push(response.create(req, res));
 
-			// validate controller method requirement(s)
-			var args = gracenode.lib.getArguments(controller[parsedUrl.method]);
-			if (parsedUrl.args.length !== args.length) {
-				return errorHandler(req, res, 'number of arguments does not match');
-			}
-
 			// check for request hook
 			var requestHookExecuted = handleRequestHook(req, res, controller, parsedUrl);
 			if (requestHookExecuted) {
