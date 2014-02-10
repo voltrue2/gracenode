@@ -34,7 +34,7 @@ util.inherits(GraceNode, EventEmitter);
 
 // never use this function in production, but setup script only
 GraceNode.prototype.getModuleSchema = function (modName, cb) {
-	var path = this._root + 'GraceNode/scripts/' + modName + '/schema.sql';
+	var path = this._root + rootDirName + '/scripts/' + modName + '/schema.sql';
 	fs.readFile(path, 'utf-8', function (error, sql) {
 		if (error) {
 			return cb(error);
