@@ -101,6 +101,13 @@ void exit(String errorMessage)
 > Stop GraceNode process
 >> errorMessage is optional and if given GraceNode will stop with an error
 
+#### getModuleSchema
+<pre>
+void getModuleSchema(String moduleName, Function callback)
+</pre>
+> Extracts and passes SQL schema(s) for a GraceNode built-in module such as iap, and wallet
+>> This function should NOT be used in production.
+
 ## GraceNode Events
 
 ##### setup.config
