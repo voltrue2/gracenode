@@ -73,18 +73,18 @@ void setConfigFiles(Array configFileList)
 </pre>
 > Give GraceNode the list of configuration files to be used (the files must be in the directory given to setConfigFiles)
 
+##### addModulePath
+<pre>
+void addModulePath(String modulePath)
+</pre>
+> Adds an laternative path for GraceNode to look for module(s) to load from
+>> This will be used to load custom module(s)
+
 ##### use
 <pre>
-void use(String moduleName, Object optionalParams)
+void use(String moduleName)
 </pre>
-> Indicate what module to use (this function can be used to load both built-in and custom modules)
->> optionalParams
-```javascript
-{ 
-	path: 'path to the source code of the custom module',
-	configName: 'name of configuration to be used'
-}
-```
+> Indicates what module to use (this function can be used to load both built-in and custom modules)
 
 > Example
 ```javascript
@@ -107,7 +107,7 @@ void exit(String errorMessage)
 > Stop GraceNode process
 >> errorMessage is optional and if given GraceNode will stop with an error
 
-#### getModuleSchema
+##### getModuleSchema
 <pre>
 void getModuleSchema(String moduleName, Function callback)
 </pre>

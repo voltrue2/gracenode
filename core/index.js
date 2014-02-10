@@ -7,6 +7,7 @@ var log = logger.create('GraceNode');
 var util = require('util');
 var cluster = require('cluster');
 var fs = require('fs');
+var modPaths = [];
 
 var workerList = []; // master only
 
@@ -77,19 +78,21 @@ GraceNode.prototype.setConfigFiles = function (fileList) {
 	log.verbose('configuration file list:', fileList);
 };
 
+GraceNode.prototype.addModulePath = function (path) {
+	if (modPaths.indexOf(path) !== -1) {
+		return log.warning('module path has already been added:', path);
+	}
+	modPaths.push(path);
+	log.verbose('module path has been added:', path);
+};
+
 GraceNode.prototype.exit = function (error) {
 	process.exit(error || 0);
 };
 
-GraceNode.prototype.use = function (modName, params) {
-	if (!params) {
-		params = {};
-	}
+GraceNode.prototype.use = function (modName) {
 	this._modules.push({
-		name: modName,
-		sourceName: modName,
-		config: params.configName || null,
-		path: params.path || null
+		name: modName
 	});
 };
 
@@ -238,51 +241,56 @@ function setupProcess(that, lastCallback, cb) {
 	
 }
 
+function loadModule(that, mod, cb) {
+	var name = mod.name;
+	try {
+		// first try inside GraceNode
+		var path = that.getRootPath() + rootDirName + '/modules/' + mod.name;
+		fs.exists(path, function (exists) {
+			log.verbose('look for module [' + name + '] in ', path);
+			if (exists) {
+				log.verbose('module [' + name + '] found');
+				return cb(null, require(path));
+			}
+			// try other path(s)
+			async.eachSeries(modPaths, function (dir, callback) {
+				dir = that.getRootPath() + dir + name;
+				fs.exists(dir, function (exists) {
+					log.verbose('look for module [' + name + '] in ', dir);
+					if (exists) {
+						log.verbose('module [' + name + '] found');
+						return cb(null, require(dir));
+					}
+					callback();
+				});
+			}, cb);
+		});
+	} catch (exception) {
+		cb(exception);
+	}
+}
+
 function setupModules(that, cb) {
 	log.verbose('start loading built-in modules');
-	try {
-		async.eachSeries(that._modules, function (mod, nextCallback) {
-			var name = mod.name;
-			var dir = that.getRootPath() + (mod.path || rootDirName + '/modules/');
-			var path = dir + name;
-			var configName = 'modules.' + (mod.config || name);
-			
-			var module = null;
-			
-			that._profiler.mark('module [' + name + '] start loading');
+	async.eachSeries(that._modules, function (mod, nextCallback) {
+		
+		var name = mod.name;
 
-			// look for the module in GraceNode
-			log.verbose('> look for module [' + name + '] in ' + path);
-			try {
-				module = require(path);
+		loadModule(that, mod, function (error, module) {
 
-				log.verbose('module [' + name + '] loading: ', path);
-			
-			} catch (exception) {
-				
-				log.verbose('module [' + name + '] not found in ' + path);
-
-				// now look for the module in the application
-				try {
-					var appModulePath = that.getRootPath() + (mod.path || 'modules/' + name);
-					log.verbose('> look for module [' + name + '] in ' + appModulePath);
-					module = require(appModulePath);
-
-					log.verbose('module [' + name + '] loading: ', appModulePath);
-				
-				} catch (exception2) {
-					log.verbose(exception);
-					log.error('failed to load module [' + name + ']: ' + path);
-					return cb(exception2);	
-				}
+			if (error) {
+				return cb(error);
 			}
 
-		
-			that[name] = module;			
+			if (!module) {
+				return cb(new Error('failed to find module [' + name + ']'));
+			}
+
+			that[name] = module;
 
 			if (typeof module.readConfig === 'function') {
-				log.verbose('module [' + name + '] reading configurations: ' + configName);
-				var status = module.readConfig(config.getOne(configName));
+				log.verbose('module [' + name + '] reading configurations: modules.' + name);
+				var status = module.readConfig(config.getOne('modules.' + name));
 				if (status instanceof Error) {
 					return cb(status);
 				}
@@ -304,10 +312,8 @@ function setupModules(that, cb) {
 				that.emit('setup.' + name);
 				nextCallback();
 			}
-		}, cb);
-	} catch (e) {
-		cb(e);
-	}
+		});
+	}, cb);
 }
 
 function setupListeners(that) {
