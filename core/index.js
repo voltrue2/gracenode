@@ -1,4 +1,4 @@
-var rootDirName = 'GraceNode';
+var rootDirName = 'node_modules/GraceNode';
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');
@@ -24,9 +24,9 @@ function GraceNode() {
 		{ name: 'profiler', sourceName: 'profiler', config: null, path: null },
 		{ name: 'lib', sourceName: 'lib', config: null, path: null }
 	];
-	this._root = process.cwd() + '/';
-	this._graceNodeDir = 'node_modules/GraceNode'
-
+	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
+	process.chdir(this._root);
+	log.verbose('Working directory changed to', this._root);
 }
 
 util.inherits(GraceNode, EventEmitter);
@@ -243,7 +243,7 @@ function setupModules(that, cb) {
 	try {
 		async.eachSeries(that._modules, function (mod, nextCallback) {
 			var name = mod.name;
-			var dir = that.getRootPath() + '/' + (mod.path || that._graceNodeDir + '/modules/');
+			var dir = that.getRootPath() + '/' + (mod.path || rootDirName + '/modules/');
 
 			var path = dir + name;
 			var configName = 'modules.' + (mod.config || name);
