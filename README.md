@@ -632,15 +632,16 @@ module.exports.foo = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
-> How to read GET, POST, and PUT
+> How to read GET, POST, DELETE, and PUT
 ```javascript
 // controller file
 module.exrpots.index = function (requestObject, response) {
 	// server module automatically gives every controller the following functions:
 	// requestObject.getData and requestObject.postData
 	var getFoo = requestObject.getData.get('foo');
-	var postFoo = requestObject.postData.get('foot');
-	var putFoo = requreObject.putData.get('put');
+	var postFoo = requestObject.postData.get('foo');
+	var putFoo = requreObject.putData.get('foo');
+	var deleteFoo = requreObject.deleteData.get('foo');
 	response.json(null);
 };
 ```

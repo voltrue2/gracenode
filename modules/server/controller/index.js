@@ -57,7 +57,7 @@ function extractQueries(req, cb) {
 			});
 			req.on('end', function () {
 				var post = queryString.parse(body);
-				cb(null, { post: post, put: null, get: null });
+				cb(null, { post: post, put: null, delete: null, get: null });
 			});
 			req.on('error', function (error) {
 				cb(error);
@@ -70,7 +70,20 @@ function extractQueries(req, cb) {
 			});
 			req.on('end', function () {
 				var put = queryString.parse(putBody);
-				cb(null, { post: null, put: put, get: null });
+				cb(null, { post: null, put: put, delete: null, get: null });
+			});
+			req.on('error', function (error) {
+				cb(error);
+			});
+			break;
+		case 'DELETE':
+			var deleteBody = '';
+			req.on('data', function (data) {
+				deleteBody += data;
+			});
+			req.on('end', function () {
+				var del = queryString.parse(deleteBody);
+				cb(null, { post: null, put: null, delete: del, get: null });
 			});
 			req.on('error', function (error) {
 				cb(error);
@@ -78,11 +91,11 @@ function extractQueries(req, cb) {
 			break;
 		case 'GET':
 			var parsed = url.parse(req.url, true);
-			cb(null, { post: null, put: null, get: parsed.query });
+			cb(null, { post: null, put: null, delete: null, get: parsed.query });
 			break;
 		default:
 			log.warning('only POST, PUT, and GET are supported');
-			cb(null, { post: null, put: null, get: null });
+			cb(null, { post: null, put: null, delete: null, get: null });
 			break;
 	}
 }
@@ -221,6 +234,7 @@ function RequestObj(request, response, params, reqData) {
 	this.parameters = params;
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
 	this.putData = queryDataHandler.createGetter(reqData.put || {});
+	this.deleteData = queryDataHandler.createGetter(reqData.delete || {});
 	this.getData = queryDataHandler.createGetter(reqData.get || {});
 	this.requestHeaders = headers.create(request.headers);
 }
