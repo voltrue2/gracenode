@@ -57,7 +57,20 @@ function extractQueries(req, cb) {
 			});
 			req.on('end', function () {
 				var post = queryString.parse(body);
-				cb(null, { post: post, get: null });
+				cb(null, { post: post, put: null, get: null });
+			});
+			req.on('error', function (error) {
+				cb(error);
+			});
+			break;
+		case 'PUT':
+			var putBody = '';
+			req.on('data', function (data) {
+				putBody += data;
+			});
+			req.on('end', function () {
+				var put = queryString.parse(putBody);
+				cb(null, { post: null, put: put, get: null });
 			});
 			req.on('error', function (error) {
 				cb(error);
@@ -65,11 +78,11 @@ function extractQueries(req, cb) {
 			break;
 		case 'GET':
 			var parsed = url.parse(req.url, true);
-			cb(null, { post: null, get: parsed.query });
+			cb(null, { post: null, put: null, get: parsed.query });
 			break;
 		default:
-			log.warning('only POST and GET are supported');
-			cb(null, { post: null, get: null });
+			log.warning('only POST, PUT, and GET are supported');
+			cb(null, { post: null, put: null, get: null });
 			break;
 	}
 }
@@ -207,6 +220,7 @@ function RequestObj(request, response, params, reqData) {
 	this.cookies = new Cookies(request, response);
 	this.parameters = params;
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
+	this.putData = queryDataHandler.createGetter(reqData.put || {});
 	this.getData = queryDataHandler.createGetter(reqData.get || {});
 	this.requestHeaders = headers.create(request.headers);
 }
