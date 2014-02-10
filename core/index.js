@@ -245,8 +245,6 @@ function setupModules(that, cb) {
 			var name = mod.name;
 			var dir = that.getRootPath() + '/' + (mod.path || that._graceNodeDir + '/modules/');
 
-			console.log('DIR', dir);
-
 			var path = dir + name;
 			var configName = 'modules.' + (mod.config || name);
 			
