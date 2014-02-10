@@ -10,6 +10,12 @@ $ cd GraceNode/
 $ npm install
 </pre>
 
+##Hot to install from NPM
+<pre>
+$ cd yourApp/
+$ npm install GraceNode
+</pre>
+
 > If you execute the above commands and every thing goes fine, GraceNode is successfully installed along with its dependencies
 
 ##Create configuration files
