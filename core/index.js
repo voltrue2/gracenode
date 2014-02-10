@@ -7,8 +7,6 @@ var log = logger.create('GraceNode');
 var util = require('util');
 var cluster = require('cluster');
 var fs = require('fs');
-var path = require('path')
-
 
 var workerList = []; // master only
 
