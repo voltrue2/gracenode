@@ -10,11 +10,11 @@ $ cd GraceNode/
 $ npm install
 </pre>
 
-##Hot to install from NPM
-<pre>
-$ cd yourApp/
-$ npm install GraceNode
-</pre>
+##Hot to install from NPM (with package.json)
+```javascript
+// Add this under your dependencies to allow for installation via NPM.
+"GraceNode": "git+https://github.com/voltrue2/GraceNode.git#master"
+```
 
 > If you execute the above commands and every thing goes fine, GraceNode is successfully installed along with its dependencies
 
