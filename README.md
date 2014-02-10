@@ -632,7 +632,7 @@ module.exports.foo = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
-> How to read GET and POST
+> How to read GET, POST, and PUT
 ```javascript
 // controller file
 module.exrpots.index = function (requestObject, response) {
@@ -640,6 +640,7 @@ module.exrpots.index = function (requestObject, response) {
 	// requestObject.getData and requestObject.postData
 	var getFoo = requestObject.getData.get('foo');
 	var postFoo = requestObject.postData.get('foot');
+	var putFoo = requreObject.putData.get('put');
 	response.json(null);
 };
 ```
