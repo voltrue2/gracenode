@@ -402,7 +402,7 @@ void walkDir(String path, Function callback)
 Access
 <pre>
 // do this in your bootstrap file (index.js) before invoking gracenode.setup().
-gracenode.use('gracenode', 'gracenode');
+gracenode.use('staticdata');
 // once gracenode.setup is finished. you can access the module as following:
 gracenode.staticdata
 </pre>
@@ -688,11 +688,12 @@ exports.myMethod = function (requestObject, responseObject) {
 Void response.json(Mixed content, Integer status)
 </pre>
 
->> **response.html**
->> resonds to the client as HTML
+>> **response.data**
+>> resonds to the client as raw data
+>> can be used to send HTML data as well
 >> status code is optional and default is 200
 <pre>
-Void response.html(String content, Integer status)
+Void response.data(String content, Integer status)
 </pre>
 
 >> **response.file**
@@ -835,13 +836,13 @@ void load(String vilewFilePath, Function callback)
 > Loads a view file.
 ```javascript
 // controller file
-module.exports.index = function (cb) {
+module.exports.index = function (requestObj, responseObj) {
 	gracenode.view.assign('foo', 'hello world');
 	gracenode.view.load('/foo/index.html', function (error, contentData) {
 		if (error) {
-			return cb(error);
+			return responseObj.error(error);
 		}
-		cb(null, contentData, 'HTML');
+		responseObj.data(contentData);
 	});
 };
 // this will output "hello world"

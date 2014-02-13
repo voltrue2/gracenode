@@ -47,9 +47,9 @@ Response.prototype.json = function (content, status) {
 	this._response.emit('end');
 };
 
-Response.prototype.html = function (content, status) {
-	log.verbose('response content type: HTML');
-	respondHTML(this._request, this._response, content, status);
+Response.prototype.data = function (content, status) {
+	log.verbose('response content type: DATA');
+	respondData(this._request, this._response, content, status);
 	this._response.emit('end');
 };
 
@@ -72,11 +72,15 @@ Response.prototype.redirect = function (content, status) {
 };
 
 function compressContent(content, cb) {
+	if (content instanceof Buffer) {
+		// we do not compress binary
+		log.verbose('skip compressing binary data: ' + (content.length / 1024) + 'KB');
+		cb(null, content);
+	}
 	zlib.gzip(content, function (error, compressedData) {
 		if (error) {
 			return cb(error);
 		}
-	
 		log.verbose('compressed content size: ' + (compressedData.length / 1024) + ' KB');
 
 		cb(null, compressedData);
@@ -112,7 +116,7 @@ function respondJSON(req, res, content, status) {
 
 }
 
-function respondHTML(req, res, content, status) {
+function respondData(req, res, content, status) {
 	content = content || null;
 	status = status || 200;
 	compressContent(content, function (error, data) {
