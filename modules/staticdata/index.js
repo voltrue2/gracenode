@@ -100,16 +100,22 @@ function readFile(path, cb) {
 		
 		log.verbose('static data loaded:', path + ' (' + size + ')');
 
-		// convert to JSON		
-		if (type === 'csv') {
-			data = toJSON(data);
-		} else { 
-			try {
-				data = JSON.parse(data);
-			} catch (e) {
-				log.error('Could not turn', name, 'into object.');
-				return cb(e);
-			}
+		switch (type) {
+			case 'csv':
+				data = toObject(data);
+				break;
+			case 'json':
+				try {
+					data = JSON.parse(data);
+				} catch (e) {
+					log.error('Could not turn', name, '(type:', type, ')', 'into object.');
+					return cb(e);
+				}
+				break;
+			default:
+				data = { data: data };
+				break;
+			
 		}
 		
 		// check for error
@@ -158,7 +164,7 @@ function setupChangeListener(path) {
 	});
 }
 
-function toJSON(data) {
+function toObject(data) {
 	// assume first row as the list of columns
 	var res = [];
 	var pattern = new RegExp(quote, 'g');
