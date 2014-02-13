@@ -690,10 +690,16 @@ Void response.json(Mixed content, Integer status)
 
 >> **response.data**
 >> resonds to the client as raw data
->> can be used to send HTML data as well
 >> status code is optional and default is 200
 <pre>
 Void response.data(String content, Integer status)
+</pre>
+
+>> **response.html**
+>> resonds to the client as HTML
+>> status code is optional and default is 200
+<pre>
+Void response.html(String content, Integer status)
 </pre>
 
 >> **response.file**

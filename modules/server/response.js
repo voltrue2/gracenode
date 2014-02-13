@@ -47,6 +47,12 @@ Response.prototype.json = function (content, status) {
 	this._response.emit('end');
 };
 
+Response.prototype.html = function (content, status) {
+	log.verbose('response content type: DATA');
+	respondHTML(this._request, this._response, content, status);
+	this._response.emit('end');
+};
+
 Response.prototype.data = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondData(this._request, this._response, content, status);
@@ -116,7 +122,7 @@ function respondJSON(req, res, content, status) {
 
 }
 
-function respondData(req, res, content, status) {
+function respondHTML(req, res, content, status) {
 	content = content || null;
 	status = status || 200;
 	compressContent(content, function (error, data) {
@@ -132,6 +138,34 @@ function respondData(req, res, content, status) {
 			'Connection': 'Keep-Alive',
 			'Content-Encoding': 'gzip',
 			'Content-Type': 'text/html; charset=UTF-8',
+			'Pragma': 'no-cache',
+			'Vary': 'Accept-Encoding',
+			'Content-Length': data.length
+		});
+
+		responseLog(req, status);		
+
+		res.end(data, 'binary');		
+
+	});
+}
+
+function respondData(req, res, content, status) {
+	content = content || null;
+	status = status || 200;
+	compressContent(content, function (error, data) {
+		
+		if (error) {
+			log.error(error);
+			status = 500;
+			data = error;
+		}
+
+		res.writeHead(status, {
+			'Cache-Control': 'no-cache, must-revalidate',
+			'Connection': 'Keep-Alive',
+			'Content-Encoding': 'gzip',
+			'Content-Type': 'text/plain; charset=UTF-8',
 			'Pragma': 'no-cache',
 			'Vary': 'Accept-Encoding',
 			'Content-Length': data.length
