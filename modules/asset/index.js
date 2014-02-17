@@ -24,13 +24,18 @@ module.exports.setup = function (cb) {
 		if (error) {
 			return cb(error);
 		}
-		async.forEachSeries(list, function (item, callback) {
-			fs.readFile(item.file, function (error, fileData) {
+		async.eachSeries(list, function (item, callback) {
+			fs.lstat(item.file, function (error, stat) {
 				if (error) {
 					return cb(error);
 				}
-				mapFileData(path, item, fileData);
-				callback();
+				fs.readFile(item.file, function (error, fileData) {
+					if (error) {
+						return cb(error);
+					}
+					mapFileData(path, item, fileData, stat);
+					callback();
+				});
 			});
 		}, function () {
 			log.verbose('asset map:', map);
@@ -79,6 +84,9 @@ module.exports.getDataByKeyAndHash = function (key, hash, cb) {
 		return cb(new Error('file not found: ' + key + ', ' + hash), null);
 	}
 	if (data.hash === hash) {
+	
+		log.verbose('get asset data: ' + key + ' ' + hash + ' [cache found]');
+
 		return cb(null, data);
 	}
 	// file is not up-to-date > read the file again
@@ -90,19 +98,27 @@ module.exports.getDataByKeyAndHash = function (key, hash, cb) {
 		if (!item) {
 			return cb(new Error('file not found: ' + data.path), null);
 		}
-		fs.readFile(item.file, function (error, fileData) {
+		fs.lstat(item.file, function (error, stat) {
 			if (error) {
 				return cb(error);
 			}
-			// update the map
-			mapFileData(data.path, item, fileData);
-			// get the new data
-			cb(null, module.exports.getDataByKey(key));
+			fs.readFile(item.file, function (error, fileData) {
+				if (error) {
+					return cb(error);
+				}
+				// update the map
+				mapFileData(data.path, item, fileData, stat);
+				// get the new data
+		
+				log.verbose('get asset data: ' + key + ' ' + hash + ' [read file] > map updated');
+
+				cb(null, module.exports.getDataByKey(key));
+			});
 		});
 	});
 };
 
-function mapFileData(path, item, fileData) {
+function mapFileData(path, item, fileData, stat) {
 	var data = createMapData(path, item, fileData);
 	var keys = data.key.split('/');
 	var mapObj = map;
@@ -122,7 +138,8 @@ function mapFileData(path, item, fileData) {
 	dataMap[dataKey] = { 
 		data: fileData,
 		path: item.file,
-		hash: data.hash
+		hash: data.hash,
+		mtime: stat.mtime
 	};
 	log.verbose('mapped asset file:', data.key);
 }

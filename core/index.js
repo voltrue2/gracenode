@@ -1,4 +1,5 @@
-var rootDirName = 'node_modules/GraceNode';
+
+var rootDirName = 'GraceNode';
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');
@@ -6,7 +7,6 @@ var logger = require('../modules/log');
 var log = logger.create('GraceNode');
 var util = require('util');
 var cluster = require('cluster');
-var fs = require('fs');
 
 var workerList = []; // master only
 
@@ -25,39 +25,14 @@ function GraceNode() {
 		{ name: 'lib', sourceName: 'lib', config: null, path: null }
 	];
 	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
+	// detect current working directory directory
+	var prevCwd = process.cwd();
+	// change current working directory to the root of the application
 	process.chdir(this._root);
-	log.verbose('Working directory changed to', this._root);
+	log.verbose('cwd changed: ' + prevCwd + ' > ' + this._root);
 }
 
 util.inherits(GraceNode, EventEmitter);
-
-// never use this function in production, but setup script only
-GraceNode.prototype.getModuleSchema = function (modName, cb) {
-	var path = this._root + 'GraceNode/scripts/' + modName + '/schema.sql';
-	fs.readFile(path, 'utf-8', function (error, sql) {
-		if (error) {
-			return cb(error);
-		}
-
-		log.verbose('module schema:', sql);
-
-		// remove line breaks and tabs
-		sql = sql.replace(/(\n|\t)/g, '');
-		// separate sql statements
-		var sqlList = sql.split(';');
-		// remove empty entry in the array
-		var list = [];
-		for (var i = 0, len = sqlList.length; i < len; i++) {
-			if (sqlList[i] !== '') {
-				list.push(sqlList[i]);
-			}
-		}
-
-		log.verbose('module schema queries:', list);
-
-		cb(null, list);
-	});
-};
 
 GraceNode.prototype.getRootPath = function () {
 	return this._root;
@@ -243,8 +218,7 @@ function setupModules(that, cb) {
 	try {
 		async.eachSeries(that._modules, function (mod, nextCallback) {
 			var name = mod.name;
-			var dir = that.getRootPath() + '/' + (mod.path || rootDirName + '/modules/');
-
+			var dir = that.getRootPath() + rootDirName + '/' + (mod.path || 'modules/');
 			var path = dir + name;
 			var configName = 'modules.' + (mod.config || name);
 			
@@ -262,6 +236,7 @@ function setupModules(that, cb) {
 			} catch (exception) {
 				
 				log.verbose('module [' + name + '] not found in ' + path);
+				log.verbose(exception);				
 
 				// now look for the module in the application
 				try {
@@ -272,7 +247,6 @@ function setupModules(that, cb) {
 					log.verbose('module [' + name + '] loading: ', appModulePath);
 				
 				} catch (exception2) {
-					log.verbose(exception);
 					log.error('failed to load module [' + name + ']: ' + path);
 					return cb(exception2);	
 				}

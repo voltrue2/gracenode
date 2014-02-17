@@ -51,12 +51,17 @@ module.exports.setup = function (cb) {
 		if (error) {
 			return cb(error);
 		}
-		async.forEach(list, function (item, nextCallback) {
+		async.eachSeries(list, function (item, nextCallback) {
 			readFile(item.file, nextCallback);
 		}, cb);
 	});
 };
 
+/*
+* dataName rule:
+* configuration path: staticdata/
+* example: staticdata/example/test.csv = example/test
+*/
 module.exports.create = function (dataName) {
 	if (staticData[dataName]) {
 		return new StaticData(dataName, staticData[dataName]);
@@ -67,7 +72,7 @@ module.exports.create = function (dataName) {
 function readFile(path, cb) {
 	var lastDot = path.lastIndexOf('.');
 	var type = path.substring(lastDot + 1);
-	var name = path.substring(path.lastIndexOf('/') + 1, lastDot);
+	var name = path.substring(path.lastIndexOf(config.path) + config.path.length, lastDot);
 	fs.lstat(path, function (error, stat) {
 		if (error) {
 			return cb(error);
@@ -100,11 +105,16 @@ function readFile(path, cb) {
 			var fileName = name + '.' + type;
 			if (config.index && config.index[fileName]) {
 				indexMap = mapIndex(data, config.index[fileName]);
+				
+				log.verbose('indexed: ', config.index[fileName]);
 			}	
+			
 			// add it to cache
 			var d = new Date(stat.mtime);
 			var mtime = d.getTime();
 			staticData[name] = { data: data, indexMap: indexMap, path: path, mtime: mtime };
+
+			log.verbose('mapped: ' + path + ' > ' + name);
 
 			cb();
 		});
@@ -130,11 +140,30 @@ function toJSON(data) {
 			return new Error('data is corrupt: \ncolumns: \n' + JSON.stringify(columns, null, 4) + '\ndata: \n' + JSON.stringify(cols, null, 4));
 		}
 		for (var j = 0; j < columnLen; j++) {
-			item[columns[j]] = cols[j];
+			var value = getValue(cols[j]);
+			item[columns[j]] = value;
 		}
 		res.push(item);
 	}
 	return res;
+}
+
+function getValue(value) {
+	if (!isNaN(value)) {
+		return Number(value);
+	}
+	switch (value.toLowerCase()) {
+		case 'true':
+			return true;
+		case 'false':
+			return false;
+		case 'null':
+			return null;
+		case 'undefined':
+			return undefined;
+		default:
+			return value;
+	}
 }
 
 function mapIndex(data, indexNames) {
@@ -142,16 +171,25 @@ function mapIndex(data, indexNames) {
 	for (var c = 0, length = data.length; c < length; c++) {
 		var item = data[c];
 		for (var i = 0, len = indexNames.length; i < len; i++) {
-			var index = indexNames[i];
-			if (item[index] !== undefined) {
-				if (!map[index]) {
-					map[index] = {};
+			var indexName = indexNames[i];
+			if (item[indexName] !== undefined) {
+				if (!map[indexName]) {
+					map[indexName] = {};
 				}
-				map[index][item[index]] = {};
+				var index = item[indexName];
+				var itemObj = {};
 				for (var key in item) {
-					if (key !== index) {
-						map[index][item[index]][key] = item[key];
+					itemObj[key] = item[key];
+				}
+				if (map[indexName][index]) {
+					// index is not unique
+					if (!Array.isArray(map[indexName][index])) {
+						map[indexName][index] = [map[indexName][index]];
 					}
+					map[indexName][index].push(itemObj);
+				} else {
+					// index is unique or this is the first item of the index
+					map[indexName][index] = itemObj;
 				}
 			}
 		}
@@ -197,9 +235,9 @@ StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 		if (error) {
 			return cb(error);
 		}
-		if (that._indexMap[indexName]) {
+		if (that._indexMap && that._indexMap[indexName]) {
 			if (that._indexMap[indexName][key] !== undefined) {
-				if (typeof that._indexMap[indexName][key] === 'object') {
+				if (that._indexMap[indexName][key] !== null && typeof that._indexMap[indexName][key] === 'object') {
 					return cb(null, getObjValue(that._indexMap[indexName][key]));
 				}
 				return cb(null, that._indexMap[indexName][key]);
@@ -212,7 +250,7 @@ StaticData.prototype.getOneByIndex = function (indexName, key, cb) {
 StaticData.prototype.getManyByIndex = function (indexName, keyList, cb) {
 	var res = {};
 	var that = this;
-	async.forEach(keyList, function (key, nextCallback) {
+	async.eachSeries(keyList, function (key, nextCallback) {
 		that.getOneByIndex(indexName, key, function (error, data) {
 			if (error) {
 				return cb(error);
@@ -233,7 +271,7 @@ StaticData.prototype.getOne = function (index, cb) {
 			return cb(error);
 		}
 		if (that._src[index]) {	
-			if (typeof that._src[index] === 'object') {
+			if (that._src[index] !== null && typeof that._src[index] === 'object') {
 				return cb(null, getObjValue(that._src[index]));
 			}
 			return cb(null, that._src[index]);
@@ -242,10 +280,10 @@ StaticData.prototype.getOne = function (index, cb) {
 	});
 };
 
-StaticData.prototype.getMany = function (indexList) {
+StaticData.prototype.getMany = function (indexList, cb) {
 	var res = {};
 	var that = this;
-	async.forEach(indexList, function (index, nextCallback) {
+	async.eachSeries(indexList, function (index, nextCallback) {
 		that.getOne(index, function (error, data) {
 			if (error) {
 				return cb(error);
@@ -266,6 +304,19 @@ StaticData.prototype.getAll = function (cb) {
 			return cb(error);
 		}
 		cb(null, getObjValue(that._src));
+	});
+};
+
+StaticData.prototype.getAllByIndexName = function (indexName, cb) {
+	var that = this;
+	this.validateCachedData(function (error) {
+		if (error) {
+			return cb(error);
+		}
+		if (that._indexMap[indexName]) {
+			return cb(null, getObjValue(that._indexMap[indexName]));
+		}
+		cb(null, null);
 	});
 };
 

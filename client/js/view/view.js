@@ -82,14 +82,14 @@
 		return this._elm[key] !== undefined ? this._elm[key] : null;
 	};
 
-	Dom.prototype.setAttribute = function (att) {
+	Dom.prototype.setAttributes = function (att) {
 		for (var name in att) {
 			this._elm.setAttribute(name, att[name]);
 		}
 		this.emit('setAttribute', att);
 	};
 
-	Dom.prototype.getAttribute = function (name) {
+	Dom.prototype.getAttributes = function (name) {
 		return this._elm.getAttribute(name);
 	};
 
@@ -132,7 +132,10 @@
 	window.View = View;
 
 	View.prototype.ready = function () {
-		this.emit('ready', this.name, this);
+		var that = this;
+		window.setTimeout(function () {
+		that.emit('ready', that.name, that);
+		}, 0);
 	};
 
 }());

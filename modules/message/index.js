@@ -1,6 +1,4 @@
 
-var gracenode = require('../../');
-var log = gracenode.log.create('message');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 

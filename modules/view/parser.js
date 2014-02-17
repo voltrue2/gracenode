@@ -1,4 +1,6 @@
-
+/*
+* variable replacement syntax: (:= variable name:), (:include file path:)
+*/
 var gracenode = require('../../');
 var log = gracenode.log.create('view/parser');
 
@@ -12,7 +14,7 @@ function Parser(valueMap) {
 
 Parser.prototype.parseData = function (data) {
 	var includeList = [];
-	data = this.parse('(:', ':)', data, function (that, tag, keyTag, indicator, data) {
+	data = this.parse(data, function (that, tag, keyTag, indicator, data) {
 		// evaluate the indicator
 		switch (indicator) {
 			case '=':
@@ -35,25 +37,15 @@ Parser.prototype.parseData = function (data) {
 
 // functions below are not meant to be used outside of this file
 
-Parser.prototype.parse = function (opening, closing, data, callbackEach) {
-	var openIndex = data.indexOf(opening);
-	var closeIndex = data.indexOf(closing);
-	var tmp = data;
-	while (openIndex !== -1 && closeIndex !== -1) {
-		//extract tag for replacement
-		var closer = closeIndex + 2;
-		var tag = tmp.substring(openIndex, closer);
+Parser.prototype.parse = function (data, callbackEach) {
+	var pattern = /\(:([^:\)]+)?:\)/g;	
+	var match = pattern.exec(data);
+	while (match) {
+		var tag = match[0];
 		var indicator = tag.substring(2, tag.indexOf(' '));
 		var keyTag = tag.substring(2 + indicator.length, tag.length - 2).trim(' ');
-		// update tmp
-		tmp = tmp.substring(closer);	
-		
-		// replace
 		data = callbackEach(this, tag, keyTag, indicator, data);
-        
-		// move forward
-		openIndex = tmp.indexOf(opening);
-		closeIndex = tmp.indexOf(closing);
+		match = pattern.exec(data);
 	}
 	return data;
 };

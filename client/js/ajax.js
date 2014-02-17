@@ -15,9 +15,7 @@
 			console.error('ajax: missing callback (argument 3)');
 			return;
 		}
-
-		var ee = new EventEmitter();		
-
+		
 		var method = params && params.method || 'GET';
 		var path = window.encodeURI(domain + uri);
 		var paramStr = getParams(params);
@@ -30,17 +28,19 @@
 			req = new window.XMLHttpRequest();
 		}
 
+		var request = new Request(req);
+
 		req.overrideMimeType('text');
 		req.open(method, path, true);
 		req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
 		req.onreadystatechange = function () {
 			if (req.readyState === 4) {
-				ee.emit('response', req);
+				request.emit('response', req);
 				ajaxEvents.emit('response', req);
 				var error = null;
 				var response = null;
-				if (req.status >= 200 && req.status <= 299 || req.status == 304) {
+				if (req.responseText) {
 					try {
 						response = JSON.parse(req.responseText);
 					} catch (Exception) {
@@ -51,32 +51,33 @@
 						};
 						console.error('ajax, JSON.parse: ', Exception.toString());
 						console.trace();
-						ee.emit('response.error', error);
+						request.emit('response.error', error);
 						ajaxEvents.emit('response.error', error);
 					}
-				} else {
-					error = {
-						status: req.status,
-						path: path,
-						response: response
-					};
-					var resendObj = {
-						path: path, 
-						params: params,
-						callback: cb
-					};
-					ee.emit('response.error', error, resendObj);
-					ajaxEvents.emit('response.error', error, resendObj);
+					if (req.status >= 400) {
+						error = {
+							status: req.status,
+							path: path,
+							response: response
+						};
+						var resendObj = {
+							path: path, 
+							params: params,
+							callback: cb
+						};
+						request.emit('response.error', error, resendObj);
+						ajaxEvents.emit('response.error', error, resendObj);
+					}
 				}
-				ee.emit('response.complete', error, response);
+				request.emit('response.complete', error, response);
 				ajaxEvents.emit('response.complete', error, response);
 				cb(error, response);
 			}
 		};
-		ee.emit('send');
+		request.emit('send');
 		ajaxEvents.emit('send');
 		req.send(paramStr);
-		return ee;
+		return request;
 	}
 
 	function getParams(params) {
@@ -96,6 +97,16 @@
 		}
 		return window.encodeURIComponent(value);
 	}
+
+	function Request(req) {
+		this._req = req;
+	}
+
+	window.inherits(Request, window.EventEmitter);
+
+	Request.prototype.abort = function () {
+		this._req.abort();
+	};
 	
 	window.setAjaxDomain = function (d) {
 		domain = d;

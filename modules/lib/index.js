@@ -2,12 +2,17 @@
 var fs = require('fs');
 var gracenode = require('../../');
 var log = gracenode.log.create('lib');
+var validationPatterns = {
+	numeric: /^\d+$/,
+    alphaNumeric: /^[a-z0-9]+$/i,
+    password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
+};
 
 module.exports.errorMsg = function () {
 	var msg = '';
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		var arg = arguments[i];
-		if (typeof arg === 'object') {
+		if (arg !== null && typeof arg === 'object') {
 			arg = JSON.stringify(arg, null, 4);
 		}
 		msg += arg + '\n';
@@ -23,6 +28,12 @@ module.exports.randomInt = function (min, max) {
 	return rand;
 };
 
+module.exports.randomArray = function (list) {
+	var max = list.length - 1;
+	var index = module.exports.randomInt(0, max);
+	return list[index];
+};
+
 module.exports.getArguments = function (func) {
 	var names = func.toString().match(/^[\s\(]*function[^(]*\(([^)]*)\)/);
 	var args = names[1].replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '');
@@ -31,6 +42,9 @@ module.exports.getArguments = function (func) {
 };
 
 module.exports.cloneObj = function (obj) {
+	if (obj === null || typeof obj !== 'object') {
+		return obj;
+	}
 	var res = null;
 	if (Array.isArray(obj)) {
 		res = [];
@@ -38,13 +52,46 @@ module.exports.cloneObj = function (obj) {
 		res = {};
 	}
 	for (var key in obj) {
-		if (typeof obj[key] === 'object') {
+		if (obj[key] !== null && typeof obj[key] === 'object') {
 			res[key] = module.exports.cloneObj(obj[key]);
 		} else {
 			res[key] = obj[key];
 		}
 	}
 	return res;
+};
+
+/*
+* params: { pattern: 'numeric' or 'alphaNumeric', alloweSpace: true or false, allowHTML: true or false }
+*
+**/
+module.exports.validateInput = function (input, minLen, maxLen, params) {
+	var allowHTML = params && params.allowHTML || false;
+	var allowSpace = params && params.allowSpace || false;
+	var pattern = params && params.pattern && validationPatterns[params.pattern] || null;
+	var len = input.length;
+
+	// length check
+	if (len < minLen || len > maxLen) {
+		return false;
+	}
+
+	// HTML check
+	if (!allowHTML && input.match(/(<([^>]+)>)/ig)) {
+		return false;
+	}
+
+	// space check
+	if (!allowSpace && input.match(' ')) {
+		return false;
+	}
+
+	// pattern check
+	if (pattern && !input.match(pattern)) {
+		return false;
+	}
+
+	return true;
 };
 
 module.exports.walkDir = function (path, cb) {
@@ -64,7 +111,7 @@ module.exports.walkDir = function (path, cb) {
 			}
 			var pending = list.length;
 			if (!pending) {
-					return cb(null, res);
+				return cb(null, res);
 			}
 			list.forEach(function (file) {
 				var slash = path.substring(path.length - 1) !== '/' ? '/' : '';
@@ -97,6 +144,7 @@ module.exports.walkDir = function (path, cb) {
 	});
 };
 
+// may not be used at all... 
 module.exports.walkDirEach = function (path, eachCallback, cb) {
 	var res = [];
 	fs.lstat(path, function (error, stat) {
@@ -114,7 +162,7 @@ module.exports.walkDirEach = function (path, eachCallback, cb) {
 			}
 			var pending = list.length;
 			if (!pending) {
-					return cb(null, res);
+				return cb(null, res);
 			}
 			list.forEach(function (file) {
 				var slash = path.substring(path.length - 1) !== '/' ? '/' : '';
@@ -146,4 +194,13 @@ module.exports.walkDirEach = function (path, eachCallback, cb) {
 			});
 		});
 	});
+};
+
+module.exports.chunkSplit = function (str, len, end) {
+	len = parseInt(len, 10) || 76;
+	if (len < 1) {
+		return false;
+	}
+	end = end || '\r\n';
+	return str.match(new RegExp('.{0,' + len + '}', 'g')).join(end);
 };

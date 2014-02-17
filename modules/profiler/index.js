@@ -29,7 +29,7 @@ Profiler.prototype.start = function () {
 
 Profiler.prototype.mark = function (name) {
 	if (!this._running) {
-		return log.warning('profiler "' + this._name + '" is not running');
+		return log.warning('mark called, but profiler "' + this._name + '" is not running');
 	}
 	
 	var date = new Date();
@@ -44,7 +44,7 @@ Profiler.prototype.mark = function (name) {
 
 Profiler.prototype.stop = function () {
 	if (!this._running) {
-		return log.warning('profiler "' + this._name + '" is not running');
+		return log.warning('stop called, but profiler "' + this._name + '" is not running');
 	}
 
 	log.verbose('profiling of "' + this._name + '" stopped');

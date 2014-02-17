@@ -33,6 +33,7 @@ Preloader.prototype.img = function (imageList, cb) {
 		}
 	});
 	// load the first image
+	this.emit('start');
 	img.src = list.shift();
 };
 

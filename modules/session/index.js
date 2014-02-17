@@ -6,6 +6,9 @@ var crypto = require('crypto');
 
 var config = null;
 
+// timestamp taken at the start of GraceNode > this will make all session invalid on every restart
+var sessionVersion = 0;
+
 /*
 * session: {
 *	hosts: [],
@@ -20,9 +23,14 @@ module.exports.readConfig = function (configIn) {
 	config = configIn;
 };
 
+module.exports.setup = function (cb) {
+	sessionVersion = Date.now() + ':';
+	cb();
+};
+
 module.exports.getSession = function (sessionId, cb) {
 	if (!sessionId) {
-		log.verbose('found session [false]: null');
+		log.verbose('no session id');
 		return cb(null, null);
 	}
 	var key = getKey(sessionId);
@@ -32,8 +40,24 @@ module.exports.getSession = function (sessionId, cb) {
 		if (error) {
 			return cb(error);
 		}
-		log.verbose('found session [' + (value ? true : false) + ']:', value);
-		cb(null, value);
+		
+		log.verbose('found session (id: ' + sessionId + ') [' + (value ? true : false) + ']');
+		
+		if (value) {
+			// session value found > update session
+			return mem.set(key, value, config.ttl, function (error) {
+				if (error) {
+					return cb(error);
+				}
+	
+				log.verbose('session updated: ' + key);
+
+				cb(null, value);
+			});
+		}		
+
+		// no session value found
+		cb(null, null);
 	});
 };
 
@@ -41,7 +65,7 @@ module.exports.setSession = function (unique, value, cb) {
 	var sessionId = createSessionId(unique);
 	var key = getKey(sessionId);
 	var mem = new Memcache(config.hosts, config.options || null);
-	log.verbose('setting session: ' + key);	
+	log.verbose('setting session: ' + key, config.ttl, value);	
 	mem.set(key, value, config.ttl, function (error) {
 		if (error) {
 			return cb(error);
@@ -51,8 +75,22 @@ module.exports.setSession = function (unique, value, cb) {
 	});
 };
 
+module.exports.delSession = function (sessionId, cb) {
+	var key = getKey(sessionId);
+	var mem = new Memcache(config.hosts, config.options || null);
+	log.verbose('deleting session: ' + key);	
+	mem.del(key, function (error) {
+		if (error) {
+			return cb(error);
+		}
+		log.verbose('delete session: (key: ' + key + '):');
+		cb(null);
+	});
+
+};
+
 function getKey(sessionId) {
-	return 'sess/' + sessionId;	
+	return 'sess/' + sessionId + sessionVersion;	
 }
 
 function createSessionId(unique) {

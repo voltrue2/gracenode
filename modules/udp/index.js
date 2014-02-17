@@ -29,7 +29,7 @@ module.exports.startServers = function (cb) {
 
 	log.verbose('start UDP server(s)...');
 
-	async.forEach(servers, function (item, nextCallback) {
+	async.eachSeries(servers, function (item, nextCallback) {
 		setupServer(item, nextCallback);
 	}, cb);
 };

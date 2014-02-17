@@ -1,4 +1,5 @@
 
+// FIXME: refactor this code.... very ugly
 /***
  * configurations
  *
@@ -30,14 +31,15 @@ var mysql = require('mysql');
 var gracenode = require('../../');
 var log = gracenode.log.create('mysql');
 
+var pooledConnections = {};
 var configs = {};
 var writeQueries = [
-	'insert',
-	'update',
-	'alter',
-	'delete',
-	'drop',
-	'create',
+	'insert ',
+	'update ',
+	'alter ',
+	'delete ',
+	'drop ',
+	'create ',
 	'transaction',
 	'rollback',
 	'commit'
@@ -53,6 +55,41 @@ module.exports.readConfig = function (configIn) {
 	return true;
 };
 
+module.exports.setup = function (cb) {
+	
+	log.info('establishing connection pools to mysql...');
+
+	// graceful exit clean up
+	gracenode.on('exit', function () {
+		for (var name in configs) {
+			var conf = configs[name];
+			var pool = pooledConnections[name] || null;
+			if (pool) {
+				log.info('closing connection:', name, conf);
+				pool.end(connectionClosed);
+			}
+		}
+	});
+
+	// create connection pools
+	for (var name in configs) {
+		var conf = configs[name];
+
+		pooledConnections[name] = mysql.createPool({
+			host: conf.host,
+			database: conf.database,
+			maxPoolNum: conf.maxPoolNum || 10,
+			user: conf.user,
+			password: conf.password,
+			port: conf.port || undefined,
+		});
+		
+		log.info('connection pool ceated: ', name, conf);
+	}
+
+	cb();
+};
+
 /**
  * @param {String} 
  * */
@@ -62,16 +99,13 @@ module.exports.create = function (configName) {
 		return new Error('invalid configuration configuration name given: ' + configName + ' > \n' + JSON.stringify(configs, null, 4));
 	}
 	
-	var connection = mysql.createPool({
-		host: config.host,
-		database: config.database,
-		user: config.user,
-		password: config.password,
-		port: config.port || undefined,
-	});
-
-	log.verbose('create mysql with: ', configName, config);
+	log.verbose('create mysql with: ', configName);
 	
+	var connection = pooledConnections[configName] || null;
+	if (!connection) {
+		return new Error('connection not found:' + configName);
+	}
+
 	return new MySql(configName, connection, config);
 };
 
@@ -81,22 +115,6 @@ function MySql(name, connection, config) {
 	this._type = config.type;
 	this._resource = connection;
 	this._connection = null;
-	// error listener
-	this._resource.on('error', function (error) {
-		
-		log.error(error);
-	
-		log.info('terminate connection to mysql (' + name + ')');
-
-		// terminate the connection right now!
-		this.end();
-	});
-	// listen to gracenode exit
-	var that = this;
-	gracenode.on('exit', function () {
-		log.info('disconnect from mysql (' + name + ')');
-		that._resource.end();
-	});
 }
 
 util.inherits(MySql, EventEmitter);
@@ -177,7 +195,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 };
 
 MySql.prototype.write = function (sql, params, cb) {
-	log.verbose(sql, params);
 	this.exec(sql, params, cb);
 };
 
@@ -194,7 +211,7 @@ MySql.prototype.startTransaction = function (cb) {
 			return cb(error);
 		}
 		
-		log.verbose('start transaction');
+		log.info('start transaction');
 		
 		that.exec('START TRANSACTION', null, cb);
 	});
@@ -202,7 +219,7 @@ MySql.prototype.startTransaction = function (cb) {
 
 MySql.prototype.commit = function (cb) {
 	
-	log.verbose('commit');
+	log.info('commit');
 
 	var that = this;
 	this.exec('COMMIT', null, function (error) {
@@ -215,7 +232,7 @@ MySql.prototype.commit = function (cb) {
 
 MySql.prototype.rollBack = function (cb) {
 	
-	log.verbose('rollback');		
+	log.info('rollback');		
 
 	var that = this;
 	this.exec('ROLLBACK', null, function (error) {
@@ -228,12 +245,12 @@ MySql.prototype.rollBack = function (cb) {
 
 MySql.prototype.get = function (sql, params, mustExist, cb) {
 	if (this._type === 'ro') {
-		return this.roGet(sql, params, mustExist, cb);
+		return this.readOnlyGet(sql, params, mustExist, cb);
 	}
-	this.rwGet(sql, params, mustExist, cb);
+	this.readAndWriteGet(sql, params, mustExist, cb);
 };
 
-MySql.prototype.roGet = function (sql, params, mustExist, cb) {
+MySql.prototype.readOnlyGet = function (sql, params, mustExist, cb) {
 	var sDate = new Date();
 	var start = sDate.getTime();
 	
@@ -264,23 +281,24 @@ MySql.prototype.roGet = function (sql, params, mustExist, cb) {
 			that.end(function () {
 				var eDate = new Date();
 				var end = eDate.getTime();
-				log.verbose(sql, ' took [' + (end - start) + ' ms]');
-				
+				log.verbose(sql, ' took (ready only) [' + (end - start) + ' ms]');
 				cb(error, res);
 			});
 		});
 	});
 };
 
-MySql.prototype.rwGet = function (sql, params, mustExist, cb) {
+MySql.prototype.readAndWriteGet = function (sql, params, mustExist, cb) {
 	var sDate = new Date();
 	var start = sDate.getTime();
-	
-	var that = this;	
 
 	if (!validateQuery(sql, this._type)) {
 		var err = new Error('cannot execute the query (read only): ' + sql);
 		return cb(err, []);
+	}
+
+	if (!this._connection) {
+		return cb(new Error('cannot execute the query outside of transaction: ' + sql), []);
 	}
 
 	this._connection.query(sql, params, function (error, res) {
@@ -296,7 +314,7 @@ MySql.prototype.rwGet = function (sql, params, mustExist, cb) {
 		
 		var eDate = new Date();
 		var end = eDate.getTime();
-		log.verbose(sql, ' took [' + (end - start) + ' ms]');
+		log.verbose(sql, ' took (read & write) [' + (end - start) + ' ms]');
 		
 		cb(error, res);
 	});
@@ -311,13 +329,43 @@ MySql.prototype.exec = function (sql, params, cb) {
 		return cb(err, {});
 	}
 
+	if (!this._connection) {
+		// execute the query outside of transaction
+		log.info('executing write query without transaction');
+		var that = this;
+		return this.connect(function (error) {
+			if (error) {
+				return that.end(function () {
+					cb(error);
+				});
+			}
+			that._connection.query(sql, params, function (error, res) {
+				if (error) {
+					log.error(error);
+				}
+				var eDate = new Date();
+				var end = eDate.getTime();
+				log.info(sql, params, ' took [' + (end - start) + ' ms]');
+
+				log.info('query result:', res);
+				
+				that.end(function () {
+					cb(error, res);
+				});
+			});
+		});
+	}
+
+	// execute the query in transaction
 	this._connection.query(sql, params, function (error, res) {
 		if (error) {
 			log.error(error);
 		}
 		var eDate = new Date();
 		var end = eDate.getTime();
-		log.verbose(sql, ' took [' + (end - start) + ' ms]');
+		log.info(sql, params, ' took [' + (end - start) + ' ms]');
+
+		log.info('query result:', res);
 		
 		cb(error, res);
 	});
@@ -334,20 +382,20 @@ MySql.prototype.connect = function (cb) {
 			return cb(error);
 		}
 		
-		log.info('connect to mysql (' + that._name + ') [connection pooled]');
-		
+		log.info('connection obtained from pool (' + that._name + ')');
+	
 		that._connection = pooledConnection;
 		cb(null);
 	};
 
-	log.info('obtaining connection to mysql (' + this._name + ')...');
+	//log.info('obtaining connection from pool (' + this._name + ')...');
 
 	this._resource.getConnection(callback);
 };
 
 MySql.prototype.end = function (cb) {
 	
-	log.info('release connection to mysql (' + this._name + ')');
+	log.info('release connection to pool (' + this._name + ')');
 	
 	this._connection.release();
 	return cb(null);
@@ -367,4 +415,8 @@ function validateQuery(sql, type) {
 		}
 	}
 	return true;
+}
+
+function connectionClosed() {
+	log.info('connection pool closed');
 }

@@ -1,5 +1,5 @@
 // dependency EventEmitter
-(function () {
+(function (window) {
 
 	/***
 	* Events: resize, add, ready, open, close, error 
@@ -94,10 +94,13 @@
 					// make the new view visible
 					newView.show();
 					// emit open
-					that.emit('open', newView);
+					window.setTimeout(function () {
+						that.emit('open', newView);
+					}, 0);
 				});	
 				// view must call view.emit('opened') on this event;
 				newView.emit('open', params);
+				return;
 			}
 			// no view by the given name found
 			that.error('view not found: ' + name);
@@ -112,14 +115,18 @@
 				openNewView();
 			});
 			prev.emit('close');
-			this.emit('close', prev);
+			window.setTimeout(function () {
+				that.emit('close', prev);
+			}, 0);
 			return;
 		}
 		// there is no previously opened view > open a new view
-		openNewView();
+		window.setTimeout(function () {
+			openNewView();
+		}, 0);
 	};
 
-	ViewManager.prototype.openPopup = function (name, params) {
+	ViewManager.prototype.openPopup = function (name, params, forceTop) {
 		var view = this.getViewByName(name);
 		if (!view) {
 			return this.error('view not found: ' + name);
@@ -132,10 +139,18 @@
 				view.setStyle({
 					zIndex: that._index
 				});
+				// force this popup to be the top
+				if (forceTop) {
+					view.setStyle({ zIndex: 999 });
+				}
 				view.show();		
-				that.emit('open', view);
+				window.setTimeout(function () {
+					that.emit('open', view);
+				}, 0);
 			});
-			view.emit('open', params);
+			window.setTimeout(function () {
+				view.emit('open', params);
+			});
 		}	
 	};
 
@@ -189,4 +204,4 @@
 		this.emit('error', msg);
 	};
 
-}());
+}(window));
