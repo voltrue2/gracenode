@@ -1043,16 +1043,15 @@ void transaction(Function taskCallback, Function callback)
 </pre>
 > Creates Mysql transaction and allows you to execute transactional SQL queries in taskCallback.
 >> Commit will be executed automatically on successful execution of taskCallback
->>> An error in taskCallback will cause auto-rollback and ends the transaction.
 >>>> Can **NOT** be executed if the *type* is "ro"
 ```javascript
 var mysql = gracenode.mysql.create('animalDb');
-mysql.transaction(function (finishCallback) {
-	mysql.write('INSERT INTO animal (name, species) VALUES(?, ?)', ['dog', 'knine'], function (error, res) {
+mysql.transaction(function (transactionMysql, finishCallback) {
+	transactionMysql.write('INSERT INTO animal (name, species) VALUES(?, ?)', ['dog', 'knine'], function (error, res) {
 		if (error) {
 			return finishCallback(error);
 		}
-		mysql.write('INSERT INTO food (animalName, amount) VALUES(?, ?)', ['dog', 10], function (error, res) {
+		transactionMysql.write('INSERT INTO food (animalName, amount) VALUES(?, ?)', ['dog', 10], function (error, res) {
 			if (error) {
 				return finishCallback(error);
 			}
