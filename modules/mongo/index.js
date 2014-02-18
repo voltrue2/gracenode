@@ -91,7 +91,7 @@ MongoDB.prototype.find = function (key, cb) {
 MongoDB.prototype.mfind = function (keys, cb) {
 
 
-	if (!keys.length) {
+	if (!Array.isArray(keys)) {
 		return cb('keysIsNotArray');
 	}
 
@@ -109,7 +109,7 @@ MongoDB.prototype.remove = function (key, cb) {
 
 MongoDB.prototype.mremove = function (keys, cb) {
 
-	if (!keys.length) {
+	if (!Array.isArray(keys)) {
 		return cb('keysIsNotArray');
 	}
 

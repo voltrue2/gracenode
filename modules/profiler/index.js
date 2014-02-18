@@ -2,16 +2,18 @@
 var gracenode = require('../../');
 var log = gracenode.log.create('profiler');
 
-module.exports.create = function (name) {
-	return new Profiler(name);
+module.exports.create = function (name, logType) {
+	return new Profiler(name, logType);
 };
 
-function Profiler(name) {
+// logType: verbose, debug, info, warning, error, fatal > default is verbose
+function Profiler(name, logType) {
 	this._name = name;
 	this._startTime = 0;
 	this._nowTime = 0;
 	this._marks = [];
 	this._running = false;
+	this._type = logType || 'verbose';
 }
 
 Profiler.prototype.start = function () {
@@ -19,7 +21,7 @@ Profiler.prototype.start = function () {
 		return log.warning('profiler is currently running. invoke "stop" before calling "start"');
 	}
 	
-	log.verbose('profiling of "' + this._name + '" started');
+	log[this._type]('profiling of "' + this._name + '" started');
 
 	var date = new Date();
 	this._startTime = date.getTime();
@@ -47,7 +49,7 @@ Profiler.prototype.stop = function () {
 		return log.warning('stop called, but profiler "' + this._name + '" is not running');
 	}
 
-	log.verbose('profiling of "' + this._name + '" stopped');
+	log[this._type]('profiling of "' + this._name + '" stopped');
 
 	var date = new Date();
 	var now = date.getTime();
@@ -73,23 +75,23 @@ Profiler.prototype.stop = function () {
 		line += '-';
 	}
 	line += '+';
-	log.verbose(line);
+	log[this._type](line);
 	for (var j = 0; j < len; j++) {
 		gap = longest - logList[j].length;
 		space = '';
 		for (var n = 0; n < gap; n++) {
 			space += ' ';
 		}
-		log.verbose('|' + logList[j] + space + '|');
-		log.verbose(line);
+		log[this._type]('|' + logList[j] + space + '|');
+		log[this._type](line);
 	}
 	gap = longest - msgLen;
 	space = '';
 	for (var b = 0; b < gap; b++) {
 		space += ' ';
 	}
-	log.verbose('|' + msg + space + '|');
-	log.verbose(line);
+	log[this._type]('|' + msg + space + '|');
+	log[this._type](line);
 	// flush out and reset
 	this._startTime = 0;
 	this._nowTime = 0;

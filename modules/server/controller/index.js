@@ -57,7 +57,33 @@ function extractQueries(req, cb) {
 			});
 			req.on('end', function () {
 				var post = queryString.parse(body);
-				cb(null, { post: post, get: null });
+				cb(null, { post: post, put: null, delete: null, get: null });
+			});
+			req.on('error', function (error) {
+				cb(error);
+			});
+			break;
+		case 'PUT':
+			var putBody = '';
+			req.on('data', function (data) {
+				putBody += data;
+			});
+			req.on('end', function () {
+				var put = queryString.parse(putBody);
+				cb(null, { post: null, put: put, delete: null, get: null });
+			});
+			req.on('error', function (error) {
+				cb(error);
+			});
+			break;
+		case 'DELETE':
+			var deleteBody = '';
+			req.on('data', function (data) {
+				deleteBody += data;
+			});
+			req.on('end', function () {
+				var del = queryString.parse(deleteBody);
+				cb(null, { post: null, put: null, delete: del, get: null });
 			});
 			req.on('error', function (error) {
 				cb(error);
@@ -65,11 +91,11 @@ function extractQueries(req, cb) {
 			break;
 		case 'GET':
 			var parsed = url.parse(req.url, true);
-			cb(null, { post: null, get: parsed.query });
+			cb(null, { post: null, put: null, delete: null, get: parsed.query });
 			break;
 		default:
-			log.warning('only POST and GET are supported');
-			cb(null, { post: null, get: null });
+			log.warning('only POST, PUT, and GET are supported');
+			cb(null, { post: null, put: null, delete: null, get: null });
 			break;
 	}
 }
@@ -86,8 +112,7 @@ function handle(req, res, parsedUrl, queryData) {
 			log.verbose('controller "' + parsedUrl.controller + '" loaded');
 
 			// create arguments for the controller method
-			var reqArray = [new RequestObj(req, res, queryData)];
-			parsedUrl.args = reqArray.concat(parsedUrl.args);
+			parsedUrl.args = [new RequestObj(req, res, parsedUrl.args, queryData)];
 			
 			// validate controller method
 			if (!controller[parsedUrl.method]) {
@@ -96,12 +121,6 @@ function handle(req, res, parsedUrl, queryData) {
 
 			// create final response callback and append it to the arguments
 			parsedUrl.args.push(response.create(req, res));
-
-			// validate controller method requirement(s)
-			var args = gracenode.lib.getArguments(controller[parsedUrl.method]);
-			if (parsedUrl.args.length !== args.length) {
-				return errorHandler('number of arguments does not match > given:\n' + JSON.stringify(parsedUrl.args) + '\nexpected:\n' + JSON.stringify(args));
-			}
 
 			// check for request hook
 			var requestHookExecuted = handleRequestHook(req, res, controller, parsedUrl);
@@ -158,7 +177,7 @@ function execRequestHook(req, res, hook, controller, parsedUrl) {
 	log.verbose('request hook found for "' + parsedUrl.controller + '.' + parsedUrl.method + '"');
 	hook(parsedUrl.args[0], function (error, status) {
 		if (error) {
-			log.error('request hook exeuted with an error:', error, '(status: ' + status + ')');
+			log.error('request hook executed with an error:', error, '(status: ' + status + ')');
 			return errorHandler(req, res, error, status);
 		}
 		log.verbose('request hook executed');
@@ -180,6 +199,9 @@ function errorHandler(req, res, errorMsg, status) {
 	
 	// we can not have handleError deal with it
 	var responder = new response.create(req, res);
+	if (errorMsg instanceof Error) {
+		errorMsg = errorMsg.message;
+	}
 	responder.error(JSON.stringify({ error: errorMsg }), status);
 }
 
@@ -203,13 +225,16 @@ function handleError(req, res, status) {
 	return false;	
 }
 
-function RequestObj(request, response, reqData) {
+function RequestObj(request, response, params, reqData) {
 	this._props = {};
 	this._response = response;
 	
 	// public
 	this.cookies = new Cookies(request, response);
+	this.parameters = params;
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
+	this.putData = queryDataHandler.createGetter(reqData.put || {});
+	this.deleteData = queryDataHandler.createGetter(reqData.delete || {});
 	this.getData = queryDataHandler.createGetter(reqData.get || {});
 	this.requestHeaders = headers.create(request.headers);
 }

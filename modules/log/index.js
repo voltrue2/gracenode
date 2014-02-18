@@ -23,6 +23,9 @@ var prefix = '';
 
 var fs = require('fs');
 
+var today = new Date();
+var ymd = '.' + today.getFullYear() + '.' + (today.getMonth() + 1) + '.' + today.getDate();
+
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.type) {
 		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
@@ -131,7 +134,7 @@ function print(name, msg) {
 		console.log.apply(console, msg);
 	} else if (config.level && config.level[name] && config.level[name].path) {
 		// write to a file
-		var path = config.level[name].path + name + '.log';
+		var path = config.level[name].path + name + ymd + '.log';
 		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
 			if (error) {
 				throw new Error('failed to write a log to a file: ' + error);
