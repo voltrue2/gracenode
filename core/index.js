@@ -1,4 +1,4 @@
-var rootDirName = 'GraceNode';
+var rootDirName = 'node_modules/GraceNode';
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');
@@ -25,11 +25,8 @@ function GraceNode() {
 		{ name: 'lib', sourceName: 'lib', config: null, path: null }
 	];
 	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
-	// detect current working directory directory
-	var prevCwd = process.cwd();
-	// change current working directory to the root of the application
 	process.chdir(this._root);
-	log.verbose('cwd changed: ' + prevCwd + ' > ' + this._root);
+	log.verbose('Working directory changed to', this._root);
 }
 
 util.inherits(GraceNode, EventEmitter);
