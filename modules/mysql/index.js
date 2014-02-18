@@ -97,32 +97,6 @@ module.exports.setup = function (cb) {
 
 		callback();
 	}, cb);
-
-	/*
-	for (var name in configs) {
-		var conf = configs[name];
-
-		var connection = mysql.createPool({
-			host: conf.host,
-			database: conf.database,
-			maxPoolNum: conf.maxPoolNum || 10,
-			user: conf.user,
-			password: conf.password,
-			port: conf.port || undefined,
-		});
-
-		// set up connection loss handler
-		connection.on('error', function (event) {
-			handleConnectionError(name, event);
-		});
-
-		pooledConnections[name] = connection;
-		
-		log.info('connection pool ceated: ', name, conf);
-	}
-
-	cb();
-	*/
 };
 
 /**
