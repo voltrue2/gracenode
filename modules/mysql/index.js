@@ -25,6 +25,7 @@
  * */
 
 var util = require('util');
+var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var mysql = require('mysql');
 
@@ -72,10 +73,11 @@ module.exports.setup = function (cb) {
 	});
 
 	// create connection pools
-	for (var name in configs) {
+	var nameList = Object.keys(configs);
+	async.forEach(nameList, function (name, callback) {
 		var conf = configs[name];
 
-		pooledConnections[name] = mysql.createPool({
+		var connection = mysql.createPool({
 			host: conf.host,
 			database: conf.database,
 			maxPoolNum: conf.maxPoolNum || 10,
@@ -83,11 +85,44 @@ module.exports.setup = function (cb) {
 			password: conf.password,
 			port: conf.port || undefined,
 		});
+
+		// set up connection loss handler
+		connection.on('error', function (event) {
+			handleConnectionError(name, event);
+		});
+
+		pooledConnections[name] = connection;
+		
+		log.info('connection pool ceated: ', name, conf);
+
+		callback();
+	}, cb);
+
+	/*
+	for (var name in configs) {
+		var conf = configs[name];
+
+		var connection = mysql.createPool({
+			host: conf.host,
+			database: conf.database,
+			maxPoolNum: conf.maxPoolNum || 10,
+			user: conf.user,
+			password: conf.password,
+			port: conf.port || undefined,
+		});
+
+		// set up connection loss handler
+		connection.on('error', function (event) {
+			handleConnectionError(name, event);
+		});
+
+		pooledConnections[name] = connection;
 		
 		log.info('connection pool ceated: ', name, conf);
 	}
 
 	cb();
+	*/
 };
 
 /**
@@ -108,6 +143,38 @@ module.exports.create = function (configName) {
 
 	return new MySql(configName, connection, config);
 };
+
+function handleConnectionError(name, event) {
+	var code = event.code;
+	if (code === 'PROTOCOL_CONNECTION_LOST') {
+		
+		log.error('connection lost [' + name + ']:', event);
+
+		// connection loss due to: timeout or server restart
+		var conf = configs[name];
+		// reconnect
+		var newConn = mysql.createPool({
+			host: conf.host,
+			database: conf.database,
+			maxPoolNum: conf.maxPoolNum || 10,
+			user: conf.user,
+			password: conf.password,
+			port: conf.port || undefined,
+		});
+
+		// set up connection loss handler
+		newConn.on('error', function (event) {
+			handleConnectionError(name, event);
+		});
+
+		// update connection pool
+		pooledConnections[name] = newConn;
+
+		log.info('connection pool re-connected: ', name, conf);
+	}
+	// fatal connection error
+	log.fatal('connection error [' + name + ']:', event);
+}
 
 function MySql(name, connection, config) {
 	EventEmitter.call(this);
