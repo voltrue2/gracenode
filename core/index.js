@@ -8,7 +8,6 @@ var util = require('util');
 var cluster = require('cluster');
 var fs = require('fs');
 var modPaths = [];
-
 var workerList = []; // master only
 
 module.exports.GraceNode = GraceNode;
@@ -31,6 +30,7 @@ function GraceNode() {
 }
 
 util.inherits(GraceNode, EventEmitter);
+
 
 // never use this function in production, but setup script only
 GraceNode.prototype.getModuleSchema = function (modName, cb) {

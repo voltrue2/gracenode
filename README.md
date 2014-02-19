@@ -1,54 +1,48 @@
-Author: Nobuyori Takahashi
+#GraceNode
+©2013 - 2014 Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
-Since 2013 to present
+##Installation
 
-##How to set it up
-<pre>
-$ cd yourApp/
-$ git clone https://github.com/voltrue2/GraceNode GraceNode
-$ cd GraceNode/
-$ npm install
-</pre>
+###Installation via NPM
 
-##Hot to install from NPM (with package.json)
-```javascript
-// Add this under your dependencies to allow for installation via NPM.
-"GraceNode": "git+https://github.com/voltrue2/GraceNode.git#master"
+To install GraceNode you can either add it to your package.json like so,
+
 ```
+{ 
+    "dependencies": {
+        "GraceNode": "git+https://github.com/voltrue2/GraceNode.git#master"
+    }
+}
+```
+or NPM install directly via `npm install git+https://github.com/voltrue2/GraceNode.git#master`.
 
-> If you execute the above commands and every thing goes fine, GraceNode is successfully installed along with its dependencies
+###Creating configuration files
 
-##Create configuration files
+In your root directory create a directory that is called 'configs'. Although you can name it whatever you want, for this instruction we have named our directory configs.
+
 <pre>
-$ cd yourApp/
 $ mkdir configs/
+$ touch configs/conf.json
 </pre>
-> You will then create your configuration file(s) under configs/ directory. The format is JSON. For reference please refer to GraceNode/example-config.json
 
-##index.js file for bootstrapping
-<pre>
-$ cd yourApp/
-$ ls -la
-$ ..
-$  .
-$ index.js
-$ GraceNode/
-</pre>
-> GraceNode needs to be set up for it to run correctly.
->> Below is the example code to set up GraceNode in index.js
+Refer to `example-config.json` for an example configuration file.
 
-```javascript
-var gracenode = require('../GraceNode');
-// tell GraceNode where to look for configuration file(s)
-// we will explain the effect of the function "gracenode.getRootPath()" later.
-gracenode.setConfigPath(gracenode.getRootPath() + 'configs/');
-// tell GraceNode the name(s) of configuration files to load
-gracenode.setConfigFiles(['base.json', 'modules.json']);
+##Bootstrapping GraceNode
+
+GraceNode needs to be set up for it to run correctly. In your application add:
+
+```
+var gracenode = require('GraceNode');
+//Set the configuration path.
+gracenode.setConfigPath('configs/');
+//Add configuration files that need to be loaded.
+gracenode.setConfigFiles(['conf.json']);
+
 // decide what module(s) of GraceNode to use in your application.
-// this will be explained in more detail later.
 gracenode.use('server');
 gracenode.use('view');
 gracenode.use('mysql');
+
 // now start the set up process
 gracenode.setup(function (error) {
     if (error) {
@@ -58,712 +52,98 @@ gracenode.setup(function (error) {
 
 });
 ```
+#Gracenode 
+##Methods
 
-## GraceNode Methods
+###.setConfigPath(configDirectoryPath [string])
+Tells GraceNode where to find the configuraitons files.
+```
+gracenode.setConfigPath('configs/');
+```
 
-##### setConfigPath
-<pre>
-void setConfigPath(String configDirectoryPath)
-</pre>
-> Give GraceNode the directory path to the configuration files
+###.setConfigFiles(configFileList [array])
+Give GraceNode the list of configuration files to be used. The files must be in the directory given to setConfigFiles.
+```
+gracenode.setConfigFiles(['conf.json']);
+```
 
-##### setConfigFiles
-<pre>
-void setConfigFiles(Array configFileList)
-</pre>
-> Give GraceNode the list of configuration files to be used (the files must be in the directory given to setConfigFiles)
-
-##### addModulePath
-<pre>
-void addModulePath(String modulePath)
-</pre>
-> Adds an laternative path for GraceNode to look for module(s) to load from
->> This will be used to load custom module(s)
-
-##### use
-<pre>
-void use(String moduleName)
-</pre>
-> Indicates what module to use (this function can be used to load both built-in and custom modules)
-
-> Example
-```javascript
-// load and use GraceNode mysql built-in module
+###.use(moduleName [string], params [object*])
+Tells GraceNode what modules to load when calling the setup functions.
+```
 gracenode.use('mysql');
-// load and use custom module
-gracenode.use('myMod', { path: 'app/customModules/myMod' });
+gracenode.use('myModule');
 ```
 
-##### setup
-<pre>
-void setup(Function callback)
-</pre>
-> Start the set-up process of GraceNode
-
-##### exit
-<pre>
-void exit(String errorMessage)
-</pre>
-> Stop GraceNode process
->> errorMessage is optional and if given GraceNode will stop with an error
-
-##### getModuleSchema
-<pre>
-void getModuleSchema(String moduleName, Function callback)
-</pre>
-> Extracts and passes SQL schema(s) for a GraceNode built-in module such as iap, and wallet
->> This function should NOT be used in production.
-
-## GraceNode Events
-
-##### setup.config
-<pre>
-gracenode.on('setup.config', callbackFunction)
-</pre>
-> Emitted when config module has been set up
-
-##### setup.log
-<pre>
-gracenode.on('setup.log', callbackFunction)
-</pre>
-> Emitted when log module has been set up
-
-##### setup.complete
-<pre>
-gracenode.on('setup.complete', callbackFunction)
-</pre>
-> Emitted when setup method finishes
-
-##### setup.moduleName
-<pre>
-gracenode.on('setup.moduleName', callbackFunction);
-</pre>
-> Emitted when a module has been set up
-
-##### uncaughtException
-<pre>
-gracenode.on('uncaughtException', callbackFunction)
-</pre>
-> Emitted when GraceNode catches uncaught exception
-
-##### exit
-<pre>
-gracenode.on('exit')
-</pre>
-> Emitted when GraceNode process exits
-
-##### shutdown
-<pre>
-gracenode.on('shutdown')
-</pre>
-> Emitted when GraceNode detects SIGINT
-
-## Cluster Mode
-> GraceNode can spwan multiple processes to go in cluster-mode if used in multi-core system
-```javascript
-// Configurations
-"cluster": {
-	"enable": true or false // if true, GraceNode will be ready to go into cluster-mode
-	"max": <number> // maximum number of processes allowed in cluster-mode
-}
+###.setup(callback [function])
+Start the setting up of GraceNode modules.
 ```
-
-## GraceNode Built-in Modules
-> GraceNode has some built-in modules.
-
-#### Automatically loaded by GraceNode on setup
-- <a href="#config-module">config</a>
-- <a href="#log-module">log</a>
-- <a href="#profiler-module">profiler</a>
-- <a href="#lib-module">lib</a>
-
-#### Other optional modules
-- <a href="#staticdata-module">staticdata</a>
-- <a href="#request-module">request</a>
-- <a href="#server-module">server</a>
-- <a href="#udp-module">udp</a>
-- <a href="#view-module">view</a>
-- <a href="#session-module">session</a>
-- <a href="#encrypt-module">encrypt</a>
-- <a href="#mysql-module">mysql</a>
-- <a href="#memcache-module">memcache</a>
-- <a href="#asset-module">asset</a>
-- <a href="#iap-module">iap (In-App-Purchase with Apple and Google Play)</a>
-- <a href="#wallet-module">wallet</a>
-
-### Built-in Modules
-
-***
-#### <span id="config-module">config module</span>
-<a href="#top">Back to the list of built-in modules</a>
-*** 
-
-Access
-<pre>
-gracenode.config
-</pre>
-
-Configurations
-*N/A*
-
-#####API: *getOne*
-
-<pre>
-mixed getOne(String propName)
-</pre>
-> Returns the value of configuration property
->> Example
-
-```javascript
-// configuration JSON
-{ "foo": 
-    { 
-         "boo": 1
-    }
-}
-// query the value of "foo"
-var foo = gracenode.config.getOne("foo");
-// foo = { "boo": 1 };
-
-// query the value of "boo"
-var boo = gracenode.config.getOne("foo.boo");
-// boo = 1
-```
-
-#####API: *getMany*
-
-<pre>
-Object getMany(Array propNameList)
-</pre>
-> Returns the values of configuration properties
-
-***
-#### <span id="log-module">log module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
-
-Access
-```javascript
-var log = gracenode.log.create('nameToBeDisplayed');
-```
-
-Configurations
-```javascript
-{
-	"modules":
-		"log": {
-			"type": "stdout" or "file",
-			"color": true or false,
-			"level": {
-				"verbose": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"debug": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"info": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"warning": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"error": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"fatal": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" }
-			}
-		}
-}
-```
-
-#####API: *verbose*
-
-<pre>
-void verbose(mixed data, [...])
-</pre>
-
-#####API: *debug*
-
-<pre>
-void debug(mixed data, [...])
-</pre>
-
-#####API: *info*
-
-<pre>
-void info(mixed data, [...])
-</pre>
-
-#####API: *warning*
-
-<pre>
-void warning(mixed data, [...])
-</pre>
-
-#####API: *error*
-
-<pre>
-void error(mixed data, [...])
-</pre>
-
-#####API: *fatal*
-
-<pre>
-void fatal(mixed data, [...])
-</pre>
-
-***
-#### <span id="profiler-module">profiler module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
-
-Access
-<pre>
-gracenote.profiler
-</pre>
-
-Configurations
-*N/A*
-
-####API: *create*
-<pre>
-Profiler create(String name)
-</pre>
-> Returns an instance of Profiler class
-
-##### Profiler class
-
-> **start**
-<pre>
-void start()
-</pre>
-Starts profiling
-
-> **mark**
-<pre>
-void mark(String benchmarkPointName)
-</pre>
-Calculate elapsed time between marks and output on profiler.stop()
-
-> **stop**
-<pre>
-void stop()
-</pre>
-Stops profiler and output the profiling results
-
-***
-#### <span id="lib-module">lib module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
-
-Access
-<pre>
-gracenode.lib
-</pre>
-
-Configurations *N/A*
-
-#####API: *randomInt*
-<pre>
-Int randomInt(Int min, Int max)
-</pre>
-> Returns pseudo-random integer between min and max
-
-#####API: *randomArray*
-<pre>
-Mixed randomArray(Array list)
-</pre>
-> returns a randomly selected element from the given array
-
-#####API: *cloneObj*
-<pre>
-Mixed cloneObj(Mixed original)
-</pre>
-> creates a copy of the given value
-
-#####API: *getArguments*
-<pre>
-Array getArguments(Function func)
-</pre>
-> Returns an array of arguments for the given function
-
-```javascript
-
-function foo(num1, num2) {
-	return num1 + num2;
-}
-
-var args = gracenode.lib.getArguments(foo);
-// args = ["num1", "num2"];
-```
-
-#####API: *walkDir*
-<pre>
-void walkDir(String path, Function callback)
-</pre>
-> Recursively walks the given path and passes an array of file paths to the callback function
-
-
-***
-#### <span id="staticdata-module">staticdata module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
-
-Access
-<pre>
-// do this in your bootstrap file (index.js) before invoking gracenode.setup().
-gracenode.use('staticdata');
-// once gracenode.setup is finished. you can access the module as following:
-gracenode.staticdata
-</pre>
-
-Configurations
-```javascript
-// staticdata module supports CSV and JSON format
-{
-	"modules": {
-		"staticdata": {
-			"path": "directory path to the static files",
-			"linebreak": optional and defaults to '\n', // for parsing CSV files
-			"delimiter": optional and defaults to ',', // for parsing CSV files
-			"quote": optional and defaults to '"' // for parsing CSV files
-			"index": { // optional // for getOneByIndex and getManyByIndex
-				"staticFileName": ["indexName", [...]]
-			}
-		}
-	}
-}
-```
-
-#####API: *create*
-<pre>
-StaticData create(String dataName)
-</pre>
-> Returns and instance of StaticData class
->> Example:
-```javascript
-/* 
-In order to create a static data object from a static data file called "example.csv",
-do the following:
-*/
-var example = gracenode.staticdata.create('example');
-```
-
-##### StaticData class
-
-> **getOneByIndex**
-<pre>
-mixed getOneByIndex(String indexName, String indexKey, Function callback)
-</pre>
-**getManyByIndex**
-<pre>
-mixed getManyByIndex(String indexName, Array indexKeyList, Function callback)
-</pre>
-**getOne**
-<pre>
-mixed getOne(mixed key, Function callback)
-</pre>
-**getMany**
-<pre>
-mixed getMany(Array keyList, Function callback)
-</pre>
-**getAll**
-<pre>
-mixed getAll(Function calback)
-</pre>
-**getAllByIndexName**
-<pre>
-mixed getAllByIndexName(String indexName)
-</pre>
-
-***
-#### <span id="request-module">request module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
-
-Access
-<pre>
-gracenode.request
-</pre>
-
-Configurations
-N/A
-
-#####API: *send*
-<pre>
-void send(Object params, Object options, Function callback)
-</pre>
-> Sends an HTTP or HTTPS request and recieve the response
->> ```javascript
-// arguments
-// params
-{
-	protocol: 'http' or 'https',
-	host: 'host name',
-	path: 'URI',
-	port: int,
-	method: string,
-	data: object
-}
-// options
-{
-	headers: object,
-	timeout: int (in miliseconds)
-}
-// usage example
-request.send(params, options, function (error, response) {
-	// do something there
+gracenode.setup(function(error) {
+    if (error) return console.error('Could not load gracenode:', error);
 });
 ```
 
-***
-#### <span id="server-module">server module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
-
-Access
-<pre>
-gracenode.server
-</pre>
-
-Configurations
-```javascript
-"modules": {
-	"server": {
-		"protocol": "http" or "https",
-		"pemKey": "file path to pem key file" // https only
-		"pemCert": "file path to pem cert file" // https only
-		"port": port number,
-		"host": host name or IP address,
-		"controllerPath": path to controller directory,
-		"ignored": ['name of ignored URI'...],
-		"error": {
-			"404": {
-				"controller": controller name,
-				"method": public controller method
-			},
-			"500": ...
-		},
-		"reroute": [
-			{
-				"from": '/',
-				"to": 'another/place'
-			},
-			...
-		]
-	}
-}
+###.exit(errorMessage [string*])
+Exits GraceNode and attempts to gracefully shutdown the process. You can give it an error message in case you want to stop the process due to an error.
 ```
-
-####SSL server
-> GraceNode has bash scripts to help set up HTTPS server
-<pre>
-GraceNode/scripts/sslcertgen.sh //for production
-GraceNode/scripts/sslcertgen-dev.sh //for development
-</pre>
-
-######API: *start*
-
-<pre>
-void start()
-</pre>
-> Starts an HTTP or HTTPS server
-
-#####API: *events*
-
-<pre>
-EventEmitter events()
-</pre>
-> Returns an instance of EventEmitter
->> Events: requestStart, requestEnd
-
-######API: *setRequestHook*
-
-<pre>
-void setRequestHook(Object hooks)
-</pre>
-> assign a function to be invoked on every request (each hook callback function is assigned to specific controller method).
->> Should be used for session validatation etc
-Example:
-```javascript
-gracenode.server.setupRequestHooks({
-	myController: {
-		myPage: checkSession
-	}
-});
-function checkSession(request, callback) {
-	var sessionId = request.getCookie('sessionId');
-	gracenode.session.getSession(sessionId, function (error, session) {
-		if (error) {
-			return cb(error);
-		}
-		if (!session) {
-			// no session
-			return cb(new Error('auth error', 403));
-		}
-		// session found
-		cb();
-	});
-}
-// this will apply checkSession function as a request hook to ALL controller and methods
-var hooks = checkSession;
-// this will apply checkSession function as a request hook to ALL methods of myController
-var hooks = {
-	myController: checkSession
-};
-// this will apply checkSession function as a request hook to myPage of myController only
-var hooks = {
-	myController: {
-		myPage: checkSession
-	}
-};
-// set up request hooks
-gracenode.server.seupRequestHooks(hooks);
+gracenode.exit('financialCrisis');
 ```
-
-###### Example:
-> Example of how to set up a server
-```javascript
-// index.js file of an application
-var gracenode = require('./GraceNode/');
-gracenode.use('server', 'server');
-gracenode.setup(function (error) {
-	if (error) {
-		throw new Error('failed to set up GraceNode');
-	}
-	// we start the server as soon as GraceNode is ready
-	gracenode.server.start();
-});
+##Events
+Gracenode has the capabilities to emit events, you can catch these events using:
 ```
-> Controller
-```javascript
-// controller/example/index.js > /example/foo/
-var gracenode = require('../GraceNode/');
-// this will become part of the URI
-// the first argument is **ALWAYS** requestObject
-module.exports.foo = function (requestObject, serverResponse) {
-	// serverResponse is created by server module per request
-	serverResponse.json({ foo: 'foo' });
-};
-// /example/foo/ will display "foo" on your browser
+gracenode.on('event.name', yourEventHandler);
 ```
-
-> How to read GET, POST, DELETE, and PUT
-```javascript
-// controller file
-module.exrpots.index = function (requestObject, response) {
-	// server module automatically gives every controller the following functions:
-	// requestObject.getData and requestObject.postData
-	var getFoo = requestObject.getData.get('foo');
-	var postFoo = requestObject.postData.get('foo');
-	var putFoo = requreObject.putData.get('foo');
-	var deleteFoo = requreObject.deleteData.get('foo');
-	response.json(null);
-};
-```
-
-> How to read request headers
-```javascript
-// controller file
-module.exports.index = function (requestObject, response) {
-	// server module automatically gives every contrller the following function:
-	// requestObject.requestHeaders > an instance of Headers class
-	var os = requestObject.requestHeaders.getOs();
-};
-```
-
-> ### How to read URL fragments:
-```javascript
-// URL: http://mydomain.com/myControler/myMethod/one/two/three/
-exports.myMethod = function (requestObject, responseObject) {
-	var params = requestObject.parameters;
-	console.log(params);
-	// this will output as follows:
-	/*
-	[
-		"one",
-		"two",
-		"three"
-	]
-	*/
-};
-```
-
-> #### response object
-
->> **response.json**
->> resonds to the client as JSON
->> status code is optional and default is 200
-<pre>
-Void response.json(Mixed content, Integer status)
-</pre>
-
->> **response.data**
->> resonds to the client as raw data
->> status code is optional and default is 200
-<pre>
-Void response.data(String content, Integer status)
-</pre>
-
->> **response.html**
->> resonds to the client as HTML
->> status code is optional and default is 200
-<pre>
-Void response.html(String content, Integer status)
-</pre>
-
->> **response.file**
->> resonds to the client as a static file
->> status code is optional and default is 200
-<pre>
-Void response.file(Binary content, Integer status)
-</pre>
-
->> **response.error**
->> resonds to the client as an error. content can be JSON, String, Number
->> status code is optional and default is 200
-<pre>
-Void response.error(Mixed content, Integer status)
-</pre>
+###setup.config
+Emitted when the config module has been set up.
+###setup.log
+Emitted when the log module has been setup.
+###setup.complete
+Emitted when the setup has been completed.
+###setup.moduleName
+Emitted when a specific module has been setup.
+###uncaughtException
+Emitted when GraceNode caught an uncaught exception.
+###exit
+Emitted when GraceNode exits.
+###shutdown
+Emitted when GraceNode detects SIGINT. This is before exit is emitted.
 
 
-> #### Headers class
->> Access
-```javascript
-module.exports.index = function (requestObject, response) {
-	var requestHeaders = requestObject.requestHeaders;
-};
-```
 
->> **get**
-<pre>
-String get(String headerName)
-</pre>
+#Default Modules
+By default GraceNode automatically loads the following modules. Click on the link to read more about them.
+###[Config](modules/config)
+Handles everything config related.
+###[Log](modules/log)
+Takes care of logging.
+###[Profiler](modules/profiler)
+Used to profile your application so you can easily determine bottlenecks in your application.
+###[Lib](modules/lib)
+Contains a plethora of commonly used functions like random integer generation.
+#Additional Modules
+###[StaticData](modules/staticdata)
+Allows for easy loading of static data such as JSON and CSV files.
+###[Request](modules/request)
+Handles requests to the server.
+###[Server](modules/server)
+Handles requests to the server.
+###[UDP](modules/udp)
+A module that makes it easier to handle UDP traffic from and to your server.
+###[View](modules/view)
+Manages, loads and creates views you can server to clients.
+###[Session](modules/session)
+Handles sessions and automatically expires them if they are not accessed within a preset amount of time.
+###[Encrypt](modules/encrypt)
+Contains functions that make it easier to deal with crypography and password hashing.
+###[MySQL](modules/mysql)
+A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
+###[Datacache](modules/datacache)
+Allows you to cache queries to MySQL and other requests.
+###[Asset](modules/asset)
+Asset management.
+###[Message](modules/message)
+Allows you to easily manage messages throughoout your application.
 
->> **getOs**
-<pre>
-String getOs()
-</pre>
-
->> **getClient**
-<pre>
-String getClient()
-</pre>
-
->> **getDefaultLang**
-<pre>
-String getDefaultLang
-</pre>
-
-> How to set response headers
-```javascript
-// controller
-module.exports.index = function (requestObject, response) {
-	// name, value
-	response.header('foo', 'foo');
-};
-```
-
-> How to get and set cookie
-```javascript
-// controller
-module.exports.index = function (requestObject, response) {
-	// get
-	var foo = requestObject.cookies.get('foo');
-	// set
-	requestObject.cookies('boo', 'boo');	
-};
-```
+#Other
 
 > How to handle and pass parameters
 ```javascript
