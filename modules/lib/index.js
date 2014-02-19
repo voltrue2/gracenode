@@ -8,18 +8,6 @@ var validationPatterns = {
     password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
 
-module.exports.errorMsg = function () {
-	var msg = '';
-	for (var i = 0, len = arguments.length; i < len; i++) {
-		var arg = arguments[i];
-		if (arg !== null && typeof arg === 'object') {
-			arg = JSON.stringify(arg, null, 4);
-		}
-		msg += arg + '\n';
-	}
-	return msg;
-};
-
 module.exports.randomInt = function (min, max) {
 	var rand = Math.floor(Math.random() * (max + 1));
 	if (rand < min) {
@@ -144,58 +132,6 @@ module.exports.walkDir = function (path, cb) {
 	});
 };
 
-// may not be used at all... 
-module.exports.walkDirEach = function (path, eachCallback, cb) {
-	var res = [];
-	fs.lstat(path, function (error, stat) {
-		if (error) {
-			return cb(error);
-		}
-		if (!stat.isDirectory()) {
-			log.verbose('file:', path);
-			res.push({ file: path, stat: stat });
-			return cb(null, res);
-		}
-		fs.readdir(path, function (error, list) {
-			if (error) {
-				return cb(error);
-			}
-			var pending = list.length;
-			if (!pending) {
-				return cb(null, res);
-			}
-			list.forEach(function (file) {
-				var slash = path.substring(path.length - 1) !== '/' ? '/' : '';
-				var filePath = path + slash + file;
-				fs.stat(filePath, function (error, stat) {
-					if (error) {
-						return cb(error);
-					}
-					if (stat.isDirectory()) {
-						return module.exports.walkDir(filePath, function (error, resultList) {
-							if (error) {
-								return cb(error);
-							}
-							res = res.concat(resultList);
-							pending--;
-							if (!pending) {
-								cb(null, res);
-							}
-						});
-					}
-					log.verbose('file:', filePath);
-					res.push({ file: filePath, stat: stat });
-					eachCallback({ file: filePath, stat: stat });
-					pending--;
-					if (!pending) {
-						cb(null, res);
-					}
-				});
-			});
-		});
-	});
-};
-
 module.exports.chunkSplit = function (str, len, end) {
 	len = parseInt(len, 10) || 76;
 	if (len < 1) {
@@ -204,3 +140,38 @@ module.exports.chunkSplit = function (str, len, end) {
 	end = end || '\r\n';
 	return str.match(new RegExp('.{0,' + len + '}', 'g')).join(end);
 };
+
+module.exports.chr = function (codePoint) {
+	if (codePoint > 0xffff) {
+		codePoint -= 0x10000;
+		return String.fromCharCode(0x800 + (codePoint >> 10), 0xdc00 + (codePoint & 0x3ff));
+	}
+	return String.fromCharCode(codePoint);
+};
+
+module.exports.ord = function (str) {
+	// force it to be a string
+	str += '';
+	
+	var code = str.charCodeAt(0);
+
+	if (0xd800 <= code && code <= 0xdbff) {
+		if (str.length === 1) {
+			return code;
+		}
+
+		var high = code;
+		var low = str.charCodeAt(1);
+
+		return ((high - 0xd800) * 0x400 + (low - 0xdc00) + 0x10000);
+	}
+	
+	if (0xdc00 <= code && code <= 0xdfff) {
+		log.error('invalid value given to ord:', code);
+		return null;
+	}
+
+	return code;
+
+};
+
