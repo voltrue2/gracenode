@@ -60,9 +60,9 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 	
 	var that = this;
 	
-	writer.transaction(function (callback) {
+	writer.transaction(function (mysql, callback) {
 		
-		getBalanceByUserId(that, writer, userId, function (error, balance) {
+		getBalanceByUserId(that, mysql, userId, function (error, balance) {
 			if (error) {
 				return callback(error);
 			}
@@ -76,12 +76,12 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 
 			var newBalance = balance - valueToSpend;
 
-			spendFromBalance(userId, that._name, newBalance, function (error) {
+			spendFromBalance(mysql, userId, that._name, newBalance, function (error) {
 				if (error) {
 					return callback(error);
 				}
 				
-				updateBalanceHistoryOut(userId, that._name, valueToSpend, spendFor, function (error) {
+				updateBalanceHistoryOut(mysql, userId, that._name, valueToSpend, spendFor, function (error) {
 					if (error) {
 						return callback(error);
 					}
@@ -128,14 +128,14 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 	
 	var name = this._name;
 
-	writer.transaction(function (callback) {
+	writer.transaction(function (mysql, callback) {
 
-		addToBalance(userId, name, value, function (error) {
+		addToBalance(mysql, userId, name, value, function (error) {
 			if (error) {
 				return callback(error);
 			}
 		
-			updateBalanceHistoryIn(receiptHashId, userId, name, price, value, valueType, function (error) {
+			updateBalanceHistoryIn(mysql, receiptHashId, userId, name, price, value, valueType, function (error) {
 				if (error) {
 					return callback(error);
 				}
@@ -186,7 +186,7 @@ function getBalanceByUserId(that, db, userId, cb) {
 	});
 }
 
-function spendFromBalance(userId, name, balance, cb) {
+function spendFromBalance(db, userId, name, balance, cb) {
 	if (balance < 0) {
 		return cb(new Error('spendFromBalance >> balance cannot be lower than 0: user('  + userId + ') > ' + balance));
 	}
@@ -203,7 +203,7 @@ function spendFromBalance(userId, name, balance, cb) {
 		balance,
 		now
 	];
-	writer.write(sql, params, function (error, res) {
+	db.write(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
@@ -230,7 +230,7 @@ function spendFromBalance(userId, name, balance, cb) {
 	*/
 }
 
-function addToBalance(userId, name, balance, cb) {
+function addToBalance(db, userId, name, balance, cb) {
 	var sql = 'INSERT INTO wallet_balance (userId, name, value, created, modtime) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = value + ?, modtime = ?';
 	var now = Date.now();
 	var params = [
@@ -244,7 +244,7 @@ function addToBalance(userId, name, balance, cb) {
 		balance,
 		now
 	];
-	writer.write(sql, params, function (error, res) {
+	db.write(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
@@ -256,7 +256,7 @@ function addToBalance(userId, name, balance, cb) {
 		cb();
 	});
 }
-function updateBalanceHistoryIn(receiptHashId, userId, name, price, value, valueType, cb) {
+function updateBalanceHistoryIn(db, receiptHashId, userId, name, price, value, valueType, cb) {
 	var sql = 'INSERT INTO wallet_in (receiptHashId, userId, name, price, value, valueType, created) VALUES(?, ?, ?, ?, ?, ?, ?)';
 	var params = [
 		receiptHashId,
@@ -267,7 +267,7 @@ function updateBalanceHistoryIn(receiptHashId, userId, name, price, value, value
 		valueType,
 		Date.now()
 	];
-	writer.write(sql, params, function (error, res) {
+	db.write(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
@@ -280,7 +280,7 @@ function updateBalanceHistoryIn(receiptHashId, userId, name, price, value, value
 	});
 }
 
-function updateBalanceHistoryOut(userId, name, valueToSpend, spendFor, cb) {
+function updateBalanceHistoryOut(db, userId, name, valueToSpend, spendFor, cb) {
 	var sql = 'INSERT INTO wallet_out (userId, name, value, spentFor, created) VALUES(?, ?, ?, ?, ?)';
 	var params = [
 		userId,
@@ -289,7 +289,7 @@ function updateBalanceHistoryOut(userId, name, valueToSpend, spendFor, cb) {
 		spendFor,
 		Date.now()
 	];
-	writer.write(sql, params, function (error, res) {
+	db.write(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
