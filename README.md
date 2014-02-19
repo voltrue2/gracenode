@@ -136,8 +136,6 @@ Handles sessions and automatically expires them if they are not accessed within 
 Contains functions that make it easier to deal with crypography and password hashing.
 ###[MySQL](modules/mysql)
 A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
-###[MongoDB](modules/mongodb)
-Takes care of communication to your cluster of MongoDB.
 ###[Datacache](modules/datacache)
 Allows you to cache queries to MySQL and other requests.
 ###[Asset](modules/asset)
