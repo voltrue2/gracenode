@@ -29,7 +29,9 @@ module.exports.handle = function (req, res) {
 		
 		log.info('request ignored:', req.url);
 
-		this.emit('ignored', req, res);
+		// respond with 404 right away
+		res.writeHead(404, {});
+		res.end('');
 
 		return;
 	}
