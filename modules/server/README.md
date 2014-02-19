@@ -150,9 +150,8 @@ module.exports.index = function (requestObject, cb) {
 ```javascript
 // controller
 // request URI /foo/index/one/two/
-module.exports.index = function (requestObject, one, two, cb) {
-	// one and two are  the values in the request URI
-	// by having these parameters and the arguments, these arguments will become requirements
-	// missing arguments will cause and error
+module.exports.index = function (requestObject, cb) {
+	var parameters = requestObject.parameters;
+	// parameters: ["one", "two"]
 };
 ```
