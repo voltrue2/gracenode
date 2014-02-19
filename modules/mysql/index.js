@@ -62,7 +62,7 @@ module.exports.setup = function (cb) {
 
 	// graceful exit clean up
 	gracenode.on('exit', function () {
-		log.info('discarded all connections to mysql');
+		log.info('discarded all connection pools to mysql');
 	});
 
 	// create connection pools
@@ -220,8 +220,6 @@ MySql.prototype.exec = function (sql, params, cb) {
 			return cb(error);
 		}
 
-		log.info('connection obtained from pool [' + that._name + ']');
-
 		connection.query(sql, params, function (error, result) {
 			if (error) {
 				return cb(error);
@@ -245,10 +243,15 @@ MySql.prototype.connect = function (cb) {
 	
 	log.verbose('obtaining connection from pool [' + this._name + ']');
 
+	var that = this;
+
 	this._pool.getConnection(function (error, connection) {
 		if (error) {
 			return cb(error);
 		}
+
+		log.info('connection obtained from pool [' + that._name + ']');
+		
 		cb(null, connection);
 	});
 };
@@ -277,6 +280,26 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		if (error) {
 			return cb(error);
 		}
+		
+		var autoRollback = function (error) {
+			connection.query('ROLLBACK', null, function (err) {
+				if (err) {
+					return log.error(err);
+				}
+
+				log.info('transaction auto-rollback on uncaught exception');
+
+				connection.release();
+
+				log.info('connection released to pool');
+
+				log.info('transaction ended');
+
+				cb(error);
+			});
+		};
+
+		gracenode.once('uncaughtException', autoRollback);
 
 		async.waterfall([
 			function (callback) {
@@ -325,6 +348,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 					log.info('transaction ended');
 
+					gracenode.removeListener('unchaughtException', autoRollback);
+
 					cb(error);
 				});
 				return;
@@ -342,6 +367,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 				log.info('connection released to pool');
 
 				log.info('transaction ended');
+
+				gracenode.removeListener('unchaughtException', autoRollback);
 
 				cb();
 			});
