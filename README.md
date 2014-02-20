@@ -140,6 +140,12 @@ A wrapper to handle MySQL connections without the hassle of maintaining your con
 Allows you to cache queries to MySQL and other requests.
 ###[Asset](modules/asset)
 Asset management.
+###[Memcache] (modules/memcache)
+Memcache management.
+### [Iap] (modules/iap)
+Apple and GooglePlay in-app-purchase validation.
+### [Wallet] (modules/wallet)
+Coin management.
 
 ### Useing GraceNode With Apache
 > apache configuration example

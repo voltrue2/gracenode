@@ -3,15 +3,14 @@ var gracenode = require('../../');
 var log = gracenode.log.create('wallet');
 
 var config = null;
-var reader = null;
-var writer = null;
+var mysqlDb = null;
 var wallets = {};
 
 module.exports.readConfig = function (configIn) {
 	if (!gracenode.mysql) {
 		throw new Error('wallet module requires mysql module');
 	}
-	if (!configIn || !configIn.names || !Array.isArray(configIn.names) || !configIn.sql || !configIn.sql.read || !configIn.sql.write) {
+	if (!configIn || !configIn.names || !Array.isArray(configIn.names) || !configIn.sql) {
 		throw new Error('invalid configurations given:\n', JSON.stringify(configIn));
 	}
 	config = configIn;
@@ -23,8 +22,7 @@ module.exports.setup = function (cb) {
 		wallets[name] = new Wallet(name);
 		log.verbose('wallet [' + name + '] created');
 	}
-	reader = gracenode.mysql.create(config.sql.read);
-	writer = gracenode.mysql.create(config.sql.write);
+	mysqlDb = gracenode.mysql.create(config.sql);
 	cb();
 };
 
@@ -41,7 +39,7 @@ function Wallet(name) {
 }
 
 Wallet.prototype.getBalanceByUserId = function (userId, cb) {
-	getBalanceByUserId(this, reader, userId, cb);
+	getBalanceByUserId(this, mysqlDb, userId, cb);
 };
 
 Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, onCallback, cb) {
@@ -60,7 +58,7 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 	
 	var that = this;
 	
-	writer.transaction(function (mysql, callback) {
+	mysqlDb.transaction(function (mysql, callback) {
 		
 		getBalanceByUserId(that, mysql, userId, function (error, balance) {
 			if (error) {
@@ -128,7 +126,7 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 	
 	var name = this._name;
 
-	writer.transaction(function (mysql, callback) {
+	mysqlDb.transaction(function (mysql, callback) {
 
 		addToBalance(mysql, userId, name, value, function (error) {
 			if (error) {
@@ -214,20 +212,6 @@ function spendFromBalance(db, userId, name, balance, cb) {
 		
 		cb();
 	});
-	/*	
-	// balance record MUST exist in order to spend
-	var sql = 'UPDATE wallet_balance SET value = ?, modtime = ? WHERE userId = ? AND name = ?';
-	writer.write(sql, [balance, Date.now(), userId, name], function (error, res) {
-		if (error) {
-			return cb(error);
-		}
-		if (!res || !res.affectedRows) {
-			return cb(new Error('spendFromBalance failed'));
-		}
-		
-		cb();
-	});
-	*/
 }
 
 function addToBalance(db, userId, name, balance, cb) {

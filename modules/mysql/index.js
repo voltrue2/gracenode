@@ -6,19 +6,19 @@
  * {
  *		"mysql": {
  *			"config name of your choice": {
- *				"database": "database name",
- *				"host": "db host or ip address",
- *				"user": "db user",
- *				"password": "db password",
- *				"type": "user type ("ro" or "rw")" // ro stands for read only and rw stands for read and write
- *			},
- *			"config name of your choice": {
- *				"database": "database name",
- *				"host": "db host or ip address",
- *				"user": "db user",
- *				"password": "db password",
- *				"type": "user type ("ro" or "rw")" // ro stands for read only and rw stands for read and write
- *			}....
+ *				"read": {
+ *					"database": "database name",
+ *					"host": "db host or ip address",
+ *					"user": "db user",
+ *					"password": "db password"
+ *				},
+ *				"write": {
+ *					"database": "database name",
+ *					"host": "db host or ip address",
+ *					"user": "db user",
+ *					"password": "db password"
+ *				}
+ *			} {...}
  *		}
  * }
  *
@@ -48,8 +48,11 @@ var writeQueries = [
 
 module.exports.readConfig = function (configIn) {
 	for (var name in configIn) {
-		if (!configIn[name].database || !configIn[name].host || !configIn[name].user || !configIn[name].password || !configIn[name].type) {
-			return new Error('invalid configurations: \n' + JSON.stringify(configIn, null, 4));
+		for (var type in configIn[name]) {
+			var conf = configIn[name][type];
+			if (!conf.database || !conf.host || !conf.user || !conf.password) {
+				return new Error('invalid configurations for [' + name + '.' + type + ']: \n' + JSON.stringify(configIn, null, 4));
+			}
 		}
 	}
 	configs = configIn;
@@ -66,68 +69,111 @@ module.exports.setup = function (cb) {
 	});
 
 	// create connection pools
-	var nameList = Object.keys(configs);
-	async.forEach(nameList, function (name, callback) {
-		var conf = configs[name];
+	for (var confName in configs) {
+		var confGroup = configs[confName];
+		for (var type in confGroup) {
+			var conf = confGroup[type];
+			var name = createName(confName, conf, type);
+			var pool = mysql.createPool({
+				waitForConnections: true,
+				host: conf.host,
+				database: conf.database,
+				maxPoolNum: conf.maxPoolNum || 10,
+				user: conf.user,
+				password: conf.password,
+				port: conf.port || undefined,
+			});
 
-		var pool = mysql.createPool({
-			waitForConnections: true,
-			host: conf.host,
-			database: conf.database,
-			maxPoolNum: conf.maxPoolNum || 10,
-			user: conf.user,
-			password: conf.password,
-			port: conf.port || undefined,
-		});
+			poolMap[name] = pool;
+			
+			log.info('connection pool ceated: ', name, conf);
+		}
+	}
 
-		poolMap[name] = pool;
-		
-		log.info('connection pool ceated: ', name, conf);
+	cb();
+};
 
-		callback();
-	}, cb);
+module.exports.create = function (confName) {
+	if (!configs[confName]) {
+		log.fatal('invalid configuration name given:', confName);
+		return null;
+	}
+	var config = configs[confName];
+	var read = module.exports.createOne(confName, config.read, 'read');
+	if (read instanceof Error) {
+		log.fatal(read);
+		log.fatal('failed to establish "read" mysql instance...');
+		return null;
+	}
+	var write = module.exports.createOne(confName, config.write, 'write');
+	if (write instanceof Error) {
+		log.fatal(write);
+		log.fatal('failed to establish "write" mysql instance...');
+		return null;
+	}
+	return new MySqlGroup(read, write);
 };
 
 /**
- * @param {String} 
- * */
-module.exports.create = function (configName) {
-	var config = configs[configName] || null;
+* Do NOT use this method outside!! 
+* */
+module.exports.createOne = function (confName, config, type) {
 	if (!config) {
-		return new Error('invalid configuration configuration name given: ' + configName + ' > \n' + JSON.stringify(configs, null, 4));
+		return new Error('invalid configuration configuration name given: > \n' + JSON.stringify(configs, null, 4));
 	}
 	
-	log.verbose('create mysql with: ', configName);
-	
-	var pool = poolMap[configName] || null;
+	var name = createName(confName, config, type);
+	var pool = poolMap[name] || null;
 	if (!pool) {
-		return new Error('connection not found:' + configName);
+		return new Error('connection not found: ' + name);
 	}
 
-	return new MySql(configName, pool, config);
+	log.info('connection pool created with:', name);
+
+	return new MySql(name, pool, config, type);
 };
 
-function validateQuery(sql, type) {
-	if (type === 'rw') {
-		// status rw allows writes
-		return true;
-	}
-	sql = sql.toLowerCase();
-	for (var i = 0, len = writeQueries.length; i < len; i++) {
-		var wq = writeQueries[i];
-		var index = sql.indexOf(wq);
-		if (index !== -1) {
-			return false;
-		}
-	}
-	return true;	
+function MySqlGroup(read, write) {
+	this._read = read;
+	this._write = write;
 }
 
-function MySql(name, pool, config) {
+util.inherits(MySqlGroup, EventEmitter);
+
+MySqlGroup.prototype.placeHolder = function (params) {
+	return this._read.placeHolder(params);
+};
+
+MySqlGroup.prototype.getOne = function (sql, params, cb) {
+	this._read.getOne(sql, params, cb);
+};
+
+MySqlGroup.prototype.getMany = function (sql, params, cb) {
+	this._read.getMany(sql, params, cb);
+};
+
+MySqlGroup.prototype.searchOne = function (sql, params, cb) {
+	this._read.searchOne(sql, params, cb);
+};
+
+MySqlGroup.prototype.searchMany = function (sql, params, cb) {
+	this._read.searchMany(sql, params, cb);
+};
+
+MySqlGroup.prototype.write = function (sql, params, cb) {
+	this._write.write(sql, params, cb);
+};
+
+MySqlGroup.prototype.transaction = function (taskCallback, cb) {
+	this._write.transaction(taskCallback, cb);
+};
+
+function MySql(name, pool, config, type) {
 	EventEmitter.call(this);
 	this._name = name;
 	this._pool = pool;
 	this._config = config;
+	this._type = type;
 	this._transactionConnection = null; // do not touch this outside of this module!
 }
 
@@ -208,9 +254,9 @@ MySql.prototype.exec = function (sql, params, cb) {
 	
 	log.verbose('attempt to execute query:', sql, params);
 
-	var valid = validateQuery(sql, this._config.type);
+	var valid = validateQuery(sql, this._type);
 	if (!valid) {
-		return cb(new Error('invalid query for type ' + this._config.type));
+		return cb(new Error('invalid query for type ' + this._type));
 	}
 	
 	var that = this;
@@ -267,8 +313,8 @@ MySql.prototype.release = function (connection) {
 };
 
 MySql.prototype.transaction = function (taskCallback, cb) {
-	if (this._config.type !== 'rw') {
-		return cb(new Error('cannot execute transaction with type: ' + this._config.type));
+	if (this._type !== 'write') {
+		return cb(new Error('cannot execute transaction with type: ' + this._type));
 	}
 
 	log.info('transaction started');
@@ -322,8 +368,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 			},
 
 			function (name, connection, callback) {
-				var transactionMysql = module.exports.create(name);
 				// this connection will be re-used in this transaction
+				var transactionMysql = new MySql(name, that._pool, that._config, that._type);
 				transactionMysql._transactionConnection = connection;	
 				callback(null, transactionMysql);
 			},
@@ -360,6 +406,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 					log.error(err);
 				}
 
+				that._transactionConnection = null;
+
 				log.info('transaction commit');
 
 				reuseConn.release();
@@ -376,3 +424,23 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 	});
 };
+
+function validateQuery(sql, type) {
+	if (type === 'write') {
+		// status write allows writes
+		return true;
+	}
+	sql = sql.toLowerCase();
+	for (var i = 0, len = writeQueries.length; i < len; i++) {
+		var wq = writeQueries[i];
+		var index = sql.indexOf(wq);
+		if (index !== -1) {
+			return false;
+		}
+	}
+	return true;	
+}
+
+function createName(confName, conf, type) {
+	return confName + '-' + conf.database + '-' + conf.host + '-' + type;
+}

@@ -8,6 +8,7 @@ var apple = require('./apple.js');
 var google = require('./google.js');
 
 var config = null;
+var mysql = null;
 
 // constants
 var VALIDATED = 'validated';
@@ -20,11 +21,13 @@ module.exports.readConfig = function (configIn) {
 	if (!gracenode.request || !gracenode.mysql) {
 		throw new Error('iap module requires request module and mysql module');
 	}
-	if (!configIn || !configIn.sql || !configIn.sql.write || !configIn.sql.read) {
+	if (!configIn || !configIn.sql) {
         throw new Error('invalid configurations given:\n' + JSON.stringify(configIn, null, 4));
     }
 	
 	config = configIn;
+
+	mysql = gracenode.mysql.create(config.sql);
 
 	apple.readConfig(config);
 	google.readConfig(config);
@@ -64,8 +67,7 @@ module.exports.updateStatus = function (receipt, status, cb) {
 		createReceiptHash(receipt),
 		service
 	];
-	var writer = gracenode.mysql.create(config.sql.write);
-	writer.write(sql, params, function (error) {
+	mysql.write(sql, params, function (error) {
 		if (error) {
 			return cb(error);
 		}
@@ -81,8 +83,7 @@ function checkDb(receipt, finalCallback, cb) {
 	var sql = 'SELECT validateState, status, service FROM iap WHERE receiptHashId = ?';
 	var hash = createReceiptHash(receipt);
 	var params = [hash];
-	var reader = gracenode.mysql.create(config.sql.read);
-	reader.searchOne(sql, params, function (error, res) {
+	mysql.searchOne(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
@@ -116,8 +117,7 @@ function storeResponse(receipt, response, validated, cb) {
 		validateState,
 		now
 	];
-	var writer = gracenode.mysql.create(config.sql.write);
-	writer.write(sql, params, function (error) {
+	mysql.write(sql, params, function (error) {
 		if (error) {
 			return cb(error);
 		}

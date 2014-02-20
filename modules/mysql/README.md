@@ -11,12 +11,19 @@ Configurations
 "modules": {
 	"mysql": {
 		"configNameOfYourChoice": {
-			"database": "databaseName",
-			"host": "host or IP address",
-			"user": "databaseUser",
-			"password": "databasePassword",
-			"type": "ro" or "rw" // "ro" for Read Only and "rw" for Read and Write
-		}...
+			"read": {
+				"database": "databaseName",
+				"host": "host or IP address",
+				"user": "databaseUser",
+				"password": "databasePassword"
+			},
+			"write": {
+				"database": "databaseName",
+				"host": "host or IP address",
+				"user": "databaseUser",
+				"password": "databasePassword"
+			}
+		}{...}
 	}
 }
 ```
@@ -25,9 +32,9 @@ Configurations
 <pre>
 MySql create(String configName)
 </pre>
-> Returns an instance of MySql class
+> Returns an instance of MySqlGroup class
 
-##### MySql class
+##### MySqlGroup class
 
 > **getOne**
 <pre>
@@ -84,12 +91,12 @@ void transaction(Function taskCallback, Function callback)
 >>>> Can **NOT** be executed if the *type* is "ro"
 ```javascript
 var mysql = gracenode.mysql.create('animalDb');
-mysql.transaction(function (finishCallback) {
-	mysql.write('INSERT INTO animal (name, species) VALUES(?, ?)', ['dog', 'knine'], function (error, res) {
+mysql.transaction(function (transactionMysql, finishCallback) {
+	transactionMysql.write('INSERT INTO animal (name, species) VALUES(?, ?)', ['dog', 'knine'], function (error, res) {
 		if (error) {
 			return finishCallback(error);
 		}
-		mysql.write('INSERT INTO food (animalName, amount) VALUES(?, ?)', ['dog', 10], function (error, res) {
+		transactionMysql.write('INSERT INTO food (animalName, amount) VALUES(?, ?)', ['dog', 10], function (error, res) {
 			if (error) {
 				return finishCallback(error);
 			}
