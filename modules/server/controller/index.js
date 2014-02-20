@@ -48,7 +48,33 @@ module.exports.exec = function (req, res, parsedUrl) {
 
 module.exports.execError = errorHandler;
 
+function readResponseBody(headers, body) {
+
+	var responseObject;
+
+	console.log('HEADERS:', headers, body);
+	if (headers['content-type'] === 'application/json') {
+
+		try {
+			responseObject = JSON.parse(body);
+		} catch (e) {
+
+			log.error('Invalid JSON in request:', body);
+			responseObject = {};
+
+		}
+
+	} else {
+		responseObject = queryString.parse(body);
+	}
+
+	return responseObject;
+
+}
+
+
 function extractQueries(req, cb) {
+
 	switch (req.method) {
 		case 'POST':
 			var body = '';
@@ -56,7 +82,7 @@ function extractQueries(req, cb) {
 				body += data;
 			});
 			req.on('end', function () {
-				var post = queryString.parse(body);
+				var post = readResponseBody(req.headers, body);
 				cb(null, { post: post, put: null, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -69,7 +95,7 @@ function extractQueries(req, cb) {
 				putBody += data;
 			});
 			req.on('end', function () {
-				var put = queryString.parse(putBody);
+				var put = readResponseBody(req.headers, putBody);
 				cb(null, { post: null, put: put, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -232,6 +258,7 @@ function RequestObj(request, response, params, reqData) {
 	// public
 	this.cookies = new Cookies(request, response);
 	this.parameters = params;
+	
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
 	this.putData = queryDataHandler.createGetter(reqData.put || {});
 	this.deleteData = queryDataHandler.createGetter(reqData.delete || {});
