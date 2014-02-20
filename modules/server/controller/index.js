@@ -58,7 +58,7 @@ function readResponseBody(headers, body) {
 			responseObject = JSON.parse(body);
 		} catch (e) {
 
-			log.error('Invalid JSON in request:', body);
+			log.error('Invalid JSON in request:', body, e);
 			responseObject = {};
 
 		}
