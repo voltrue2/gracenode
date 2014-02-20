@@ -74,7 +74,7 @@ module.exports.setup = function (cb) {
 		for (var type in confGroup) {
 			var conf = confGroup[type];
 			var name = createName(confName, conf, type);
-			var pool = mysql.createPool({
+			var params = {
 				waitForConnections: true,
 				host: conf.host,
 				database: conf.database,
@@ -82,11 +82,11 @@ module.exports.setup = function (cb) {
 				user: conf.user,
 				password: conf.password,
 				port: conf.port || undefined,
-			});
-
+			};
+			var pool = mysql.createPool(params); 
 			poolMap[name] = pool;
 			
-			log.info('connection pool ceated: ', name, conf);
+			log.info('connection pool created: ', name, params);
 		}
 	}
 
@@ -128,7 +128,7 @@ module.exports.createOne = function (confName, config, type) {
 		return new Error('connection not found: ' + name);
 	}
 
-	log.info('connection pool created with:', name);
+	log.info('connection pool found:', name);
 
 	return new MySql(name, pool, config, type);
 };
@@ -317,8 +317,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		return cb(new Error('cannot execute transaction with type: ' + this._type));
 	}
 
-	log.info('transaction started');
-
 	var that = this;
 	var reuseConn = null;
 
@@ -326,6 +324,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		if (error) {
 			return cb(error);
 		}
+
+		log.info('transaction started');
 		
 		var autoRollback = function (error) {
 			connection.query('ROLLBACK', null, function (err) {
@@ -374,8 +374,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 				callback(null, transactionMysql);
 			},
 
-			function (mysql, callback) {
-				taskCallback(mysql, callback);
+			function (transactionMysql, callback) {
+				taskCallback(transactionMysql, callback);
 			}
 
 		], 
