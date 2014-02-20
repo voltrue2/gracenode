@@ -52,7 +52,6 @@ function readResponseBody(headers, body) {
 
 	var responseObject;
 
-	console.log('HEADERS:', headers, body);
 	if (headers['content-type'] === 'application/json') {
 
 		try {
