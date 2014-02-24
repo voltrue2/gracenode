@@ -5,7 +5,6 @@
  * {
  *		"staticdata": {
  *			"path": "directory path to the source static files",
- *			"linebreak": optional,
  *			"delimiter": optional,
  *			"qoute": optional,
  *			"index": optional {
