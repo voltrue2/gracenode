@@ -25,7 +25,6 @@ var gracenode = require('../../');
 var log = gracenode.log.create('staticdata');
 
 var config;
-var linebreak = '\n';
 var delimiter = ',';
 var quote = '"';
 var staticData = {}; // static data source object
@@ -37,9 +36,6 @@ module.exports.readConfig = function (configIn) {
 	}
 	config = configIn;
 	// optional
-	if (config.linebreak !== undefined) {
-		linebreak = config.linebreak;
-	}
 	if (config.delimiter !== undefined) {
 		delimiter = config.delimiter;
 	}
@@ -168,7 +164,10 @@ function toObject(data) {
 	// assume first row as the list of columns
 	var res = [];
 	var pattern = new RegExp(quote, 'g');
-	var rows = data.replace(pattern, '').split(linebreak);
+
+	//Replace all linebreaks with \r to eliminate cross browser eol issues.
+	data.replace(/(\r\n|\n|\r)/gm, '\r');
+	var rows = data.replace(pattern, '').split('\r');
 	var columns = rows[0].split(delimiter);
 	var columnLen = columns.length;
 	for (var i = 1, len = rows.length; i < len; i++) {
