@@ -166,7 +166,7 @@ function toObject(data) {
 	var pattern = new RegExp(quote, 'g');
 
 	//Replace all linebreaks with \r to eliminate cross browser eol issues.
-	data.replace(/(\r\n|\n|\r)/gm, '\r');
+	data.replace(/(\r\n|\n)/gm, '\r');
 	var rows = data.replace(pattern, '').split('\r');
 	var columns = rows[0].split(delimiter);
 	var columnLen = columns.length;
