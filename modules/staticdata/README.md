@@ -16,7 +16,6 @@ Configurations
 	"modules": {
 		"staticdata": {
 			"path": "directory path to the static files",
-			"linebreak": optional and defaults to '\n', // for parsing CSV files
 			"delimiter": optional and defaults to ',', // for parsing CSV files
 			"quote": optional and defaults to '"' // for parsing CSV files
 			"index": { // optional // for getOneByIndex and getManyByIndex
