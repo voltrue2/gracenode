@@ -87,6 +87,21 @@ Exits GraceNode and attempts to gracefully shutdown the process. You can give it
 ```
 gracenode.exit('financialCrisis');
 ```
+
+###.getRootPath()
+Returns the root path of the application (not the root path of GraceNode)
+```
+var appRoot = gracenode.getRootPath();
+```
+
+###.getModuleSchema(moduleName [string], callback [function])
+Finds and returns an array of schema SQL queries (only for modules with schema.sql file in the directory)
+```
+gracenode.getModuleSchema('wallet', function (error, sqlList) {
+	// execute queries	
+});
+```
+
 ##Events
 Gracenode has the capabilities to emit events, you can catch these events using:
 ```

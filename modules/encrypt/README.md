@@ -1,34 +1,5 @@
-Access
-<pre>
-gracenode.session
-</pre>
-
-Configurations
-```javascript
-"modules": {
-        "session": {
-                "hosts": ["host:port", "host:port"...],
-                "ttl": int (in seconds),
-                "options": object
-        }
-}
-```
-
-#####API: *getSession*
-
-<pre>
-void getSession(String sessionId, Function callback)
-</pre>
-> Passes a session object to the callback
-
-#####API: *setSession*
-<pre>
-void setSession(String, sessionId, mixed value, Function callback)
-</pre>
-
 ***
-#### <span id="encrypt-module">encrypt module</span>
-<a href="#top">Back to the list of built-in modules</a>
+Encrypt
 ***
 
 Access
