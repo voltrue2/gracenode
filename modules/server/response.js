@@ -258,9 +258,10 @@ function getFileType(type) {
 	switch (type) {
 		case 'png':
 		case 'gif':
+			return 'image/' + type;
 		case 'jpg':
 		case 'jpeg':
-			return 'image/' + type;
+			return 'image/jpeg';
 		case 'mp3':
 			return 'audio/mpeg';
 		case 'wav':
