@@ -44,21 +44,6 @@ GraceNode/scripts/sslcertgen.sh //for production
 GraceNode/scripts/sslcertgen-dev.sh //for development
 </pre>
 
-######API: *start*
-
-<pre>
-void start()
-</pre>
-> Starts an HTTP or HTTPS server
-
-#####API: *events*
-
-<pre>
-EventEmitter events()
-</pre>
-> Returns an instance of EventEmitter
->> Events: requestStart, requestEnd
-
 #####API: *events*
 
 <pre>
@@ -186,7 +171,7 @@ Void response.file(Binary content, Integer status)
 
 >> **response.error**
 >> resonds to the client as an error. content can be JSON, String, Number
->> status code is optional and default is 200
+>> status code is optional and default is 404
 <pre>
 Void response.error(Mixed content, Integer status)
 </pre>
