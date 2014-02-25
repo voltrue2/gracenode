@@ -223,7 +223,7 @@ module.exports.index = function (requestObject, response) {
         // get
         var foo = requestObject.cookies.get('foo');
         // set
-        requestObject.cookies('boo', 'boo');    
+        requestObject.cookies.set('boo', 'boo');    
 };
 ```
 
