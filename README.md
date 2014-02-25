@@ -67,6 +67,13 @@ Give GraceNode the list of configuration files to be used. The files must be in 
 gracenode.setConfigFiles(['conf.json']);
 ```
 
+###.addModulePath(modulePath [string])
+Adds a module path for GraceNode to load modules from. Used to load external GraceNode module
+```
+gracenode.addModulePath('mymodules/');
+gracenode.use('mymodule');
+```
+
 ###.use(moduleName [string], params [object*])
 Tells GraceNode what modules to load when calling the setup functions.
 ```
