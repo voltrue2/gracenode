@@ -35,9 +35,11 @@ util.inherits(GraceNode, EventEmitter);
 // finds a schema.sql under given module's directory
 // never use this function in production, but setup script only
 GraceNode.prototype.getModuleSchema = function (modName, cb) {
-	var prefix = this.getRootPath() + rootDirName + '/modules/';
-	async.eachSeries(modPaths, function (path, callback) {
-		var filePath = prefix + modName + '/schema.sql';
+	var prefix = this.getRootPath();
+	var pathList = [rootDirName + '/modules/'];
+	pathList = pathList.concat(modPaths);
+	async.eachSeries(pathList, function (path, callback) {
+		var filePath = prefix + path + modName + '/schema.sql';
 		log.verbose('looking for ' + filePath);	
 		fs.exists(filePath, function (exists) {
 			if (exists) {
