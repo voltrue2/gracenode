@@ -124,7 +124,7 @@ module.exports.foo = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
-> How to read GET and POST
+> How to read GET, POST, PUT, and DELETE
 ```javascript
 // controller file
 module.exrpots.index = function (requestObject, response) {
@@ -132,6 +132,8 @@ module.exrpots.index = function (requestObject, response) {
         // requestObject.getData and requestObject.postData
         var getFoo = requestObject.getData.get('foo');
         var postFoo = requestObject.postData.get('foot');
+        var putFoo = requestObject.putData.get('foot');
+        var deleteFoo = requestObject.deleteData.get('foot');
         response.json(null);
 };
 ```
@@ -229,10 +231,14 @@ module.exports.index = function (requestObject, response) {
 ```javascript
 // controller
 // request URI /foo/index/one/two/
-module.exports.index = function (requestObject, one, two, response) {
-        // one and two are  the values in the request URI
-        // by having these parameters and the arguments, these arguments will become requirements
-        // missing arguments will cause and error
+module.exports.index = function (requestObject, response) {
+	var params = requestObject.parameters;
+	/*
+	[
+		"one",
+		"two"
+	]
+	*/
 };
 ```
 
