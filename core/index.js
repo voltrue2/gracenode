@@ -61,8 +61,9 @@ GraceNode.prototype.getModuleSchema = function (modName, cb) {
 		cb(null, list);
 	});
 	*/
+	var prefix = this.getRootPath() + rootDirName + '/modules/';
 	async.eachSeries(modPaths, function (path, callback) {
-		var filePath = path + modName + '/schema.sql';
+		var filePath = prefix + modName + '/schema.sql';
 		log.verbose('looking for ' + filePath);	
 		fs.exists(filePath, function (exists) {
 			if (exists) {

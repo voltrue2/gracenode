@@ -165,10 +165,11 @@ function toObject(data) {
 	var pattern = new RegExp(quote, 'g');
 
 	//Replace all linebreaks with \r to eliminate cross OS eol issues.
-	data.replace(/(\r\n|\n)/gm, '\r');
+	data = data.replace(/(\r\n|\n)/gm, '\r');
 	var rows = data.replace(pattern, '').split('\r');
 	var columns = rows[0].split(delimiter);
 	var columnLen = columns.length;
+
 	for (var i = 1, len = rows.length; i < len; i++) {
 		if (!rows[i]) {
 			// ignore empty
