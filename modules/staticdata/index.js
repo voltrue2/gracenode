@@ -21,6 +21,7 @@ var EventEmitter = require('events').EventEmitter;
 var fileWatcher = new EventEmitter();
 
 var gracenode = require('../../');
+var csvParser = require('./csv');
 var log = gracenode.log.create('staticdata');
 
 var config;
@@ -160,52 +161,10 @@ function setupChangeListener(path) {
 }
 
 function toObject(data) {
-	// assume first row as the list of columns
-	var res = [];
-	var pattern = new RegExp(quote, 'g');
-
-	//Replace all linebreaks with \r to eliminate cross OS eol issues.
-	data = data.replace(/(\r\n|\n)/gm, '\r');
-	var rows = data.replace(pattern, '').split('\r');
-	var columns = rows[0].split(delimiter);
-	var columnLen = columns.length;
-
-	for (var i = 1, len = rows.length; i < len; i++) {
-		if (!rows[i]) {
-			// ignore empty
-			continue;
-		}
-		var item = {};
-		var cols = rows[i].split(delimiter);
-		// validate data schema
-		if (cols.length !== columnLen) {
-			return new Error('data is corrupt: \ncolumns: \n' + JSON.stringify(columns, null, 4) + '\ndata: \n' + JSON.stringify(cols, null, 4));
-		}
-		for (var j = 0; j < columnLen; j++) {
-			var value = getValue(cols[j]);
-			item[columns[j]] = value;
-		}
-		res.push(item);
-	}
-	return res;
-}
-
-function getValue(value) {
-	if (!isNaN(value)) {
-		return Number(value);
-	}
-	switch (value.toLowerCase()) {
-		case 'true':
-			return true;
-		case 'false':
-			return false;
-		case 'null':
-			return null;
-		case 'undefined':
-			return undefined;
-		default:
-			return value;
-	}
+	var csv = csvParser.create(quote, delimiter);
+	var obj =  csv.toObject(data);
+	log.verbose(obj);
+	return obj;
 }
 
 function mapIndex(data, indexNames) {
