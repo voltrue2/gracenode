@@ -8,6 +8,9 @@
 	/*
 	 *@url (String)
 	 *@params (Object)
+	 *Reserved properties of params
+	 * method: 'GET', 'POST', 'PUT', 'DELETE' > defualt 'GET'
+	 * sendAsBinary: true/false
 	 *@cb (Function)
 	 * **/ 
 	function ajax(uri, params, cb) {
@@ -17,6 +20,7 @@
 		}
 		
 		var method = params && params.method || 'GET';
+		var sendAsBin = params && params.sendAsBinary || false;
 		var path = window.encodeURI(domain + uri);
 		var paramStr = getParams(params);
 		var req = null;
@@ -76,7 +80,11 @@
 		};
 		request.emit('send');
 		ajaxEvents.emit('send');
-		req.send(paramStr);
+		if (sendAsBin) {
+			req.sendAsBinary(paramStr);
+		} else {
+			req.send(paramStr);
+		}
 		return request;
 	}
 

@@ -149,7 +149,11 @@ function color(name, msgItem) {
 		if (msgItem instanceof Error) {
 			msgItem = msgItem.message + '\n<stack trace>\n' + msgItem.stack;
 		} else {
-			msgItem = '\n' + JSON.stringify(msgItem, null, 4);
+			try {
+				msgItem = '\n' + JSON.stringify(msgItem, null, 4);
+			} catch (e) {
+				msgItem = '[Circular]';
+			}
 		}
 	}
 	if (!config || !config.color) {
