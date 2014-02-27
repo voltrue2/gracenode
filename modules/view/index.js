@@ -199,8 +199,13 @@ function parseContent(outputData, parser, seen, clientData, cb) {
 			if (error) {
 				return cb(error);
 			}
-			
-			outputData = outputData.replace(tag, data);
+		
+			// FIXME: a sad, really sad way to make sure ALL the tags be replaced....	
+			var newData = outputData.replace(tag, data);
+			while (newData !== outputData) {
+				newData = newData.replace(tag, data);
+				outputData = newData;
+			}
 			
 			next();
 		});

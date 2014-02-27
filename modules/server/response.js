@@ -67,6 +67,7 @@ Response.prototype.file = function (content, status) {
 
 Response.prototype.error = function (content, status) {
 	log.verbose('response content type: Error');
+	log.error(content);
 	respondERROR(this._request, this._response, content, status);
 	this._response.emit('end');
 };
