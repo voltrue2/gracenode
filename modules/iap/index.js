@@ -88,9 +88,17 @@ function checkDb(receipt, finalCallback, cb) {
 			return cb(error);
 		}
 		log.info('validated data in database: (receipt hash: ' + hash + ')', res);
-		if (res && res.validateState === VALIDATED) {
-			// this receipt has been validated by the service provider already
-			return finalCallback(null, res);
+		if (res) {
+			// check status
+			if (res.status === HANDLED || res.status === CANCELED) {
+				// status is either handled or canceled > we do nothing in this case...
+				return cb(new Error('status has already been ' + res.status));
+			}
+			// check validation
+			if (res.validateState === VALIDATED) {
+				// this receipt has been validated by the service provider already
+				return finalCallback(null, res);
+			}
 		}
 		cb(null, receipt);
 	});	
