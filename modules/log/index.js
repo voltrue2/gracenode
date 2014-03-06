@@ -48,36 +48,54 @@ function Log(prefix, name) {
 
 Log.prototype.verbose = function () {
 	var name = 'verbose';
+	if (!isEnabled(name)) {
+		return;
+	}
 	var msg = createMsg(this._name, name, arguments);
 	print(name, msg);
 };
 
 Log.prototype.debug = function () {
 	var name = 'debug';
+	if (!isEnabled(name)) {
+		return;
+	}
 	var msg = createMsg(this._name, name, arguments);
 	print(name, msg);
 };
 
 Log.prototype.info = function () {
 	var name = 'info';
+	if (!isEnabled(name)) {
+		return;
+	}
 	var msg = createMsg(this._name, name, arguments);
 	print(name, msg);
 };
 
 Log.prototype.warning = function () {
 	var name = 'warning';
+	if (!isEnabled(name)) {
+		return;
+	}
 	var msg = createMsg(this._name, name, arguments);
 	print(name, msg);
 };
 
 Log.prototype.error = function () {
 	var name = 'error';
+	if (!isEnabled(name)) {
+		return;
+	}
 	var msg = createMsg(this._name, name, arguments);
 	print(name, msg);
 };
 
 Log.prototype.fatal = function () {
 	var name = 'fatal';
+	if (!isEnabled(name)) {
+		return;
+	}
 	var msg = createMsg(this._name, name, arguments);
 	print(name, msg);
 };
@@ -121,14 +139,9 @@ function pad(n, digit) {
 }
 
 function print(name, msg) {
-	if (!isEnabled(name)) {
-		
-		if (!config || !config[name] || config[name].enabled === undefined) {
-			// no configurations
-			console.log.apply(console, msg);
-		}
-
-		return;
+	if (!config || !config[name] || config[name].enabled === undefined) {
+		// no configurations
+		return console.log.apply(console, msg);
 	}
 	if (!config.type || config.type === 'stdout') {
 		console.log.apply(console, msg);
