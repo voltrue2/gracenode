@@ -9,6 +9,7 @@ var cluster = require('cluster');
 var fs = require('fs');
 var modPaths = [];
 var workerList = []; // master only
+var gracefulWaitList = []; // list of tasks to be executed before shutting down of GraceNode
 
 module.exports.GraceNode = GraceNode;
 
@@ -31,6 +32,13 @@ function GraceNode() {
 
 util.inherits(GraceNode, EventEmitter);
 
+GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
+	if (typeof taskFunc !== 'function') {
+		return log.error('argument 2 must be a function');
+	}
+	log.info('graceful shutdown task for ' + name + ' has been registered');
+	gracefulWaitList.push({ name: name, task: taskFunc });
+};
 
 // finds a schema.sql under given module's directory
 // never use this function in production, but setup script only
@@ -334,6 +342,21 @@ function setupModules(that, cb) {
 	}, cb);
 }
 
+function handleShutdownTasks(cb) {
+	if (!gracefulWaitList.length) {
+		return cb();
+	}
+	async.eachSeries(gracefulWaitList, function (item, next) {
+		log.info('handling graceful exit task for ', item.name);
+		item.task(next);
+	},
+	function () {
+		gracefulWaitList = [];
+		log.info('all shutdown tasks have been executed');
+		cb();
+	});
+}
+
 function setupListeners(that) {
 	
 	process.on('uncaughtException', function (error) {
@@ -343,28 +366,40 @@ function setupListeners(that) {
 	});
 
 	process.on('exit', function (error) {
-		that.emit('exit', error);
-		if (error) {
-			return log.fatal('exit GraceNode with an error:', error);
-		}
-		log.info('exit GraceNode');
+		log.info('exit caught: shutting down GraceNode...');
+		handleShutdownTasks(function () {
+			that.emit('exit', error);
+			if (error) {
+				return log.fatal('exit GraceNode with an error:', error);
+			}
+			log.info('exit GraceNode');
+		});
 	});
 
 	process.on('SIGINT', function () {
-		log.verbose('shutdown GraceNode');
-		that.emit('shutdown');
-		that.exit();
+		log.info('SIGINT caught: shutting down GraceNode...');
+		handleShutdownTasks(function () {
+			log.info('shutdown GraceNode');
+			that.emit('shutdown');
+			that.exit();
+		});
 	});
 
 	process.on('SIGQUIT', function () {
-		log.verbose('quit GraceNode');
-		that.emit('shutdown');
-		that.exit();
+		log.info('SIGQUIT caught: shutting down GraceNode...');
+		handleShutdownTasks(function () {
+			log.info('quit GraceNode');
+			that.emit('shutdown');
+			that.exit();
+		});
 	});
 
 	process.on('SIGTERM', function () {
-		log.verbose('terminate GraceNode');
-		that.emit('shutdown');
-		that.exit();
+		log.info('SIGTERM caught: shutting down GraceNode...');
+		handleShutdownTasks(function () {
+			log.info('terminate GraceNode');
+			that.emit('shutdown');
+			that.exit();
+		});
 	});
 }

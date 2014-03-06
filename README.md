@@ -67,6 +67,16 @@ Give GraceNode the list of configuration files to be used. The files must be in 
 gracenode.setConfigFiles(['conf.json']);
 ```
 
+###.registerShutdownTask(taskName [string], task [function]);
+Registers a function to be executed when GraceNode process is shutting down to ensure graceful exit of the application
+```
+gracenode.registerShutdownTask('example', function (callback) {
+	// handle graceful tasks here
+	// we are done
+	callback();
+});
+```
+
 ###.addModulePath(modulePath [string])
 Adds a module path for GraceNode to load modules from. Used to load external GraceNode module
 ```

@@ -64,8 +64,17 @@ module.exports.setup = function (cb) {
 	log.info('establishing connection pools to mysql...');
 
 	// graceful exit clean up
-	gracenode.on('exit', function () {
-		log.info('discarded all connection pools to mysql');
+	gracenode.registerShutdownTask('mysql', function (callback) {
+		var idList = Object.keys(poolMap);
+		async.eachSeries(idList, function (id, next) {
+			var pool = poolMap[id];
+			log.info('discarding connection pool for', id);
+			pool.end(next);
+		},
+		function () {
+			log.info('discarded all connection pools to mysql');
+			callback();
+		});
 	});
 
 	// create connection pools

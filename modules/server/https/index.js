@@ -60,10 +60,11 @@ function Https() {
 		this.server.listen(config.port, config.host);
 
 		// listener for gracenode shutdown
-		gracenode.on('shutdown', function () {
+		gracenode.registerShutdownTask('server-https', function (callback) {
 			log.info('stopping server...');
 			that.server.close();
 			log.info('server stopped gracefully: ' + config.host + ':' + config.port);
+			callback();
 		});
 
 		log.info('server started:', config.host + ':' + config.port);
