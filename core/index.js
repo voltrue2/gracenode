@@ -113,7 +113,7 @@ GraceNode.prototype.addModulePath = function (path) {
 };
 
 GraceNode.prototype.exit = function (error) {
-	process.exit(error || 0);
+	this.emit('exit', error || 0);
 };
 
 GraceNode.prototype.use = function (modName) {
@@ -358,22 +358,22 @@ function handleShutdownTasks(cb) {
 }
 
 function setupListeners(that) {
+
+	that.on('exit', function (error) {
+		log.info('exit caught: shutting down GraceNode...');
+		handleShutdownTasks(function () {
+			if (error) {
+				return log.fatal('exit GraceNode with an error:', error);
+			}
+			log.info('exit GraceNode');
+			process.exit(error);
+		});
+	});
 	
 	process.on('uncaughtException', function (error) {
 		log.fatal('GraceNode detected an uncaught exception');
 		log.fatal(error);
 		that.emit('uncaughtException', error);
-	});
-
-	process.on('exit', function (error) {
-		log.info('exit caught: shutting down GraceNode...');
-		handleShutdownTasks(function () {
-			that.emit('exit', error);
-			if (error) {
-				return log.fatal('exit GraceNode with an error:', error);
-			}
-			log.info('exit GraceNode');
-		});
 	});
 
 	process.on('SIGINT', function () {
