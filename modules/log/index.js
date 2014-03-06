@@ -139,6 +139,7 @@ function pad(n, digit) {
 }
 
 function print(name, msg) {
+	/*
 	if (!config || !config[name] || config[name].enabled === undefined) {
 		// no configurations
 		return console.log.apply(console, msg);
@@ -154,6 +155,18 @@ function print(name, msg) {
 			}
 		});
 	}
+	*/
+	if (config && config.type === 'file' && config.level && config.level[name] && config.level[name].path) {
+		// we log to a file
+		var path = config.level[name].path + name + ymd + '.log';
+		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
+			if (error) {
+				throw new Error('failed to write a log to a file: ' + error);
+			}
+		});
+	}
+	// we log to stdout stream
+	console.log.apply(console, msg);
 }
 
 function color(name, msgItem) {
