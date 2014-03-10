@@ -41,7 +41,7 @@ GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
 };
 
 GraceNode.prototype.require = function (path) {
-	return require(this.getRooPath() + path);
+	return require(this.getRootPath() + path);
 };
 
 // finds a schema.sql under given module's directory
