@@ -40,6 +40,10 @@ GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
 	gracefulWaitList.push({ name: name, task: taskFunc });
 };
 
+GraceNode.prototype.require = function (path) {
+	return require(this.getRooPath() + path);
+};
+
 // finds a schema.sql under given module's directory
 // never use this function in production, but setup script only
 GraceNode.prototype.getModuleSchema = function (modName, cb) {

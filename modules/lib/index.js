@@ -8,6 +8,14 @@ var validationPatterns = {
     password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
 
+module.exports.randomFloat = function (min, max) {
+	var rand = Math.random() * ((max - min) + min);
+	if (rand < min) {
+		return min;
+	}
+	return rand;
+};
+
 module.exports.randomInt = function (min, max) {
 	var rand = Math.floor(Math.random() * (max + 1));
 	if (rand < min) {

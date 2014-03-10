@@ -111,6 +111,12 @@ Returns the root path of the application (not the root path of GraceNode)
 var appRoot = gracenode.getRootPath();
 ```
 
+###.require()
+Executes nodejs native require with application root path as prefix. You do not have to go ../../mydir/me.js
+```
+var mymod = gracenode.require('mydir/mymod');
+```
+
 ###.getModuleSchema(moduleName [string], callback [function])
 Finds and returns an array of schema SQL queries (only for modules with schema.sql file in the directory)
 ```
