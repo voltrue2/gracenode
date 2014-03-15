@@ -9,7 +9,7 @@ var cluster = require('cluster');
 var fs = require('fs');
 var modPaths = [];
 var workerList = []; // master only
-var gracefulWaitList = []; // list of tasks to be executed before shutting down of GraceNode
+var gracefulWaitList = []; // list of tasks to be executed before shutting down GraceNode
 
 module.exports.GraceNode = GraceNode;
 

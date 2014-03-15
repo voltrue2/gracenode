@@ -5,10 +5,22 @@ var log = gracenode.log.create('server-router');
 var EventEmitter = require('events').EventEmitter;
 
 var config = null;
+var rerouteMap = {};
+
 module.exports = new EventEmitter();
 
 module.exports.readConfig = function (configIn) {
 	config = configIn;
+	if (config && config.retoute && config.reroute.length) {
+		// create map for rerouting
+		for (var i = 0, len = config.reroute.length; i < len; i++) {
+			var item = config.reroute[i];
+			rerouteMap[item.from] = item.to;
+		}
+
+		log.verbose('rerouting mapped:', rerouteMap);
+	
+	}
 };
 
 module.exports.handle = function (req, res) {
@@ -64,6 +76,7 @@ function handleReroute(reroute, parsedUrl) {
 	var controller = parsedUrl.controller ? '/' + parsedUrl.controller : '/';
 	var method = parsedUrl.method ? parsedUrl.method + '/' : '';
 	var from = controller + method;
+	/*
 	for (var i = 0, len = reroute.length; i < len; i++) {
 		if (reroute[i].from === from) {
 			var rerouteTo = reroute[i].to;
@@ -71,6 +84,12 @@ function handleReroute(reroute, parsedUrl) {
 			log.verbose('rerouting: from "' + from + '" to "' + rerouteTo + '"');
 			return parseUrl(rerouteTo);
 		}
+	}
+	*/
+	if (rerouteMap[from]) {
+		var rerouteTo = rerouteMap[from];
+		log.verbose('rerouting: from "' + from + '" to "' + rerouteTo + '"');
+		return parseUrl(rerouteTo);
 	}
 	// no rerouting
 	return null;
