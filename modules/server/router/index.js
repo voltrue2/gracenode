@@ -11,7 +11,7 @@ module.exports = new EventEmitter();
 
 module.exports.readConfig = function (configIn) {
 	config = configIn;
-	if (config && config.retoute && config.reroute.length) {
+	if (config && config.reroute && config.reroute.length) {
 		// create map for rerouting
 		for (var i = 0, len = config.reroute.length; i < len; i++) {
 			var item = config.reroute[i];
