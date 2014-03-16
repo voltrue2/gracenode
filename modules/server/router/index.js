@@ -76,16 +76,6 @@ function handleReroute(reroute, parsedUrl) {
 	var controller = parsedUrl.controller ? '/' + parsedUrl.controller : '/';
 	var method = parsedUrl.method ? parsedUrl.method + '/' : '';
 	var from = controller + method;
-	/*
-	for (var i = 0, len = reroute.length; i < len; i++) {
-		if (reroute[i].from === from) {
-			var rerouteTo = reroute[i].to;
-			// reroute
-			log.verbose('rerouting: from "' + from + '" to "' + rerouteTo + '"');
-			return parseUrl(rerouteTo);
-		}
-	}
-	*/
 	if (rerouteMap[from]) {
 		var rerouteTo = rerouteMap[from];
 		log.verbose('rerouting: from "' + from + '" to "' + rerouteTo + '"');

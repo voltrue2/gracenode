@@ -176,14 +176,14 @@ function handle(req, res, parsedUrl, queryData) {
 function handleRequestHook(req, res, controller, parsedUrl) {
 	if (requestHooks) {
 		if (typeof requestHooks === 'function') {
-			// request hook applies to all controller and method
+			// request hook applies to all controllers and methods
 			execRequestHook(req, res, requestHooks, controller, parsedUrl);
 			return true;
 		} 
 		var hookedController = requestHooks[parsedUrl.controller] || null;
 		if (hookedController) {
 			if (typeof hookedController === 'function') {
-				// request hook applies to this controller and all of its method
+				// request hook applies to this controller and all of its methods
 				execRequestHook(req, res, hookedController, controller, parsedUrl);
 				return true;
 			}
