@@ -11,7 +11,7 @@
 		"async": "= 0.2.9",
 		"uglify-js": "= 2.4.0",
 		"password-hash": "= 1.2.1",
-		"memcached": "= 0.2.5",
+		"memcached": "= 0.2.8",
 		"mysql": "= 2.0.1",
 		"jshint": "= 2.2.0",
 		"bcrypt": "= 0.7.7",
