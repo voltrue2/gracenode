@@ -34,12 +34,20 @@ function Http() {
 		gracenode.registerShutdownTask('http-server', function (callback) {
 			try {
 				log.info('stopping server...');
-				that.server.close();
-				log.info('server stopped gracefully: ' + config.host + ':' + config.port);
+				that.server.close(function (error) {
+					if (error) {
+						log.error(error);
+					}
+					log.info('server stopped gracefully: ' + config.host + ':' + config.port);
+					callback();
+				});
 			} catch (e) {
-				log.info(e);
+				if (e.message === 'Not running') {
+					log.verbose(e.message);
+					return callback();
+				}
+				callback(e);
 			}
-			callback();
 		});
 
 		log.info('server started:', config.host + ':' + config.port);

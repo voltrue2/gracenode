@@ -221,6 +221,14 @@ function setupProcess(that, lastCallback, cb) {
 	if (cluster.isMaster && max && enabled) {
 		
 		// master process	
+		
+		var handleWorkerShutdown = function () {
+			var worker = this;
+			handleShutdownTasks(function () {
+				process.kill(worker.pid);
+				log.info('worker has shutdown (pid: ' + worker.pid + ')');
+			});
+		};
 
 		that.log.setPrefix('MASTER: ' + process.pid);	
 		log.info('in cluster mode [master]: number of CPU > ' + CPUNum + ' >> number of workers to be spawned: ' + max);
@@ -230,6 +238,7 @@ function setupProcess(that, lastCallback, cb) {
 			var worker = cluster.fork();
 			workerList.push(worker);
 			log.info('worker spawned: (pid: ' + worker.process.pid + ')');
+			worker.process.on('shutdown', handleWorkerShutdown);
 		}
 
 		that._isMaster = true;
@@ -237,14 +246,14 @@ function setupProcess(that, lastCallback, cb) {
 		// set up termination listener
 		cluster.on('exit', function (worker, code, sig) {
 			workerList.splice(workerList.indexOf(worker), 1);
-			log.error('worker has died: (pid: ' + worker.process.pid + ') [signal: ' + sig + '] ' + code);
+			log.error('worker has exited: (pid: ' + worker.process.pid + ') [signal: ' + sig + '] ' + code);
 		});
 
 		that.on('shutdown', function (signal) {
-			log.info('shutdown all workers');
+			log.info('shutting down all workers');
 			for (var i = 0, len = workerList.length; i < len; i++) {
-				process.kill(workerList[i].process.pid, signal);
-				log.info('worker has been killed: (pid: ' + workerList[i].process.pid + ')');
+				log.info('shutting down worker (pid: ' + workerList[i].process.pid + ')');
+				workerList[i].process.emit('shutdown', signal);
 			}
 		});
 	
@@ -352,7 +361,12 @@ function handleShutdownTasks(cb) {
 	}
 	async.eachSeries(gracefulWaitList, function (item, next) {
 		log.info('handling graceful exit task for ', item.name);
-		item.task(next);
+		item.task(function (error) {
+			if (error) {
+				log.error('shutdown task: <', item.name, '>', error);
+			}
+			next();
+		});
 	},
 	function () {
 		gracefulWaitList = [];
