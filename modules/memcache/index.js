@@ -78,6 +78,17 @@ Cache.prototype.del = function (rawKey, cb) {
 	});
 };
 
+Cache.prototype.flush = function (cb) {
+	log.info('flushing all memcache data...');
+	this._cache.flush(function (error) {
+		if (error) {
+			return cb(error);
+		}
+		log.info('all memcache data flushed');
+		cb();
+	});
+};
+
 Cache.prototype._createKey = function (src) {
 	var key = this._name + '/' + src;
 	log.verbose('create cache key: ' + src + ' -> ' + key);

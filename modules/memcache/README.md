@@ -17,17 +17,17 @@ Cache create(String name)
 
 ##### Cache class
 
-> **get**
+> **getOne**
 <pre>
 void get(String key, Function callback)
 </pre>
 > Read a value associated with the given key.
 ```javascript
 var peopleTable = gracenode.mysql.create('people');
-var peopleCache = gracenode.datacache.create('people');
+var peopleCache = gracenode.memcache.create('people');
 var sql = 'SELECT * FROM people WHERE name = ?';
 var params = ['bob'];
-peopleCache.get(sql + params.json(''), function (error, value) {
+peopleCache.getOne(sql + params.json(''), function (error, value) {
         if (error) {
                 throw new Error(error);
         }
@@ -40,7 +40,7 @@ peopleCache.get(sql + params.json(''), function (error, value) {
                                 throw new Error(error);
                         }
                         // set cache
-                        peopleCache.set(sql + params.json(''), res, function (error) {
+                        peopleCache.set(sql + params.join(''), res, function (error) {
                                 if (error) {
                                         throw new Error(error);
                                 }
@@ -50,6 +50,16 @@ peopleCache.get(sql + params.json(''), function (error, value) {
         });
 });
 ```
+
+> **getMany**
+<pre>
+void getMany(Array keyList, Function callback)
+</pre>
+
+> **replace**
+<pre>
+void replace(String key, mixed value, Function callback)
+</pre>
 
 > **set**
 <pre>
@@ -58,7 +68,7 @@ void set(String key, mixed value, Function callback)
 > Sets a value associated with the given key.
 ```javascript
 var peopleTable = gracenode.mysql.create('people');
-var peopleCache = gracenode.datacache.create('people');
+var peopleCache = gracenode.memcache.create('people');
 var sql = 'SELECT * FROM people WHERE name = ?';
 var params = ['bob'];
 peopleCache.get(sql + params.json(''), function (error, value) {
@@ -74,7 +84,7 @@ peopleCache.get(sql + params.json(''), function (error, value) {
                                 throw new Error(error);
                         }
                         // set cache
-                        peopleCache.set(sql + params.json(''), res, function (error) {
+                        peopleCache.set(sql + params.join(''), res, function (error) {
                                 if (error) {
                                         throw new Error(error);
                                 }
@@ -85,19 +95,19 @@ peopleCache.get(sql + params.json(''), function (error, value) {
 });
 ```
 
-> How to flush old cache
+> How to delete old cache
 ```javascript
-// flush old cache value on updated mysql data
+// delete old cache value on updated mysql data
 var peopleTable = gracenode.mysql.create('people');
-var peopleCache = gracenode.datacache.create('people');
+var peopleCache = gracenode.memcache.create('people');
 var sql = 'UPDATE people SET age = ? WHERE name = ?';
 var params = [40, 'bob'];
 peopleTable.write(sql, params, function (error) {
         if (error) {
                 throw new Error(error);
         }
-        // successfully updated > now we need to flush out the old cache
-        peopleCache.update(function (error) {
+        // successfully updated > now delete the old cache
+        peopleCache.del(sql + params.join(''), function (error) {
                 if (error) {
                         throw new Error(error);
                 }
@@ -105,3 +115,13 @@ peopleTable.write(sql, params, function (error) {
         });
 });
 ```
+
+> **del**
+<pre>
+void del(String key, Function callback)
+</pre>
+
+> **flush**
+<pre>
+void flush(Function callback)
+</pre>
