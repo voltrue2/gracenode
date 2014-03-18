@@ -145,7 +145,15 @@ Emitted when GraceNode exits.
 ###shutdown
 Emitted when GraceNode detects SIGINT. This is before exit is emitted.
 
-
+#Cluster Mode
+Spawns forked process(es) if allowed
+###Configurations
+```javascript
+"cluster": {
+	"enabled": <boolean>
+	"max": <integer> // number of maximum child processes allowed
+}
+```
 
 #Default Modules
 By default GraceNode automatically loads the following modules. Click on the link to read more about them.
