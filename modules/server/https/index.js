@@ -63,13 +63,9 @@ function Https() {
 		gracenode.registerShutdownTask('server-https', function (callback) {
 			try {
 				log.info('stopping server...');
-				that.server.close(function (error) {
-					if (error) {
-						log.error(error);
-					}
-					log.info('server stopped gracefully: ' + config.host + ':' + config.port);
-					callback();
-				});
+				that.server.close();
+				log.info('server stopped gracefully: ' + config.host + ':' + config.port);
+				callback();
 			} catch (e) {
 				if (e.message === 'Not running') {
 					log.verbose(e.message);
