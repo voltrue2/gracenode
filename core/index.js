@@ -5,11 +5,11 @@ var config = require('../modules/config');
 var logger = require('../modules/log');
 var log = logger.create('GraceNode');
 var util = require('util');
-var cluster = require('cluster');
 var fs = require('fs');
 var modPaths = [];
-var workerList = []; // master only
 var gracefulWaitList = []; // list of tasks to be executed before shutting down GraceNode
+
+var Process = require('./process');
 
 module.exports.GraceNode = GraceNode;
 
@@ -208,76 +208,15 @@ function setupProfiler(that, lastCallback, cb) {
 }
 
 function setupProcess(that, lastCallback, cb) {
-
-	log.verbose('setting up process...');
-	
-	var enabled = that.config.getOne('cluster.enable');
-	var CPUNum = require('os').cpus().length;
-	var maxClusterNum = that.config.getOne('cluster.max') || 0;
-	var max = Math.min(maxClusterNum, CPUNum);
-
-	log.verbose('maximum possible number of process to spawn: ' + max);
-	
-	if (cluster.isMaster && max && enabled) {
-		
-		// master process	
-		
-		var handleWorkerShutdown = function () {
-			var worker = this;
-			handleShutdownTasks(function () {
-				process.kill(worker.pid);
-				log.info('worker has shutdown (pid: ' + worker.pid + ')');
-			});
-		};
-
-		that.log.setPrefix('MASTER: ' + process.pid);	
-		log.info('in cluster mode [master]: number of CPU > ' + CPUNum + ' >> number of workers to be spawned: ' + max);
-		log.info('(pid: ' + process.pid + ')');
-
-		for (var i = 0; i < max; i++) {
-			var worker = cluster.fork();
-			workerList.push(worker);
-			log.info('worker spawned: (pid: ' + worker.process.pid + ')');
-			worker.process.on('shutdown', handleWorkerShutdown);
-		}
-
-		that._isMaster = true;
-
-		// set up termination listener
-		cluster.on('exit', function (worker, code, sig) {
-			workerList.splice(workerList.indexOf(worker), 1);
-			log.error('worker has exited: (pid: ' + worker.process.pid + ') [signal: ' + sig + '] ' + code);
-		});
-
-		that.on('shutdown', function (signal) {
-			log.info('shutting down all workers');
-			for (var i = 0, len = workerList.length; i < len; i++) {
-				log.info('shutting down worker (pid: ' + workerList[i].process.pid + ')');
-				workerList[i].process.emit('shutdown', signal);
-			}
-		});
-	
-		// we stop here
-		lastCallback();
-	
-	} else if (max && enabled) {
-		
-		// worker process
-
-		that.log.setPrefix('WORKER: ' + process.pid);
-		log.info('in cluster mode [worker] (pid: ' + process.pid + ')');
-	
+	var ps = new Process(that);
+	ps.on('cluster.master.setup', lastCallback);
+	ps.on('cluster.worker.setup', function () {
 		cb(null, that);
-
-	} else {
-	
-		// none-cluster mode
-		log.info('in none-cluster mode: (pid: ' + process.pid + ')');		
-
+	});
+	ps.on('nocluster.setup', function () {
 		cb(null, that);
-
-	}
-	
+	});
+	ps.setup();	
 }
 
 function loadModule(that, mod, cb) {
