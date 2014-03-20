@@ -48,6 +48,7 @@ module.exports.load = function (configList, cb) {
 	function (error) {
 		if (error) {
 			console.error(error);
+			console.trace();
 		}
 		cb(error);
 	});
