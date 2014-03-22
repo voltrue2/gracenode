@@ -180,6 +180,7 @@ function setupConfig(that, lastCallback, cb) {
 }
 
 function setupLog(that, lastCallback, cb) {
+	logger.gracenode = that;
 	logger.readConfig(config.getOne('modules.log'));
 	that.log = logger;
 

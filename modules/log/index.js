@@ -32,6 +32,7 @@ var fs = require('fs');
 
 var today = new Date();
 var ymd = '.' + today.getFullYear() + '.' + (today.getMonth() + 1) + '.' + today.getDate();
+var openFiles = {};
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.type) {
@@ -51,6 +52,25 @@ module.exports.readConfig = function (configIn) {
 			}
 		}
 	}
+
+	if (config.type === 'file' && config.level) {
+		// create file write streams
+		for (var lvlName in config.level) {
+			var level = config.level[lvlName];
+			if (level.enabled && level.path) {
+				var path = level.path + lvlName + ymd + '.log';
+				openFiles[lvlName] = fs.createWriteStream(path, { flags: 'a', mode: parseInt('0644', 8), encoding: 'utf8' });
+			}
+		}
+		// cleaner
+		module.exports.gracenode.registerShutdownTask('log', function (done) {
+			for (var lvlName in openFiles) {
+				openFiles[lvlName].end();
+			}
+			done();
+		});
+	}
+
 	return true;
 };
 
@@ -176,12 +196,17 @@ function print(name, msg) {
 }
 
 function writeToFile(name, msg) {
+	/*
 	var path = config.level[name].path + name + ymd + '.log';
 	fs.appendFile(path, msg.join(' ') + '\n', function (error) {
 		if (error) {
 			throw new Error('failed to write a log to a file: ' + error);
 		}
 	});
+	*/
+	if (openFiles[name]) {
+		openFiles[name].write(msg.join(' ') + '\n');
+	}
 }
 
 function sendToServer(name, msg) {
