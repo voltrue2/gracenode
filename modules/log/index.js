@@ -4,7 +4,11 @@
  *
  * {
  *		"log": {
- *			"type": "stdout" or "file",
+ *			"type": "stdout", "remote" or "file"
+			"remoteServer": {
+				"host": <optional>
+				"port": <optional>
+			},
  *			"color": true/false,
  *			"level": {
  *				"verbose": { "enabled": true/false, "path": "file path (required only if type is file)" },
@@ -18,6 +22,9 @@
  * }
  *
  * */
+var os = require('os');
+var ip = null;
+var dgram = require('dgram');
 var config = null;
 var prefix = '';
 
@@ -31,6 +38,19 @@ module.exports.readConfig = function (configIn) {
 		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
 	}
 	config = configIn;
+	
+	// server IP addrss
+	var ifaces = os.networkInterfaces();
+	for (var dev in ifaces) {
+		var iface = ifaces[dev];
+		for (var i = 0, len = iface.length; i < len; i++) {
+			var detail = iface[i];
+			if (detail.family === 'IPv4') {
+				ip = detail.address;
+				break;	
+			}
+		}
+	}
 	return true;
 };
 
@@ -139,34 +159,57 @@ function pad(n, digit) {
 }
 
 function print(name, msg) {
-	/*
-	if (!config || !config[name] || config[name].enabled === undefined) {
-		// no configurations
-		return console.log.apply(console, msg);
-	}
-	if (!config.type || config.type === 'stdout') {
-		console.log.apply(console, msg);
-	} else if (config.level && config.level[name] && config.level[name].path) {
-		// write to a file
-		var path = config.level[name].path + name + ymd + '.log';
-		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
-			if (error) {
-				throw new Error('failed to write a log to a file: ' + error);
-			}
-		});
-	}
-	*/
-	if (config && config.type === 'file' && config.level && config.level[name] && config.level[name].path) {
-		// we log to a file
-		var path = config.level[name].path + name + ymd + '.log';
-		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
-			if (error) {
-				throw new Error('failed to write a log to a file: ' + error);
-			}
-		});
+	if (config && config.level && config.level[name] && config.level[name].path) {
+		switch (config.type) {
+			case 'file':
+				// we log to a file
+				writeToFile(name, msg);
+				break;
+			case 'remote':
+				// we send log data to a remote server via UDP4
+				sendToServer(name, msg);
+				break;
+		}
 	}
 	// we log to stdout stream
 	console.log.apply(console, msg);
+}
+
+function writeToFile(name, msg) {
+	var path = config.level[name].path + name + ymd + '.log';
+	fs.appendFile(path, msg.join(' ') + '\n', function (error) {
+		if (error) {
+			throw new Error('failed to write a log to a file: ' + error);
+		}
+	});
+}
+
+function sendToServer(name, msg) {
+	var data = {
+		address: ip,
+		name: name,
+		message: msg
+	};
+	data = new Buffer(JSON.stringify(data));
+	// set up UDP sender
+	var client = dgram.createSocket('udp4');
+	var offset = 0;
+	// check config
+	if (!config.remoteServer || !config.remoteServer.port || !config.remoteServer.host) {
+		console.error('Error: missing remoteServer configurations');
+		console.error(config.remoteServer);
+		return;
+	}
+	// send
+	console.log('seding log data to:', config.remoteServer);
+	client.send(data, offset, data.length, config.remoteServer.port, config.remoteServer.host, function (error) {
+		if (error) {
+			console.error(error);
+		}
+		
+		// close socket
+		client.close();
+	});
 }
 
 function color(name, msgItem) {

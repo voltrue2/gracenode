@@ -1,3 +1,12 @@
+Handles logging
+
+###type: "stdout"
+Sends log data to stdout tream.
+###type: "remote"
+Sends log data to a remote server via UDP.
+###type: "file"
+Writes log data to files in the file system.
+
 #gracenode.log
 
 ###Access
@@ -10,7 +19,11 @@ var log = gracenode.log.create('nameToBeDisplayed');
 {
 	"modules":
 		"log": {
-			"type": "stdout" or "file",
+			"type": "stdout", "remote", or "file",
+			"remoteServer": {
+				"host": <optional> for type "remote"
+				"port"" <optional> for type "remote"
+			}
 			"color": true or false,
 			"level": {
 				"verbose": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
