@@ -119,7 +119,7 @@ function extractQueries(req, cb) {
 			cb(null, { post: null, put: null, delete: null, get: parsed.query });
 			break;
 		default:
-			log.warning('only POST, PUT, and GET are supported');
+			log.warning('only POST, PUT, DELETE, and GET are supported');
 			cb(null, { post: null, put: null, delete: null, get: null });
 			break;
 	}
