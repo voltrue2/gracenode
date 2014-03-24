@@ -48,26 +48,26 @@ module.exports.exec = function (req, res, parsedUrl) {
 
 module.exports.execError = errorHandler;
 
-function readResponseBody(headers, body) {
+function readReqestBody(headers, body) {
 
-	var responseObject;
+	var reqBody;
 
 	if (headers['content-type'] === 'application/json') {
 
 		try {
-			responseObject = JSON.parse(body);
+			reqBody = JSON.parse(body);
 		} catch (e) {
 
 			log.error('Invalid JSON in request:', body, e);
-			responseObject = {};
+			reqBody = {};
 
 		}
 
 	} else {
-		responseObject = queryString.parse(body);
+		reqBody = queryString.parse(body);
 	}
 
-	return responseObject;
+	return reqBody;
 
 }
 
@@ -81,7 +81,7 @@ function extractQueries(req, cb) {
 				body += data;
 			});
 			req.on('end', function () {
-				var post = readResponseBody(req.headers, body);
+				var post = readReqestBody(req.headers, body);
 				cb(null, { post: post, put: null, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -94,7 +94,7 @@ function extractQueries(req, cb) {
 				putBody += data;
 			});
 			req.on('end', function () {
-				var put = readResponseBody(req.headers, putBody);
+				var put = readReqestBody(req.headers, putBody);
 				cb(null, { post: null, put: put, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -119,7 +119,7 @@ function extractQueries(req, cb) {
 			cb(null, { post: null, put: null, delete: null, get: parsed.query });
 			break;
 		default:
-			log.warning('only POST, PUT, and GET are supported');
+			log.warning('only POST, PUT, DELETE, and GET are supported');
 			cb(null, { post: null, put: null, delete: null, get: null });
 			break;
 	}

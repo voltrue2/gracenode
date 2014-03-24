@@ -4,7 +4,11 @@
  *
  * {
  *		"log": {
- *			"type": "stdout" or "file",
+ *			"type": "stdout", "remote" or "file"
+			"remoteServer": {
+				"host": <optional>
+				"port": <optional>
+			},
  *			"color": true/false,
  *			"level": {
  *				"verbose": { "enabled": true/false, "path": "file path (required only if type is file)" },
@@ -18,20 +22,91 @@
  * }
  *
  * */
+var os = require('os');
+var ip = null;
+var dgram = require('dgram');
 var config = null;
 var prefix = '';
 
+var async = require('async');
 var fs = require('fs');
 
-var today = new Date();
-var ymd = '.' + today.getFullYear() + '.' + (today.getMonth() + 1) + '.' + today.getDate();
+var openFiles = {};
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn || !configIn.type) {
 		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
 	}
 	config = configIn;
+	
+	// server IP addrss
+	var ifaces = os.networkInterfaces();
+	for (var dev in ifaces) {
+		var iface = ifaces[dev];
+		for (var i = 0, len = iface.length; i < len; i++) {
+			var detail = iface[i];
+			if (detail.family === 'IPv4') {
+				ip = detail.address;
+				break;	
+			}
+		}
+	}
 	return true;
+};
+
+module.exports.setup = function (cb) {
+	if (config.type === 'file' && config.level) {
+		// create file write streams
+		var options = {
+			flags: 'a',
+			mode: parseInt('0644', 8),
+			encoding: 'utf8'
+		};
+		var createStream = function (lvl, path, callback) {
+			fs.writeFile(path, '', options, function (error) {
+				if (error) {
+					return callback(error);
+				}
+				var fileStream = fs.createWriteStream(path, options);
+				fs.watch(path, function (event) {
+					if (event === 'rename') {
+						// the log file has been renamed > end the current write stream
+						fileStream.end();
+						delete openFiles[lvl];
+						// create the new write stream
+						createStream(lvl, path, function (error) { console.error('ERROR:', error); });
+					}
+				});
+				// add to open file stream list
+				openFiles[lvl] = fileStream;
+				// done
+				callback();
+			});
+		};
+		var cleaner = function () {
+			// cleaner
+			module.exports.gracenode._setLogCleaner('log', function (done) {
+				for (var lvlName in openFiles) {
+					openFiles[lvlName].end();
+					delete openFiles[lvlName];
+				}
+				done();
+			});
+			// we are done
+			cb();
+		};
+		var lvlList = Object.keys(config.level);
+		async.eachSeries(lvlList, function (lvlName, next) {
+			var level = config.level[lvlName];
+			if (level.enabled && level.path) {
+				var path = level.path + lvlName + '.log';
+				createStream(lvlName, path, next);
+			}
+		}, cleaner);
+		return;
+	}
+	// we do nothing
+	cb();
 };
 
 module.exports.setPrefix = function (prefixIn) {
@@ -139,34 +214,54 @@ function pad(n, digit) {
 }
 
 function print(name, msg) {
-	/*
-	if (!config || !config[name] || config[name].enabled === undefined) {
-		// no configurations
-		return console.log.apply(console, msg);
-	}
-	if (!config.type || config.type === 'stdout') {
-		console.log.apply(console, msg);
-	} else if (config.level && config.level[name] && config.level[name].path) {
-		// write to a file
-		var path = config.level[name].path + name + ymd + '.log';
-		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
-			if (error) {
-				throw new Error('failed to write a log to a file: ' + error);
-			}
-		});
-	}
-	*/
-	if (config && config.type === 'file' && config.level && config.level[name] && config.level[name].path) {
-		// we log to a file
-		var path = config.level[name].path + name + ymd + '.log';
-		fs.appendFile(path, msg.join(' ') + '\n', function (error) {
-			if (error) {
-				throw new Error('failed to write a log to a file: ' + error);
-			}
-		});
+	if (config && config.level && config.level[name] && config.level[name].path) {
+		switch (config.type) {
+			case 'file':
+				// we log to a file
+				writeToFile(name, msg);
+				break;
+			case 'remote':
+				// we send log data to a remote server via UDP4
+				sendToServer(name, msg);
+				break;
+		}
 	}
 	// we log to stdout stream
 	console.log.apply(console, msg);
+}
+
+function writeToFile(name, msg) {
+	if (openFiles[name]) {
+		openFiles[name].write(msg.join(' ') + '\n');
+	}
+}
+
+function sendToServer(name, msg) {
+	var data = {
+		address: ip,
+		name: name,
+		message: msg
+	};
+	data = new Buffer(JSON.stringify(data));
+	// set up UDP sender
+	var client = dgram.createSocket('udp4');
+	var offset = 0;
+	// check config
+	if (!config.remoteServer || !config.remoteServer.port || !config.remoteServer.host) {
+		console.error('Error: missing remoteServer configurations');
+		console.error(config.remoteServer);
+		return;
+	}
+	// send
+	console.log('seding log data to:', config.remoteServer);
+	client.send(data, offset, data.length, config.remoteServer.port, config.remoteServer.host, function (error) {
+		if (error) {
+			console.error(error);
+		}
+		
+		// close socket
+		client.close();
+	});
 }
 
 function color(name, msgItem) {

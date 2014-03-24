@@ -11,6 +11,12 @@ var gracefulWaitList = []; // list of tasks to be executed before shutting down 
 
 var Process = require('./process');
 
+// overwridden by calling _setLogCleaner from log module
+// shutdown task for log module. this will be executed at the very end
+var logCleaner = function (done) {
+	done();
+};
+
 module.exports.GraceNode = GraceNode;
 
 function GraceNode() {
@@ -31,6 +37,19 @@ function GraceNode() {
 }
 
 util.inherits(GraceNode, EventEmitter);
+
+GraceNode.prototype._setLogCleaner = function (name, func) {
+	logCleaner = function (done) {
+		log.info('shutting down log module...');
+		func(function (error) {
+			if (error) {
+				log.error(error);
+			}
+			log.info('log module gracefully shutdown');
+			done();
+		});
+	};
+};
 
 GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
@@ -180,14 +199,20 @@ function setupConfig(that, lastCallback, cb) {
 }
 
 function setupLog(that, lastCallback, cb) {
+	logger.gracenode = that;
 	logger.readConfig(config.getOne('modules.log'));
-	that.log = logger;
+	logger.setup(function (error) {
+		if (error) {
+			return lastCallback(error);
+		}
+		that.log = logger;
+		
+		log.verbose('log is ready');
 
-	log.verbose('log is ready');
+		that.emit('setup.log');
 
-	that.emit('setup.log');
-
-	cb(null, that, lastCallback);
+		cb(null, that, lastCallback);
+	});
 }
 
 function setupProfiler(that, lastCallback, cb) {
@@ -298,8 +323,9 @@ function handleShutdownTasks(cb) {
 	if (!gracefulWaitList.length) {
 		return cb();
 	}
+	// execute shutdown tasks
 	async.eachSeries(gracefulWaitList, function (item, next) {
-		log.info('handling graceful exit task for ', item.name);
+		log.info('handling graceful exit task for', item.name);
 		item.task(function (error) {
 			if (error) {
 				log.error('shutdown task: <', item.name, '>', error);
@@ -320,10 +346,15 @@ function setupListeners(that) {
 		log.info('exit caught: shutting down GraceNode...');
 		handleShutdownTasks(function () {
 			if (error) {
-				return log.fatal('exit GraceNode with an error:', error);
+				log.fatal('exit GraceNode with an error:', error);
 			}
-			log.info('exit GraceNode');
-			process.exit(error);
+			logCleaner(function () {
+				if (error) {
+					log.fatal('exit GraceNode with an error:', error);
+				}	
+				log.info('exit GraceNode');
+				process.exit(error);
+			});
 		});
 	});
 	
