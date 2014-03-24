@@ -7,7 +7,7 @@ var log = gracenode.log.create('request');
 
 /**
  * @param {object} { protocol: http/https, hots: string, path: string. port: number, method: string, data: object }
- * @options {object} { headers: object, timeout: miliseconds }
+ * @options {object} { agent: <int>, headers: object, timeout: miliseconds }
  * */
 module.exports.send = function (params, options, cb) {
 	if (!params) {
@@ -51,7 +51,8 @@ module.exports.send = function (params, options, cb) {
 		host: host,
 		path: path,
 		method: method,
-		headers: headers
+		headers: headers,
+		agent: options.agent || false
 	};
 	if (port) {
 		args.port = port;

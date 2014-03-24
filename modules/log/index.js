@@ -196,14 +196,6 @@ function print(name, msg) {
 }
 
 function writeToFile(name, msg) {
-	/*
-	var path = config.level[name].path + name + ymd + '.log';
-	fs.appendFile(path, msg.join(' ') + '\n', function (error) {
-		if (error) {
-			throw new Error('failed to write a log to a file: ' + error);
-		}
-	});
-	*/
 	if (openFiles[name]) {
 		openFiles[name].write(msg.join(' ') + '\n');
 	}
