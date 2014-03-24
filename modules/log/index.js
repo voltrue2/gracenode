@@ -28,10 +28,9 @@ var dgram = require('dgram');
 var config = null;
 var prefix = '';
 
+var async = require('async');
 var fs = require('fs');
 
-var today = new Date();
-var ymd = '.' + today.getFullYear() + '.' + (today.getMonth() + 1) + '.' + today.getDate();
 var openFiles = {};
 
 module.exports.readConfig = function (configIn) {
@@ -52,26 +51,62 @@ module.exports.readConfig = function (configIn) {
 			}
 		}
 	}
+	return true;
+};
 
+module.exports.setup = function (cb) {
 	if (config.type === 'file' && config.level) {
 		// create file write streams
-		for (var lvlName in config.level) {
+		var options = {
+			flags: 'a',
+			mode: parseInt('0644', 8),
+			encoding: 'utf8'
+		};
+		var createStream = function (lvl, path, callback) {
+			fs.writeFile(path, '', options, function (error) {
+				if (error) {
+					return callback(error);
+				}
+				var fileStream = fs.createWriteStream(path, options);
+				fs.watch(path, function (event) {
+					if (event === 'rename') {
+						// the log file has been renamed > end the current write stream
+						fileStream.end();
+						delete openFiles[lvl];
+						// create the new write stream
+						createStream(lvl, path, function (error) { console.error('ERROR:', error); });
+					}
+				});
+				// add to open file stream list
+				openFiles[lvl] = fileStream;
+				// done
+				callback();
+			});
+		};
+		var cleaner = function () {
+			// cleaner
+			module.exports.gracenode._cleanLog('log', function (done) {
+				for (var lvlName in openFiles) {
+					openFiles[lvlName].end();
+					delete openFiles[lvlName];
+				}
+				done();
+			});
+			// we are done
+			cb();
+		};
+		var lvlList = Object.keys(config.level);
+		async.eachSeries(lvlList, function (lvlName, next) {
 			var level = config.level[lvlName];
 			if (level.enabled && level.path) {
-				var path = level.path + lvlName + ymd + '.log';
-				openFiles[lvlName] = fs.createWriteStream(path, { flags: 'a', mode: parseInt('0644', 8), encoding: 'utf8' });
+				var path = level.path + lvlName + '.log';
+				createStream(lvlName, path, next);
 			}
-		}
-		// cleaner
-		module.exports.gracenode.registerShutdownTask('log', function (done) {
-			for (var lvlName in openFiles) {
-				openFiles[lvlName].end();
-			}
-			done();
-		});
+		}, cleaner);
+		return;
 	}
-
-	return true;
+	// we do nothing
+	cb();
 };
 
 module.exports.setPrefix = function (prefixIn) {
