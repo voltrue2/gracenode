@@ -85,7 +85,7 @@ module.exports.setup = function (cb) {
 		};
 		var cleaner = function () {
 			// cleaner
-			module.exports.gracenode._cleanLog('log', function (done) {
+			module.exports.gracenode._setLogCleaner('log', function (done) {
 				for (var lvlName in openFiles) {
 					openFiles[lvlName].end();
 					delete openFiles[lvlName];

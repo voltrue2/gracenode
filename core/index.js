@@ -8,9 +8,14 @@ var util = require('util');
 var fs = require('fs');
 var modPaths = [];
 var gracefulWaitList = []; // list of tasks to be executed before shutting down GraceNode
-var logCleaner = null; // shutdown task for log module. this will be executed at the very end
 
 var Process = require('./process');
+
+// overwridden by calling _setLogCleaner from log module
+// shutdown task for log module. this will be executed at the very end
+var logCleaner = function (done) {
+	done();
+};
 
 module.exports.GraceNode = GraceNode;
 
@@ -33,7 +38,7 @@ function GraceNode() {
 
 util.inherits(GraceNode, EventEmitter);
 
-GraceNode.prototype._cleanLog = function (name, func) {
+GraceNode.prototype._setLogCleaner = function (name, func) {
 	logCleaner = function (done) {
 		log.info('shutting down log module...');
 		func(function (error) {
