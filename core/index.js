@@ -205,6 +205,7 @@ function setupLog(that, lastCallback, cb) {
 		if (error) {
 			return lastCallback(error);
 		}
+		log.config = config.getOne('modules.log');
 		that.log = logger;
 		
 		log.verbose('log is ready');
