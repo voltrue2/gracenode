@@ -253,7 +253,6 @@ function sendToServer(name, msg) {
 		return;
 	}
 	// send
-	console.log('seding log data to:', config.remoteServer);
 	client.send(data, offset, data.length, config.remoteServer.port, config.remoteServer.host, function (error) {
 		if (error) {
 			console.error(error);
