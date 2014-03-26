@@ -1,6 +1,4 @@
 var fs = require('fs');
-var EventEmitter = require('events').EventEmitter;
-var events = new EventEmitter();
 
 var today = require('./today');
 
@@ -12,10 +10,6 @@ var writeOptions = {
 
 var streams = {};
 var paths = {};
-
-events.on('write', function (stream, msg) {
-	stream.write(msg);
-});
 
 module.exports.setup = function (gn, levelMap, path) {
 	
@@ -43,7 +37,7 @@ module.exports.setup = function (gn, levelMap, path) {
 
 module.exports.log = function (levelName, msg) {
 	var stream = getWriteStream(levelName);
-	events.emit('write', stream, msg + '\n');
+	stream.write(msg + '\n');
 };
 
 function getWriteStream(levelName) {

@@ -17,7 +17,7 @@ var collectionName = 'logger';
 module.exports.setup = function (gn, configIn, cb) {
 	if (!configIn) {
 		// no mongodb logging
-		return cb;
+		return cb();
 	}
 
 	config = configIn;
