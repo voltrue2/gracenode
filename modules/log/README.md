@@ -19,19 +19,19 @@ var log = gracenode.log.create('nameToBeDisplayed');
 {
 	"modules":
 		"log": {
-			"type": "stdout", "remote", or "file",
-			"remoteServer": {
+			"file": <log directory path> or false
+			"remote": {
 				"host": <optional> for type "remote"
 				"port"" <optional> for type "remote"
 			}
 			"color": true or false,
 			"level": {
-				"verbose": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"debug": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"info": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"warning": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"error": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" },
-				"fatal": { "enabled": true or false, "path": "file path for the log file to be written (required if type is "file")" }
+				"verbose": <boolean>
+				"debug": <boolean>
+				"info": <boolean>
+				"warning": <boolean>
+				"error": <boolean>
+				"fatal": <boolean>
 			}
 		}
 }
