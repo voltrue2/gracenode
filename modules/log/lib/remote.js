@@ -1,28 +1,24 @@
-var os = require('os');
 var dgram = require('dgram');
 
-var ip = null;
+var ip = require('./ip');
+
+var address = null;
 var config = null;
 
 module.exports.setup = function (configIn) {
-	// server IP addrss
-	var ifaces = os.networkInterfaces();
-	for (var dev in ifaces) {
-		var iface = ifaces[dev];
-		for (var i = 0, len = iface.length; i < len; i++) {
-			var detail = iface[i];
-			if (detail.family === 'IPv4') {
-				ip = detail.address;
-				break;
-			}
-		}
+	
+	if (!configIn) {
+		// no remote logging
+		return;
 	}
+
+	address = ip.get();
 	config = configIn;
 };
 
-module.exports.send = function (levelName, msg) {
+module.exports.log = function (levelName, msg) {
 	var data = {
-		address: ip,
+		address: address,
 		name: levelName,
 		message: msg
 	};

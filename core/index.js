@@ -13,9 +13,7 @@ var Process = require('./process');
 
 // overwridden by calling _setLogCleaner from log module
 // shutdown task for log module. this will be executed at the very end
-var logCleaner = function (done) {
-	done();
-};
+var logCleaners = [];
 
 module.exports.GraceNode = GraceNode;
 
@@ -38,8 +36,8 @@ function GraceNode() {
 
 util.inherits(GraceNode, EventEmitter);
 
-GraceNode.prototype._setLogCleaner = function (name, func) {
-	logCleaner = function (done) {
+GraceNode.prototype._addLogCleaner = function (name, func) {
+	var cleaner = function (done) {
 		log.info('shutting down log module...');
 		func(function (error) {
 			if (error) {
@@ -49,6 +47,7 @@ GraceNode.prototype._setLogCleaner = function (name, func) {
 			done();
 		});
 	};
+	logCleaners.push(cleaner);
 };
 
 GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
@@ -349,12 +348,12 @@ function setupListeners(that) {
 			if (error) {
 				log.fatal('exit GraceNode with an error:', error);
 			}
-			logCleaner(function () {
-				if (error) {
-					log.fatal('exit GraceNode with an error:', error);
-				}	
+			async.eachSeries(logCleaners, function (cleaner, next) {
+				cleaner(next);
+			},
+			function () {
 				log.info('exit GraceNode');
-				process.exit(error);
+				process.exit();
 			});
 		});
 	});

@@ -19,11 +19,16 @@ var log = gracenode.log.create('nameToBeDisplayed');
 {
 	"modules":
 		"log": {
-			"file": <log directory path> or false
+			"file": "<log directory path> or false"
 			"remote": {
-				"host": <optional> for type "remote"
-				"port"" <optional> for type "remote"
+				"host": "<host name or ip address>",
+				"port"" "<port>"
 			}
+			"mongodb": {
+				"host": "<host name or ip addres>",
+				"port": "<port>",
+				"collection": "<collection name>"
+			},
 			"color": true or false,
 			"level": {
 				"verbose": <boolean>

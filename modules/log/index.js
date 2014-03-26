@@ -6,8 +6,13 @@
  *		"log": {
 			"file": <path to log directory> or false
 			"remote": {
-				"host": <optional>
-				"port": <optional>
+				"host": 
+				"port": 
+			},
+			"mongodb": {
+				"host":
+				"port":
+				"collection":
 			},
  *			"color": true/false,
  *			"level": {
@@ -33,14 +38,12 @@ module.exports.readConfig = function (configIn) {
 	}
 	
 	config = configIn;
-
-	loggerSource.setup(module.exports.gracenode, config);
 	
 	return true;
 };
 
 module.exports.setup = function (cb) {
-	cb();
+	loggerSource.setup(module.exports.gracenode, config, cb);
 };
 
 module.exports.setPrefix = function (p) {
