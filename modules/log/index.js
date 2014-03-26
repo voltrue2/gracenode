@@ -4,20 +4,20 @@
  *
  * {
  *		"log": {
- *			"type": "stdout", "remote" or "file"
-			"remoteServer": {
+			"file": <path to log directory> or false
+			"remote": {
 				"host": <optional>
 				"port": <optional>
 			},
  *			"color": true/false,
  *			"level": {
- *				"verbose": { "enabled": true/false, "path": "file path (required only if type is file)" },
- *				"debug": { "enabled": true/false, "path": "file path (required only if type is file)" },
- *				"info": { "enabled": true/false, "path": "file path (required only if type is file)" },
- *				"warning": { "enabled": true/false, "path": "file path (required only if type is file)" },
- *				"error": { "enabled": true/false, "path": "file path (required only if type is file)" },
- *				"fatal": { "enabled": true/false, "path": "file path (required only if type is file)" }
- *			}
+				"verbose": <boolean>
+				"debug": <boolean>
+				"info": <boolean>
+				"warning": <boolean>
+				"error": <boolean>
+				"fatal": <boolean>
+*			}
  *		}
  * }
  *
@@ -28,7 +28,7 @@ var config = null;
 var prefix = '';
 
 module.exports.readConfig = function (configIn) {
-	if (!configIn || !configIn.type) {
+	if (!configIn) {
 		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
 	}
 	

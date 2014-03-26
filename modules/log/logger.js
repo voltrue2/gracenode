@@ -4,8 +4,8 @@ var remote = require('./lib/remote');
 
 module.exports.setup = function (gn, config) {
 	msg.setup(config);
-	file.setup(gn, config.level);
-	remote.setup(config.remoteServer);
+	file.setup(gn, config.level, config.file);
+	remote.setup(config.remote);
 };
 
 module.exports.Logger = Logger;
@@ -42,26 +42,23 @@ Logger.prototype.fatal = function () {
 
 Logger.prototype._handleLog = function (levelName, message) {
 	var logMsg = msg.create(this.prefix, this.name, levelName, message);
+	
 	console.log(logMsg);
-	if (this.config && this.config.level && this.config.level[levelName] && this.config.level[levelName].enabled) {
+	
+	if (this.config && this.config.level && this.config.level[levelName] && this.config.level[levelName]) {
 		outputLog(this.config, levelName, logMsg);
 	}
 };
 
 function outputLog(config, levelName, logMsg) {
-	switch (config.type) {
-		case 'file':
-			file.log(levelName, logMsg);
-			break;
-		case 'remote':
-			remote.send(levelName, logMsg);
-			break;
-		case 'stdout':
-			console.log(logMsg);
-			break;
-		default:
-			console.error('log.logger: Error: unkown type given:', config.type, levelName, logMsg);
-			break;
+	
+	if (config.file) {
+		file.log(levelName, logMsg);
 	}
+
+	if (config.remote) {
+		remote.send(levelName, logMsg);
+	}
+	
 	return true;
 }

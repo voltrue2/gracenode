@@ -15,12 +15,12 @@ events.on('write', function (stream, msg) {
 	stream.write(msg);
 });
 
-module.exports.setup = function (gn, levelMap) {
+module.exports.setup = function (gn, levelMap, path) {
 	// create map for file paths (enabled level ONLY)
 	for (var levelName in levelMap) {
 		var level = levelMap[levelName];
-		if (level.enabled) {
-			paths[levelName] = level.path + levelName;
+		if (level) {
+			paths[levelName] = path + levelName;
 		}
 	}
 	
