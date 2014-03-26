@@ -42,9 +42,6 @@ module.exports.log = function (levelName, msg) {
 		}
 	};
 	collection.update({ _id: logId }, value, options, function (error) {
-		
-		console.log('written?', logId, error);
-
 		if (error) {
 			console.error('log.mongodb: Error:', error);
 		}
