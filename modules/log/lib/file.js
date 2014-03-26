@@ -2,6 +2,8 @@ var fs = require('fs');
 var EventEmitter = require('events').EventEmitter;
 var events = new EventEmitter();
 
+var today = require('./today');
+
 var writeOptions = {
 	flags: 'a',
 	mode: parseInt('0644', 8),
@@ -16,6 +18,12 @@ events.on('write', function (stream, msg) {
 });
 
 module.exports.setup = function (gn, levelMap, path) {
+	
+	if (!path) {
+		// no file logging
+		return;
+	}
+
 	// create map for file paths (enabled level ONLY)
 	for (var levelName in levelMap) {
 		var level = levelMap[levelName];
@@ -25,7 +33,7 @@ module.exports.setup = function (gn, levelMap, path) {
 	}
 	
 	// cleaner
-	gn._setLogCleaner('log', function (done) {
+	gn._addLogCleaner('log.file', function (done) {
 		for (var levelName in streams) {
 			destroyWriteStream(levelName);
 		}
@@ -83,16 +91,4 @@ function destroyWriteStream(levelName) {
 		streams[levelName].stream.end();
 		delete streams[levelName];
 	}
-}
-
-function today() {
-	var d = new Date();
-	return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate());
-}
-
-function pad(n) {
-	if (n < 10) {
-		return '0' + n;
-	}
-	return n;
 }
