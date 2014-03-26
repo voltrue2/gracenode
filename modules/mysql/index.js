@@ -341,6 +341,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 				if (err) {
 					return log.error(err);
 				}
+				
+				that._transactionConnection = null;
 
 				log.info('transaction auto-rollback on uncaught exception');
 
@@ -394,6 +396,8 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 					if (err) {
 						log.error(err);
 					}
+				
+					that._transactionConnection = null;
 
 					log.info('transaction rollback');
 
