@@ -276,13 +276,14 @@ MySql.prototype.exec = function (sql, params, cb) {
 		}
 
 		connection.query(sql, params, function (error, result) {
+
+			that.release(connection);
+			
 			if (error) {
 				return cb(error);
 			}
 
 			log.info('query executed:', sql, params);			
-
-			that.release(connection);
 
 			cb(error, result);
 		});	
