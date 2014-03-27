@@ -87,7 +87,7 @@ module.exports.setup = function (cb) {
 				waitForConnections: true,
 				host: conf.host,
 				database: conf.database,
-				maxPoolNum: conf.maxPoolNum || 10,
+				connectionLimit: conf.poolSize || 10,
 				user: conf.user,
 				password: conf.password,
 				port: conf.port || undefined,
