@@ -227,7 +227,7 @@ function errorHandler(req, res, errorMsg, status) {
 	if (errorMsg instanceof Error) {
 		errorMsg = errorMsg.message;
 	}
-	responder.error(JSON.stringify({ error: errorMsg }), status);
+	responder.error(JSON.stringify(errorMsg), status);
 }
 
 function handleError(req, res, status) {
