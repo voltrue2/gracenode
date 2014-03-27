@@ -2,14 +2,12 @@ var ip = require('./lib/ip');
 var msg = require('./lib/msg');
 var file = require('./lib/file');
 var remote = require('./lib/remote');
-var mongodb = require('./lib/mongodb');
 
-module.exports.setup = function (gn, config, cb) {
+module.exports.setup = function (gn, config) {
 	ip.setup();
 	msg.setup(config);
 	file.setup(gn, config.level, config.file);
 	remote.setup(config.remote);
-	mongodb.setup(gn, config.mongodb, cb);
 };
 
 module.exports.Logger = Logger;
@@ -68,10 +66,6 @@ function outputLog(config, levelName, logMsg) {
 
 	if (config.remote) {
 		remote.log(levelName, logMsg);
-	}
-
-	if (config.mongodb) {
-		mongodb.log(levelName, logMsg);
 	}
 	
 	return true;
