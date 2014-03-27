@@ -16,13 +16,15 @@ Configurations
 				"database": "databaseName",
 				"host": "host or IP address",
 				"user": "databaseUser",
-				"password": "databasePassword"
+				"password": "databasePassword",
+				"poolSize": <int optional>
 			},
 			"write": {
 				"database": "databaseName",
 				"host": "host or IP address",
 				"user": "databaseUser",
-				"password": "databasePassword"
+				"password": "databasePassword",
+				"poolSize": <int optional>
 			}
 		}{...}
 	}

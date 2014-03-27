@@ -45,6 +45,12 @@ Logger.prototype.fatal = function () {
 };
 
 Logger.prototype._handleLog = function (levelName, message) {
+	// check enabled or not
+	if (this.config && this.config.level && !this.config.level[levelName]) {
+		// not enabled
+		return;
+	}
+
 	var logMsg = msg.create(this.prefix, this.name, levelName, message);
 	
 	console.log(logMsg);
