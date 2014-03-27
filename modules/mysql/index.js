@@ -336,7 +336,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 	}
 
 	var that = this;
-	var reuseConn = null;
 	var transactionId = uuid.v4();
 
 	this.connect(function (error, connection) {
@@ -348,7 +347,7 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		
 		var autoRollback = function (error) {
 			log.error('transaction uncaugh exception detected: auto-rollback [' + transactionId + ']');
-			endTransaction(error, that, connection, null, cb);
+			endTransaction(error, transactionId, that, connection, null, cb);
 		};
 
 		gracenode.once('uncaughtException', autoRollback);
@@ -369,7 +368,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 			},
 
 			function (connection, callback) {
-				reuseConn = connection;
 				callback(null, that._name, connection);				
 			},
 
@@ -386,7 +384,7 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 		], 
 		function (error) {
-			endTransaction(error, transactionId, that, reuseConn, autoRollback, cb);
+			endTransaction(error, transactionId, that, connection, autoRollback, cb);
 		});	
 
 	});
