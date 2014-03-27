@@ -13,7 +13,7 @@ module.exports.create = function (prefix, logName, levelName, args) {
 	for (var i = 0, len = timestamp.length; i < len; i++) {
 		space += ' ';
 	}
-	var msg = [color.create(levelName, (prefix ? '[' + prefix + '] ' : '') + '[' + timestamp + '] <' + levelName + '> ' + logName)];
+	var msg = [color.create(levelName, (prefix ? '[' + prefix + '] ' : '') + '[' + timestamp + '] <' + levelName + '> [' + logName + ']')];
 	for (var key in args) {
 		msg.push(color.create(levelName, args[key], space));
 	}

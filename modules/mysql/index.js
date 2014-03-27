@@ -23,7 +23,7 @@
  * }
  *
  * */
-
+var uuid = require('node-uuid');
 var util = require('util');
 var async = require('async');
 var EventEmitter = require('events').EventEmitter;
@@ -277,9 +277,10 @@ MySql.prototype.exec = function (sql, params, cb) {
 
 		connection.query(sql, params, function (error, result) {
 
-			that.release(connection);
+			that.release(error, connection);
 			
 			if (error) {
+				log.error(sql, params);
 				return cb(error);
 			}
 
@@ -312,14 +313,21 @@ MySql.prototype.connect = function (cb) {
 	});
 };
 
-MySql.prototype.release = function (connection) {
+MySql.prototype.release = function (error, connection) {
+
+	// if there is an error, we release the connection no matter what
+	if (error) {
+		this._transactionConnection = null;
+	}
+
 	if (!this._transactionConnection) {
 		// release the connection back to pool
 		connection.release();
 		log.info('released connection back to pool [' + this._name + ']');
 		return;
 	}
-	log.verbose('connection kept for transaction');
+
+	log.info('connection kept for transaction [' + this._name + ']');
 };
 
 MySql.prototype.transaction = function (taskCallback, cb) {
@@ -329,32 +337,18 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 	var that = this;
 	var reuseConn = null;
+	var transactionId = uuid.v4();
 
 	this.connect(function (error, connection) {
 		if (error) {
 			return cb(error);
 		}
 
-		log.info('transaction started');
+		log.info('transaction started [' + transactionId + ']');
 		
 		var autoRollback = function (error) {
-			connection.query('ROLLBACK', null, function (err) {
-				if (err) {
-					return log.error(err);
-				}
-				
-				that._transactionConnection = null;
-
-				log.info('transaction auto-rollback on uncaught exception');
-
-				connection.release();
-
-				log.info('connection released to pool');
-
-				log.info('transaction ended');
-
-				cb(error);
-			});
+			log.error('transaction uncaugh exception detected: auto-rollback [' + transactionId + ']');
+			endTransaction(error, that, connection, null, cb);
 		};
 
 		gracenode.once('uncaughtException', autoRollback);
@@ -392,52 +386,44 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 		], 
 		function (error) {
-			if (error) {
-				reuseConn.query('ROLLBACK', null, function (err) {
-					if (err) {
-						log.error(err);
-					}
-				
-					that._transactionConnection = null;
-
-					log.info('transaction rollback');
-
-					reuseConn.release();
-
-					log.info('connection released to pool');
-
-					log.info('transaction ended');
-
-					gracenode.removeListener('unchaughtException', autoRollback);
-
-					cb(error);
-				});
-				return;
-			}
-
-			reuseConn.query('COMMIT', null, function (err) {
-				if (err) {
-					log.error(err);
-				}
-
-				that._transactionConnection = null;
-
-				log.info('transaction commit');
-
-				reuseConn.release();
-
-				log.info('connection released to pool');
-
-				log.info('transaction ended');
-
-				gracenode.removeListener('unchaughtException', autoRollback);
-
-				cb();
-			});
+			endTransaction(error, transactionId, that, reuseConn, autoRollback, cb);
 		});	
 
 	});
 };
+
+function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
+	if (error) {
+		// auto-rollback on error
+		log.error('transaction rollback on error:', error, '[' + transactionId + ']');
+		conn.query('ROLLBACK', null, function (err) {
+			if (autoRollback) {
+				gracenode.removeListener('unchaughtException', autoRollback);
+			}
+			that._transactionConnection = null;
+			that.release(error, conn);
+			if (err) {
+				log.error('transaction rollback error:', err, '[' + transactionId + ']');
+				return cb(err);
+			}
+			log.info('transaction rollback [' + transactionId + ']');
+			cb(error);
+		});
+		return;
+	}
+	// success commit
+	conn.query('COMMIT', null, function (err) {
+		gracenode.removeListener('unchaughtException', autoRollback);
+		that._transactionConnection = null;
+		that.release(null, conn);
+		if (err) {
+			log.error('transaction commit error:', err, '[' + transactionId + ']');
+			return cb(err);
+		}
+		log.info('transaction commit [' + transactionId + ']');
+		cb();
+	});
+}
 
 function validateQuery(sql, type) {
 	if (type === 'write') {
