@@ -2,15 +2,21 @@ var ip = require('./lib/ip');
 var msg = require('./lib/msg');
 var file = require('./lib/file');
 var remote = require('./lib/remote');
+var EventEmitter = require('events').EventEmitter;
+var events = new EventEmitter();
+var address = null;
 
 module.exports.setup = function (gn, config) {
 	ip.setup();
+	address = ip.get();
 	msg.setup(config);
 	file.setup(gn, config.level, config.file);
 	remote.setup(config.remote);
 };
 
 module.exports.Logger = Logger;
+
+module.exports.events = events;
 
 function Logger(prefix, name, config) {
 	this.prefix = prefix;
@@ -68,5 +74,7 @@ function outputLog(config, levelName, logMsg) {
 		remote.log(levelName, logMsg);
 	}
 	
+	events.emit('output', address, levelName, logMsg);
+
 	return true;
 }

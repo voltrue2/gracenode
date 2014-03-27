@@ -37,6 +37,16 @@ var log = gracenode.log.create('nameToBeDisplayed');
 }
 ```
 
+##Events: *output*
+
+```
+gracenode.log.on('output', function (address, level, message) {
+	// address: IP address of the server
+	// level: verbose, debug, info, warning, error, or fatal
+	// message: log data
+});
+```
+
 ###API: *verbose*
 
 <pre>
@@ -50,7 +60,6 @@ void debug(mixed data, [...])
 </pre>
 
 ###API: *info*
-
 
 <pre>
 void info(mixed data, [...])
