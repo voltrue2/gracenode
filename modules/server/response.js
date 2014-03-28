@@ -249,7 +249,7 @@ function respondERROR(req, res, content, status) {
 function responseLog(req, status) {
 	var msg = 'response (url:' + req.url + '): (status: ' + status + ')';
 	if (status >= 400) {
-		log.error('error (url:' + req.url + '): ' + msg);
+		log.error(msg);
 	} else {
 		log.info(msg);
 	}

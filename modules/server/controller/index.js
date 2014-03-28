@@ -203,7 +203,7 @@ function execRequestHook(req, res, hook, controller, parsedUrl) {
 	log.verbose('request hook found for "' + url + '"');
 	hook(parsedUrl.args[0], function (error, status) {
 		if (error) {
-			log.error('request hook executed with an error: (url:' + url + ')', error, '(status: ' + status + ')');
+			log.error('request hook executed with an error (url:' + url + '):', error, '(status: ' + status + ')');
 			return errorHandler(req, res, error, status);
 		}
 		log.verbose('request hook executed');
