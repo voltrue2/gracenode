@@ -48,7 +48,7 @@ module.exports.exec = function (req, res, parsedUrl) {
 
 module.exports.execError = errorHandler;
 
-function readRequestBody(controller, method, headers, body) {
+function readRequestBody(url, headers, body) {
 
 	var reqBody;
 
@@ -58,7 +58,7 @@ function readRequestBody(controller, method, headers, body) {
 			reqBody = JSON.parse(body);
 		} catch (e) {
 
-			log.error('Invalid JSON in request: (url:' + (controller + '/' + method) + ')', body, e);
+			log.error('Invalid JSON in request: (url:' + url + ')', body, e);
 			reqBody = {};
 
 		}
@@ -81,7 +81,7 @@ function extractQueries(req, cb) {
 				body += data;
 			});
 			req.on('end', function () {
-				var post = readRequestBody(req.controller, req.method, req.headers, body);
+				var post = readRequestBody(req.url, req.headers, body);
 				cb(null, { post: post, put: null, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -94,7 +94,7 @@ function extractQueries(req, cb) {
 				putBody += data;
 			});
 			req.on('end', function () {
-				var put = readRequestBody(req.controller, req.method, req.headers, putBody);
+				var put = readRequestBody(req.url, req.headers, putBody);
 				cb(null, { post: null, put: put, delete: null, get: null });
 			});
 			req.on('error', function (error) {
