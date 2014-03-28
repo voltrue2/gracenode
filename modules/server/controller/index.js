@@ -48,7 +48,7 @@ module.exports.exec = function (req, res, parsedUrl) {
 
 module.exports.execError = errorHandler;
 
-function readReqestBody(headers, body) {
+function readRequestBody(controller, method, headers, body) {
 
 	var reqBody;
 
@@ -58,7 +58,7 @@ function readReqestBody(headers, body) {
 			reqBody = JSON.parse(body);
 		} catch (e) {
 
-			log.error('Invalid JSON in request:', body, e);
+			log.error('Invalid JSON in request: (url:' + (controller + '/' + method) + ')', body, e);
 			reqBody = {};
 
 		}
@@ -81,7 +81,7 @@ function extractQueries(req, cb) {
 				body += data;
 			});
 			req.on('end', function () {
-				var post = readReqestBody(req.headers, body);
+				var post = readRequestBody(req.controller, req.method, req.headers, body);
 				cb(null, { post: post, put: null, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -94,7 +94,7 @@ function extractQueries(req, cb) {
 				putBody += data;
 			});
 			req.on('end', function () {
-				var put = readReqestBody(req.headers, putBody);
+				var put = readRequestBody(req.controller, req.method, req.headers, putBody);
 				cb(null, { post: null, put: put, delete: null, get: null });
 			});
 			req.on('error', function (error) {
@@ -199,10 +199,11 @@ function handleRequestHook(req, res, controller, parsedUrl) {
 }
 
 function execRequestHook(req, res, hook, controller, parsedUrl) {
-	log.verbose('request hook found for "' + parsedUrl.controller + '.' + parsedUrl.method + '"');
+	var url = parsedUrl.controller + '/' + parsedUrl.method;
+	log.verbose('request hook found for "' + url + '"');
 	hook(parsedUrl.args[0], function (error, status) {
 		if (error) {
-			log.error('request hook executed with an error:', error, '(status: ' + status + ')');
+			log.error('request hook executed with an error: (url:' + url + ')', error, '(status: ' + status + ')');
 			return errorHandler(req, res, error, status);
 		}
 		log.verbose('request hook executed');
@@ -215,7 +216,7 @@ function errorHandler(req, res, errorMsg, status) {
 
 	status = status || 404;	
 
-	log.error('errorHandler:', errorMsg);
+	log.error('errorHandler (url:' + req.url + '):', errorMsg);
 	
 	if (handleError(req, res, status)) {
 		// stop here and let handleError deal with it

@@ -184,6 +184,7 @@ function MySql(name, pool, config, type) {
 	this._config = config;
 	this._type = type;
 	this._transactionConnection = null; // do not touch this outside of this module!
+	this._transactionId = null; // do not touch this outside this module
 }
 
 util.inherits(MySql, EventEmitter);
@@ -260,8 +261,9 @@ MySql.prototype.write = function (sql, params, cb) {
 };
 
 MySql.prototype.exec = function (sql, params, cb) {
-	
-	log.verbose('attempt to execute query:', sql, params);
+	var transactionId = this._transactionId ? '(transaction:' + this._transactionId + ')' : '';	
+
+	log.verbose('attempt to execute query:', sql, params, transactionId);
 
 	var valid = validateQuery(sql, this._type);
 	if (!valid) {
@@ -280,11 +282,11 @@ MySql.prototype.exec = function (sql, params, cb) {
 			that.release(error, connection);
 			
 			if (error) {
-				log.error(sql, params);
+				log.error(sql, params, transactionId);
 				return cb(error);
 			}
 
-			log.info('query executed:', sql, params);			
+			log.info('query executed:', sql, params, transactionId);			
 
 			cb(error, result);
 		});	
@@ -318,6 +320,7 @@ MySql.prototype.release = function (error, connection) {
 	// if there is an error, we release the connection no matter what
 	if (error) {
 		this._transactionConnection = null;
+		this._transactionId = null;
 	}
 
 	if (!this._transactionConnection) {
@@ -343,7 +346,7 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 			return cb(error);
 		}
 
-		log.info('transaction started [' + transactionId + ']');
+		log.info('transaction started (transaction:' + transactionId + ')');
 		
 		var autoRollback = function (error) {
 			log.error('transaction uncaugh exception detected: auto-rollback [' + transactionId + ']');
@@ -375,6 +378,7 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 				// this connection will be re-used in this transaction
 				var transactionMysql = new MySql(name, that._pool, that._config, that._type);
 				transactionMysql._transactionConnection = connection;	
+				transactionMysql._transactionId = transactionId;
 				callback(null, transactionMysql);
 			},
 
@@ -393,15 +397,16 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
 	if (error) {
 		// auto-rollback on error
-		log.error('transaction rollback on error:', error, '[' + transactionId + ']');
+		log.error('transaction rollback on error:', error, '(transaction:' + transactionId + ')');
 		conn.query('ROLLBACK', null, function (err) {
 			if (autoRollback) {
 				gracenode.removeListener('unchaughtException', autoRollback);
 			}
 			that._transactionConnection = null;
+			that._transactionId = null;
 			that.release(error, conn);
 			if (err) {
-				log.error('transaction rollback error:', err, '[' + transactionId + ']');
+				log.error('transaction rollback error:', err, '(transaction:' + transactionId + ')');
 				return cb(err);
 			}
 			log.info('transaction rollback [' + transactionId + ']');
