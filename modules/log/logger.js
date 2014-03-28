@@ -57,7 +57,7 @@ Logger.prototype._handleLog = function (levelName, message) {
 
 	var logMsg = msg.create(this.prefix, this.name, levelName, message);
 	
-	console.log(logMsg);
+	console.log('[timestamp:' + logMsg.timestamp + '] ' + logMsg.message);
 	
 	if (this.config && this.config.level && this.config.level[levelName] && this.config.level[levelName]) {
 		outputLog(this.config, levelName, logMsg);
@@ -74,7 +74,7 @@ function outputLog(config, levelName, logMsg) {
 		remote.log(levelName, logMsg);
 	}
 	
-	events.emit('output', address, levelName, logMsg);
+	events.emit('output', address, levelName, logMsg.message, logMsg.timestamp);
 
 	return true;
 }

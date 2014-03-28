@@ -37,7 +37,7 @@ module.exports.setup = function (gn, levelMap, path) {
 
 module.exports.log = function (levelName, msg) {
 	var stream = getWriteStream(levelName);
-	stream.write(msg + '\n');
+	stream.write('[timestamp:' + msg.timestamp + '] ' + msg.message + '\n');
 };
 
 function getWriteStream(levelName) {

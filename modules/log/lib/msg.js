@@ -17,7 +17,7 @@ module.exports.create = function (prefix, logName, levelName, args) {
 	for (var key in args) {
 		msg.push(color.create(levelName, args[key], space));
 	}
-	return msg.join(' ');
+	return { message: msg.join(' '), timestamp: date.getTime() };
 };
 
 function pad(n, digit) {
