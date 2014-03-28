@@ -409,7 +409,7 @@ function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
 				log.error('transaction rollback error:', err, '(transaction:' + transactionId + ')');
 				return cb(err);
 			}
-			log.info('transaction rollback [' + transactionId + ']');
+			log.info('transaction rollback (transaction:' + transactionId + ')');
 			cb(error);
 		});
 		return;
@@ -420,10 +420,10 @@ function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
 		that._transactionConnection = null;
 		that.release(null, conn);
 		if (err) {
-			log.error('transaction commit error:', err, '[' + transactionId + ']');
+			log.error('transaction commit error:', err, 'transaction:' + transactionId + ')');
 			return cb(err);
 		}
-		log.info('transaction commit [' + transactionId + ']');
+		log.info('transaction commit (transaction:' + transactionId + ')');
 		cb();
 	});
 }
