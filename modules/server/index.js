@@ -108,11 +108,11 @@ function setupRequestHandler() {
 	// server request listener
 	server.on('request', function (request, response) {
 
-		events.emit('requestStart');
+		events.emit('requestStart', request.url);
 
 		// set up the listener on response end
 		response.on('end', function () {
-			events.emit('requestEnd');
+			events.emit('requestEnd', request.url);
 		});
 
 		router.handle(request, response);

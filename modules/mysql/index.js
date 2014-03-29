@@ -23,7 +23,7 @@
  * }
  *
  * */
-
+var uuid = require('node-uuid');
 var util = require('util');
 var async = require('async');
 var EventEmitter = require('events').EventEmitter;
@@ -87,7 +87,7 @@ module.exports.setup = function (cb) {
 				waitForConnections: true,
 				host: conf.host,
 				database: conf.database,
-				maxPoolNum: conf.maxPoolNum || 10,
+				connectionLimit: conf.poolSize || 10,
 				user: conf.user,
 				password: conf.password,
 				port: conf.port || undefined,
@@ -184,6 +184,7 @@ function MySql(name, pool, config, type) {
 	this._config = config;
 	this._type = type;
 	this._transactionConnection = null; // do not touch this outside of this module!
+	this._transactionId = null; // do not touch this outside this module
 }
 
 util.inherits(MySql, EventEmitter);
@@ -260,8 +261,9 @@ MySql.prototype.write = function (sql, params, cb) {
 };
 
 MySql.prototype.exec = function (sql, params, cb) {
-	
-	log.verbose('attempt to execute query:', sql, params);
+	var transactionId = this._transactionId ? '(transaction:' + this._transactionId + ')' : '';	
+
+	log.verbose('attempt to execute query:', sql, params, transactionId);
 
 	var valid = validateQuery(sql, this._type);
 	if (!valid) {
@@ -276,13 +278,15 @@ MySql.prototype.exec = function (sql, params, cb) {
 		}
 
 		connection.query(sql, params, function (error, result) {
+
+			that.release(error, connection);
+			
 			if (error) {
+				log.error(sql, params, transactionId);
 				return cb(error);
 			}
 
-			log.info('query executed:', sql, params);			
-
-			that.release(connection);
+			log.info('query executed:', sql, params, transactionId);			
 
 			cb(error, result);
 		});	
@@ -311,14 +315,22 @@ MySql.prototype.connect = function (cb) {
 	});
 };
 
-MySql.prototype.release = function (connection) {
+MySql.prototype.release = function (error, connection) {
+
+	// if there is an error, we release the connection no matter what
+	if (error) {
+		this._transactionConnection = null;
+		this._transactionId = null;
+	}
+
 	if (!this._transactionConnection) {
 		// release the connection back to pool
 		connection.release();
 		log.info('released connection back to pool [' + this._name + ']');
 		return;
 	}
-	log.verbose('connection kept for transaction');
+
+	log.info('connection kept for transaction [' + this._name + ']');
 };
 
 MySql.prototype.transaction = function (taskCallback, cb) {
@@ -327,31 +339,18 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 	}
 
 	var that = this;
-	var reuseConn = null;
+	var transactionId = uuid.v4();
 
 	this.connect(function (error, connection) {
 		if (error) {
 			return cb(error);
 		}
 
-		log.info('transaction started');
+		log.info('transaction started (transaction:' + transactionId + ')');
 		
 		var autoRollback = function (error) {
-			connection.query('ROLLBACK', null, function (err) {
-				if (err) {
-					return log.error(err);
-				}
-
-				log.info('transaction auto-rollback on uncaught exception');
-
-				connection.release();
-
-				log.info('connection released to pool');
-
-				log.info('transaction ended');
-
-				cb(error);
-			});
+			log.error('transaction uncaugh exception detected: auto-rollback [' + transactionId + ']');
+			endTransaction(error, transactionId, that, connection, null, cb);
 		};
 
 		gracenode.once('uncaughtException', autoRollback);
@@ -372,7 +371,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 			},
 
 			function (connection, callback) {
-				reuseConn = connection;
 				callback(null, that._name, connection);				
 			},
 
@@ -380,6 +378,7 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 				// this connection will be re-used in this transaction
 				var transactionMysql = new MySql(name, that._pool, that._config, that._type);
 				transactionMysql._transactionConnection = connection;	
+				transactionMysql._transactionId = transactionId;
 				callback(null, transactionMysql);
 			},
 
@@ -389,50 +388,45 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 		], 
 		function (error) {
-			if (error) {
-				reuseConn.query('ROLLBACK', null, function (err) {
-					if (err) {
-						log.error(err);
-					}
-
-					log.info('transaction rollback');
-
-					reuseConn.release();
-
-					log.info('connection released to pool');
-
-					log.info('transaction ended');
-
-					gracenode.removeListener('unchaughtException', autoRollback);
-
-					cb(error);
-				});
-				return;
-			}
-
-			reuseConn.query('COMMIT', null, function (err) {
-				if (err) {
-					log.error(err);
-				}
-
-				that._transactionConnection = null;
-
-				log.info('transaction commit');
-
-				reuseConn.release();
-
-				log.info('connection released to pool');
-
-				log.info('transaction ended');
-
-				gracenode.removeListener('unchaughtException', autoRollback);
-
-				cb();
-			});
+			endTransaction(error, transactionId, that, connection, autoRollback, cb);
 		});	
 
 	});
 };
+
+function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
+	if (error) {
+		// auto-rollback on error
+		log.error('transaction rollback on error:', error, '(transaction:' + transactionId + ')');
+		conn.query('ROLLBACK', null, function (err) {
+			if (autoRollback) {
+				gracenode.removeListener('unchaughtException', autoRollback);
+			}
+			that._transactionConnection = null;
+			that._transactionId = null;
+			that.release(error, conn);
+			if (err) {
+				log.error('transaction rollback error:', err, '(transaction:' + transactionId + ')');
+				return cb(err);
+			}
+			log.info('transaction rollback (transaction:' + transactionId + ')');
+			cb(error);
+		});
+		return;
+	}
+	// success commit
+	conn.query('COMMIT', null, function (err) {
+		gracenode.removeListener('unchaughtException', autoRollback);
+		that._transactionConnection = null;
+		that.release(null, conn);
+		if (err) {
+			log.error('transaction commit error:', err, 'transaction:' + transactionId + ')');
+			return cb(err);
+		}
+		log.info('transaction commit (transaction:' + transactionId + ')');
+		cb();
+	});
+}
 
 function validateQuery(sql, type) {
 	if (type === 'write') {

@@ -9,7 +9,7 @@ module.exports.standby = function (req, res) {
 
 	var errorCallback = function (error) {
 		
-		log.error('exception caught:', error);
+		log.error('exception caught(url:' + req.url + '): ', error);
 		
 		var response = new Response(req, res);
 		response.error('500', 500);
@@ -67,7 +67,7 @@ Response.prototype.file = function (content, status) {
 
 Response.prototype.error = function (content, status) {
 	log.verbose('response content type: Error');
-	log.error(content);
+	log.error('(url:' + this._request.url + ')', content);
 	respondERROR(this._request, this._response, content, status);
 	this._response.emit('end');
 };
@@ -78,17 +78,17 @@ Response.prototype.redirect = function (content, status) {
 	this._response.emit('end');
 };
 
-function compressContent(content, cb) {
+function compressContent(req, content, cb) {
 	if (content instanceof Buffer) {
 		// we do not compress binary
-		log.verbose('skip compressing binary data: ' + (content.length / 1024) + 'KB');
+		log.verbose('skip compressing binary data (url:' + req.url + '): ' + (content.length / 1024) + 'KB');
 		cb(null, content);
 	}
 	zlib.gzip(content, function (error, compressedData) {
 		if (error) {
 			return cb(error);
 		}
-		log.verbose('compressed content size: ' + (compressedData.length / 1024) + ' KB');
+		log.info('compressed content size (url:' + req.url + '): ' + (compressedData.length / 1024) + ' KB');
 
 		cb(null, compressedData);
 	});
@@ -97,10 +97,10 @@ function compressContent(content, cb) {
 function respondJSON(req, res, content, status) {
 	content = content || null;
 	status = status || 200;
-	compressContent(JSON.stringify(content), function (error, data) {
+	compressContent(req, JSON.stringify(content), function (error, data) {
 		
 		if (error) {
-			log.error(error);
+			log.error('(url:' + req.url + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -126,10 +126,10 @@ function respondJSON(req, res, content, status) {
 function respondHTML(req, res, content, status) {
 	content = content || null;
 	status = status || 200;
-	compressContent(content, function (error, data) {
+	compressContent(req, content, function (error, data) {
 		
 		if (error) {
-			log.error(error);
+			log.error('(url:' + req.url, + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -154,10 +154,10 @@ function respondHTML(req, res, content, status) {
 function respondData(req, res, content, status) {
 	content = content || null;
 	status = status || 200;
-	compressContent(content, function (error, data) {
+	compressContent(req, content, function (error, data) {
 		
 		if (error) {
-			log.error(error);
+			log.error('(url: ' + req.url + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -204,7 +204,7 @@ function respondFILE(req, res, content, status) {
 		'Content-Type': getFileType(type)
 	});
 	
-	log.verbose('response content size: ' + (contentSize / 1024) + ' KB');
+	log.verbose('response content size (url:' + req.url + '): ' + (contentSize / 1024) + ' KB');
 
 	responseLog(req, status);		
 
@@ -218,10 +218,10 @@ function respondERROR(req, res, content, status) {
 		content = JSON.stringify(content);
 	}
 	status = status || 404;
-	compressContent(content, function (error, data) {
+	compressContent(req, content, function (error, data) {
 		
 		if (error) {
-			log.error(error);
+			log.error('(url:' + req.url + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -237,7 +237,7 @@ function respondERROR(req, res, content, status) {
 			'Content-Length': data.length
 		});
 		
-		log.error('response content size: ' + (contentSize / 1024) + ' KB');
+		log.error('response content size (url:' + req.url + '): ' + (contentSize / 1024) + ' KB');
 	
 		responseLog(req, status);		
 	
@@ -247,9 +247,9 @@ function respondERROR(req, res, content, status) {
 }
 
 function responseLog(req, status) {
-	var msg = 'response: ' + req.url + ' (status: ' + status + ')';
+	var msg = 'response (url:' + req.url + '): (status: ' + status + ')';
 	if (status >= 400) {
-		log.error('error ' + msg);
+		log.error(msg);
 	} else {
 		log.info(msg);
 	}
