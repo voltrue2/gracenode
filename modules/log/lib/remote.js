@@ -17,6 +17,12 @@ module.exports.setup = function (configIn) {
 };
 
 module.exports.log = function (levelName, msg) {
+	// check config
+	if (!config || !config.port || !config.host) {
+		console.error('Error: missing remoteServer configurations');
+		console.error(config);
+		return;
+	}
 	var data = {
 		address: address,
 		name: levelName,
@@ -27,12 +33,6 @@ module.exports.log = function (levelName, msg) {
 	// set up UDP sender
 	var client = dgram.createSocket('udp4');
 	var offset = 0;
-	// check config
-	if (!config || !config.port || !config.host) {
-		console.error('Error: missing remoteServer configurations');
-		console.error(config);
-		return;
-	}
 	// send
 	client.send(data, offset, data.length, config.port, config.host, function (error) {
 		if (error) {
