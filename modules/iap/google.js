@@ -69,18 +69,18 @@ function validatePublicKey(receipt, pkey, cb) {
 	validater.update(receipt.data);
 	var valid = validater.verify(pkey, receipt.signature, 'base64');
 
-	log.info('receipt data:', receipt.data);
-	log.info('receipt signature:', receipt.signature);	
-	log.info('valid:', valid);
+	log.verbose('receipt data:', receipt.data);
+	log.verbose('receipt signature:', receipt.signature);	
+	log.verbose('valid:', valid);
 
 	if (valid) {
-		log.info('purchase validated successfully');
+		log.info('purchase validated successfully (google):', data, receipt, valid);
 		// validated successfully
 		var data = JSON.parse(receipt.data);
 		data.status = 0;
 		return cb(null, receipt, data, true);
 	}
 	// failed to validate
-	log.error('failed to validate purchase');
+	log.error('failed to validate purchase (google):', receipt.data, receipt, valid);
 	cb(null, receipt, { status: 1 }, false);
 }

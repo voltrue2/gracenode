@@ -284,13 +284,16 @@ function getObjValue(data) {
 	if (Array.isArray(data)) {
 		obj = [];
 		for (var i = 0, len = data.length; i < len; i++) {
-			obj.push(data[i]);
+			obj.push(getObjValue(data[i]));
 		}
-	} else {
+	} else if (typeof data === 'object') {
 		obj = {};
 		for (var key in data) {
-			obj[key] = data[key];
+			obj[key] = getObjValue(data[key]);
 		}
+	} else {
+		obj = data;
 	}
+	
 	return obj;
 }
