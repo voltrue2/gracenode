@@ -29,6 +29,7 @@ function GraceNode() {
 		{ name: 'profiler', sourceName: 'profiler', config: null, path: null },
 		{ name: 'lib', sourceName: 'lib', config: null, path: null }
 	];
+	this._overrideAllowedMods = [];
 	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
 	process.chdir(this._root);
 	log.verbose('Working directory changed to', this._root);
@@ -36,6 +37,7 @@ function GraceNode() {
 
 util.inherits(GraceNode, EventEmitter);
 
+// internal use only
 GraceNode.prototype._addLogCleaner = function (name, func) {
 	var cleaner = function (done) {
 		log.info('shutting down log module...');
@@ -136,6 +138,10 @@ GraceNode.prototype.addModulePath = function (path) {
 
 GraceNode.prototype.exit = function (error) {
 	this.emit('exit', error || 0);
+};
+
+GraceNode.prototype.allowOverride = function (builtInModuleName) {
+	this._overrideAllowedMods.push(builtInModuleName);
 };
 
 GraceNode.prototype.use = function (modName) {
@@ -246,27 +252,50 @@ function setupProcess(that, lastCallback, cb) {
 
 function loadModule(that, mod, cb) {
 	var name = mod.name;
+	// this variable will remember the found built-in module for allowed override case
+	var builtInMod = null;
 	try {
 		// first try inside GraceNode
 		var path = that.getRootPath() + rootDirName + '/modules/' + mod.name;
 		fs.exists(path, function (exists) {
-			log.verbose('look for module [' + name + '] in ', path);
+			log.verbose('look for module [' + name + '] in', path);
 			if (exists) {
 				log.verbose('module [' + name + '] found');
-				return cb(null, require(path));
+				// check if this module is allowed to be overridden
+				if (that._overrideAllowedMods.indexOf(mod.name) !== -1) {
+					// override allowed
+					log.verbose('module [' + name + '] is allowed to be overridden by custom module of the same name');
+					builtInMod = path;
+				} else {
+					// override NOT allowed
+					return cb(null, require(path));
+				}
 			}
 			// try other path(s)
 			async.eachSeries(modPaths, function (dir, callback) {
 				dir = that.getRootPath() + dir + name;
 				fs.exists(dir, function (exists) {
-					log.verbose('look for module [' + name + '] in ', dir);
+					log.verbose('look for module [' + name + '] in', dir);
 					if (exists) {
 						log.verbose('module [' + name + '] found');
+						if (builtInMod) {
+							log.verbose('override the built-in module with the custom module [' + name + ']');
+						}
 						return cb(null, require(dir));
 					}
 					callback();
 				});
-			}, cb);
+			},
+			function () {
+				// check if we found module or not
+				if (builtInMod) {
+					// overriding was allowed but custom module to override the built-in module was NOT found > use the built-in module
+					log.verbose('load the built-in module [' + name + ']');
+					return cb(null, require(builtInMod));
+				}
+				// no module by the given name was found
+				cb(new Error('failed to find module [' + name + ']'));
+			});
 		});
 	} catch (exception) {
 		cb(exception);
@@ -283,10 +312,6 @@ function setupModules(that, cb) {
 
 			if (error) {
 				return cb(error);
-			}
-
-			if (!module) {
-				return cb(new Error('failed to find module [' + name + ']'));
 			}
 
 			that[name] = module;
