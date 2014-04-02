@@ -23,7 +23,15 @@ Configurations
 
 #####API: *create*
 <pre>
-Collection create(String configName)
+Db create(String configName)
+</pre>
+> Returns an instance of Db class
+
+##### Db class
+
+> **collection**
+<pre>
+Collection collection(String collectionName)
 </pre>
 > Returns an instance of Collection class
 
