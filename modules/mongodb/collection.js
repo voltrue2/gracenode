@@ -131,7 +131,7 @@ Collection.prototype.findAndModify = function (query, sort, update, options, cb)
 
 	var that = this;
 
-	this._collection.save(query, sort, update, options, function (error, result) {
+	this._collection.findAndModify(query, sort, update, options, function (error, result) {
 		if (error) {
 			return cb(error);
 		}

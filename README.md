@@ -84,6 +84,12 @@ gracenode.addModulePath('mymodules/');
 gracenode.use('mymodule');
 ```
 
+###.allowOverride(moduleName [string])
+Allows the application to override and use custom module of the same module name instead of the built-in module from GraceNode
+```
+gracenode.allowOverrid('mysql')
+```
+
 ###.use(moduleName [string], params [object*])
 Tells GraceNode what modules to load when calling the setup functions.
 ```
