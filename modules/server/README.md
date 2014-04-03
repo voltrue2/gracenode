@@ -127,7 +127,7 @@ module.exports.foo = function (requestObject, serverResponse) {
 > How to read GET, POST, PUT, and DELETE
 ```javascript
 // controller file
-module.exrpots.index = function (requestObject, response) {
+module.exports.index = function (requestObject, response) {
         // server module automatically gives every controller the following functions:
         // requestObject.getData and requestObject.postData
         var getFoo = requestObject.getData.get('foo');
@@ -135,6 +135,23 @@ module.exrpots.index = function (requestObject, response) {
         var putFoo = requestObject.putData.get('foot');
         var deleteFoo = requestObject.deleteData.get('foot');
         response.json(null);
+};
+```
+
+> Transtaing URL
+```javascript
+// Suppose we have a request like this: mydomain.com/myController/myMethod/a/b/c/d
+// controller translates this as:
+module.exports.myMethod = function (request, response) {
+	var params = request.parameters;
+	/*
+	[
+		"a",
+		"b",
+		"c",
+		"d"
+	]
+	*/
 };
 ```
 
