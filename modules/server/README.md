@@ -138,7 +138,7 @@ module.exports.index = function (requestObject, response) {
 };
 ```
 
-> Transtaing URL
+> Translating URL
 ```javascript
 // Suppose we have a request like this: mydomain.com/myController/myMethod/a/b/c/d
 // controller translates this as:
