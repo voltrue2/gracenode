@@ -100,7 +100,7 @@ gracenode.server.seupRequestHooks(hooks);
 > Example of how to set up a server
 ```javascript
 // index.js file of an application
-var gracenode = require('./GraceNode/');
+var gracenode = require('GraceNode');
 gracenode.use('server', 'server');
 gracenode.setup(function (error) {
         if (error) {
@@ -114,7 +114,7 @@ gracenode.setup(function (error) {
 > Controller
 ```javascript
 // controller/example/index.js > /example/foo/
-var gracenode = require('../GraceNode/');
+var gracenode = require('GraceNode');
 // this will become part of the URI
 // the first argument is **ALWAYS** requestObject
 module.exports.foo = function (requestObject, serverResponse) {
@@ -127,7 +127,7 @@ module.exports.foo = function (requestObject, serverResponse) {
 > How to read GET, POST, PUT, and DELETE
 ```javascript
 // controller file
-module.exrpots.index = function (requestObject, response) {
+module.exports.index = function (requestObject, response) {
         // server module automatically gives every controller the following functions:
         // requestObject.getData and requestObject.postData
         var getFoo = requestObject.getData.get('foo');
@@ -135,6 +135,23 @@ module.exrpots.index = function (requestObject, response) {
         var putFoo = requestObject.putData.get('foot');
         var deleteFoo = requestObject.deleteData.get('foot');
         response.json(null);
+};
+```
+
+> Translating URL
+```javascript
+// Suppose we have a request like this: mydomain.com/myController/myMethod/a/b/c/d
+// controller translates this as:
+module.exports.myMethod = function (request, response) {
+	var params = request.parameters;
+	/*
+	[
+		"a",
+		"b",
+		"c",
+		"d"
+	]
+	*/
 };
 ```
 
@@ -239,6 +256,14 @@ module.exports.index = function (requestObject, response) {
 		"two"
 	]
 	*/
+};
+```
+
+> How to set response header
+```
+module.exports.myControllerMethod = function (request, response) {
+	response.header('Connection', 'Keep-Alive');
+	response.header('CustomHeader', 'It is a custom header');
 };
 ```
 
