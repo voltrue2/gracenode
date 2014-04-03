@@ -259,6 +259,14 @@ module.exports.index = function (requestObject, response) {
 };
 ```
 
+> How to set response header
+```
+module.exports.myControllerMethod = function (request, response) {
+	response.header('Connection', 'Keep-Alive');
+	response.header('CustomHeader', 'It is a custom header');
+};
+```
+
 > How to redirect to another URL
 ```javascript
 // controller
