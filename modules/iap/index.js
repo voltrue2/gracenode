@@ -80,7 +80,7 @@ module.exports.createHashId = function (receipt) {
 };
 
 function checkDb(receipt, finalCallback, cb) {
-	var sql = 'SELECT validateState, status, service FROM iap WHERE receiptHashId = ?';
+	var sql = 'SELECT validateState, status, service, response FROM iap WHERE receiptHashId = ?';
 	var hash = createReceiptHash(receipt);
 	var params = [hash];
 	mysql.searchOne(sql, params, function (error, res) {
@@ -88,6 +88,7 @@ function checkDb(receipt, finalCallback, cb) {
 			return cb(error);
 		}
 		log.info('validated data in database: (receipt hash: ' + hash + ')', res);
+
 		if (res) {
 			// check status
 			if (res.status === HANDLED || res.status === CANCELED) {
@@ -97,6 +98,13 @@ function checkDb(receipt, finalCallback, cb) {
 			// check validation
 			if (res.validateState === VALIDATED) {
 				// this receipt has been validated by the service provider already
+				try {
+					res.response = JSON.parse(res.response);
+				} catch (e) {
+					log.error('response data corrupt:', res);
+					return cb(new Error('response data corrupt'));
+				}
+
 				return finalCallback(null, res);
 			}
 		}
@@ -129,7 +137,7 @@ function storeResponse(receipt, response, validated, cb) {
 		if (error) {
 			return cb(error);
 		}
-		cb(null, { validateState: validateState, status: PENDING });
+		cb(null, { validateState: validateState, status: PENDING, response: response });
 	});
 }
 
