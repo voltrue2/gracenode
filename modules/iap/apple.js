@@ -70,10 +70,11 @@ module.exports.validatePurchase = function (receipt, cb) {
 function handleResponse(receipt, data, cb) {
 	if (data.status === 0) {
 		// validated successfully
-		log.info('purchase validated successfully');
+		log.info('purchase validated successfully (apple):', data, receipt, true);
 		return cb(null, receipt, data, true);
 	}
 	// failed to validate
+	log.error('failed to validate purchase (apple):', data, receipt, false);
 	log.error(getErrorByCode(data.status));
 	cb(null, receipt, data, false);
 }
