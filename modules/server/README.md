@@ -100,7 +100,7 @@ gracenode.server.seupRequestHooks(hooks);
 > Example of how to set up a server
 ```javascript
 // index.js file of an application
-var gracenode = require('./GraceNode/');
+var gracenode = require('GraceNode');
 gracenode.use('server', 'server');
 gracenode.setup(function (error) {
         if (error) {
@@ -114,7 +114,7 @@ gracenode.setup(function (error) {
 > Controller
 ```javascript
 // controller/example/index.js > /example/foo/
-var gracenode = require('../GraceNode/');
+var gracenode = require('GraceNode');
 // this will become part of the URI
 // the first argument is **ALWAYS** requestObject
 module.exports.foo = function (requestObject, serverResponse) {
