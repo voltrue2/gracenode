@@ -13,7 +13,6 @@ defaultDirList="index.js core/ modules/";
 # Example: ./lint.sh "mydir/ myFile" > this will lint all files in mydir/ and lint myFile
 dirList=$1;
 
-
 ##################
 # functions
 ##################
@@ -55,7 +54,36 @@ mark() {
 	echo -e "\xCB\x83 ";
 }
 
+lintTreeObj() {
+	# lint the code to be commited
+	if git rev-parse --verify HEAD >/dev/null 2>&1
+	then
+		against=HEAD;
+	else
+		# Initial commit: diff against an empty tree object
+		against=4b825dc642cb6eb9a060e54bf8d69288fbee4904;
+	fi
+
+	toBeCommited=$(git diff --cached --name-only --diff-filter=ACM | grep ".js$");
+
+	echoBlue "linting added files...";
+
+	# lint JavaScript files only
+	for file in ${toBeCommited}; do	
+		echo "linting $path$file";
+		failed=`jshint "$path$file"`;
+		if [ "$failed" ]; then
+			echoRed "[error] line error(s) in $1";
+			echoRed "$failed";
+			exit 1;
+		else
+			echoGreen "Passed [OK]";
+		fi
+	done
+}
+
 lint() {
+	# lint the code in the specified directories (this may not include added files to git)
 	targetPath="$path$1";
 
 	if [ -d "$targetPath" ] || [ -f "$targetPath" ]; then
@@ -78,10 +106,15 @@ lint() {
 	fi
 }
 
-
 ##########################
 # procedural codes
 ##########################
+
+# test if jshtin command is avialable
+if ! type "jshint" > /dev/null; then
+	echoRed "[error] jshint command is not available";
+	exit 1;
+fi
 
 # find root path
 index=`indexOf "$cwd" "$name"`;
@@ -110,6 +143,11 @@ done
 
 # start linting
 echoYellow "Executing jshint...";
+
+# lint the files in git tree
+lintTreeObj "";
+
+echoBlue "lint files in specified directories...";
 
 # lint
 for item in "${list[@]}"; do
