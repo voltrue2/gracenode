@@ -62,6 +62,26 @@ myCol.findMany({ _id: 123456 }, ['_id', 'name'], { limit: 10, offset: 5, sort: '
 });
 ```
 
+> **findEach**
+<pre>
+void findEach(Object querym Array fields, Int limit, Object [sort*], Function eachCallback, Function finalCallback)
+</pre>
+Executes findMany with the given limit and auto-iterate until it finds no more record. Each iteration will call eachCallback.
+When it reaches the end, it will call finalCallback.
+This operation can be very expensive.
+Example:
+```javascript
+var myDb = gracenode.mongodb.create('myDb');
+var myCol = gracenode.mongodb.collection('myCol');
+myCol.findEach({ _id: /name/ }, ['age'], { age: -1 }, function (list, next) {
+	// do something with list
+	next();
+},
+function (error) {
+	// done
+});
+```
+
 > **insert**
 <pre>
 void insert(Object values, Function callback)

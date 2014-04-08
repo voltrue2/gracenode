@@ -201,12 +201,8 @@ function parseContent(outputData, parser, seen, clientData, cb) {
 			}
 		
 			// FIXME: a sad, really sad way to make sure ALL the tags be replaced....	
-			var newData = outputData.replace(tag, data);
-			while (newData !== outputData) {
-				newData = newData.replace(tag, data);
-				outputData = newData;
-			}
-			
+			outputData = insertData(outputData, tag, tag.length, data);			
+	
 			next();
 		});
 	}, 
@@ -216,6 +212,17 @@ function parseContent(outputData, parser, seen, clientData, cb) {
 		}
 		cb(null, outputData);
 	});
+}
+
+function insertData(content, tag, len, data) {
+	var index = content.indexOf(tag);
+	if (index === -1) {
+		return content;
+	}
+	var head = content.substring(0, index);
+	var tail = content.substring(index + len);
+	content = head + data + tail;
+	return insertData(content, tag, len, data);
 }
 
 function processFile(type, data) {

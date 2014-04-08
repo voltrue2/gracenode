@@ -38,7 +38,7 @@ pagenate: <object>
 pagenate: {
 	limit: <int>
 	offset: <int>
-	sort: <object>
+	sort: <object>,
 }
 */
 Collection.prototype.findMany = function (query, fields, pagenate, cb) {
@@ -53,9 +53,9 @@ Collection.prototype.findMany = function (query, fields, pagenate, cb) {
 		}
 		if (pagenate && pagenate.limit !== undefined && pagenate.offset !== undefined) {
 			if (pagenate.sort) {
-				cursor = cursor.sort(pagenate.sort).limit(pagenate.limit).skip(pagenate.skip);
+				cursor = cursor.sort(pagenate.sort).limit(pagenate.limit).skip(pagenate.offset);
 			} else {
-				cursor = cursor.limit(pagenate.limit).skip(pagenate.skip);
+				cursor = cursor.limit(pagenate.limit).skip(pagenate.offset);
 			}
 			logger.verbose('query executed:', that._name, query, fields, pagenate);
 			return extractResults(cursor, cb);
@@ -63,6 +63,51 @@ Collection.prototype.findMany = function (query, fields, pagenate, cb) {
 		// no pagenation
 		extractResults(cursor, cb);
 	});
+};
+
+/*
+find records upto limit and iterate the same operation until there is no more record
+- eachCallback will be call on each iteration. eachCallback will reveive found records and next callback as arguments
+- cb will be called when the iteration completes
+- sort is optional
+*/ 
+Collection.prototype.findEach = function (query, fields, limit, sort, eachCallback, cb) {
+	var pagenate = {
+		offset: 0,
+		limit: limit
+	};
+	if (sort) {
+		pagenate.sort = sort;
+	}
+
+	var that = this;
+
+	var iterator = function (pagenate, finalCallback) {
+		that.findMany(query, fields, pagenate, function (error, results) {
+			if (error) {
+				// we will call the final callback on error
+				logger.error(error);
+				return finalCallback(error);
+			}
+			
+			var next;
+			// check the found records
+			if (results.length < limit) {
+				// this is the last iteration
+				next = finalCallback;				
+			} else {
+				// there is more
+				pagenate.offset += limit;
+				next = function () {
+					iterator(pagenate, finalCallback);
+				};
+			}
+
+			eachCallback(results, next);
+		});
+	};
+
+	iterator(pagenate, cb);
 };
 
 /*
