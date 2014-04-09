@@ -54,6 +54,7 @@ mark() {
 	echo -e "\xCB\x83 ";
 }
 
+# probably pointless...
 lintTreeObj() {
 	# lint the code to be commited
 	if git rev-parse --verify HEAD >/dev/null 2>&1
@@ -145,7 +146,7 @@ done
 echoYellow "Executing jshint...";
 
 # lint the files in git tree
-lintTreeObj "";
+#lintTreeObj "";
 
 echoBlue "lint files in specified directories...";
 
