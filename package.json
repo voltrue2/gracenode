@@ -22,5 +22,8 @@
 		"apn": "= 1.4.4",
 		"node-gcm": "0.9.8"
 	},
-	"engine": "node = 0.10.20"
+	"engine": "node = 0.10.20",
+	"contributors": [
+		{ "name": "Brian de Heus", "email": "me@brian.jp" }
+	]
 }
