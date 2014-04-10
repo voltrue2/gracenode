@@ -43,11 +43,11 @@ Wallet.prototype.getBalanceByUserId = function (userId, cb) {
 };
 
 Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, onCallback, cb) {
-	this.add(receiptHashId, userId, price, value, 'paid', onCallback, cb);
+	this.add(receiptHashId, userId, price, value, 0, 'paid', onCallback, cb);
 };
 
 Wallet.prototype.addFree = function (receiptHashId, userId, value, onCallback, cb) {
-	this.add(receiptHashId, userId, 0, value, 'free', onCallback, cb);
+	this.add(receiptHashId, userId, 0, 0, value, 'free', onCallback, cb);
 };
 
 Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, cb) {
@@ -65,25 +65,27 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 				return callback(error);
 			}
 
-			log.info('trying to spend ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
-			
+			var total = balance.paid + balance.free;
+
+			log.info('trying to spend ' + valueToSpend + ' out of ' + total + ' user: ' + userId);
+	
 			// check if the user has enough value to spend
-			if (balance < valueToSpend) {
-				return callback('not enough balance: user(' + userId + ')');
+			if (total < valueToSpend) {
+				return callback(new Error('not enough balance: user(' + userId + ')'));
 			}
 
-			var newBalance = balance - valueToSpend;
+			var spendValues = calcSpendValues(valueToSpend, balance.paid, balance.free);
 
-			spendFromBalance(mysql, userId, that._name, newBalance, function (error) {
+			spendFromBalance(mysql, userId, that._name, spendValues.paidBalance, spendValues.freeBalance, function (error) {
 				if (error) {
 					return callback(error);
 				}
-				
-				updateBalanceHistoryOut(mysql, userId, that._name, valueToSpend, spendFor, function (error) {
+
+				updateBalanceHistoryOut(mysql, userId, that._name, spendValues.toSpendPaid, spendValues.toSpendFree, spendFor, function (error) {
 					if (error) {
 						return callback(error);
 					}
-					
+
 					if (typeof onCallback === 'function') {
 						return onCallback(function (error) {
 							if (error) {
@@ -91,13 +93,15 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 								return callback(error);
 							}
 							
-							log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
-							
+							log.info('spent: ' + valueToSpend + ' out of ' + total + ' user: ' + userId);
+							log.info('spent detail: (paid:' + spendValues.toSpendPaid + ') (free:' + spendValues.toSpendFree + ')');						
+	
 							callback(null);
 						});
 					}
 
-					log.info('spent: ' + valueToSpend + ' out of ' + balance + ' user: ' + userId);
+					log.info('spent: ' + valueToSpend + ' out of ' + total + ' user: ' + userId);
+					log.info('spent detail: (paid:' + spendValues.toSpendPaid + ') (free:' + spendValues.toSpendFree + ')');						
 
 					callback();
 
@@ -112,13 +116,15 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 		if (error) {
 			return cb(error);
 		}
+
 		cb();
 	});
 
 };
 
 // used privately ONLY
-Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType, onCallback, cb) {
+Wallet.prototype.add = function (receiptHashId, userId, price, paid, free, valueType, onCallback, cb) {
+	var value = paid + free;
 	
 	if (typeof value !== 'number' || value <= 0) {
 		return cb(new Error('invalid value to add given:' + value + ':' + (typeof value)));
@@ -128,7 +134,7 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 
 	mysqlDb.transaction(function (mysql, callback) {
 
-		addToBalance(mysql, userId, name, value, function (error) {
+		addToBalance(mysql, userId, name, paid, free, function (error) {
 			if (error) {
 				return callback(error);
 			}
@@ -170,36 +176,52 @@ Wallet.prototype.add = function (receiptHashId, userId, price, value, valueType,
 };
 
 function getBalanceByUserId(that, db, userId, cb) {
-	var sql = 'SELECT value FROM wallet_balance WHERE userId = ? AND name = ?';
+	var sql = 'SELECT paid, free FROM wallet_balance WHERE userId = ? AND name = ?';
 	var params = [userId, that._name];
 	db.searchOne(sql, params, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
-		var balance = 0;
-		if (res && res.value) {
-			balance = res.value;
+		var balance = { paid: 0, free: 0};
+		if (res) {
+			if (res.paid) {
+				balance.paid = res.paid;
+			}
+			if (res.free) {
+				balance.free = res.free;
+			}
 		}
 		cb(null, balance);
 	});
 }
 
-function spendFromBalance(db, userId, name, balance, cb) {
-	if (balance < 0) {
-		return cb(new Error('spendFromBalance >> balance cannot be lower than 0: user('  + userId + ') > ' + balance));
+function spendFromBalance(db, userId, name, paid, free, cb) {
+	if (paid + free < 0) {
+		return cb(new Error('spendFromBalance >> balance cannot be lower than 0: user('  + userId + ') > ' + 'paid: ' + paid + ', free: ' + free));
 	}
-	var sql = 'INSERT INTO wallet_balance (userId, name, value, created, modtime) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = ?, modtime = ?';
 	var now = Date.now();
+	/*
+	var sql = 'INSERT INTO wallet_balance (userId, name, paid, free, created, modtime) VALUES(?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE paid = ?, free = ?, modtime = ?';
 	var params = [
 		// insert with
 		userId,
 		name,
-		balance,
+		paid,
+		free,
 		now,
 		now,
 		// update with
-		balance,
+		paid,
+		free,
 		now
+	];
+	*/
+	var sql = 'UPDATE wallet_balance SET paid = ?, free = ?, modtime = ? WHERE userId = ?';
+	var params = [
+		paid,
+		free,
+		now,
+		userId
 	];
 	db.write(sql, params, function (error, res) {
 		if (error) {
@@ -214,18 +236,20 @@ function spendFromBalance(db, userId, name, balance, cb) {
 	});
 }
 
-function addToBalance(db, userId, name, balance, cb) {
-	var sql = 'INSERT INTO wallet_balance (userId, name, value, created, modtime) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = value + ?, modtime = ?';
+function addToBalance(db, userId, name, paid, free, cb) {
+	var sql = 'INSERT INTO wallet_balance (userId, name, paid, free, created, modtime) VALUES(?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE paid = paid + ?, free = free + ?, modtime = ?';
 	var now = Date.now();
 	var params = [
 		// insert with
 		userId,
 		name,
-		balance,
+		paid,
+		free,
 		now,
 		now,
 		// update with
-		balance,
+		paid,
+		free,
 		now
 	];
 	db.write(sql, params, function (error, res) {
@@ -264,12 +288,13 @@ function updateBalanceHistoryIn(db, receiptHashId, userId, name, price, value, v
 	});
 }
 
-function updateBalanceHistoryOut(db, userId, name, valueToSpend, spendFor, cb) {
-	var sql = 'INSERT INTO wallet_out (userId, name, value, spentFor, created) VALUES(?, ?, ?, ?, ?)';
+function updateBalanceHistoryOut(db, userId, name, paid, free, spendFor, cb) {
+	var sql = 'INSERT INTO wallet_out (userId, name, paid, free, spentFor, created) VALUES(?, ?, ?, ?, ?, ?)';
 	var params = [
 		userId,
 		name,
-		valueToSpend,
+		paid,
+		free,
 		spendFor,
 		Date.now()
 	];
@@ -284,4 +309,24 @@ function updateBalanceHistoryOut(db, userId, name, valueToSpend, spendFor, cb) {
 
 		cb();
 	});
+}
+
+function calcSpendValues(toSpend, paidBalance, freeBalance) {
+	// spend from free balance first
+	freeBalance = freeBalance - toSpend;
+	var toSpendFree = toSpend;
+	var toSpendPaid = 0;
+	if (freeBalance < 0) {
+		// free balance alone is not enough > spend from paid balance as well
+		paidBalance += freeBalance;
+		toSpendFree += freeBalance;
+		toSpendPaid = toSpend - toSpendFree;
+		freeBalance = 0;
+	}
+	return {
+		paidBalance: paidBalance,
+		freeBalance: freeBalance,
+		toSpendPaid: toSpendPaid,
+		toSpendFree: toSpendFree
+	};
 }

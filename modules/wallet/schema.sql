@@ -9,7 +9,7 @@ CREATE TABLE wallet_in (
 	userId VARCHAR(100) NOT NULL,
 	name VARCHAR(20) NOT NULL,
 	price INT(6) NOT NULL,
-	value INT(7) NOT NULL,
+	value INT(8) NOT NULL,
 	valueType ENUM('paid', 'free') NOT NULL,		
 	created BIGINT(13) UNSIGNED NOT NULL,
 	PRIMARY KEY(receiptHashId),
@@ -19,7 +19,8 @@ CREATE TABLE wallet_in (
 CREATE TABLE wallet_out (
 	userId VARCHAR(100) NOT NULL,
 	name VARCHAR(20) NOT NULL,
-	value INT(7) NOT NULL,
+	paid INT(8) NOT NULL,
+	free INT(8) NOT NULL,
 	spentFor VARCHAR(100) NOT NULL,
 	created BIGINT(13) UNSIGNED NOT NULL,
 	INDEX name (name)
@@ -28,7 +29,8 @@ CREATE TABLE wallet_out (
 CREATE TABLE wallet_balance (
 	userId VARCHAR(100) NOT NULL,
 	name VARCHAR(20) NOT NULL,
-	value INT(8) NOT NULL,
+	paid INT(8) NOT NULL,
+	free INT(8) NOT NULL,
 	created BIGINT(13) UNSIGNED NOT NULL,
 	modtime BIGINT(13) UNSIGNED NOT NULL,
 	PRIMARY KEY(userId),
