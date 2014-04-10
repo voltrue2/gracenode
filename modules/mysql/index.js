@@ -348,11 +348,6 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		}
 
 		log.info('transaction started (transaction:' + transactionId + ')');
-		
-		var autoRollback = function (error) {
-			log.error('transaction uncaugh exception detected: auto-rollback [' + transactionId + ']');
-			endTransaction(error, transactionId, that, connection, null, cb);
-		};
 
 		async.waterfall([
 			
@@ -384,13 +379,13 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 
 		], 
 		function (error) {
-			endTransaction(error, transactionId, that, connection, autoRollback, cb);
+			endTransaction(error, transactionId, that, connection, cb);
 		});	
 
 	});
 };
 
-function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
+function endTransaction(error, transactionId, that, conn, cb) {
 	if (error) {
 		// auto-rollback on error
 		conn.query('ROLLBACK', null, function (err) {
