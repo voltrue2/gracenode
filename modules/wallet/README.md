@@ -20,7 +20,7 @@ Wallet create(String walletName)
 <pre>
 void getBalanceByUserId(String uniqueUserId, Function callback)
 </pre>
-> Rerturns the current balance of a wallet in the callback as a second argument
+> Rerturns the current balance (paid and free separately) of a wallet in the callback as a second argument
 
 > **addPaid**
 <pre>

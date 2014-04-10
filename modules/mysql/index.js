@@ -295,7 +295,7 @@ MySql.prototype.exec = function (sql, params, cb) {
 
 MySql.prototype.connect = function (cb) {
 	if (this._transactionConnection) {
-		log.verbose('in transaction mode re-using connection');
+		log.info('in transaction mode re-using connection [' + this._name + '] (transaction:' + this._transactionId + ')');
 		// we are in transaction mode and will be re-using connection until the transaction ends
 		return cb(null, this._transactionConnection);
 	}
@@ -338,6 +338,7 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		return cb(new Error('cannot execute transaction with type: ' + this._type));
 	}
 
+	var transactionMysql;
 	var that = this;
 	var transactionId = uuid.v4();
 
@@ -353,36 +354,31 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 			endTransaction(error, transactionId, that, connection, null, cb);
 		};
 
-		gracenode.once('uncaughtException', autoRollback);
-
 		async.waterfall([
+			
 			function (callback) {
-				callback(null, connection);
-			},
-
-			function (connection, callback) {
 				connection.query('START TRANSACTION', null, function (error) {
 					if (error) {
 						return callback(error);
 					}
 
-					callback(null, connection);
+					callback();
 				});
 			},
 
-			function (connection, callback) {
-				callback(null, that._name, connection);				
+			function (callback) {
+				callback();				
 			},
 
-			function (name, connection, callback) {
+			function (callback) {
 				// this connection will be re-used in this transaction
-				var transactionMysql = new MySql(name, that._pool, that._config, that._type);
+				transactionMysql = new MySql(that._name, that._pool, that._config, that._type);
 				transactionMysql._transactionConnection = connection;	
 				transactionMysql._transactionId = transactionId;
-				callback(null, transactionMysql);
+				callback();
 			},
 
-			function (transactionMysql, callback) {
+			function (callback) {
 				taskCallback(transactionMysql, callback);
 			}
 
@@ -397,33 +393,25 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 function endTransaction(error, transactionId, that, conn, autoRollback, cb) {
 	if (error) {
 		// auto-rollback on error
-		log.error('transaction rollback on error:', error, '(transaction:' + transactionId + ')');
 		conn.query('ROLLBACK', null, function (err) {
-			if (autoRollback) {
-				gracenode.removeListener('unchaughtException', autoRollback);
-			}
-			that._transactionConnection = null;
-			that._transactionId = null;
+			log.error('transaction rollback on error:', error, '(transaction:' + transactionId + ')');
 			that.release(error, conn);
 			if (err) {
 				log.error('transaction rollback error:', err, '(transaction:' + transactionId + ')');
 				return cb(err);
 			}
-			log.info('transaction rollback (transaction:' + transactionId + ')');
 			cb(error);
 		});
 		return;
 	}
 	// success commit
 	conn.query('COMMIT', null, function (err) {
-		gracenode.removeListener('unchaughtException', autoRollback);
-		that._transactionConnection = null;
+		log.info('transaction commit (transaction:' + transactionId + ')');
 		that.release(null, conn);
 		if (err) {
 			log.error('transaction commit error:', err, 'transaction:' + transactionId + ')');
 			return cb(err);
 		}
-		log.info('transaction commit (transaction:' + transactionId + ')');
 		cb();
 	});
 }
