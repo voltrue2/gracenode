@@ -95,8 +95,7 @@ module.exports.setSession = function (key, data, cb) {
 	}
 	var session = {
 		data: data,
-		ttl: Date.now() + config.ttl,
-		key: key
+		ttl: Date.now() + config.ttl
 	};
 	var id = createSessionId(key);
 	setter(id, session, function (error) {
