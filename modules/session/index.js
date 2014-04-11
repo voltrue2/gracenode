@@ -60,12 +60,14 @@ module.exports.getSession = function (id, cb) {
 		}
 		if (!session) {
 			// session object not found
-			return cb(null, null);	
+			logger.error('session not found (sessionId:' + id + ')');
+			return cb(null, null);
 		}
 		// check expiration
 		var now = Date.now();
 		if (session.ttl - now <= 0) {
 			// this session has already been expired
+			logger.error('session expired (sessionId:' + id + ')');
 			return cb(null, null);
 		}
 		// update session
