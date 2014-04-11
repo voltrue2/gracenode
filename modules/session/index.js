@@ -84,7 +84,7 @@ module.exports.getSession = function (id, cb) {
 			
 			logger.verbose('set session (sessionId:' + id + ')');
 			
-			cb(null, id);
+			cb(null, session.data);
 		});
 	});
 };
