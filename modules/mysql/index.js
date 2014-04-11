@@ -423,7 +423,7 @@ function validateQuery(sql, type) {
 		var query = sql.split(' ');
 		for (var j = 0, l = query.length; j < l; j++) {
 
-			//Check if the this part of the query matches a word that indicates a read takes place.
+			//Check if the this part of the query matches a word that indicates a write takes place.
 			if (query[j] === writeQueries[i]) {
 				return false;
 			}
