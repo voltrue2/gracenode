@@ -34,17 +34,6 @@ var log = gracenode.log.create('mysql');
 
 var poolMap = {};
 var configs = {};
-var writeQueries = [
-	'insert ',
-	'update ',
-	'alter ',
-	'delete ',
-	'drop ',
-	'create ',
-	'transaction',
-	'rollback',
-	'commit'
-];
 
 module.exports.readConfig = function (configIn) {
 	for (var name in configIn) {
@@ -264,12 +253,6 @@ MySql.prototype.exec = function (sql, params, cb) {
 	var transactionId = this._transactionId ? '(transaction:' + this._transactionId + ')' : '';	
 
 	log.verbose('attempt to execute query:', sql, params, transactionId);
-
-	var valid = validateQuery(sql, this._type);
-	if (!valid) {
-		return cb(new Error('invalid query for type ' + this._type));
-	}
-	
 	var that = this;
 
 	this.connect(function (error, connection) {
@@ -409,22 +392,6 @@ function endTransaction(error, transactionId, that, conn, cb) {
 		}
 		cb();
 	});
-}
-
-function validateQuery(sql, type) {
-	if (type === 'write') {
-		// status write allows writes
-		return true;
-	}
-	sql = sql.toLowerCase();
-	for (var i = 0, len = writeQueries.length; i < len; i++) {
-		var wq = writeQueries[i];
-		var index = sql.indexOf(wq);
-		if (index !== -1) {
-			return false;
-		}
-	}
-	return true;	
 }
 
 function createName(confName, conf, type) {
