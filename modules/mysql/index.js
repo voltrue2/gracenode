@@ -418,13 +418,22 @@ function validateQuery(sql, type) {
 	}
 	sql = sql.toLowerCase();
 	for (var i = 0, len = writeQueries.length; i < len; i++) {
-		var wq = writeQueries[i];
-		var index = sql.indexOf(wq);
-		if (index !== -1) {
-			return false;
+
+		//Split by space.
+		var query = sql.split(' ');
+		for (var j = 0, l = query.length; j < l; j++) {
+
+			//Check if the this part of the query matches a word that indicates a read takes place.
+			if (query[j] === writeQueries[i]) {
+				return false;
+			}
+
 		}
+
 	}
-	return true;	
+
+	return true;
+
 }
 
 function createName(confName, conf, type) {
