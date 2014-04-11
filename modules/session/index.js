@@ -69,15 +69,20 @@ module.exports.getSession = function (id, cb) {
 			return cb(null, null);
 		}
 		// update session
-		module.exports.setSession(session.key, session.data, function (error) {
+		if (!validate(setter)) {
+			return cb(new Error('invalidSetterFunction'));
+		}
+		// update ttl
+		session.ttl = now + config.ttl;
+		setter(id, session, function (error) {
 			if (error) {
-				logger.error('failed to update a session:', error);
-				return cb(new Error('failedToUpdateSession'));
+				logger.error('failed to set a session:', error);
+				return cb(new Error('failedToSetSession'));
 			}
 			
-			logger.verbose('found session (sessionId:' + id + ')');
+			logger.verbose('set session (sessionId:' + id + ')');
 			
-			cb(null, session.data);
+			cb(null, id);
 		});
 	});
 };
