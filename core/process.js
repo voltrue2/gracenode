@@ -2,8 +2,6 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
 
-var workers = {};
-
 module.exports = Process;
 
 function Process(gracenode) {
@@ -55,7 +53,7 @@ Process.prototype.startClusterMode = function () {
 
 //private
 Process.prototype.setupMaster = function () {
-	this.gracenode.log.setPrefix('MASTER: ' + process.pid);
+	this.gracenode.log.setPrefix('MASTER:' + process.pid);
 	this.gracenode._isMaster = true;
 
 	this.log.info('running the process in cluster mode [master] (pid: ' + process.pid + ')');
@@ -66,23 +64,22 @@ Process.prototype.setupMaster = function () {
 	// spawn workers
 	for (var i = 0; i < this.clusterNum; i++) {
 		var worker = cluster.fork();
-		workers[worker.process.pid] = worker;
 		this.log.info('worker spawed (pid: ' + worker.process.pid + ')');
 	}
 
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
-		delete workers[worker.process.pid];
 		that.log.error('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
 	});
 
 	// set up listener on master process shutdown
 	this.gracenode.on('shutdown', function (signal) {
 		that.log.info('shutting down all workers...');
-		for (var pid in workers) {
-			process.kill(pid, signal || null);
-			delete workers[pid];
-			that.log.info('shutting down worker (pid: ' + pid + ')');
+		var workers = cluster.workers;
+		for (var id in workers) {
+			var worker = workers[id];
+			worker.kill(signal);
+			that.log.info('shutting down worker (pid: ' + worker.process.pid + ')');
 		}
 	});
 
@@ -94,7 +91,7 @@ Process.prototype.setupMaster = function () {
 // private 
 Process.prototype.setupWorker = function () {
 	this.gracenode._isMaster = false;
-	this.gracenode.log.setPrefix('WORKER: ' + process.pid);
+	this.gracenode.log.setPrefix('WORKER:' + process.pid);
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
 	
 	this.emit('cluster.worker.setup');
