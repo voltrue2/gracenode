@@ -34,17 +34,6 @@ var log = gracenode.log.create('mysql');
 
 var poolMap = {};
 var configs = {};
-var writeQueries = [
-	'insert ',
-	'update ',
-	'alter ',
-	'delete ',
-	'drop ',
-	'create ',
-	'transaction',
-	'rollback',
-	'commit'
-];
 
 module.exports.readConfig = function (configIn) {
 	for (var name in configIn) {
@@ -264,12 +253,6 @@ MySql.prototype.exec = function (sql, params, cb) {
 	var transactionId = this._transactionId ? '(transaction:' + this._transactionId + ')' : '';	
 
 	log.verbose('attempt to execute query:', sql, params, transactionId);
-
-	var valid = validateQuery(sql, this._type);
-	if (!valid) {
-		return cb(new Error('invalid query for type ' + this._type));
-	}
-	
 	var that = this;
 
 	this.connect(function (error, connection) {
@@ -287,6 +270,10 @@ MySql.prototype.exec = function (sql, params, cb) {
 			}
 
 			log.info('query executed:', sql, params, transactionId);			
+
+			if (that._type === 'write') {
+				log.info('query results:', sql, params, result);
+			}
 
 			cb(error, result);
 		});	
@@ -348,46 +335,26 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		}
 
 		log.info('transaction started (transaction:' + transactionId + ')');
-
-		async.waterfall([
-			
-			function (callback) {
-				connection.query('START TRANSACTION', null, function (error) {
-					if (error) {
-						return callback(error);
-					}
-
-					callback();
-				});
-			},
-
-			function (callback) {
-				callback();				
-			},
-
-			function (callback) {
-				// this connection will be re-used in this transaction
-				transactionMysql = new MySql(that._name, that._pool, that._config, that._type);
-				transactionMysql._transactionConnection = connection;	
-				transactionMysql._transactionId = transactionId;
-				callback();
-			},
-
-			function (callback) {
-				taskCallback(transactionMysql, callback);
+		
+		connection.query('START TRANSACTION', null, function (error) {
+			if (error) {
+				return cb(error);
 			}
-
-		], 
-		function (error) {
-			endTransaction(error, transactionId, that, connection, cb);
-		});	
-
+			
+			// this connection will be re-used in this transaction
+			transactionMysql = new MySql(that._name, that._pool, that._config, that._type);
+			transactionMysql._transactionConnection = connection;	
+			transactionMysql._transactionId = transactionId;
+			taskCallback(transactionMysql, function (error) {
+				endTransaction(error, transactionId, that, connection, cb);
+			});
+		});
 	});
 };
 
 function endTransaction(error, transactionId, that, conn, cb) {
 	if (error) {
-		// auto-rollback on error
+		// rollback on error
 		conn.query('ROLLBACK', null, function (err) {
 			log.error('transaction rollback on error:', error, '(transaction:' + transactionId + ')');
 			that.release(error, conn);
@@ -409,22 +376,6 @@ function endTransaction(error, transactionId, that, conn, cb) {
 		}
 		cb();
 	});
-}
-
-function validateQuery(sql, type) {
-	if (type === 'write') {
-		// status write allows writes
-		return true;
-	}
-	sql = sql.toLowerCase();
-	for (var i = 0, len = writeQueries.length; i < len; i++) {
-		var wq = writeQueries[i];
-		var index = sql.indexOf(wq);
-		if (index !== -1) {
-			return false;
-		}
-	}
-	return true;	
 }
 
 function createName(confName, conf, type) {
