@@ -271,6 +271,10 @@ MySql.prototype.exec = function (sql, params, cb) {
 
 			log.info('query executed:', sql, params, transactionId);			
 
+			if (that._type === 'write') {
+				log.info('query results:', sql, params, result);
+			}
+
 			cb(error, result);
 		});	
 	});
@@ -331,46 +335,26 @@ MySql.prototype.transaction = function (taskCallback, cb) {
 		}
 
 		log.info('transaction started (transaction:' + transactionId + ')');
-
-		async.waterfall([
-			
-			function (callback) {
-				connection.query('START TRANSACTION', null, function (error) {
-					if (error) {
-						return callback(error);
-					}
-
-					callback();
-				});
-			},
-
-			function (callback) {
-				callback();				
-			},
-
-			function (callback) {
-				// this connection will be re-used in this transaction
-				transactionMysql = new MySql(that._name, that._pool, that._config, that._type);
-				transactionMysql._transactionConnection = connection;	
-				transactionMysql._transactionId = transactionId;
-				callback();
-			},
-
-			function (callback) {
-				taskCallback(transactionMysql, callback);
+		
+		connection.query('START TRANSACTION', null, function (error) {
+			if (error) {
+				return cb(error);
 			}
-
-		], 
-		function (error) {
-			endTransaction(error, transactionId, that, connection, cb);
-		});	
-
+			
+			// this connection will be re-used in this transaction
+			transactionMysql = new MySql(that._name, that._pool, that._config, that._type);
+			transactionMysql._transactionConnection = connection;	
+			transactionMysql._transactionId = transactionId;
+			taskCallback(transactionMysql, function (error) {
+				endTransaction(error, transactionId, that, connection, cb);
+			});
+		});
 	});
 };
 
 function endTransaction(error, transactionId, that, conn, cb) {
 	if (error) {
-		// auto-rollback on error
+		// rollback on error
 		conn.query('ROLLBACK', null, function (err) {
 			log.error('transaction rollback on error:', error, '(transaction:' + transactionId + ')');
 			that.release(error, conn);
