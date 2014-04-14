@@ -11,10 +11,25 @@ module.exports.create = function (prefix, logName, levelName, args) {
 	var timestamp = ymd + ' ' + his;
 	var msg = [(prefix ? '[' + prefix + '] ' : '') + '[' + timestamp + '] <' + levelName + '> [' + logName + ']'];
 	for (var key in args) {
-		msg.push(args[key]);
+		msg.push(createMsg(args[key]));
 	}
 	return { message: color.create(levelName, msg.join(' ')), timestamp: date.getTime() };
 };
+
+function createMsg(msgItem) {
+	if (typeof msgItem === 'object') {
+		if (msgItem instanceof Error) {
+			msgItem = msgItem.message + '\n<stack trace>\n' + msgItem.stack;
+		} else {
+			try {
+				msgItem = '\n' + JSON.stringify(msgItem, null, 4);
+			} catch (e) {
+				msgItem = '[Circular]';
+			}
+		}
+	}
+	return msgItem;
+}
 
 function pad(n, digit) {
 	n = n.toString();

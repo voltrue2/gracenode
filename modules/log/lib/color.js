@@ -6,17 +6,6 @@ module.exports.setup = function (configIn) {
 
 module.exports.create = function (name, msgItem) {
 	var res = '';
-	if (typeof msgItem === 'object') {
-		if (msgItem instanceof Error) {
-			msgItem = msgItem.message + '\n<stack trace>\n' + msgItem.stack;
-		} else {
-			try {
-				msgItem = '\n' + JSON.stringify(msgItem, null, 4);
-			} catch (e) {
-				msgItem = '[Circular]';
-			}
-		}
-	}
 	// no color used
 	if (!config || !config.color) {
 		return msgItem;
