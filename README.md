@@ -192,8 +192,6 @@ A wrapper to handle MySQL connections without the hassle of maintaining your con
 A wrapper to handle Mongodb functions and connections.
 ###[Datacache](modules/datacache)
 Allows you to cache queries to MySQL and other requests.
-###[Asset](modules/asset)
-Asset management.
 ###[Memcache] (modules/memcache)
 Memcache management.
 ### [Iap] (modules/iap)
@@ -219,7 +217,6 @@ Coin management.
     </Proxy>
 
     ProxyPreserveHost on
-    ProxyPass /asset ! # do not proxy this path
     ProxyPass / http://yourdomain.com:8000/ # proxy everything else to GraceNode
     ProxyPassReverse / yourdomain.com:8000/
 

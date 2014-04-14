@@ -23,9 +23,12 @@
  *
  * */
 var loggerSource = require('./logger');
+var EventEmitter = require('events').EventEmitter;
 
 var config = null;
 var prefix = '';
+
+module.exports = new EventEmitter();
 
 module.exports.readConfig = function (configIn) {
 	if (!configIn) {
@@ -50,6 +53,6 @@ module.exports.create = function (name) {
 	return new loggerSource.Logger(prefix, name, config);
 };
 
-module.exports.on = function (eventName, func) {
-	loggerSource.events.on(eventName, func);
-};
+loggerSource.events.on('output', function (address, level, message, timestamp) {
+	module.exports.emit('output', address, level, message, timestamp);
+});
