@@ -24,6 +24,7 @@
 	},
 	"engine": "node = 0.10.20",
 	"contributors": [
-		{ "name": "Brian de Heus", "email": "me@brian.jp" }
+		{ "name": "Brian de Heus", "email": "me@brian.jp" },
+		{ "name": "Henry Hobein", "email": "N/A" }
 	]
 }
