@@ -21,7 +21,7 @@ module.exports.events = events;
 function Logger(prefix, name, config) {
 	this.prefix = prefix;
 	this.name = name;
-	this.config = config;
+	this.config = config || {};
 }
 
 Logger.prototype.verbose = function () {
@@ -56,12 +56,14 @@ Logger.prototype._handleLog = function (levelName, message) {
 	}
 
 	var logMsg = msg.create(this.prefix, this.name, levelName, message);
-	
-	console.log('[timestamp:' + logMsg.timestamp + '] ' + logMsg.message);
-	
-	if (this.config && this.config.level && this.config.level[levelName] && this.config.level[levelName]) {
-		outputLog(this.config, levelName, logMsg);
+
+	// if console is enabled, we output to console
+	if (this.config.console) {	
+		console.log('[timestamp:' + logMsg.timestamp + '] ' + logMsg.message);
 	}
+
+	// this log level is enabled
+	outputLog(this.config, levelName, logMsg);
 };
 
 function outputLog(config, levelName, logMsg) {

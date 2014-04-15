@@ -24,6 +24,7 @@ var log = gracenode.log.create('nameToBeDisplayed');
 				"host": "<host name or ip address>",
 				"port"" "<port>"
 			},
+			"console": <boolean>,
 			"color": true or false,
 			"level": {
 				"verbose": <boolean>
