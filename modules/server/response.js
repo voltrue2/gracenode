@@ -17,10 +17,10 @@ module.exports.standby = function (req, res) {
 
 	// if the server responded w/o an exception > remove the error listener
 	res.once('end', function () {
-		
-		log.verbose('server responded');
 
 		gracenode.removeListener('uncaughtException', errorCallback);
+		
+		log.verbose('server responded');
 	});
 
 	// listener for an exception

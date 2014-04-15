@@ -14,11 +14,8 @@ function Headers(reqHeaders) {
 	this._headers = reqHeaders;
 	this._os = null;
 	this._client = null;
-	this._lang = null;
-	// parse user agent
-	this.parseUserAgent(this.get('user-agent'));
-	// parse accept language
-	this.parseLanguage(this.get('accept-language'));
+	this._agent = this.get('user-agent');
+	this._acceptLang = this.get('accept-language');
 }
 
 Headers.prototype.get = function (name) {
@@ -30,43 +27,49 @@ Headers.prototype.getAll = function () {
 };
 
 Headers.prototype.getOs = function () {
+	this.parseUserAgent();
 	return this._os;	
 };
 
 Headers.prototype.getClient = function () {
+	this.parseUserAgent();
 	return this._client;
 };
 
 Headers.prototype.getDefaultLang = function () {
-	return this._lang;
+	return this.parseLanguage();
 };
 
-Headers.prototype.parseUserAgent = function (userAgent) {
-	if (!userAgent) {
+Headers.prototype.parseUserAgent = function () {
+	if (!this._agent) {
+		return false;
+	}
+	if (this._os || this._client) {
 		return false;
 	}
 	// detect OS
-	var osRes = userAgent.match(osRegex);
+	var osRes = this._agent.match(osRegex);
 	if (osRes) {
 		this._os = osRes[osRes.length - 1];
 	}
 	log.verbose('client OS/Device:', this._os);	
 	// detect browser
-	var browserRes = userAgent.match(browserRegex);
+	var browserRes = this._agent.match(browserRegex);
 	if (browserRes) {
 		this._client = browserRes[browserRes.length - 1];
 	}
 	log.verbose('client browser:', this._client);
 };
 
-Headers.prototype.parseLanguage = function (acceptLang) {
-	if (!acceptLang) {
+Headers.prototype.parseLanguage = function () {
+	if (!this._acceptLang) {
 		return false;
 	}
 	// detect default accept language
+	var language = '';
 	var qval = 0.0;
 	var lang = {};
-	var x = acceptLang.split(',');
+	var x = this._acceptLang.split(',');
 	for (var i = 0, len = x.length; i < len; i++) {
 		var matches = x[i].match(/(.*);q=([0-1]{0,1}\.\d{0,4})/i);
 		if (matches) {
@@ -79,10 +82,11 @@ Headers.prototype.parseLanguage = function (acceptLang) {
 		var value = lang[key];
 		if (value > qval) {
 			qval = value;
-			this._lang = key;
+			language = key;
 		}
 	}
 	// force lower case
-	this._lang = this._lang.toLowerCase();
+	language = language.toLowerCase();
 	log.verbose('client default language:', this._lang);
+	return language;
 };

@@ -254,9 +254,12 @@ function handleError(req, res, status) {
 function RequestObj(request, response, params, reqData) {
 	this._props = {};
 	this._response = response;
+	this.cookie = {};
 	
 	// public
-	this.cookies = new Cookies(request, response);
+	if (request.headers.cookie) {
+		this.cookies = new Cookies(request, response);
+	}
 	this.parameters = params;
 	
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
