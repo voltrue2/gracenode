@@ -53,6 +53,6 @@ module.exports.create = function (name) {
 	return new loggerSource.Logger(prefix, name, config);
 };
 
-loggerSource.events.on('output', function (address, level, message, timestamp) {
-	module.exports.emit('output', address, level, message, timestamp);
+loggerSource.events.on('output', function (address, name, level, data) {
+	module.exports.emit('output', address, name, level, data);
 });
