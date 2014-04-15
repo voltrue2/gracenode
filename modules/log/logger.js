@@ -63,10 +63,10 @@ Logger.prototype._handleLog = function (levelName, message) {
 	}
 
 	// this log level is enabled
-	outputLog(this.config, levelName, logMsg);
+	outputLog(this.config, this.name, levelName, logMsg);
 };
 
-function outputLog(config, levelName, logMsg) {
+function outputLog(config, name, levelName, logMsg) {
 	
 	if (config.file) {
 		file.log(levelName, logMsg);
@@ -76,7 +76,7 @@ function outputLog(config, levelName, logMsg) {
 		remote.log(levelName, logMsg);
 	}
 	
-	events.emit('output', address, levelName, logMsg.message, logMsg.timestamp);
+	events.emit('output', address, name, levelName, logMsg);
 
 	return true;
 }
