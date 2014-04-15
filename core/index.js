@@ -22,6 +22,7 @@ function GraceNode() {
 	// listeners
 	setupListeners(this);
 	// variables
+	this._pid = null;
 	this._isMaster = false;
 	this._configPath = '';
 	this._configFiles = [];
@@ -116,6 +117,13 @@ GraceNode.prototype.getRootPath = function () {
 
 GraceNode.prototype.isMaster = function () {
 	return this._isMaster;
+};
+
+GraceNode.prototype.getProcessType = function () {
+	var ret = {};
+	ret.type = this._isMaster ? 'master' : 'worker';
+	ret.pid = this._pid;
+	return ret;
 };
 
 GraceNode.prototype.setConfigPath = function (configPath) {
@@ -240,8 +248,12 @@ function setupProfiler(that, lastCallback, cb) {
 
 function setupProcess(that, lastCallback, cb) {
 	var ps = new Process(that);
-	ps.on('cluster.master.setup', lastCallback);
-	ps.on('cluster.worker.setup', function () {
+	ps.on('cluster.master.setup', function (pid) {
+		that._pid = pid;
+		lastCallback();
+	});
+	ps.on('cluster.worker.setup', function (pid) {
+		that._pid = pid;
 		cb(null, that);
 	});
 	ps.on('nocluster.setup', function () {

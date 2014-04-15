@@ -85,7 +85,7 @@ Process.prototype.setupMaster = function () {
 
 	this.log.info('master has been set up');
 
-	this.emit('cluster.master.setup');
+	this.emit('cluster.master.setup', process.pid);
 };
 
 // private 
@@ -94,5 +94,5 @@ Process.prototype.setupWorker = function () {
 	this.gracenode.log.setPrefix('WORKER:' + process.pid);
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
 	
-	this.emit('cluster.worker.setup');
+	this.emit('cluster.worker.setup', process.pid);
 };

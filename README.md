@@ -105,6 +105,18 @@ gracenode.setup(function(error) {
 });
 ```
 
+###.isMaster()
+Returns a boolean. true is given if the process is master (available ONLY in cluster mode)
+
+###.getProcessType()
+Returns an object that contains the type of process as a string and pid. (available ONLY in cluster mode)
+```
+var processType = gracenode.getProcessType();
+/*
+{ type: 'master', pid: 1240 } or { type: 'worker', pid: 36204 }
+*/
+```
+
 ###.exit(errorMessage [string*])
 Exits GraceNode and attempts to gracefully shutdown the process. You can give it an error message in case you want to stop the process due to an error.
 ```
