@@ -153,6 +153,37 @@ Collection.prototype.update = function (conditions, update, cb) {
 	});
 };
 
+// decrementValue must NOT be negative
+// value = value - decrementValue where value >= decrementValue
+// this operation will prevent the target value to go below 0
+Collection.prototype.decrement = function (conditions, propName, decrementValue, cb) {
+	
+	if (!decrementValue) {
+		return cb(new Error('inValidDecrementValue'));
+	}
+
+	logger.info('decrementing a property of document(s) in mongodb:', this._name, conditions, decrementValue);
+
+	var that = this;
+	var update = { $inc: {} };
+	update.$inc[propName] = -1 * decrementValue;
+	conditions[propName] = {
+		$gte: decrementValue
+	};
+
+	this._collection.update(conditions, update, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		if (!res) {
+			return cb(new Error('blockedNegativeDecrement'));
+		}
+		logger.info('decremented a property of document(s) in mongodb:', that._name, conditions, decrementValue);
+		cb(null, res);
+	});
+
+};
+
 /*
 values: { object to be deleted }
 
