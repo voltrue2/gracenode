@@ -4,8 +4,11 @@ var log = gracenode.log.create('server-response');
 
 var zlib = require('zlib');
 
+// in debug mode only
 // set up exception catcher and handle if an exception is caught
-module.exports.standby = function (req, res) {
+module.exports.setupExceptionHandler = function (req, res) {
+
+	log.debug('in debug mode read to catch uncaught expcetions');
 
 	var errorCallback = function (error) {
 		

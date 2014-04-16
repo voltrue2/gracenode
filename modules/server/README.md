@@ -12,6 +12,7 @@ Configurations
 ```javascript
 "modules": {
         "server": {
+		"debug": <boolean>
                 "protocol": "http" or "https",
                 "pemKey": "file path to pem key file" // https only
                 "pemCert": "file path to pem cert file" // https only
@@ -36,6 +37,9 @@ Configurations
         }
 }
 ```
+
+###Debug mode
+If debug is set to true in the configurations, any uncaught exception in each request will be caught and result in 500 status response.
 
 ####SSL server
 > GraceNode has bash scripts to help set up HTTPS server
@@ -122,6 +126,13 @@ module.exports.foo = function (requestObject, serverResponse) {
         serverResponse.json({ foo: 'foo' });
 };
 // /example/foo/ will display "foo" on your browser
+```
+
+> Request URL
+```javascript
+module.exports.index = function (requestObject, response) {
+	var url = requestObject.url;
+};
 ```
 
 > How to detect request method
