@@ -42,6 +42,18 @@ Used to flush data for flush
 void setFlusher(Function flusherFunction);
 </pre>
 
+####API: *get*
+Shorthand for getSession.
+
+####API: *set*
+Shorthand for setSession.
+
+####API: *del*
+Shorthand for delSession.
+
+####API: *flush*
+Shorthand for flushSession.
+
 #####API: *getSession*
 
 <pre>
@@ -59,7 +71,7 @@ void setSession(String, sessionId, mixed value, Function callback)
 void delSession(String sessionId, Function callback)
 </pre>
 
-#####API: *flush*
+#####API: *flushSession*
 <pre>
 void flush(Function callback)
 </pre>
