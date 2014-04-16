@@ -1,6 +1,12 @@
 var gracenode = require('GraceNode');
 var logger = gracenode.log.create('mongodb-collection');
 
+var updateOptions = {
+	safe: true,
+	multi: true,
+	upsert: false
+};
+
 module.exports = Collection;
 
 function Collection(dbName, name, collection) {
@@ -123,12 +129,27 @@ Collection.prototype.insert = function (values, cb) {
 	
 	var that = this;
 
-	this._collection.insert(values, function (error) {
+	this._collection.insert(values, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
 		logger.info('inserted to mongodb:', that._name, values);
-		cb();
+		cb(null, res);
+	});
+};
+
+Collection.prototype.update = function (conditions, update, cb) {
+	
+	logger.info('updating document(s) in mongodb:', this._name, conditions, update);
+
+	var that = this;
+
+	this._collection.update(conditions, update, updateOptions, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		logger.info('updated document(s) in mongodb:', that._name, conditions, update);
+		cb(null, res);
 	});
 };
 
@@ -161,12 +182,12 @@ Collection.prototype.save = function (values, cb) {
 
 	var that = this;
 
-	this._collection.save(values, function (error) {
+	this._collection.save(values, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
 		logger.info('saved to mongodb:', that._name, values);
-		cb();
+		cb(null, res);
 	});
 };
 

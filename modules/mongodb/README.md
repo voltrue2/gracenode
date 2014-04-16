@@ -87,6 +87,12 @@ function (error) {
 void insert(Object values, Function callback)
 </pre>
 
+> **update**
+safe and multi are always true and upsert is false
+<pre>
+void update(Object conditions, Object updates, Function callback)
+</pre>
+
 > **save**
 <pre>
 void save(Object values, Function callback)
