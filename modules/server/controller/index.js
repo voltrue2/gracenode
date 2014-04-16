@@ -252,17 +252,18 @@ function handleError(req, res, status) {
 }
 
 function RequestObj(request, response, params, reqData) {
+	// private
 	this._props = {};
 	this._response = response;
-	this.cookie = {};
 	this._request = request;
 	
 	// public
+	this.cookie = {};
 	if (request.headers.cookie) {
 		this.cookies = new Cookies(request, response);
 	}
+	this.url = request.url;
 	this.parameters = params;
-	
 	this.postData = queryDataHandler.createGetter(reqData.post || {});
 	this.putData = queryDataHandler.createGetter(reqData.put || {});
 	this.deleteData = queryDataHandler.createGetter(reqData.delete || {});
