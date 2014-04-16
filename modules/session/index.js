@@ -46,11 +46,6 @@ module.exports.setFlusher = function (func) {
 	flusher = func;
 };
 
-module.exports.get = module.exports.getSession;
-module.exports.set = module.exports.setSession;
-module.exports.del = module.exports.delSession;
-module.exports.flush = module.exports.flushSession;
-
 module.exports.getSession = function (id, cb) {
 	if (!validate(getter)) {
 		return cb(new Error('invalidGetterFunction'));
@@ -147,3 +142,8 @@ module.exports.flushSession = function (cb) {
 		cb();
 	});
 };
+
+module.exports.get = module.exports.getSession;
+module.exports.set = module.exports.setSession;
+module.exports.del = module.exports.delSession;
+module.exports.flush = module.exports.flushSession;
