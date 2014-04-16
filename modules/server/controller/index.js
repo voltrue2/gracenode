@@ -255,6 +255,7 @@ function RequestObj(request, response, params, reqData) {
 	this._props = {};
 	this._response = response;
 	this.cookie = {};
+	this._request = request;
 	
 	// public
 	if (request.headers.cookie) {
@@ -268,6 +269,10 @@ function RequestObj(request, response, params, reqData) {
 	this.getData = queryDataHandler.createGetter(reqData.get || {});
 	this.requestHeaders = headers.create(request.headers);
 }
+
+RequestObj.prototype.getMethod = function () {
+	return this._request.method;
+};
 
 RequestObj.prototype.set = function (name, value) {
 	this._props[name] = value;

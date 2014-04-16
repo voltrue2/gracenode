@@ -124,6 +124,14 @@ module.exports.foo = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
+> How to detect request method
+```javascript
+module.exports.index = function (requestObject, response) {
+	var method = requestObject.getMethod();
+	// GET, POST, PUT, DELETE...
+};
+```
+
 > How to read GET, POST, PUT, and DELETE
 ```javascript
 // controller file
