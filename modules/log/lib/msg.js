@@ -1,3 +1,4 @@
+var util = require('util');
 var color = require('./color');
 
 module.exports.setup = function (config) {
@@ -21,11 +22,7 @@ function createMsg(msgItem) {
 		if (msgItem instanceof Error) {
 			msgItem = msgItem.message + '\n<stack trace>\n' + msgItem.stack;
 		} else {
-			try {
-				msgItem = '\n' + JSON.stringify(msgItem, null, 4);
-			} catch (e) {
-				msgItem = '[Circular]';
-			}
+			msgItem = '\n' + util.format(msgItem) + '\n';
 		}
 	}
 	return msgItem;
