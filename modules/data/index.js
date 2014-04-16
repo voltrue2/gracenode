@@ -89,6 +89,9 @@ TimedNumber.prototype.getProperties = function () {
 };
 
 TimedNumber.prototype.setValue = function (val) {
+	if (isNaN(val)) {
+		throw new Error('valueNotNumber');
+	}
 	this._props.value = Math.min(Math.max(val, this._props.min), this._props.max);
 	this._props.lastUpdated = Date.now();
 	this.emit('setValue', this._props.value, this._props.lastUpdated);

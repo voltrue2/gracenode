@@ -202,8 +202,6 @@ Contains functions that make it easier to deal with crypography and password has
 A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
 ###[Mongodb](modules/mongodb)
 A wrapper to handle Mongodb functions and connections.
-###[Datacache](modules/datacache)
-Allows you to cache queries to MySQL and other requests.
 ###[Memcache] (modules/memcache)
 Memcache management.
 ### [Iap] (modules/iap)
