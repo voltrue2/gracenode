@@ -22,7 +22,7 @@ function createMsg(msgItem) {
 		if (msgItem instanceof Error) {
 			msgItem = msgItem.message + '\n<stack trace>\n' + msgItem.stack;
 		} else {
-			msgItem = '\n' + util.format(msgItem) + '\n';
+			msgItem = '\n' + util.format(msgItem);
 		}
 	}
 	return msgItem;
