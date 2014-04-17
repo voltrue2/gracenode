@@ -93,6 +93,12 @@ void insert(Object values, Function callback)
 void update(Object conditions, Object updates, Function callback)
 </pre>
 
+> **increment**
+(does NOT allow the target property to exceed maximum number given)
+<pre>
+void increment(Object conditions, String propertyName, Number incrementBy, Number maximumNumberAllowed, Function callback)
+</pre>
+
 > **decrement**
 (does NOT allow the target property to fall below 0)
 <pre>

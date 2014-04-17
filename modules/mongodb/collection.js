@@ -153,13 +153,41 @@ Collection.prototype.update = function (conditions, update, cb) {
 	});
 };
 
-// decrementValue must NOT be negative
+// incValue must NOT be zero or negative
+// threshhold is the maximum value allowed and it must be bigger than incValue
+Collection.prototype.increment = function (conditions, propName, incValue, threshhold, cb) {
+	if (!incValue) {
+		return cb(new Error('invalidIncrementvalue'));
+	}
+	if (incValue > threshhold) {
+		return cb(new Error('incrementValueExceedsMax'));
+	}
+	logger.info('incrementing a property of document(s) in mongodb:', this._name, conditions, incValue, threshhold);
+	var that = this;
+	var update = { $inc: {} };
+	update.$inc[propName] = incValue;
+	conditions[propName] = {
+		$lte: threshhold - incValue
+	};
+	this._collection.update(conditions, update, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		if (!res) {
+			return cb(new Error('blockedExceedMaxIncrement'));
+		}
+		logger.info('incremented a property of document(s) in mongodb:', that._name, conditions, incValue, threshhold);
+		cb(null, res);
+	});
+};
+
+// decrementValue must NOT be zero or negative
 // value = value - decrementValue where value >= decrementValue
 // this operation will prevent the target value to go below 0
 Collection.prototype.decrement = function (conditions, propName, decrementValue, cb) {
 	
 	if (!decrementValue) {
-		return cb(new Error('inValidDecrementValue'));
+		return cb(new Error('invalidDecrementValue'));
 	}
 
 	logger.info('decrementing a property of document(s) in mongodb:', this._name, conditions, decrementValue);
