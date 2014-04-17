@@ -78,7 +78,7 @@ Request.prototype.data = function (method, key) {
 		return this._dataHandler.get(key);
 	}
 	// invalid method
-	logger.warning(this.url, 'expcets', this._method, 'data, but ask for "', method, '"');
+	logger.warning(this.url, 'expcets "', method, '" data, but the client sent a "', method, '" request');
 	return null;
 };
 
