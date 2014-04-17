@@ -78,7 +78,7 @@ Request.prototype.data = function (method, key) {
 		return this._dataHandler.get(key);
 	}
 	// invalid method
-	logger.warning(this.url, 'expcets "', method, '" data, but the client sent a "', method, '" request');
+	logger.warning(this.url, 'expects "', method, '" data, but the client sent a "', this._method, '" request');
 	return null;
 };
 
