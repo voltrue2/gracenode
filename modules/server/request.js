@@ -35,22 +35,22 @@ Request.prototype.setup = function (cb) {
 		// depricated and will be removed
 		that.postData = {};
 		that.postData.get = function (key) {
-			logger.warning('postData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
+			logger.warning(that.url, 'postData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
 			return that.data('POST', key);
 		};
 		that.getData = {};
 		that.getData.get = function (key) {
-			logger.warning('getData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
+			logger.warning(that.url, 'getData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
 			return that.data('GET', key);
 		};
 		that.putData = {};
 		that.putData.get = function (key) {
-			logger.warning('putData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
+			logger.warning(that.url, 'putData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
 			return that.data('PUT', key);
 		};
 		that.deleteData = {};
 		that.deleteData.get = function (key) {
-			logger.warning('deleteData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
+			logger.warning(that.url, 'deleteData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
 			return that.data('DELETE', key);
 		};
 
