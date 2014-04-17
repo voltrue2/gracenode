@@ -284,14 +284,14 @@ Collection.prototype.findAndModify = function (query, sort, update, options, cb)
 	});
 };
 
-Collection.prototype.ensureIndex = function (indexes, cb) {
-	logger.verbose('adding index(es) to a document in mongodb:', this._name, indexes);
+Collection.prototype.ensureIndex = function (indexes, options, cb) {
+	logger.verbose('adding index(es) to a document in mongodb:', this._name, indexes, options);
 	var that = this;
-	this._collection.ensureIndex(indexes, function (error, res) {
+	this._collection.ensureIndex(indexes, options, function (error, res) {
 		if (error) {
 			return cb(error);
 		}
-		logger.info('added index(es) to a document in mongodb:', that._name, indexes);
+		logger.info('added index(es) to a document in mongodb:', that._name, indexes, options);
 		cb(null, res);
 	});
 };

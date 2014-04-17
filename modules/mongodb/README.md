@@ -84,7 +84,7 @@ function (error) {
 
 > **ensureIndex**
 <pre>
-void ensureIndex(Object indexes, Function callback)
+void ensureIndex(Object indexes, Object options, Function callback)
 </pre>
 
 > **insert**
