@@ -82,6 +82,11 @@ function (error) {
 });
 ```
 
+> **ensureIndex**
+<pre>
+void ensureIndex(Object indexes, Function callback)
+</pre>
+
 > **insert**
 <pre>
 void insert(Object values, Function callback)
