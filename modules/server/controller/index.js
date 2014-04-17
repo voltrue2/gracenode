@@ -1,14 +1,7 @@
-
 var gracenode = require('../../../');
 var log = gracenode.log.create('server-controller');
-
-var queryDataHandler = require('../queryData');
-var headers = require('../requestHeaders');
+var Request = require('../request');
 var response = require('../response');
-
-var Cookies = require('cookies');
-var queryString = require('querystring');
-var url = require('url');
 var fs = require('fs');
 
 var config = null;
@@ -41,92 +34,18 @@ module.exports.setupRequestHooks = function (hooks) {
 };
 
 module.exports.exec = function (req, res, parsedUrl) {
-	extractQueries(req, function (error, queryData) {
-		handle(req, res, parsedUrl, queryData);
+	var request = new Request(req, res, parsedUrl.args);
+	request.setup(function (error) {
+		if (error) {
+			return errorHandler(req, res, error);
+		}
+		handle(req, res, parsedUrl, request);
 	});
 }; 
 
 module.exports.execError = errorHandler;
 
-function readRequestBody(url, headers, body) {
-
-	var reqBody;
-
-	if (headers['content-type'] === 'application/json') {
-
-		try {
-			reqBody = JSON.parse(body);
-		} catch (e) {
-
-			log.error('Invalid JSON in request: (url:' + url + ')', body, e);
-			reqBody = {};
-
-		}
-
-	} else {
-		reqBody = queryString.parse(body);
-	}
-
-	return reqBody;
-
-}
-
-
-function extractQueries(req, cb) {
-
-	switch (req.method) {
-		case 'POST':
-			var body = '';
-			req.on('data', function (data) {
-				body += data;
-			});
-			req.on('end', function () {
-				var post = readRequestBody(req.url, req.headers, body);
-				cb(null, { post: post, put: null, delete: null, get: null });
-			});
-			req.on('error', function (error) {
-				cb(error);
-			});
-			break;
-		case 'PUT':
-			var putBody = '';
-			req.on('data', function (data) {
-				putBody += data;
-			});
-			req.on('end', function () {
-				var put = readRequestBody(req.url, req.headers, putBody);
-				cb(null, { post: null, put: put, delete: null, get: null });
-			});
-			req.on('error', function (error) {
-				cb(error);
-			});
-			break;
-		case 'DELETE':
-			var deleteBody = '';
-			req.on('data', function (data) {
-				deleteBody += data;
-			});
-			req.on('end', function () {
-				var del = queryString.parse(deleteBody);
-				cb(null, { post: null, put: null, delete: del, get: null });
-			});
-			req.on('error', function (error) {
-				cb(error);
-			});
-			break;
-		case 'GET':
-			var parsed = url.parse(req.url, true);
-			cb(null, { post: null, put: null, delete: null, get: parsed.query });
-			break;
-		default:
-			log.warning('only POST, PUT, DELETE, and GET are supported');
-			cb(null, { post: null, put: null, delete: null, get: null });
-			break;
-	}
-}
-
-function handle(req, res, parsedUrl, queryData) {
-	
+function handle(req, res, parsedUrl, requestObj) {
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller;
 
 	try {
@@ -137,7 +56,7 @@ function handle(req, res, parsedUrl, queryData) {
 			log.verbose('controller "' + parsedUrl.controller + '" loaded');
 
 			// create arguments for the controller method
-			parsedUrl.args = [new RequestObj(req, res, parsedUrl.args, queryData)];
+			parsedUrl.args = [requestObj];
 			
 			// validate controller method
 			if (!controller[parsedUrl.method]) {
@@ -250,38 +169,3 @@ function handleError(req, res, status) {
 	// no error handling given in config
 	return false;	
 }
-
-function RequestObj(request, response, params, reqData) {
-	// private
-	this._props = {};
-	this._response = response;
-	this._request = request;
-	
-	// public
-	this.cookie = {};
-	if (request.headers.cookie) {
-		this.cookies = new Cookies(request, response);
-	}
-	this.url = request.url;
-	this.parameters = params;
-	this.postData = queryDataHandler.createGetter(reqData.post || {});
-	this.putData = queryDataHandler.createGetter(reqData.put || {});
-	this.deleteData = queryDataHandler.createGetter(reqData.delete || {});
-	this.getData = queryDataHandler.createGetter(reqData.get || {});
-	this.requestHeaders = headers.create(request.headers);
-}
-
-RequestObj.prototype.getMethod = function () {
-	return this._request.method;
-};
-
-RequestObj.prototype.set = function (name, value) {
-	this._props[name] = value;
-};
-
-RequestObj.prototype.get = function (name) {
-	if (this._props[name] === undefined) {
-		return null;
-	}
-	return gracenode.lib.cloneObj(this._props[name]);
-};

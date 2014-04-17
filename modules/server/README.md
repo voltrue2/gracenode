@@ -139,21 +139,35 @@ module.exports.index = function (requestObject, response) {
 ```javascript
 module.exports.index = function (requestObject, response) {
 	var method = requestObject.getMethod();
-	// GET, POST, PUT, DELETE...
+	// GET, POST, PUT, or DELETE...
 };
 ```
 
 > How to read GET, POST, PUT, and DELETE
 ```javascript
-// controller file
+// read GET data
 module.exports.index = function (requestObject, response) {
-        // server module automatically gives every controller the following functions:
-        // requestObject.getData and requestObject.postData
-        var getFoo = requestObject.getData.get('foo');
-        var postFoo = requestObject.postData.get('foot');
-        var putFoo = requestObject.putData.get('foot');
-        var deleteFoo = requestObject.deleteData.get('foot');
-        response.json(null);
+        // server module supports GET, POST, PUT, or DELETE
+	var foo = requestObject.data('GET', 'foo');
+	response.json(null);
+};
+// read POST data
+module.exports.index = function (requestObject, response) {
+        // server module supports GET, POST, PUT, or DELETE
+	var foo = requestObject.data('POST', 'foo');
+	response.json(null);
+};
+// read PUT data
+module.exports.index = function (requestObject, response) {
+        // server module supports GET, POST, PUT, or DELETE
+	var foo = requestObject.data('PUT', 'foo');
+	response.json(null);
+};
+// read DELETE data
+module.exports.index = function (requestObject, response) {
+        // server module supports GET, POST, PUT, or DELETE
+	var foo = requestObject.data('DELETE', 'foo');
+	response.json(null);
 };
 ```
 
@@ -179,8 +193,8 @@ module.exports.myMethod = function (request, response) {
 // controller file
 module.exports.index = function (requestObject, response) {
         // server module automatically gives every contrller the following function:
-        // requestObject.requestHeaders > an instance of Headers class
-        var os = requestObject.requestHeaders.getOs();
+        // requestObject.headers > an instance of Headers class
+        var os = requestObject.headers.getOs();
 };
 ```
 
