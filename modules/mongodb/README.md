@@ -93,6 +93,11 @@ void insert(Object values, Function callback)
 void update(Object conditions, Object updates, Function callback)
 </pre>
 
+> **upsert**
+<pre>
+void upsert(Object conditions, Object updates, Boolean multi, Function callback)
+</pre>
+
 > **increment**
 (does NOT allow the target property to exceed maximum number given)
 <pre>

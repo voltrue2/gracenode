@@ -125,7 +125,7 @@ values: [ {object to be sotred}, {object to be stored}, {...} ]
 */
 Collection.prototype.insert = function (values, cb) {
 	
-	logger.info('inserting to mongodb:', this._name, values);
+	logger.verbose('inserting to mongodb:', this._name, values);
 	
 	var that = this;
 
@@ -140,7 +140,7 @@ Collection.prototype.insert = function (values, cb) {
 
 Collection.prototype.update = function (conditions, update, cb) {
 	
-	logger.info('updating document(s) in mongodb:', this._name, conditions, update);
+	logger.verbose('updating document(s) in mongodb:', this._name, conditions, update);
 
 	var that = this;
 
@@ -149,6 +149,24 @@ Collection.prototype.update = function (conditions, update, cb) {
 			return cb(error);
 		}
 		logger.info('updated document(s) in mongodb:', that._name, conditions, update);
+		cb(null, res);
+	});
+};
+
+// multi: <boolean> false by default
+Collection.prototype.upsert = function (conditions, update, multi, cb) {
+	logger.verbose('upserting document(s) in mongodb:', this._name, conditions, update);
+	var that = this;
+	var options = {
+		safe: true,
+		multi: multi || false,
+		upsert: true
+	};
+	this._collection.update(conditions, update, options, function (error, res) {
+		if (error) {
+			return cb(error);
+		}
+		logger.info('upserted document(s) in mongodb:', that._name, conditions, update, options);
 		cb(null, res);
 	});
 };
@@ -162,7 +180,7 @@ Collection.prototype.increment = function (conditions, propName, incValue, thres
 	if (incValue > threshhold) {
 		return cb(new Error('incrementValueExceedsMax'));
 	}
-	logger.info('incrementing a property of document(s) in mongodb:', this._name, conditions, incValue, threshhold);
+	logger.verbose('incrementing a property of document(s) in mongodb:', this._name, conditions, incValue, threshhold);
 	var that = this;
 	var update = { $inc: {} };
 	update.$inc[propName] = incValue;
@@ -190,7 +208,7 @@ Collection.prototype.decrement = function (conditions, propName, decrementValue,
 		return cb(new Error('invalidDecrementValue'));
 	}
 
-	logger.info('decrementing a property of document(s) in mongodb:', this._name, conditions, decrementValue);
+	logger.verbose('decrementing a property of document(s) in mongodb:', this._name, conditions, decrementValue);
 
 	var that = this;
 	var update = { $inc: {} };
@@ -220,7 +238,7 @@ values: { keyToMatch: { '$in': [keys to match] } }
 */
 Collection.prototype.delete = function (values, cb) {
 	
-	logger.info('deleting from mongodb:', this._name, values);
+	logger.verbose('deleting from mongodb:', this._name, values);
 
 	var that = this;
 
@@ -237,7 +255,7 @@ Collection.prototype.delete = function (values, cb) {
 // you can NOT save moe than one document at a time
 Collection.prototype.save = function (values, cb) {
 
-	logger.info('saving to mongodb:', this._name, values);
+	logger.verbose('saving to mongodb:', this._name, values);
 
 	var that = this;
 
@@ -252,7 +270,7 @@ Collection.prototype.save = function (values, cb) {
 
 Collection.prototype.findAndModify = function (query, sort, update, options, cb) {
 	
-	logger.info('find and modifying mongodb:', this._name, query, sort, update, options);
+	logger.verbose('find and modifying mongodb:', this._name, query, sort, update, options);
 
 	var that = this;
 
