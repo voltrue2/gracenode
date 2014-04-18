@@ -1,4 +1,3 @@
-
 module.exports.createGetter = function (dataObj) {
 	var data = new Data(dataObj);
 	return data;

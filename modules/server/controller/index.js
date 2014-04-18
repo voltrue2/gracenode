@@ -50,10 +50,21 @@ function handle(req, res, parsedUrl, requestObj) {
 
 	try {
 		if (controllerMap[parsedUrl.controller]) {
-			
+	
 			// load controller
 			var controller = require(path);
 			log.verbose('controller "' + parsedUrl.controller + '" loaded');
+	
+			log.debug(controller.allowedRequestMethods);
+	
+			// check to see if request method restriction has been applied or not for this method
+			if (controller.allowedRequestMethods && controller.allowedRequestMethods[parsedUrl.method]) {
+				// this method has request method restriction
+				if (controller.allowedRequestMethods[parsedUrl.method] !== requestObj.getMethod()) {
+					var msg = requestObj.url + ' accepts "' + controller.allowedRequestMethods[parsedUrl.method] + '" only "' + requestObj.getMethod() + '" given';
+					return errorHandler(req, res, msg, 400);
+				}
+			}
 
 			// create arguments for the controller method
 			parsedUrl.args = [requestObj];

@@ -128,6 +128,17 @@ module.exports.foo = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
+> Request Method Restriction (Optional)
+>> Controllers can reject requests with other request method than specified.
+```
+// controller index.js
+module.exports.allowedRequestMethods = {
+    myMethod: 'POST'
+};
+```
+>> The above example will result in "myController/myMethod" to accept ONLY POST request method.
+>>> If any other request method than POST is sent, the server will response with and error (status 400)
+
 > Request URL
 ```javascript
 module.exports.index = function (requestObject, response) {
