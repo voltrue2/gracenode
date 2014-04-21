@@ -115,7 +115,7 @@ gracenode.setup(function (error) {
 });
 ```
 
-> Controller
+###### Controller:
 ```javascript
 // controller/example/foo.js > /example/foo/
 var gracenode = require('GraceNode');
@@ -129,7 +129,7 @@ module.exports.GET = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
-> Request Method Restriction (Optional)
+> Request Method Restriction
 >> Controller methods execute specific request methods ONLY
 ```
 // POST /exmaple/boo > exmaple/boo.js

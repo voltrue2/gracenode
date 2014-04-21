@@ -239,10 +239,8 @@ function processFile(type, data) {
 			break;	
 		case 'css':
 		case 'html':
-			if (config.minify !== false) {
-				// remove line breaks and tabs
-				data = data.replace(/(\r\n|\n|\r|\t)/gm, '');
-			}
+			// remove line breaks and tabs
+			data = data.replace(/(\r\n|\n|\r|\t)/gm, '');
 			break;
 		case 'png':
 		case 'gif':
