@@ -142,52 +142,45 @@ module.exports.POST = function (req, res) {
 
 > Request URL
 ```javascript
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
 	var url = requestObject.url;
-};
-```
-
-> How to detect request method
-```javascript
-module.exports.index = function (requestObject, response) {
-	var method = requestObject.getMethod();
-	// GET, POST, PUT, or DELETE...
 };
 ```
 
 > How to read GET, POST, PUT, and DELETE
 ```javascript
 // read GET data
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
-	var foo = requestObject.data('GET', 'foo');
+	var foo = requestObject.data('foo');
 	response.json(null);
 };
 // read POST data
-module.exports.index = function (requestObject, response) {
+module.exports.POST = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
-	var foo = requestObject.data('POST', 'foo');
+	var foo = requestObject.data('foo');
 	response.json(null);
 };
 // read PUT data
-module.exports.index = function (requestObject, response) {
+module.exports.PUT = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
-	var foo = requestObject.data('PUT', 'foo');
+	var foo = requestObject.data('foo');
 	response.json(null);
 };
 // read DELETE data
-module.exports.index = function (requestObject, response) {
+module.exports.DELETE = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
-	var foo = requestObject.data('DELETE', 'foo');
+	var foo = requestObject.data('foo');
 	response.json(null);
 };
 ```
 
 > Translating URL
 ```javascript
-// Suppose we have a request like this: mydomain.com/myController/myMethod/a/b/c/d
+// Suppose we have a request like this: GET mydomain.com/myController/myMethod/a/b/c/d
 // controller translates this as:
-module.exports.myMethod = function (request, response) {
+// myController/myMethod.js
+module.exports.GET = function (request, response) {
 	var params = request.parameters;
 	/*
 	[
@@ -203,7 +196,7 @@ module.exports.myMethod = function (request, response) {
 > How to read request headers
 ```javascript
 // controller file
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
         // server module automatically gives every contrller the following function:
         // requestObject.headers > an instance of Headers class
         var os = requestObject.headers.getOs();
@@ -244,7 +237,7 @@ Void response.error(Mixed content, Integer status)
 > #### Headers class
 >> Access
 ```javascript
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
         var requestHeaders = requestObject.requestHeaders;
 };
 ```
@@ -272,7 +265,7 @@ String getDefaultLang
 > How to set response headers
 ```javascript
 // controller
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
         // name, value
         response.header('foo', 'foo');
 };
@@ -281,7 +274,7 @@ module.exports.index = function (requestObject, response) {
 > How to get and set cookie
 ```javascript
 // controller
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
         // get
         var foo = requestObject.cookies.get('foo');
         // set
@@ -293,7 +286,7 @@ module.exports.index = function (requestObject, response) {
 ```javascript
 // controller
 // request URI /foo/index/one/two/
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
 	var params = requestObject.parameters;
 	/*
 	[
@@ -306,7 +299,7 @@ module.exports.index = function (requestObject, response) {
 
 > How to set response header
 ```
-module.exports.myControllerMethod = function (request, response) {
+module.exports.GET = function (request, response) {
 	response.header('Connection', 'Keep-Alive');
 	response.header('CustomHeader', 'It is a custom header');
 };
@@ -316,7 +309,7 @@ module.exports.myControllerMethod = function (request, response) {
 ```javascript
 // controller
 // request URI /foo/index/
-module.exports.index = function (requestObject, response) {
+module.exports.GET = function (requestObject, response) {
         response.redirect('/anotherPage/');
 };
 ```

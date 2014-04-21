@@ -75,13 +75,15 @@ Request.prototype.get = function (name) {
 	return gracenode.lib.cloneObj(this._props[name]);
 };
 
-Request.prototype.data = function (method, key) {
-	if (this._method === method) {
-		return this._dataHandler.get(key);
+Request.prototype.data = function (key, oldKey) {
+
+	// backward compatibility safe
+	if (oldKey !== undefined) {
+		// if key is not present, we assume the first argument is the key
+		key = oldKey;
+		logger.warning('Request.data expects 1 argument only. method is automatically understood:', this.url, this._method, key);
 	}
-	// invalid method
-	logger.warning(this.url, 'expects "', method, '" data, but the client sent a "', this._method, '" request data:', key);
-	return null;
+	return this._dataHandler.get(key);
 };
 
 Request.prototype.extractQueries = function (req, cb) {

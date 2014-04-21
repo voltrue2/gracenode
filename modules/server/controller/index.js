@@ -88,6 +88,10 @@ function handle(req, res, parsedUrl, requestObj) {
 
 	} catch (exception) {
 
+		if (exception.message === 'Cannot find module \'' + path + '\'') {
+			return errorHandler(req, res, exception, 404);
+		}
+
 		log.fatal('exception caught:', exception);
 
 		errorHandler(req, res, exception, 500);		
