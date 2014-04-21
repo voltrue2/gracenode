@@ -25,3 +25,11 @@ Data.prototype.get = function (key) {
 	}
 	return res;
 };
+
+Data.prototype.getAll = function () {
+	var res = {};
+	for (var key in this._data) {
+		res[key] = this.get(key);
+	}
+	return res;
+};

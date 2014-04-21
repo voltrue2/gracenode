@@ -120,8 +120,8 @@ function setupRequestHandler() {
 
 	// router request listener
 	router.on('handled', function (request, response, parsedUrl) {
-	
-		if (config.debug) {	
+
+		if (config.respondOnException) {
 			// we are in debug mode
 			// set up response module to listen for exception handler and response
 			responser.setupExceptionHandler(request, response);

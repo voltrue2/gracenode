@@ -12,7 +12,7 @@ Configurations
 ```javascript
 "modules": {
         "server": {
-		"debug": <boolean>
+		"respondOnException": <boolean>
                 "protocol": "http" or "https",
                 "pemKey": "file path to pem key file" // https only
                 "pemCert": "file path to pem cert file" // https only
@@ -39,7 +39,7 @@ Configurations
 ```
 
 ###Debug mode
-If debug is set to true in the configurations, any uncaught exception in each request will be caught and result in 500 status response.
+If "respondOnException" is set to true in the configurations, any uncaught exception in each request will be caught and result in 500 status response.
 
 ####SSL server
 > GraceNode has bash scripts to help set up HTTPS server
@@ -56,10 +56,10 @@ EventEmitter events()
 > Returns an instance of EventEmitter
 >> Events: requestStart, requestEnd
 
-######API: *setRequestHook*
+######API: *setupRequestHooks*
 
 <pre>
-void setRequestHook(Object hooks)
+void setupRequestHooks(Object hooks)
 </pre>
 > assign a function to be invoked on every request (each hook callback function is assigned to specific controller method).
 >> Should be used for session validatation etc
@@ -117,11 +117,12 @@ gracenode.setup(function (error) {
 
 > Controller
 ```javascript
-// controller/example/index.js > /example/foo/
+// controller/example/foo.js > /example/foo/
 var gracenode = require('GraceNode');
 // this will become part of the URI
 // the first argument is **ALWAYS** requestObject
-module.exports.foo = function (requestObject, serverResponse) {
+// this will handle requests with "GET" method ONLY
+module.exports.GET = function (requestObject, serverResponse) {
         // serverResponse is created by server module per request
         serverResponse.json({ foo: 'foo' });
 };
@@ -129,14 +130,14 @@ module.exports.foo = function (requestObject, serverResponse) {
 ```
 
 > Request Method Restriction (Optional)
->> Controllers can reject requests with other request method than specified.
+>> Controller methods execute specific request methods ONLY
 ```
-// controller index.js
-module.exports.allowedRequestMethods = {
-    myMethod: 'POST'
+// POST /exmaple/boo > exmaple/boo.js
+module.exports.POST = function (req, res) {
+	// do something
 };
 ```
->> The above example will result in "myController/myMethod" to accept ONLY POST request method.
+>> Above example is the controller method for POST requests (POST /example/boo).
 >>> If any other request method than POST is sent, the server will response with and error (status 400)
 
 > Request URL
