@@ -296,6 +296,23 @@ Collection.prototype.ensureIndex = function (indexes, options, cb) {
 	});
 };
 
+Collection.prototype.count = function (query, cb) {
+
+	logger.verbose('Getting count for', this._name, 'with query:', query);
+
+	this._collection.count(query, function (error, res) {
+
+		if (error) {
+			return cb(error);
+		}
+
+		logger.info('Retrieved the document count for', this._name, ':', res);
+		cb(null, res);
+
+	});
+
+};
+
 function extractResults(cursor, cb) {
 	var results = [];
 	walk(results, cursor, cb);
