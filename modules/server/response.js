@@ -1,4 +1,3 @@
-
 var gracenode = require('../../');
 var log = gracenode.log.create('server-response');
 
@@ -31,11 +30,12 @@ module.exports.setupExceptionHandler = function (req, res) {
 
 };
 
-module.exports.create = function (request, response) {
-	return new Response(request, response);
+module.exports.create = function (server, request, response) {
+	return new Response(server, request, response);
 };
 
-function Response(request, response) {
+function Response(server, request, response) {
+	this._server = server;
 	this._request = request;
 	this._response = response;
 }
@@ -48,24 +48,28 @@ Response.prototype.json = function (content, status) {
 	log.verbose('response content type: JSON');
 	respondJSON(this._request, this._response, content, status);
 	this._response.emit('end');
+	this._server.emit('requestEnd', this._request.url);
 };
 
 Response.prototype.html = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondHTML(this._request, this._response, content, status);
 	this._response.emit('end');
+	this._server.emit('requestEnd', this._request.url);
 };
 
 Response.prototype.data = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondData(this._request, this._response, content, status);
 	this._response.emit('end');
+	this._server.emit('requestEnd', this._request.url);
 };
 
 Response.prototype.file = function (content, status) {
 	log.verbose('response content type: File');
 	respondFILE(this._request, this._response, content, status);
 	this._response.emit('end');
+	this._server.emit('requestEnd', this._request.url);
 };
 
 Response.prototype.error = function (content, status) {
@@ -73,12 +77,14 @@ Response.prototype.error = function (content, status) {
 	log.error('(url:' + this._request.url + ')', content);
 	respondERROR(this._request, this._response, content, status);
 	this._response.emit('end');
+	this._server.emit('requestEnd', this._request.url);
 };
 
 Response.prototype.redirect = function (content, status) {
 	log.verbose('response content type: Redirect');
 	respondRedirect(this._request, this._response, content, status);
 	this._response.emit('end');
+	this._server.emit('requestEnd', this._request.url);
 };
 
 function compressContent(req, content, cb) {

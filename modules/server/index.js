@@ -32,11 +32,11 @@ var responser = require('./response');
 
 var EventEmitter = require('events').EventEmitter;
 
-var events = new EventEmitter();
-
 var config = null;
 var serverEngine = null;
 var server = null;
+
+module.exports = new EventEmitter();
 
 module.exports.readConfig = function (configIn) {
 	
@@ -69,10 +69,6 @@ module.exports.setup = function (cb) {
 	// http
 	controller.setup(cb);
 };
-
-// event emitter
-// events: requestStart, requestEnd
-module.exports.events = events;
 
 /*
 hooks: {
@@ -108,12 +104,9 @@ function setupRequestHandler() {
 	// server request listener
 	server.on('request', function (request, response) {
 
-		events.emit('requestStart', request.url);
+		module.exports.emit('requestStart', request.url);
 
-		// set up the listener on response end
-		response.on('end', function () {
-			events.emit('requestEnd', request.url);
-		});
+		// response module emits server.emit('requestEnd', request.url)
 
 		router.handle(request, response);
 	});
@@ -127,6 +120,6 @@ function setupRequestHandler() {
 			responser.setupExceptionHandler(request, response);
 		}
 
-		controller.exec(request, response, parsedUrl);
+		controller.exec(module.exports, request, response, parsedUrl);
 	});
 }
