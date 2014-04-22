@@ -11,14 +11,11 @@ module.exports = Request;
 function Request(request, response, params) {
 	// private
 	this._props = {};
+	this._response = response;
 	this._request = request;
 	this._method = request.method;
 	
 	// public
-	this.cookies = {};
-	if (request.headers.cookie) {
-		this.cookies = new Cookies(request, response);
-	}
 	this.url = request.url;
 	this.parameters = params;
 	this.headers = headers.create(request.headers);
@@ -58,6 +55,10 @@ Request.prototype.setup = function (cb) {
 
 		cb(null, that);
 	});
+};
+
+Request.prototype.cookies = function () {
+	return new Cookies(this._request, this._response);
 };
 
 Request.prototype.getMethod = function () {

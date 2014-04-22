@@ -118,9 +118,13 @@ function handleRequestHook(server, req, res, requestObj, responseObj, methodExec
 				// request hook applies to this controller and this method only
 				hook = hookedMethod;
 			}
-		}		
-		execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl);
-		return true;
+		}
+
+		if (hook) {		
+			// hook function found
+			execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl);
+			return true;
+		}
 	}
 	return false;
 }

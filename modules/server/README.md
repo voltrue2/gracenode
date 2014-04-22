@@ -113,7 +113,7 @@ gracenode.server.setupRequestHooks({
         }
 });
 function checkSession(request, callback) {
-        var sessionId = request.getCookie('sessionId');
+        var sessionId = request.cookies().get('sessionId');
         gracenode.session.getSession(sessionId, function (error, session) {
                 if (error) {
                         return cb(error);
@@ -293,10 +293,11 @@ String getDefaultLang
 > ```javascript
 // controller
 module.exports.GET = function (requestObject, response) {
+	var cookies = requestObject.cookies();
         // get
-        var foo = requestObject.cookies.get('foo');
+        var foo = cookies.get('foo');
         // set
-        requestObject.cookies.set('boo', 'boo');
+        cookies.set('boo', 'boo');
 };
 ```
 
