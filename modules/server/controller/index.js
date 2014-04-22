@@ -37,13 +37,11 @@ module.exports.exec = function (server, req, res, parsedUrl) {
 	var request = new Request(req, res, parsedUrl.parameters);
 	request.setup(function (error) {
 		if (error) {
-			return errorHandler(req, res, error);
+			return errorHandler(server, req, res, error);
 		}
 		handle(server, req, res, parsedUrl, request);
 	});
 }; 
-
-module.exports.execError = errorHandler;
 
 function handle(server, req, res, parsedUrl, requestObj) {
 	// path: controllerDirectory/methodFile
@@ -60,7 +58,7 @@ function handle(server, req, res, parsedUrl, requestObj) {
 			// validate request method
 			if (!method[requestObj.getMethod()]) {
 				var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
-				return errorHandler(req, res, msg, 400);
+				return errorHandler(server, req, res, msg, 400);
 			}
 
 			// controller method
@@ -70,7 +68,7 @@ function handle(server, req, res, parsedUrl, requestObj) {
 			var responseObj = response.create(server, req, res);
 
 			// check for request hook
-			var requestHookExecuted = handleRequestHook({ req: req, res: res }, requestObj, responseObj, methodExec, parsedUrl);
+			var requestHookExecuted = handleRequestHook(server, { req: req, res: res }, requestObj, responseObj, methodExec, parsedUrl);
 			if (requestHookExecuted) {
 				return;
 			}
@@ -83,41 +81,41 @@ function handle(server, req, res, parsedUrl, requestObj) {
 			return;
 		}	
 		
-		return errorHandler(req, res, 'controller not found:' + path);
+		return errorHandler(server, req, res, 'controller not found:' + path);
 			
 
 	} catch (exception) {
 
 		if (exception.message === 'Cannot find module \'' + path + '\'') {
-			return errorHandler(req, res, exception, 404);
+			return errorHandler(server, req, res, exception, 404);
 		}
 
 		log.fatal('exception caught:', exception);
 
-		errorHandler(req, res, exception, 500);		
+		errorHandler(server, req, res, exception, 500);		
 
 	}
 
 }
 
-function handleRequestHook(origin, req, res, methodExec, parsedUrl) {
+function handleRequestHook(server, origin, req, res, methodExec, parsedUrl) {
 	if (requestHooks) {
 		if (typeof requestHooks === 'function') {
 			// request hook applies to all controllers and methods
-			execRequestHook(origin, req, res, requestHooks, methodExec, parsedUrl);
+			execRequestHook(server, origin, req, res, requestHooks, methodExec, parsedUrl);
 			return true;
 		} 
 		var hookedController = requestHooks[parsedUrl.controller] || null;
 		if (hookedController) {
 			if (typeof hookedController === 'function') {
 				// request hook applies to this controller and all of its methods
-				execRequestHook(origin, req, res, hookedController, methodExec, parsedUrl);
+				execRequestHook(server, origin, req, res, hookedController, methodExec, parsedUrl);
 				return true;
 			}
 			var hookedMethod = hookedController[parsedUrl.method] || null;
 			if (typeof hookedMethod === 'function') {
 				// request hook applies to this controller and this method only
-				execRequestHook(origin, req, res, hookedMethod, methodExec, parsedUrl);
+				execRequestHook(server, origin, req, res, hookedMethod, methodExec, parsedUrl);
 				return true;
 			}
 		}		
@@ -125,13 +123,13 @@ function handleRequestHook(origin, req, res, methodExec, parsedUrl) {
 	return false;
 }
 
-function execRequestHook(origin, req, res, hook, methodExec, parsedUrl) {
+function execRequestHook(server, origin, req, res, hook, methodExec, parsedUrl) {
 	var url = parsedUrl.controller + '/' + parsedUrl.method;
 	log.verbose('request hook found for "' + url + '"');
 	hook(req, function (error, status) {
 		if (error) {
 			log.error('request hook executed with an error (url:' + url + '):', error, '(status: ' + status + ')');
-			return errorHandler(origin.req, origin.res, error, status);
+			return errorHandler(server, origin.req, origin.res, error, status);
 		}
 		log.verbose('request hook executed');
 		methodExec(req, res);
@@ -139,13 +137,13 @@ function execRequestHook(origin, req, res, hook, methodExec, parsedUrl) {
 
 }
 
-function errorHandler(req, res, errorMsg, status) {
+function errorHandler(server, req, res, errorMsg, status) {
 
 	status = status || 404;	
 
 	log.error('errorHandler (url:' + req.url + '):', errorMsg);
 	
-	if (handleError(req, res, status)) {
+	if (handleError(server, req, res, status)) {
 		// stop here and let handleError deal with it
 		return;
 	}
@@ -158,14 +156,14 @@ function errorHandler(req, res, errorMsg, status) {
 	responder.error(JSON.stringify(errorMsg), status);
 }
 
-function handleError(req, res, status) {
+function handleError(server, req, res, status) {
 	if (config.error) {
 		var errorHandler = config.error[status.toString()] || null;
 		if (errorHandler) {
 			errorHandler.parameters = [];
 			log.verbose('error handler(' + status + ') configured:', errorHandler);
 			if (controllerMap[errorHandler.controller]) {
-				module.exports.exec(req, res, errorHandler);
+				module.exports.exec(server, req, res, errorHandler);
 				return true;
 			}
 			log.verbose('error handler for ' + status + ' not found');
