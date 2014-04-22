@@ -135,8 +135,8 @@ void fundAndModify(Object query, Object sort, Object update, Object options, Fun
 void count(Object query, Function callback)
 </pre>
 ```javascript
-var mongo = gracenode.mongodb.create('mongoDatabase').collection('jar');
+var mongo = gracenode.mongodb.create('mongoDatabase').collection('cookieJar');
 mongo.count({ type: 'cookies' }, function (error, count) {
-	console.log('There are', count, 'in the jar');
+	console.log('There are', count, 'cookies in the jar');
 });
 ```
