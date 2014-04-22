@@ -31,15 +31,14 @@ module.exports.setup = function (cb) {
 	async.eachSeries(keys, function (name, next) {
 		var configData = config[name];
 		var url = 'mongodb://' + configData.host + ':' + configData.port + '/' + configData.database;
-		var options = {
-			db: {
-				poolSize: configData.poolSize || 5
-			}
-		};
+
+		if (configData.poolSize) {
+			url += '?maxPoolSize=' + configData.poolSize;
+		}
 
 		logger.verbose('creating connection pool to mongodb [' +  name + ']');
 
-		client.connect(url, options, function (error, db) {
+		client.connect(url, function (error, db) {
 			if (error) {
 				return cb(error);
 			}
