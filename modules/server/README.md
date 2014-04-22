@@ -152,7 +152,6 @@ Example:
 ```javascript
 // controller/example/foo.js > /example/foo/
 var gracenode = require('GraceNode');
-// this will become part of the URI
 // the first argument is **ALWAYS** requestObject
 // this will handle requests with "GET" method ONLY
 module.exports.GET = function (requestObject, serverResponse) {
@@ -185,7 +184,7 @@ module.exports.GET = function (request, response) {
 
 ####Request Method Restrictions
 
-Each controller methods accept and execute specific *declared* request methods ONLY.
+Each controller method accepts and executes requests with *declared* request method ONLY.
 
 Example:
 
