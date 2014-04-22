@@ -149,7 +149,7 @@ function errorHandler(server, req, res, errorMsg, status) {
 	}
 	
 	// we can not have handleError deal with it
-	var responder = new response.create(req, res);
+	var responder = new response.create(server, req, res);
 	if (errorMsg instanceof Error) {
 		errorMsg = errorMsg.message;
 	}
