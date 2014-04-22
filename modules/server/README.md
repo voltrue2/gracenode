@@ -74,7 +74,7 @@ server.on('requestEnd', function (requestUrl) {
 
 ***
 
-### start
+### .start
 
 Example of how to set up a server:
 
@@ -93,7 +93,7 @@ gracenode.setup(function (error) {
 
 ***
 
-### setupRequestHooks
+### .setupRequestHooks
 
 <pre>
 void setupRequestHooks(Object hooks)
@@ -385,4 +385,4 @@ Example:
 
 The above example assigns the controller "error" and method "notFound" (controller/error/notFound.js) to status code 404.
 
-When the server response status is 404, the server will then execute error/notFound.js.
+When the server responds with status 404, the server will then execute error/notFound.js.
