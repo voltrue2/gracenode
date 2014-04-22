@@ -100,25 +100,27 @@ function handle(server, req, res, parsedUrl, requestObj) {
 
 function handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl) {
 	if (requestHooks) {
+
+		var hook;
+
 		if (typeof requestHooks === 'function') {
 			// request hook applies to all controllers and methods
-			execRequestHook(server, req, res, requestObj, responseObj, requestHooks, methodExec, parsedUrl);
-			return true;
-		} 
+			hook = requestHooks;
+		}
 		var hookedController = requestHooks[parsedUrl.controller] || null;
 		if (hookedController) {
 			if (typeof hookedController === 'function') {
 				// request hook applies to this controller and all of its methods
-				execRequestHook(server, req, res, requestObj, responseObj, hookedController, methodExec, parsedUrl);
-				return true;
+				hook = hookedController;
 			}
 			var hookedMethod = hookedController[parsedUrl.method] || null;
 			if (typeof hookedMethod === 'function') {
 				// request hook applies to this controller and this method only
-				execRequestHook(server, req, res, requestObj, responseObj, hookedMethod, methodExec, parsedUrl);
-				return true;
+				hook = hookedMethod;
 			}
 		}		
+		execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl);
+		return true;
 	}
 	return false;
 }
