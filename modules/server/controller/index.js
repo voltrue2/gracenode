@@ -126,7 +126,7 @@ function handleRequestHook(server, req, res, requestObj, responseObj, methodExec
 function execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl) {
 	var url = parsedUrl.controller + '/' + parsedUrl.method;
 	log.verbose('request hook found for "' + url + '"');
-	hook(req, function (error, status) {
+	hook(requestObj, function (error, status) {
 		if (error) {
 			log.error('request hook executed with an error (url:' + url + '):', error, '(status: ' + status + ')');
 			return errorHandler(server, req, res, parsedUrl, requestObj, error, status);
