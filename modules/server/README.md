@@ -363,4 +363,26 @@ module.exports.GET = function (requestObject, response) {
 Void response.file(Binary content, Integer status)
 </pre>
 
+***
 
+#### Congiguring Error Handlers
+
+Server module allows the developer to assigned specific error handling constroller end method based on HTTP response status
+
+Example:
+
+```
+// configurations:
+{
+	"server": {
+		"404": {
+			"controller": "error",
+			"method": "notFound"
+		}
+	}
+}
+```
+
+The above example assigns the controller "error" and method "notFound" (controller/error/notFound.js) to status code 404.
+
+When the server response status is 404, the server will then execute error/notFound.js.

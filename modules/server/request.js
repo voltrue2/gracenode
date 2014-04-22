@@ -87,7 +87,6 @@ Request.prototype.data = function (key, oldKey) {
 };
 
 Request.prototype.extractQueries = function (req, cb) {
-
 	switch (req.method) {
 		case 'POST':
 			var body = '';
