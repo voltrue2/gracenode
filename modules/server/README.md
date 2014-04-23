@@ -227,24 +227,28 @@ Request data can be accessed according to the request methods as shown below.
 module.exports.GET = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
+	var allData = requestObject.dataAll();
         response.json(null);
 };
 // read POST data
 module.exports.POST = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
+	var allData = requestObject.dataAll();
         response.json(null);
 };
 // read PUT data
 module.exports.PUT = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
+	var allData = requestObject.dataAll();
         response.json(null);
 };
 // read DELETE data
 module.exports.DELETE = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
+	var allData = requestObject.dataAll();
         response.json(null);
 };
 ```

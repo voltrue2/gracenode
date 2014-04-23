@@ -87,6 +87,10 @@ Request.prototype.data = function (key, oldKey) {
 	return this._dataHandler.get(key);
 };
 
+Request.prototype.dataAll = function () {
+	return this._dataHandler.getAll();
+};
+
 Request.prototype.extractQueries = function (req, cb) {
 	switch (req.method) {
 		case 'POST':
