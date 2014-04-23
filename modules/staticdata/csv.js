@@ -116,6 +116,8 @@ function correctDataType(data) {
 		return true;
 	} else if (data === 'FALSE' || data === 'false') {
 		return false;
+	} else if (data === 'NULL' || data === 'null') {
+		return null;
 	} else {
 		try {
 			return JSON.parse(data);
