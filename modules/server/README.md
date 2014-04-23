@@ -65,10 +65,19 @@ server.on('requestStart', function (requestUrl) {
 
 ####requestEnd
 
-The event is emitted when a request has been handled and responded. Passes the reuqest URL.
+The event is emitted when a request has been handled (not responded). Passes the reuqest URL.
 ```
 server.on('requestEnd', function (requestUrl) {
         // do something
+});
+```
+
+####requestFinish
+
+The event is emitted when a request hash been handled and finished sending all response data. Passes the request URL.
+```
+server.on('requestFinish', function (requestUrl) {
+	// do somehting
 });
 ```
 

@@ -51,6 +51,11 @@ module.exports.getSession = function (id, cb) {
 		return cb(new Error('invalidGetterFunction'));
 	}
 
+	if (!id) {
+		logger.error('no session ID given:', id);
+		return cb(new Error('failedToGetSession'));
+	}
+
 	logger.verbose('get session (sessionId:' + id + ')');
 
 	getter(id, function (error, session) {
@@ -93,6 +98,12 @@ module.exports.setSession = function (key, data, cb) {
 	if (!validate(setter)) {
 		return cb(new Error('invalidSetterFunction'));
 	}
+
+	if (!key || !data) {
+		logger.error('cannot set session with invalid key or data:', '(key:' + key + ')', 'data:', data);
+		return cb(new Error('failedToSetSession'));
+	}
+
 	var session = {
 		data: data,
 		ttl: Date.now() + config.ttl

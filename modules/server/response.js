@@ -47,45 +47,50 @@ Response.prototype.header = function (name, value) {
 Response.prototype.json = function (content, status) {
 	log.verbose('response content type: JSON');
 	respondJSON(this._request, this._response, content, status);
-	this._response.emit('end');
-	this._server.emit('requestEnd', this._request.url);
+	setupFinish(this._request, this._response, this._server);
 };
 
 Response.prototype.html = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondHTML(this._request, this._response, content, status);
-	this._response.emit('end');
-	this._server.emit('requestEnd', this._request.url);
+	setupFinish(this._request, this._response, this._server);
 };
 
 Response.prototype.data = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondData(this._request, this._response, content, status);
-	this._response.emit('end');
-	this._server.emit('requestEnd', this._request.url);
+	setupFinish(this._request, this._response, this._server);
 };
 
 Response.prototype.file = function (content, status) {
 	log.verbose('response content type: File');
 	respondFILE(this._request, this._response, content, status);
-	this._response.emit('end');
-	this._server.emit('requestEnd', this._request.url);
+	setupFinish(this._request, this._response, this._server);
 };
 
 Response.prototype.error = function (content, status) {
 	log.verbose('response content type: Error');
 	log.error('(url:' + this._request.url + ')', content);
 	respondERROR(this._request, this._response, content, status);
-	this._response.emit('end');
-	this._server.emit('requestEnd', this._request.url);
+	setupFinish(this._request, this._response, this._server);
 };
 
 Response.prototype.redirect = function (content, status) {
 	log.verbose('response content type: Redirect');
 	respondRedirect(this._request, this._response, content, status);
-	this._response.emit('end');
-	this._server.emit('requestEnd', this._request.url);
+	setupFinish(this._request, this._response, this._server);
 };
+
+// sets up events for response finish. The events will be called when the request response has all been sent.
+function setupFinish(req, res, server) {
+	// this will be called when the server sends the response data and finishes it.
+	res.once('finish', function () {
+		server.emit('requestFinish', req.url);
+	});
+	res.emit('end', req.url);
+	// this will be called when the server finishes all operation (not when the response data sent)
+	server.emit('requestEnd', req.url);
+}
 
 function compressContent(req, content, cb) {
 	if (content instanceof Buffer) {

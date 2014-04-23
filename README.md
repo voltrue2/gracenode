@@ -209,7 +209,7 @@ Apple and GooglePlay in-app-purchase validation.
 ### [Wallet] (modules/wallet)
 Coin management.
 
-### Useing GraceNode With Apache
+### Using GraceNode With Apache
 > apache configuration example
 
 ```xml

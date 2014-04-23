@@ -171,7 +171,7 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status) {
 	}
 
 	if (parsedUrl.error) {
-		log.error('error handler configed, but failed to execute:', parsedUrl);
+		log.error('error handler configured, but failed to execute:', '(error:' + msg + ')', parsedUrl);
 	}
 
 	// no error controller assigned for this error
