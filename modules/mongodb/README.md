@@ -129,3 +129,14 @@ void delete(Object values, Function callback)
 <pre>
 void fundAndModify(Object query, Object sort, Object update, Object options, Function callback)
 </pre>
+
+> **count**
+<pre>
+void count(Object query, Function callback)
+</pre>
+```javascript
+var mongo = gracenode.mongodb.create('mongoDatabase').collection('cookieJar');
+mongo.count({ type: 'cookies' }, function (error, count) {
+	console.log('There are', count, 'cookies in the jar');
+});
+```
