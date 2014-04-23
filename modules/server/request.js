@@ -134,7 +134,17 @@ Request.prototype.extractQueries = function (req, cb) {
 			break;
 		case 'GET':
 			var parsed = url.parse(req.url, true);
-			cb(null, queryDataHandler.createGetter(parsed.query));
+			var getBody = '';
+			req.on('data', function (data) {
+				getBody += data;
+			});
+			req.on('end', function () {
+				var get = queryString.parse(getBody);
+				for (var key in parsed.query) {
+					get[key] = parsed.query[key];
+				}
+				cb(null, queryDataHandler.createGetter(get));
+			});
 			break;
 		default:
 			logger.warning('only POST, PUT, DELETE, and GET are supported');
