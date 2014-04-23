@@ -48,6 +48,9 @@ Shorthand for getSession.
 ####API: *set*
 Shorthand for setSession.
 
+####API: *replace*
+Shorthand for replaceSession.
+
 ####API: *del*
 Shorthand for delSession.
 
@@ -63,7 +66,12 @@ void getSession(String sessionId, Function callback)
 
 #####API: *setSession*
 <pre>
-void setSession(String, sessionId, mixed value, Function callback)
+void setSession(String, keyForNewSessionId, mixed value, Function callback)
+</pre>
+
+#####API: *replaceSession*
+<pre>
+void replaceSession(String sessionId, mixed value, Function callback)
 </pre>
 
 #####API: *delSession*

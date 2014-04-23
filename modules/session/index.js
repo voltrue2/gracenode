@@ -99,8 +99,8 @@ module.exports.setSession = function (key, data, cb) {
 		return cb(new Error('invalidSetterFunction'));
 	}
 
-	if (!key || !data) {
-		logger.error('cannot set session with invalid key or data:', '(key:' + key + ')', 'data:', data);
+	if (!key) {
+		logger.error('cannot set session with invalid key:', '(key:' + key + ')');
 		return cb(new Error('failedToSetSession'));
 	}
 
@@ -118,6 +118,32 @@ module.exports.setSession = function (key, data, cb) {
 		logger.verbose('set session (sessionId:' + id + ')');
 		
 		cb(null, id);
+	});
+};
+
+module.exports.replaceSession = function (sessionId, data, cb) {
+	if (!validate(setter)) {
+		return cb(new Error('invalidSetterFunction'));
+	}
+	
+	if (!sessionId) {
+		logger.error('cannot replace session with invalid sessionId:', '(sessionId:' + sessionId + ')');
+		return cb(new Error('failedToReplaceSession'));
+	}
+
+	var session = {
+		data: data,
+		ttl: Date.now() + config.ttl
+	};
+	setter(sessionId, session, function (error) {
+		if (error) {
+			logger.error('failed to replace a session:', error);
+			return cb(new Error('failedToRepleaceSession'));
+		}
+		
+		logger.verbose('replace session (sessionId:' + sessionId + ')');
+		
+		cb();
 	});
 };
 
@@ -156,5 +182,6 @@ module.exports.flushSession = function (cb) {
 
 module.exports.get = module.exports.getSession;
 module.exports.set = module.exports.setSession;
+module.exports.replace = module.exports.replaceSession;
 module.exports.del = module.exports.delSession;
 module.exports.flush = module.exports.flushSession;
