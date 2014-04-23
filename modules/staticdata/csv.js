@@ -97,8 +97,7 @@ Csv.prototype._createRowObj = function (colNames, colNameLen, cols) {
 
 	var item = {};
 	for (var i = 0, len = colNameLen; i < len; i++) {
-		var value = correctDataType(cols[i]);
-		item[colNames[i]] = value;
+		item[colNames[i]] = correctDataType(cols[i]);
 	}
 	return item;
 };

@@ -222,7 +222,7 @@ StaticData.prototype.getOneByIndex = function (indexName, key) {
 	var res = data[key];
 
 	if (typeof res === 'object') {
-		return getObjValue(res);
+		return gracenode.lib.cloneObj(res);
 	}
 
 	return res;
@@ -244,7 +244,7 @@ StaticData.prototype.getOne = function (index) {
 	}
 
 	if (typeof data === 'object') {
-		return getObjValue(data);		
+		return gracenode.lib.cloneObj(data);		
 	}
 	
 	return data;
@@ -261,7 +261,7 @@ StaticData.prototype.getMany = function (indexList) {
 };
 
 StaticData.prototype.getAll = function () {
-	return getObjValue(this._src);
+	return gracenode.lib.cloneObj(this._src);
 };
 
 StaticData.prototype.getAllByIndexName = function (indexName) {
@@ -269,7 +269,7 @@ StaticData.prototype.getAllByIndexName = function (indexName) {
 		return null;
 	}
 
-	return getObjValue(this._indexMap[indexName]);
+	return gracenode.lib.cloneObj(this._indexMap[indexName]);
 };
 
 StaticData.prototype.update = function (src) {
@@ -277,23 +277,3 @@ StaticData.prototype.update = function (src) {
 	this._src = src.data;
 	this._indexMap = src.indexMap;
 };
-
-function getObjValue(data) {
-	var obj;
-
-	if (Array.isArray(data)) {
-		obj = [];
-		for (var i = 0, len = data.length; i < len; i++) {
-			obj.push(getObjValue(data[i]));
-		}
-	} else if (typeof data === 'object') {
-		obj = {};
-		for (var key in data) {
-			obj[key] = getObjValue(data[key]);
-		}
-	} else {
-		obj = data;
-	}
-	
-	return obj;
-}
