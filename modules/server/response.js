@@ -95,14 +95,14 @@ function setupFinish(req, res, server) {
 function compressContent(req, content, cb) {
 	if (content instanceof Buffer) {
 		// we do not compress binary
-		log.verbose('skip compressing binary data (url:' + req.url + '): ' + (content.length / 1024) + 'KB');
+		log.verbose('skip compressing binary data: (url:' + req.url + ') ' + (content.length / 1024) + 'KB');
 		cb(null, content);
 	}
 	zlib.gzip(content, function (error, compressedData) {
 		if (error) {
 			return cb(error);
 		}
-		log.info('compressed content size (url:' + req.url + '): ' + (compressedData.length / 1024) + ' KB');
+		log.info('compressed content size: (url:' + req.url + ') ' + (compressedData.length / 1024) + ' KB');
 
 		cb(null, compressedData);
 	});
@@ -114,7 +114,7 @@ function respondJSON(req, res, content, status) {
 	compressContent(req, JSON.stringify(content), function (error, data) {
 		
 		if (error) {
-			log.error('(url:' + req.url + ')', error);
+			log.error('compression error: (url:' + req.url, + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -143,7 +143,7 @@ function respondHTML(req, res, content, status) {
 	compressContent(req, content, function (error, data) {
 		
 		if (error) {
-			log.error('(url:' + req.url, + ')', error);
+			log.error('compression error: (url:' + req.url, + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -171,7 +171,7 @@ function respondData(req, res, content, status) {
 	compressContent(req, content, function (error, data) {
 		
 		if (error) {
-			log.error('(url: ' + req.url + ')', error);
+			log.error('compression error: (url:' + req.url + ')', error);
 			status = 500;
 			data = error;
 		}
@@ -218,7 +218,7 @@ function respondFILE(req, res, content, status) {
 		'Content-Type': getFileType(type)
 	});
 	
-	log.verbose('response content size (url:' + req.url + '): ' + (contentSize / 1024) + ' KB');
+	log.verbose('response content size: (url:' + req.url + ') ' + (contentSize / 1024) + ' KB');
 
 	responseLog(req, status);		
 
@@ -251,7 +251,7 @@ function respondERROR(req, res, content, status) {
 			'Content-Length': data.length
 		});
 		
-		log.error('response content size (url:' + req.url + '): ' + (contentSize / 1024) + ' KB');
+		log.error('response content size: (url:' + req.url + ') ' + (contentSize / 1024) + ' KB');
 	
 		responseLog(req, status);		
 	
@@ -261,7 +261,7 @@ function respondERROR(req, res, content, status) {
 }
 
 function responseLog(req, status) {
-	var msg = 'response (url:' + req.url + '): (status: ' + status + ')';
+	var msg = 'response: (url:' + req.url + ') (status:' + status + ')';
 	if (status >= 400) {
 		log.error(msg);
 	} else {

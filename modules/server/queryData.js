@@ -4,7 +4,7 @@ module.exports.createGetter = function (dataObj) {
 };
 
 function Data(dataIn) {
-	this._data = dataIn;
+	this._data = dataIn || {};
 }
 
 Data.prototype.get = function (key) {

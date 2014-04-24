@@ -29,7 +29,7 @@ Request.prototype.setup = function (cb) {
 		}
 		that._dataHandler = dataHandler;
 
-		logger.info(that._method, that.url, that._dataHandler.getAll());
+		logger.info('request body:', that._method, that.url, that._dataHandler.getAll());
 
 		// depricated and will be removed
 		that.postData = {};
