@@ -4,6 +4,9 @@
 # variables
 ###################
 
+if [ -z "$JSHINT" ]; then
+	JSHINT="jshint"
+fi
 name="GraceNode";
 cwd=`pwd`;
 # list directories/files to lint
@@ -72,7 +75,7 @@ lintTreeObj() {
 	# lint JavaScript files only
 	for file in ${toBeCommited}; do	
 		echo "linting $path$file";
-		failed=`jshint "$path$file"`;
+		failed=`$JSHINT "$path$file"`;
 		if [ "$failed" ]; then
 			echoRed "[error] line error(s) in $1";
 			echoRed "$failed";
@@ -91,7 +94,7 @@ lint() {
 
 		echo "linting $targetPath";
 
-		failed=`jshint "$targetPath"`;
+		failed=`$JSHINT "$targetPath"`;
 		if [ "$failed" ]; then
 			echoRed "[error] lint error(s) in $1";
 			echoRed "$failed";
@@ -112,7 +115,7 @@ lint() {
 ##########################
 
 # test if jshtin command is avialable
-if ! type "jshint" > /dev/null; then
+if ! type "$JSHINT" > /dev/null; then
 	echoRed "[error] jshint command is not available";
 	exit 1;
 fi
