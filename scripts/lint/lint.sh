@@ -4,6 +4,9 @@
 # variables
 ###################
 
+# You can customize the jshint location using the JSHINT variable.
+# e.g. JSHINT=./node_modules/.bin/jshint scripts/lint/lint.sh
+# if you want to use a local version of jshint.
 if [ -z "$JSHINT" ]; then
 	JSHINT="jshint"
 fi
