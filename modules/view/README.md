@@ -40,13 +40,13 @@ void load(String vilewFilePath, Function callback)
 > Loads a view file.
 ```javascript
 // controller file
-module.exports.index = function (cb) {
+module.exports.index = function (req, res) {
 	gracenode.view.assign('foo', 'hello world');
 	gracenode.view.load('/foo/index.html', function (error, contentData) {
 		if (error) {
 			return cb(error);
 		}
-		cb(null, contentData, 'HTML');
+		res.html(contentData);
 	});
 };
 // this will output "hello world"
