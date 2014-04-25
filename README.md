@@ -209,9 +209,6 @@ Apple and GooglePlay in-app-purchase validation.
 ### [Wallet] (modules/wallet)
 Coin management.
 
-### Using GraceNode With Apache
-> apache configuration example
-
 ***
 
 ### How to Write Your Custom Module for GraceNode
@@ -259,6 +256,10 @@ module.exports.setup = function (callback) {
 ```
 
 ***
+
+### Using GraceNode With Apache
+
+apache configuration example
 
 ```
 # proxy to nodejs process
