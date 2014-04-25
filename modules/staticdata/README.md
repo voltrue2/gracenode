@@ -3,9 +3,6 @@
 
 Access
 <pre>
-// do this in your bootstrap file (index.js) before invoking gracenode.setup().
-gracenode.use('gracenode', 'gracenode');
-// once gracenode.setup is finished. you can access the module as following:
 gracenode.staticdata
 </pre>
 
@@ -44,21 +41,25 @@ var example = gracenode.staticdata.create('example');
 
 > **getOneByIndex**
 <pre>
-mixed getOneByIndex(String indexName, String indexKey, Function callback)
+mixed getOneByIndex(String indexName, String indexKey)
 </pre>
 **getManyByIndex**
 <pre>
-mixed getManyByIndex(String indexName, Array indexKeyList, Function callback)
+mixed getManyByIndex(String indexName, Array indexKeyList)
 </pre>
 **getOne**
 <pre>
-mixed getOne(mixed key, Function callback)
+mixed getOne(mixed key)
 </pre>
 **getMany**
 <pre>
-mixed getMany(Array keyList, Function callback)
+mixed getMany(Array keyList)
 </pre>
 **getAll**
 <pre>
-mixed getAll(Function calback)
+mixed getAll()
+</pre>
+**getAllByIndexName**
+<pre>
+mixed getAllByIndexName(String indexName)
 </pre>
