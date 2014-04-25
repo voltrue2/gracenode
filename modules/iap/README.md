@@ -30,3 +30,50 @@ void updateStatus(Mixed receipt, String status, Function cb)
 </pre>
 > Updates the status of the given receipt. the valid status are: pending, handled, canceled.
 
+Example:
+```javascript
+// example code with iap module
+gracenode.iap.validateApplePurchase(receipt, function (error, response) {
+        if (error) {
+                // handle error here
+        }
+
+        // check the validated state
+        if (response.validateState === 'validated') {
+                // Apple has validated the purchase
+
+                var hc = gracenode.wallet.create('hc');
+                hc.addPaid(receipt, userId, itemPrice, itemValue,
+
+                        // this callback will be called BEFORE the commit of "addPaid"
+                        function (continueCallback) {
+
+                                // update iap status to mark the receipt as "handled"
+                                gracenode.iap.updateStatus(receipt, 'handled', function (error) {
+                                        if (error) {
+                                                // error on updating the status to "handled"
+                                                return continueCallback(error); // this will make "addPaid" to auto-rollback
+                                        }
+
+                                        // iap receipt status updated to "handled" now commit
+                                        continueCallback();
+
+                                })
+
+                        },
+
+                        // this callback is to finalize "addPaid" transaction
+                        function (error) {
+                                if (error) {
+                                        // error on finalizing the transaction
+                                }
+
+                                // we are done!
+                        }
+
+                );
+
+        }
+
+});
+```

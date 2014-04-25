@@ -40,7 +40,7 @@ void addFree(String uniqueReceiptHash, String uniqueUserId, Int value, Function 
 
 >> If onCallback is given: the function will be called BEFORE committing the "add" transaction, if an error occuries in onCallback, the transaction can be rolled back
 
-mple:
+Example:
 ```javascript
 // example code with iap module
 gracenode.iap.validateApplePurchase(receipt, function (error, response) {
