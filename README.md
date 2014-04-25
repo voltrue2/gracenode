@@ -212,7 +212,55 @@ Coin management.
 ### Using GraceNode With Apache
 > apache configuration example
 
-```xml
+***
+
+### How to Write Your Custom Module for GraceNode
+
+GraceNode allows you to add your own modules and use them like built-in modules.
+
+The configuration objects are read from configuration JSON file(s). The name for the module configurations MUST match the name of the module.
+```
+"modules": {
+	"awesome": {
+		// configurations for module called awesome
+	}
+}
+``` 
+
+#### .readConfig(configurations [object])
+
+An optional function for your module to receive configuration object on process start.
+
+Example:
+
+```javascript
+// module location myapp/mymodules/awesome/index.js
+module.exports.readConfig = function (configurations) {
+	// store this in memory and use it later
+	config = configurations;
+};
+```
+
+#### .setup(callback [function])
+
+An optional function for your module to be executed on process start.
+
+Useful when your module needs to pre-process something before the application is ready.
+
+Example:
+
+```javascript
+// setup function is asynchronus. Be sure to call the callback function when you are done.
+module.exports.setup = function (callback) {
+	// we are working magic here...
+	// all done!
+	callback();
+};
+```
+
+***
+
+```
 # proxy to nodejs process
 <VirtualHost *:80>
     ServerAdmin yourname@yourdomain.com
