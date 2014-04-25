@@ -25,7 +25,7 @@ $ mkdir configs/
 $ touch configs/conf.json
 </pre>
 
-Refer to `example-config.json` for an example configuration file.
+Refer to each module's README.md for more detail on configurations.
 
 ##Bootstrapping GraceNode
 
