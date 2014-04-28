@@ -15,7 +15,7 @@ var log = gracenode.log.create('nameToBeDisplayed');
 ```
 
 ###Configuration
-```javascript
+```
 {
 	"modules":
 		"log": {
@@ -24,8 +24,10 @@ var log = gracenode.log.create('nameToBeDisplayed');
 				"host": "<host name or ip address>",
 				"port"" "<port>"
 			},
-			"console": <boolean>,
+			"console": true or false,
 			"color": true or false,
+			"showHidden": true or false, // show hidden properties of object
+			"depth": <integer> // recursive depth of object
 			"level": {
 				"verbose": <boolean>
 				"debug": <boolean>

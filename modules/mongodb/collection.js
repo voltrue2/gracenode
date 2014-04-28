@@ -297,20 +297,31 @@ Collection.prototype.ensureIndex = function (indexes, options, cb) {
 };
 
 Collection.prototype.count = function (query, cb) {
-
-	logger.verbose('Getting count for', this._name, 'with query:', query);
+	logger.verbose('getting count for', this._name, 'with query:', query);
 	var that = this;
 	this._collection.count(query, function (error, res) {
-
 		if (error) {
 			return cb(error);
 		}
-
-		logger.info('Retrieved the document count for', that._name, ':', res);
+		logger.info('retrieved the document count for', that._name, ':', res);
 		cb(null, res);
-
 	});
+};
 
+// assigns map function and reduce function on the collection
+Collection.prototype.mapReduce = function (mapFunc, reduceFunc, options, cb) {
+	logger.verbose('assigning map function and reduce function to', this._name);
+	if (typeof mapFunc !== 'function' || typeof reduceFunc !== 'function') {
+		throw new Error('mapReduce expects argument 1 and 2 to be functions');
+	}
+	var that = this;
+	this._collection.mapReduce(mapFunc, reduceFunc, options, function (error, results) {
+		if (error) {
+			return cb(error);
+		}
+		logger.verbose('map function and reduce function assigned to ', that._name);
+		cb(null, results);
+	});
 };
 
 function extractResults(cursor, cb) {

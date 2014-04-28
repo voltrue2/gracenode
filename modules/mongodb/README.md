@@ -140,3 +140,9 @@ mongo.count({ type: 'cookies' }, function (error, count) {
 	console.log('There are', count, 'cookies in the jar');
 });
 ```
+
+> **mapReduce**
+<pre>
+void mapReduce(Function map, Function reduce, Object options, Function callback)
+</pre>
+<a href="http://docs.mongodb.org/manual/tutorial/map-reduce-examples/">MongoDB Map Reduce Example</a>

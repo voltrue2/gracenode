@@ -1,8 +1,17 @@
 var util = require('util');
 var color = require('./color');
 
+var showHidden = false;
+var depth = 4;
+
 module.exports.setup = function (config) {
 	color.setup(config);
+	if (config.showHidden) {
+		showHidden = true;
+	}
+	if (config.depth) {
+		depth = config.depth;
+	}
 };
 
 module.exports.create = function (prefix, logName, levelName, args) {
@@ -22,7 +31,7 @@ function createMsg(msgItem) {
 		if (msgItem instanceof Error) {
 			msgItem = msgItem.message + '\n<stack trace>\n' + msgItem.stack;
 		} else {
-			msgItem = '\n' + util.format(msgItem);
+			msgItem = '\n' + util.inspect(msgItem, { showHidden: showHidden, depth: depth });
 		}
 	}
 	return msgItem;
