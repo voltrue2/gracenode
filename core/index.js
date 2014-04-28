@@ -390,7 +390,7 @@ function setupListeners(that) {
 			},
 			function () {
 				log.info('exit GraceNode');
-				process.exit();
+				process.exit(error ? 1: 0);
 			});
 		});
 	});
