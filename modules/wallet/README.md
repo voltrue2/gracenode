@@ -22,6 +22,17 @@ void getBalanceByUserId(String uniqueUserId, Function callback)
 </pre>
 > Rerturns the current balance (paid and free separately) of a wallet in the callback as a second argument
 
+> **add**
+<pre>
+void add(String uniqueReceiptHash, String uniqueUserId, Int price, Object values, Function onCallback<optional>, Function callback)
+</pre>
+> Adds "paid" and/or "free" to a wallet.
+```
+// this will add 100 paid and 30 free into the wallet "hc".
+var hc = gracenode.wallet.create('hc');
+hc.add(receipt, userId, { paid: 100, free: 30 }, handlOnCallback, finalCallback);
+```
+
 > **addPaid**
 <pre>
 void addPaid(String uniqueReceiptHash, String uniqueUserId, Int price, Int value, Function onCallback<optional>, Function callback)

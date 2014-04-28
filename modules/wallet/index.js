@@ -1,4 +1,4 @@
-
+var async = require('async');
 var gracenode = require('../../');
 var log = gracenode.log.create('wallet');
 
@@ -43,11 +43,11 @@ Wallet.prototype.getBalanceByUserId = function (userId, cb) {
 };
 
 Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, onCallback, cb) {
-	this.add(receiptHashId, userId, price, value, 0, 'paid', onCallback, cb);
+	this.add(receiptHashId, userId, price, { paid: value, free: 0 }, onCallback, cb);
 };
 
 Wallet.prototype.addFree = function (receiptHashId, userId, value, onCallback, cb) {
-	this.add(receiptHashId, userId, 0, 0, value, 'free', onCallback, cb);
+	this._add(receiptHashId, userId, 0, { paid: 0, free: value }, onCallback, cb);
 };
 
 Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, cb) {
@@ -122,8 +122,9 @@ Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, c
 
 };
 
-// used privately ONLY
-Wallet.prototype.add = function (receiptHashId, userId, price, paid, free, valueType, onCallback, cb) {
+Wallet.prototype.add = function (receiptHashId, userId, price, pays, onCallback, cb) {
+	var paid = pays.paid;
+	var free = pays.free;
 	var value = paid + free;
 	
 	if (typeof value !== 'number' || value <= 0) {
@@ -138,8 +139,34 @@ Wallet.prototype.add = function (receiptHashId, userId, price, paid, free, value
 			if (error) {
 				return callback(error);
 			}
-		
-			updateBalanceHistoryIn(mysql, receiptHashId, userId, name, price, value, valueType, function (error) {
+
+			var updatePaidHistory = function (next) {
+				if (!paid) {
+					return next();
+				}
+				updateBalanceHistoryIn(mysql, receiptHashId, userId, name, price, paid, 'paid', function (error) {
+					if (error) {
+						return next(error);
+					}
+					log.info('balance added as [paid] added amount to [' + name + ']:', paid, '(user: ' + userId + ')');					
+					next();	
+				});
+			};
+			
+			var updateFreeHistory = function (next) {
+				if (!free) {
+					return next();
+				}
+				updateBalanceHistoryIn(mysql, receiptHashId, userId, name, price, free, 'free', function (error) {
+					if (error) {
+						return next(error);
+					}
+					log.info('balance added as [free] added amount to [' + name + ']:', free, '(user: ' + userId + ')');					
+					next();	
+				});
+			};
+
+			var done = function (error) {
 				if (error) {
 					return callback(error);
 				}
@@ -147,22 +174,18 @@ Wallet.prototype.add = function (receiptHashId, userId, price, paid, free, value
 				if (typeof onCallback === 'function') {
 					return onCallback(function (error) {
 						if (error) {
-							log.error(error);
 							return callback(error);
 						}
-						
-						log.info('balance added as [' + valueType + '] added amount to [' + name + ']:', value, '(user: ' + userId + ')');					
-	
-						callback(null);
+						callback();
 					});
 				}
-						
-				log.info('balance added as [' + valueType + '] added amount to [' + name + ']:', value, '(user: ' + userId + ')');					
-				
 				callback();
+			};
 
-			});
-
+			async.series([
+				updatePaidHistory,
+				updateFreeHistory
+			], done);
 		});		
 
 	},

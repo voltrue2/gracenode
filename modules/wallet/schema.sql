@@ -12,7 +12,7 @@ CREATE TABLE wallet_in (
 	value INT(8) NOT NULL,
 	valueType ENUM('paid', 'free') NOT NULL,		
 	created BIGINT(13) UNSIGNED NOT NULL,
-	PRIMARY KEY(receiptHashId),
+	PRIMARY KEY(receiptHashId, valueType),
 	INDEX name (name)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
