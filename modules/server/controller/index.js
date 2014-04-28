@@ -37,7 +37,7 @@ module.exports.exec = function (server, req, res, parsedUrl, startTime) {
 	var request = new Request(req, res, parsedUrl.parameters);
 	request.setup(function (error) {
 		if (error) {
-			return errorHandler(server, req, res, parsedUrl, null, error, 500);
+			return errorHandler(server, req, res, parsedUrl, null, error, 500, startTime);
 		}
 		handle(server, req, res, parsedUrl, request, startTime);
 	});
@@ -58,7 +58,7 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			// validate request method
 			if (!method[requestObj.getMethod()]) {
 				var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
-				return errorHandler(server, req, res, parsedUrl, requestObj, msg, 400);
+				return errorHandler(server, req, res, parsedUrl, requestObj, msg, 400, startTime);
 			}
 
 			// controller method
@@ -68,7 +68,7 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			var responseObj = response.create(server, req, res, startTime);
 
 			// check for request hook
-			var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl);
+			var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime);
 			if (requestHookExecuted) {
 				return;
 			}
@@ -81,24 +81,24 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			return;
 		}	
 		
-		return errorHandler(server, req, res, parsedUrl, requestObj, 'controller not found:' + path);
+		return errorHandler(server, req, res, parsedUrl, requestObj, 'controller not found:' + path, 404, startTime);
 			
 
 	} catch (exception) {
 		
 		if (exception.message === 'Cannot find module \'' + path + '\'') {
-			return errorHandler(server, req, res, parsedUrl, requestObj, exception, 404);
+			return errorHandler(server, req, res, parsedUrl, requestObj, exception, 404, startTime);
 		}
 
 		log.fatal('exception caught:', exception);
 
-		errorHandler(server, req, res, parsedUrl, requestObj, exception, 500);		
+		errorHandler(server, req, res, parsedUrl, requestObj, exception, 500, startTime);		
 
 	}
 
 }
 
-function handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl) {
+function handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime) {
 	if (requestHooks) {
 
 		var hook;
@@ -122,20 +122,20 @@ function handleRequestHook(server, req, res, requestObj, responseObj, methodExec
 
 		if (hook) {		
 			// hook function found
-			execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl);
+			execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl, startTime);
 			return true;
 		}
 	}
 	return false;
 }
 
-function execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl) {
+function execRequestHook(server, req, res, requestObj, responseObj, hook, methodExec, parsedUrl, startTime) {
 	var url = parsedUrl.controller + '/' + parsedUrl.method;
 	log.verbose('request hook found for "' + url + '"');
 	hook(requestObj, function (error, status) {
 		if (error) {
 			log.error('request hook executed with an error (url:' + url + '):', error, '(status: ' + status + ')');
-			return errorHandler(server, req, res, parsedUrl, requestObj, error, status);
+			return errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
 		}
 		log.verbose('request hook executed');
 		methodExec(requestObj, responseObj);
@@ -143,9 +143,11 @@ function execRequestHook(server, req, res, requestObj, responseObj, hook, method
 
 }
 
-function errorHandler(server, req, res, parsedUrl, requestObj, msg, status) {
+function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, startTime) {
 	// default status is 404
 	status = status || 404;
+
+	log.debug('startTime', startTime);
 	
 	// check to see if we have error controller and method assigned
 	if (config.error && !parsedUrl.error) {
@@ -163,10 +165,10 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status) {
 			// check to see if we already have requestObj or not
 			if (requestObj) {
 				// we alreay have request object
-				return handle(server, req, res, parsedUrl, requestObj);
+				return handle(server, req, res, parsedUrl, requestObj, startTime);
 			}
 			// we do not have request object yet
-			return module.exports.exec(server, req, res, parsedUrl);
+			return module.exports.exec(server, req, res, parsedUrl, startTime);
 		}
 	}
 
@@ -175,6 +177,6 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status) {
 	}
 
 	// no error controller assigned for this error
-	var responder = new response.create(server, req, res);
+	var responder = new response.create(server, req, res, startTime);
 	responder.error(JSON.stringify(msg), status);
 }
