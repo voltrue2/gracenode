@@ -47,7 +47,7 @@ Wallet.prototype.addPaid = function (receiptHashId, userId, price, value, onCall
 };
 
 Wallet.prototype.addFree = function (receiptHashId, userId, value, onCallback, cb) {
-	this._add(receiptHashId, userId, 0, { paid: 0, free: value }, onCallback, cb);
+	this.add(receiptHashId, userId, 0, { paid: 0, free: value }, onCallback, cb);
 };
 
 Wallet.prototype.spend = function (userId, valueToSpend, spendFor, onCallback, cb) {
