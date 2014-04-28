@@ -30,14 +30,15 @@ module.exports.setupExceptionHandler = function (req, res) {
 
 };
 
-module.exports.create = function (server, request, response) {
-	return new Response(server, request, response);
+module.exports.create = function (server, request, response, startTime) {
+	return new Response(server, request, response, startTime);
 };
 
-function Response(server, request, response) {
+function Response(server, request, response, startTime) {
 	this._server = server;
 	this._request = request;
 	this._response = response;
+	this._startTime = startTime;
 }
 
 Response.prototype.header = function (name, value) {
@@ -47,45 +48,47 @@ Response.prototype.header = function (name, value) {
 Response.prototype.json = function (content, status) {
 	log.verbose('response content type: JSON');
 	respondJSON(this._request, this._response, content, status);
-	setupFinish(this._request, this._response, this._server);
+	setupFinish(this._request, this._response, this._server, this._startTime);
 };
 
 Response.prototype.html = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondHTML(this._request, this._response, content, status);
-	setupFinish(this._request, this._response, this._server);
+	setupFinish(this._request, this._response, this._server, this._startTime);
 };
 
 Response.prototype.data = function (content, status) {
 	log.verbose('response content type: DATA');
 	respondData(this._request, this._response, content, status);
-	setupFinish(this._request, this._response, this._server);
+	setupFinish(this._request, this._response, this._server, this._startTime);
 };
 
 Response.prototype.file = function (content, status) {
 	log.verbose('response content type: File');
 	respondFILE(this._request, this._response, content, status);
-	setupFinish(this._request, this._response, this._server);
+	setupFinish(this._request, this._response, this._server, this._startTime);
 };
 
 Response.prototype.error = function (content, status) {
 	log.verbose('response content type: Error');
 	log.error('(url:' + this._request.url + ')', content);
 	respondERROR(this._request, this._response, content, status);
-	setupFinish(this._request, this._response, this._server);
+	setupFinish(this._request, this._response, this._server, this._startTime);
 };
 
 Response.prototype.redirect = function (content, status) {
 	log.verbose('response content type: Redirect');
 	respondRedirect(this._request, this._response, content, status);
-	setupFinish(this._request, this._response, this._server);
+	setupFinish(this._request, this._response, this._server, this._startTime);
 };
 
 // sets up events for response finish. The events will be called when the request response has all been sent.
-function setupFinish(req, res, server) {
+function setupFinish(req, res, server, startTime) {
 	// this will be called when the server sends the response data and finishes it.
 	res.once('finish', function () {
-		server.emit('requestFinish', req.url);
+		var execTime = Date.now() - startTime;
+		log.info('request execution time: (url:' + req.url + ') (took:' + execTime + 'ms)');
+		server.emit('requestFinish', req.url, execTime);
 	});
 	res.emit('end', req.url);
 	// this will be called when the server finishes all operation (not when the response data sent)

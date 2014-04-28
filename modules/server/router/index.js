@@ -23,7 +23,7 @@ module.exports.readConfig = function (configIn) {
 	}
 };
 
-module.exports.handle = function (req, res) {
+module.exports.handle = function (req, res, startTime) {
 	
 	var parsedUrl = parseUrl(req.url);
 	
@@ -50,7 +50,7 @@ module.exports.handle = function (req, res) {
 
 	log.verbose('request resolved:', parsedUrl);
 
-	this.emit('handled', req, res, parsedUrl);
+	this.emit('handled', req, res, parsedUrl, startTime);
 
 };
 

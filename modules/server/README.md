@@ -67,7 +67,7 @@ server.on('requestStart', function (requestUrl) {
 
 The event is emitted when a request has been handled (not responded). Passes the reuqest URL.
 ```
-server.on('requestEnd', function (requestUrl) {
+server.on('requestEnd', function (requestUrl, executionTime) {
         // do something
 });
 ```

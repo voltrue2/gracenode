@@ -33,17 +33,17 @@ module.exports.setupRequestHooks = function (hooks) {
 	requestHooks = hooks;
 };
 
-module.exports.exec = function (server, req, res, parsedUrl) {
+module.exports.exec = function (server, req, res, parsedUrl, startTime) {
 	var request = new Request(req, res, parsedUrl.parameters);
 	request.setup(function (error) {
 		if (error) {
 			return errorHandler(server, req, res, parsedUrl, null, error, 500);
 		}
-		handle(server, req, res, parsedUrl, request);
+		handle(server, req, res, parsedUrl, request, startTime);
 	});
 }; 
 
-function handle(server, req, res, parsedUrl, requestObj) {
+function handle(server, req, res, parsedUrl, requestObj, startTime) {
 	// path: controllerDirectory/methodFile
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller + '/' + parsedUrl.method;
 
@@ -65,7 +65,7 @@ function handle(server, req, res, parsedUrl, requestObj) {
 			var methodExec = method[requestObj.getMethod()];
 
 			// create file response object
-			var responseObj = response.create(server, req, res);
+			var responseObj = response.create(server, req, res, startTime);
 
 			// check for request hook
 			var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl);

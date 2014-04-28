@@ -108,11 +108,11 @@ function setupRequestHandler() {
 
 		// response module emits server.emit('requestEnd', request.url)
 
-		router.handle(request, response);
+		router.handle(request, response, Date.now());
 	});
 
 	// router request listener
-	router.on('handled', function (request, response, parsedUrl) {
+	router.on('handled', function (request, response, parsedUrl, startTime) {
 
 		if (config.respondOnException) {
 			// we are in debug mode
@@ -120,6 +120,6 @@ function setupRequestHandler() {
 			responser.setupExceptionHandler(request, response);
 		}
 
-		controller.exec(module.exports, request, response, parsedUrl);
+		controller.exec(module.exports, request, response, parsedUrl, startTime);
 	});
 }
