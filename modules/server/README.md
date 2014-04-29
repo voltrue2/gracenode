@@ -67,7 +67,7 @@ server.on('requestStart', function (requestUrl) {
 
 The event is emitted when a request has been handled (not responded). Passes the reuqest URL.
 ```
-server.on('requestEnd', function (requestUrl, executionTime) {
+server.on('requestEnd', function (requestUrl) {
         // do something
 });
 ```
@@ -76,7 +76,7 @@ server.on('requestEnd', function (requestUrl, executionTime) {
 
 The event is emitted when a request hash been handled and finished sending all response data. Passes the request URL.
 ```
-server.on('requestFinish', function (requestUrl) {
+server.on('requestFinish', function (requestUrl, executionTime) {
 	// do somehting
 });
 ```
@@ -116,11 +116,6 @@ Example:
 
 ```javascript
 // checkSession will be executed on every request for myController/myPage
-gracenode.server.setupRequestHooks({
-        myController: {
-                myPage: checkSession
-        }
-});
 function checkSession(request, callback) {
         var sessionId = request.cookies().get('sessionId');
         gracenode.session.getSession(sessionId, function (error, session) {
@@ -135,12 +130,26 @@ function checkSession(request, callback) {
                 cb();
         });
 }
+// set up the hook
+gracenode.server.setupRequestHooks({
+        myController: {
+                myPage: checkSession
+        }
+});
+```
+
+```javascript
 // this will apply checkSession function as a request hook to ALL controller and methods
 var hooks = checkSession;
 // this will apply checkSession function as a request hook to ALL methods of myController
 var hooks = {
         myController: checkSession
 };
+// set up request hooks
+gracenode.server.seupRequestHooks(hooks);
+```
+
+```javascript
 // this will apply checkSession function as a request hook to myPage of myController only
 var hooks = {
         myController: {
