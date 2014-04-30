@@ -184,6 +184,8 @@ Used to profile your application so you can easily determine bottlenecks in your
 ###[Lib](modules/lib)
 Contains a plethora of commonly used functions like random integer generation.
 #Additional Modules
+### [Cron] (modules/cron)
+Module to run, start, stop, and setup cron tasks
 ###[StaticData](modules/staticdata)
 Allows for easy loading of static data such as JSON and CSV files.
 ###[Request](modules/request)
