@@ -1,7 +1,7 @@
 {
 	"name": "GraceNode",
 	"description": "framework for nodejs application",
-	"version": "0.1.0",
+	"version": "0.2.1",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",

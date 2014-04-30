@@ -1,4 +1,4 @@
-Node
+GraceNode
 ©2013 - 2014 Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
 ##Installation
