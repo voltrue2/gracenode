@@ -16,6 +16,10 @@ To install gracenode you can either add it to your package.json like so,
 ```
 or NPM install directly via `npm install git+https://github.com/voltrue2/gracenode.git#master`.
 
+###Install gracenode via npm
+
+`npm install gracenode`
+
 ###Creating configuration files
 
 In your root directory create a directory that is called 'configs'. Although you can name it whatever you want, for this instruction we have named our directory configs.
