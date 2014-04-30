@@ -23,6 +23,14 @@ Configurations
 }
 ```
 
+#####API: *csvToObj*
+
+Parses CSV data into an object.
+
+<pre>
+Object csvToObj(String csvData)
+</pre>
+
 #####API: *create*
 <pre>
 StaticData create(String dataName)

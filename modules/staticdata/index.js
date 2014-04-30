@@ -77,6 +77,10 @@ module.exports.create = function (dataName) {
 	return null;
 };
 
+module.exports.csvToObj = function (csvData) {
+	return toObject(csvData);
+};
+
 function readFile(path, cb) {
 	var lastDot = path.lastIndexOf('.');
 	var type = path.substring(lastDot + 1);
