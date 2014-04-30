@@ -44,10 +44,10 @@ If "**respondOnException**" is set to true in the configurations, any uncaught e
 ***
 
 ###SSL server
-GraceNode has bash scripts to help set up HTTPS server.
+gracenode has bash scripts to help set up HTTPS server.
 <pre>
-GraceNode/scripts/sslcertgen.sh //for production
-GraceNode/scripts/sslcertgen-dev.sh //for development
+gracenode/scripts/sslcertgen.sh //for production
+gracenode/scripts/sslcertgen-dev.sh //for development
 </pre>
 
 ***
@@ -89,13 +89,13 @@ Example of how to set up a server:
 
 ```javascript
 // index.js file of an application
-var gracenode = require('GraceNode');
+var gracenode = require('gracenode');
 gracenode.use('server', 'server');
 gracenode.setup(function (error) {
         if (error) {
-                throw new Error('failed to set up GraceNode');
+                throw new Error('failed to set up gracenode');
         }
-        // we start the server as soon as GraceNode is ready
+        // we start the server as soon as gracenode is ready
         gracenode.server.start();
 });
 ```
@@ -169,7 +169,7 @@ Example:
 
 ```javascript
 // controller/example/foo.js > /example/foo/
-var gracenode = require('GraceNode');
+var gracenode = require('gracenode');
 // the first argument is **ALWAYS** requestObject
 // this will handle requests with "GET" method ONLY
 module.exports.GET = function (requestObject, serverResponse) {
@@ -181,7 +181,7 @@ module.exports.GET = function (requestObject, serverResponse) {
 
 ####Translating request URL to controller/method
 
-GraceNode's server module translates request URL to route all requests to correct controllers and methods and pass the rest of request parameters to the controller method as reuqest.parameters [array].
+gracenode's server module translates request URL to route all requests to correct controllers and methods and pass the rest of request parameters to the controller method as reuqest.parameters [array].
 
 ```javascript
 // Suppose we have a request like this: GET mydomain.com/myController/myMethod/a/b/c/d

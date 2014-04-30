@@ -1,4 +1,4 @@
-var gracenode = require('GraceNode');
+var gracenode = require('../../');
 var logger = gracenode.log.create('mongodb-collection');
 
 var updateOptions = {

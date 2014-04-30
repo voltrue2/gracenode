@@ -1,13 +1,13 @@
-var rootDirName = 'node_modules/GraceNode';
+var rootDirName = 'node_modules/gracenode';
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');
 var logger = require('../modules/log');
-var log = logger.create('GraceNode');
+var log = logger.create('gracenode');
 var util = require('util');
 var fs = require('fs');
 var modPaths = [];
-var gracefulWaitList = []; // list of tasks to be executed before shutting down GraceNode
+var gracefulWaitList = []; // list of tasks to be executed before shutting down gracenode
 
 var Process = require('./process');
 
@@ -15,9 +15,9 @@ var Process = require('./process');
 // shutdown task for log module. this will be executed at the very end
 var logCleaners = [];
 
-module.exports.GraceNode = GraceNode;
+module.exports.Gracenode = Gracenode;
 
-function GraceNode() {
+function Gracenode() {
 	EventEmitter.call(this);
 	// listeners
 	setupListeners(this);
@@ -36,10 +36,10 @@ function GraceNode() {
 	log.verbose('Working directory changed to', this._root);
 }
 
-util.inherits(GraceNode, EventEmitter);
+util.inherits(Gracenode, EventEmitter);
 
 // internal use only
-GraceNode.prototype._addLogCleaner = function (name, func) {
+Gracenode.prototype._addLogCleaner = function (name, func) {
 	var cleaner = function (done) {
 		log.info('shutting down log module...');
 		func(function (error) {
@@ -53,7 +53,7 @@ GraceNode.prototype._addLogCleaner = function (name, func) {
 	logCleaners.push(cleaner);
 };
 
-GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
+Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
 		return log.error('argument 2 must be a function');
 	}
@@ -61,13 +61,13 @@ GraceNode.prototype.registerShutdownTask = function (name, taskFunc) {
 	gracefulWaitList.push({ name: name, task: taskFunc });
 };
 
-GraceNode.prototype.require = function (path) {
+Gracenode.prototype.require = function (path) {
 	return require(this.getRootPath() + path);
 };
 
 // finds a schema.sql under given module's directory
 // never use this function in production, but setup script only
-GraceNode.prototype.getModuleSchema = function (modName, cb) {
+Gracenode.prototype.getModuleSchema = function (modName, cb) {
 	var prefix = this.getRootPath();
 	var pathList = [rootDirName + '/modules/'];
 	pathList = pathList.concat(modPaths);
@@ -111,32 +111,32 @@ GraceNode.prototype.getModuleSchema = function (modName, cb) {
 	});
 };
 
-GraceNode.prototype.getRootPath = function () {
+Gracenode.prototype.getRootPath = function () {
 	return this._root;
 };
 
-GraceNode.prototype.isMaster = function () {
+Gracenode.prototype.isMaster = function () {
 	return this._isMaster;
 };
 
-GraceNode.prototype.getProcessType = function () {
+Gracenode.prototype.getProcessType = function () {
 	var ret = {};
 	ret.type = this._isMaster ? 'master' : 'worker';
 	ret.pid = this._pid;
 	return ret;
 };
 
-GraceNode.prototype.setConfigPath = function (configPath) {
+Gracenode.prototype.setConfigPath = function (configPath) {
 	this._configPath = this._root + configPath;
 	log.verbose('configuration path:', this._configPath);
 };
 
-GraceNode.prototype.setConfigFiles = function (fileList) {
+Gracenode.prototype.setConfigFiles = function (fileList) {
 	this._configFiles = fileList;
 	log.verbose('configuration file list:', fileList);
 };
 
-GraceNode.prototype.addModulePath = function (path) {
+Gracenode.prototype.addModulePath = function (path) {
 	if (modPaths.indexOf(path) !== -1) {
 		return log.warning('module path has already been added:', path);
 	}
@@ -144,21 +144,21 @@ GraceNode.prototype.addModulePath = function (path) {
 	log.verbose('module path has been added:', path);
 };
 
-GraceNode.prototype.exit = function (error) {
+Gracenode.prototype.exit = function (error) {
 	this.emit('exit', error || 0);
 };
 
-GraceNode.prototype.allowOverride = function (builtInModuleName) {
+Gracenode.prototype.allowOverride = function (builtInModuleName) {
 	this._overrideAllowedMods.push(builtInModuleName);
 };
 
-GraceNode.prototype.use = function (modName) {
+Gracenode.prototype.use = function (modName) {
 	this._modules.push({
 		name: modName
 	});
 };
 
-GraceNode.prototype.setup = function (cb) {
+Gracenode.prototype.setup = function (cb) {
 	if (!this._configPath) {
 		return this.exit(new Error('path to configuration files not set'));
 	}
@@ -167,7 +167,7 @@ GraceNode.prototype.setup = function (cb) {
 	}
 	var that = this;
 	var starter = function (callback) {
-		log.verbose('GraceNode is starting...');
+		log.verbose('gracenode is starting...');
 		callback(null, that, cb);
 	};
 	var setupList = [
@@ -181,11 +181,11 @@ GraceNode.prototype.setup = function (cb) {
 	async.waterfall(setupList, function (error) {
 		if (error) {
 			log.fatal(error);
-			log.fatal('GraceNode failed to set up');
+			log.fatal('gracenode failed to set up');
 			return that.exit(error);
 		}
 
-		log.verbose('GraceNode set up complete');
+		log.verbose('gracenode set up complete');
 
 		that.emit('setup.complete');
 		
@@ -232,7 +232,7 @@ function setupLog(that, lastCallback, cb) {
 function setupProfiler(that, lastCallback, cb) {
 	var profiler = require('../modules/profiler');
 
-	// GraceNode profiler
+	// gracenode profiler
 	that._profiler = profiler.create(rootDirName);
 	that._profiler.start();	
 
@@ -267,7 +267,7 @@ function loadModule(that, mod, cb) {
 	// this variable will remember the found built-in module for allowed override case
 	var builtInMod = null;
 	try {
-		// first try inside GraceNode
+		// first try inside gracenode
 		var path = that.getRootPath() + rootDirName + '/modules/' + mod.name;
 		fs.exists(path, function (exists) {
 			log.verbose('look for module [' + name + '] in', path);
@@ -380,49 +380,49 @@ function handleShutdownTasks(cb) {
 function setupListeners(that) {
 
 	that.on('exit', function (error) {
-		log.info('exit caught: shutting down GraceNode...');
+		log.info('exit caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
 			if (error) {
-				log.fatal('exit GraceNode with an error:', error);
+				log.fatal('exit gracenode with an error:', error);
 			}
 			async.eachSeries(logCleaners, function (cleaner, next) {
 				cleaner(next);
 			},
 			function () {
-				log.info('exit GraceNode');
+				log.info('exit gracenode');
 				process.exit(error ? 1: 0);
 			});
 		});
 	});
 	
 	process.on('uncaughtException', function (error) {
-		log.fatal('GraceNode detected an uncaught exception');
+		log.fatal('gracenode detected an uncaught exception');
 		log.fatal(error);
 		that.emit('uncaughtException', error);
 	});
 
 	process.on('SIGINT', function () {
-		log.info('SIGINT caught: shutting down GraceNode...');
+		log.info('SIGINT caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
-			log.info('shutdown GraceNode');
+			log.info('shutdown gracenode');
 			that.emit('shutdown');
 			that.exit();
 		});
 	});
 
 	process.on('SIGQUIT', function () {
-		log.info('SIGQUIT caught: shutting down GraceNode...');
+		log.info('SIGQUIT caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
-			log.info('quit GraceNode');
+			log.info('quit gracenode');
 			that.emit('shutdown');
 			that.exit();
 		});
 	});
 
 	process.on('SIGTERM', function () {
-		log.info('SIGTERM caught: shutting down GraceNode...');
+		log.info('SIGTERM caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
-			log.info('terminate GraceNode');
+			log.info('terminate gracenode');
 			that.emit('shutdown');
 			that.exit();
 		});

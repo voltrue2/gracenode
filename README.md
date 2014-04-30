@@ -1,20 +1,20 @@
-GraceNode
+gracenode
 ©2013 - 2014 Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
 ##Installation
 
 ###Installation via NPM
 
-To install GraceNode you can either add it to your package.json like so,
+To install gracenode you can either add it to your package.json like so,
 
 ```
 {
     "dependencies": {
-        "GraceNode": "git+https://github.com/voltrue2/GraceNode.git#master"
+        "gracenode": "git+https://github.com/voltrue2/gracenode.git#master"
     }
 }
 ```
-or NPM install directly via `npm install git+https://github.com/voltrue2/GraceNode.git#master`.
+or NPM install directly via `npm install git+https://github.com/voltrue2/gracenode.git#master`.
 
 ###Creating configuration files
 
@@ -27,18 +27,18 @@ $ touch configs/conf.json
 
 Refer to each module's README.md for more detail on configurations.
 
-##Bootstrapping GraceNode
+##Bootstrapping gracenode
 
-GraceNode needs to be set up for it to run correctly. In your application add:
+gracenode needs to be set up for it to run correctly. In your application add:
 
 ```
-var gracenode = require('GraceNode');
+var gracenode = require('gracenode');
 //Set the configuration path.
 gracenode.setConfigPath('configs/');
 //Add configuration files that need to be loaded.
 gracenode.setConfigFiles(['conf.json']);
 
-// decide what module(s) of GraceNode to use in your application.
+// decide what module(s) of gracenode to use in your application.
 gracenode.use('server');
 gracenode.use('view');
 gracenode.use('mysql');
@@ -46,9 +46,9 @@ gracenode.use('mysql');
 // now start the set up process
 gracenode.setup(function (error) {
     if (error) {
-        throw new Error('GraceNode failed to set up: ' + error);
+        throw new Error('gracenode failed to set up: ' + error);
     }
-    // GraceNode is ready to go
+    // gracenode is ready to go
 
 });
 ```
@@ -56,19 +56,19 @@ gracenode.setup(function (error) {
 ##Methods
 
 ###.setConfigPath(configDirectoryPath [string])
-Tells GraceNode where to find the configuraitons files.
+Tells gracenode where to find the configuraitons files.
 ```
 gracenode.setConfigPath('configs/');
 ```
 
 ###.setConfigFiles(configFileList [array])
-Give GraceNode the list of configuration files to be used. The files must be in the directory given to setConfigFiles.
+Give gracenode the list of configuration files to be used. The files must be in the directory given to setConfigFiles.
 ```
 gracenode.setConfigFiles(['conf.json']);
 ```
 
 ###.registerShutdownTask(taskName [string], task [function]);
-Registers a function to be executed when GraceNode process is shutting down to ensure graceful exit of the application
+Registers a function to be executed when gracenode process is shutting down to ensure graceful exit of the application
 ```
 gracenode.registerShutdownTask('example', function (callback) {
 	// handle graceful tasks here
@@ -78,27 +78,27 @@ gracenode.registerShutdownTask('example', function (callback) {
 ```
 
 ###.addModulePath(modulePath [string])
-Adds a module path for GraceNode to load modules from. Used to load external GraceNode module
+Adds a module path for gracenode to load modules from. Used to load external gracenode module
 ```
 gracenode.addModulePath('mymodules/');
 gracenode.use('mymodule');
 ```
 
 ###.allowOverride(moduleName [string])
-Allows the application to override and use custom module of the same module name instead of the built-in module from GraceNode
+Allows the application to override and use custom module of the same module name instead of the built-in module from gracenode
 ```
 gracenode.allowOverrid('mysql')
 ```
 
 ###.use(moduleName [string], params [object*])
-Tells GraceNode what modules to load when calling the setup functions.
+Tells gracenode what modules to load when calling the setup functions.
 ```
 gracenode.use('mysql');
 gracenode.use('myModule');
 ```
 
 ###.setup(callback [function])
-Start the setting up of GraceNode modules.
+Start the setting up of gracenode modules.
 ```
 gracenode.setup(function(error) {
     if (error) return console.error('Could not load gracenode:', error);
@@ -118,13 +118,13 @@ var processType = gracenode.getProcessType();
 ```
 
 ###.exit(errorMessage [string*])
-Exits GraceNode and attempts to gracefully shutdown the process. You can give it an error message in case you want to stop the process due to an error.
+Exits gracenode and attempts to gracefully shutdown the process. You can give it an error message in case you want to stop the process due to an error.
 ```
 gracenode.exit('financialCrisis');
 ```
 
 ###.getRootPath()
-Returns the root path of the application (not the root path of GraceNode)
+Returns the root path of the application (not the root path of gracenode)
 ```
 var appRoot = gracenode.getRootPath();
 ```
@@ -157,11 +157,11 @@ Emitted when the setup has been completed.
 ###setup.moduleName
 Emitted when a specific module has been setup.
 ###uncaughtException
-Emitted when GraceNode caught an uncaught exception.
+Emitted when gracenode caught an uncaught exception.
 ###exit
-Emitted when GraceNode exits.
+Emitted when gracenode exits.
 ###shutdown
-Emitted when GraceNode detects SIGINT. This is before exit is emitted.
+Emitted when gracenode detects SIGINT. This is before exit is emitted.
 
 #Cluster Mode
 Spawns forked process(es) if allowed
@@ -174,7 +174,7 @@ Spawns forked process(es) if allowed
 ```
 
 #Default Modules
-By default GraceNode automatically loads the following modules. Click on the link to read more about them.
+By default gracenode automatically loads the following modules. Click on the link to read more about them.
 ###[Config](modules/config)
 Handles everything config related.
 ###[Log](modules/log)
@@ -213,9 +213,9 @@ Coin management.
 
 ***
 
-### How to Write Your Custom Module for GraceNode
+### How to Write Your Custom Module for gracenode
 
-GraceNode allows you to add your own modules and use them like built-in modules.
+gracenode allows you to add your own modules and use them like built-in modules.
 
 The configuration objects are read from configuration JSON file(s). The name for the module configurations MUST match the name of the module.
 ```
@@ -259,7 +259,7 @@ module.exports.setup = function (callback) {
 
 ***
 
-### Using GraceNode With Apache
+### Using gracenode With Apache
 
 apache configuration example
 
@@ -278,7 +278,7 @@ apache configuration example
     </Proxy>
 
     ProxyPreserveHost on
-    ProxyPass / http://yourdomain.com:8000/ # proxy everything else to GraceNode
+    ProxyPass / http://yourdomain.com:8000/ # proxy everything else to gracenode
     ProxyPassReverse / yourdomain.com:8000/
 
 </VirtualHost>
