@@ -93,10 +93,23 @@ exports.readConfig = function (config) {
 
 /**
 * Return a Cron object.
+* @param {string} name Name of the task
+* @param {schedule} schedule* optional schedule if you're creating a new task that is not set in the config.
 * @returns {Cron} cron object.
 */
-exports.create = function (name) {
+exports.create = function (name, schedule) {
 	
-	return jobs[name];
+	if (jobs[name]) {
+		return jobs[name];
+	}
+
+	if (!schedule) {
+		throw new Error('scheduleExpectedForNewCronJob');
+	}
+
+	var cronJob = new Cron(schedule);
+	jobs[name]  = cronJob;
+
+	return cronJob;
 
 };
