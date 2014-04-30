@@ -7,8 +7,6 @@ var zlib = require('zlib');
 // set up exception catcher and handle if an exception is caught
 module.exports.setupExceptionHandler = function (req, res) {
 
-	log.info('respond on exception is set');
-
 	var errorCallback = function (error) {
 		
 		log.error('exception caught(url:' + req.url + '): ', error);
