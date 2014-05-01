@@ -5,20 +5,27 @@ gracenode
 
 ###Installation via NPM
 
+`npm install gracenode`
+
+###Add gracenode as your application's dependency
+
 To install gracenode you can either add it to your package.json like so,
 
 ```
+// Add gracenode from github repo
 {
     "dependencies": {
         "gracenode": "git+https://github.com/voltrue2/gracenode.git#master"
     }
 }
+// Or add gracenode from npm repo
+{
+	"dependeicies": {
+		"gracenode": "0.2.2"
+	}
+}
 ```
 or NPM install directly via `npm install git+https://github.com/voltrue2/gracenode.git#master`.
-
-###Install gracenode via npm
-
-`npm install gracenode`
 
 ###Creating configuration files
 
@@ -56,7 +63,9 @@ gracenode.setup(function (error) {
 
 });
 ```
-#Gracenode
+
+#gracenode
+
 ##Methods
 
 ###.setConfigPath(configDirectoryPath [string])
