@@ -41,6 +41,8 @@ Configurations
 ###Respond on Exception mode
 If "**respondOnException**" is set to true in the configurations, any uncaught exception in each request will be caught and result in 500 status response.
 
+Default is true.
+
 ***
 
 ###SSL server

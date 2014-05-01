@@ -114,8 +114,8 @@ function setupRequestHandler() {
 	// router request listener
 	router.on('handled', function (request, response, parsedUrl, startTime) {
 
-		if (config.respondOnException) {
-			// we are in debug mode
+		// default is true
+		if (config.respondOnException || config.respondOnException === undefined) {
 			// set up response module to listen for exception handler and response
 			responser.setupExceptionHandler(request, response);
 		}
