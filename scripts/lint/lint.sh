@@ -10,7 +10,7 @@
 if [ -z "$JSHINT" ]; then
 	JSHINT="jshint"
 fi
-name="GraceNode";
+name="gracenode";
 cwd=`pwd`;
 # list directories/files to lint
 list=();
