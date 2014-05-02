@@ -397,7 +397,8 @@ For example if your want to display a certain page for "404 Not Found" error, we
         "server": {
             "respondOnException": true,
             "protocol": "http",
-            "port": 8000,
+            "host": "localhost",
+	    "port": 8000,
             "controllerPath": "controller/",
             "reroute": [
                 { "from": "/", "to": "helloworld/sayhello" }
