@@ -5,7 +5,7 @@
 var log = gracenode.log.create('nameToBeDisplayed');
 ```
 
-###Configuration
+###Configurations
 ```
 {
 	"modules":
@@ -30,9 +30,6 @@ var log = gracenode.log.create('nameToBeDisplayed');
 		}
 }
 ```
-
-
-## Configurations
 
 #### file
 
@@ -90,6 +87,8 @@ Each log level can be configured.
     "fatal": <boolean>
 }
 ```
+
+***
 
 ##Events: *output*
 
