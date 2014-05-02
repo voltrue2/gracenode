@@ -272,6 +272,153 @@ module.exports.setup = function (callback) {
 
 ***
 
+## Building a Web Server
+
+gracenode has a built-in module called "server". This module allows you to create and run either HTTP or HTTPS server.
+
+For more details about server module please read <a target="_blank" href="https://github.com/voltrue2/gracenode/tree/master/modules/server">here</a>.
+
+#### How to tell gracenode to use server module
+
+```javascript
+// this is your application index.js
+var gn = require('gracenode');
+
+// tell gracenode where to look for configuration file(s)
+// gracenode always looks from the root path of your application
+gn.setConfigPath('configurations/');
+
+// tell gracenode which configuration file(s) to load
+gn.setConfigFiles(['config.json']);
+
+// tell gracenode to load server module
+gn.use('server');
+
+gn.setup(function (error) {
+    if (error) {
+        return console.error('Fatal error on setting up gracenode');
+    }
+    
+    // gracenode is now ready
+    // start the server
+    gn.server.start();
+    
+});
+```
+
+#### How to configure server module
+
+Please refer to <a target="_blank" href="https://github.com/voltrue2/gracenode/tree/master/modules/server">server module README</a> for more details.
+
+```
+// this the minimum requirements for server module to run
+{
+    "modules": {
+        "server": {
+            "respondOnException": true,
+            "protocol": "http",
+            "port": 8000,
+            "controllerPath": "controller/"
+        }
+    }
+}
+```
+
+#### How to create your "Hello World" page
+
+Assuming that you are using configurations like the above, we can create our "Hello World" controller in:
+
+`yourapp/controller/helloworld/`
+
+Let's assume that our URL for "Hellow World" page would be "http://yourapp.com/hellowworld/sayhello".
+
+Server module translates the above URL to be like this:
+
+"helloworld" after the domain is interpreted to be the controller directory as `yourapp/controller/helloworld/`.
+
+"sayhello" is your actual controller and it would be assumed to be `yourapp/controller/helloworld/sayhello.js`.
+
+#### Add the controller logic to sayhello.js
+
+We will assume that this URL will be a GET request.
+
+```javascript
+// this is what's inside sayhello.js
+// server controller will always recieve a request object and response object on each request
+// notice that we specifically say "GET". this is telling server module to handle GET request only.
+module.exports.GET = function (request, response) {
+    // since there isn't much to do, we will send the response back to the client right away
+    response.html('<h1>Hello World</h2>');
+};
+
+```
+
+### More Advanced Features
+
+There are more complex things you can do with server module. For example rerouting is one of them.
+
+#### How to reroute a URL to a specific controller and its method
+
+Assume we want to have a URL like this "http://yourapp.com/helloworld".
+
+But we want to execute `yourapp/controller/helloworld/sayhello.js` for this URL.
+
+This kind of rerouting can be achieved by setting "reroute" in the configurations.
+
+```
+{
+    "modules": {
+        "server": {
+            "respondOnException": true,
+            "protocol": "http",
+            "port": 8000,
+            "controllerPath": "controller/",
+            "reroute": [
+                { "from": "/", "to": "helloworld/sayhello" }
+            ]
+        }
+    }
+}
+```
+
+Notice we have a new configuration object called "reroute" in the above configurations.
+
+This configuration allows server module to execute `helloworld/sayhello.js` when the server receives a reuqest to "http://yourapp.com/helloworld".
+
+#### Assign uniformted error controllers on specific error status
+
+Server module also allows you to pre-define controllers to be executed on specific errors.
+
+For example if your want to display a certain page for "404 Not Found" error, we can assign a specific controller and method for it.
+
+```
+{
+    "modules": {
+        "server": {
+            "respondOnException": true,
+            "protocol": "http",
+            "port": 8000,
+            "controllerPath": "controller/",
+            "reroute": [
+                { "from": "/", "to": "helloworld/sayhello" }
+            ],
+            "error": {
+                "404": {
+                    "controller": "error",
+                    "method": "notFound"
+                }
+            }
+        }
+    }
+}
+```
+
+Notice we have a configuration object called "error" in the above configurations.
+
+This tells server module to execute `yourapp/controller/error/notFound.js` on HTTP status 404.
+
+***
+
 ### Using gracenode With Apache
 
 apache configuration example
