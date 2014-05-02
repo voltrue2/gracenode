@@ -1,12 +1,3 @@
-Handles logging
-
-###type: "stdout"
-Sends log data to stdout tream.
-###type: "remote"
-Sends log data to a remote server via UDP.
-###type: "file"
-Writes log data to files in the file system.
-
 #gracenode.log
 
 ###Access
@@ -37,6 +28,66 @@ var log = gracenode.log.create('nameToBeDisplayed');
 				"fatal": <boolean>
 			}
 		}
+}
+```
+
+
+## Configurations
+
+#### file
+
+If the path to file is set, gracenode will log into files.
+
+Log files are auto-rotated by YYYY/MM/DD.
+
+`"file": "path to log file directory" or false/null`
+
+#### remote
+
+If the desitination host and port are set, gracenode will send log to an external server via UDP (v4).
+
+`"remote": { "host": "xxxx", "port": yyyy } or false/null`
+
+#### console
+
+If set to true, gracenode will send log to stdout stream of node.js process.
+
+`"console": true or false`
+
+#### color
+
+If set to true, gracenode will color log text.
+
+Each log level has different color.
+
+`"color": true or false`
+
+#### showHidden
+
+If set to true, gracenode will log hidden properties of objects.
+
+`"showHidden": true or false`
+
+#### depth
+
+Decides how far log module should recursively display objects.
+
+`"depth": <integer>`
+
+#### level
+
+Log module has 6 log levels. If set to false, gracenode will ignored that level.
+
+Each log level can be configured.
+
+```
+"level": {
+    "verbose": <boolean>,
+    "debug": <boolean>,
+    "info": <boolean>,
+    "warning": <boolean>,
+    "error": <boolean>,
+    "fatal": <boolean>
 }
 ```
 

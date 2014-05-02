@@ -197,7 +197,7 @@ Used to profile your application so you can easily determine bottlenecks in your
 ###[Lib](modules/lib)
 Contains a plethora of commonly used functions like random integer generation.
 #Additional Modules
-### [Cron] (modules/cron)
+###[Cron](modules/cron)
 Module to run, start, stop, and setup cron tasks
 ###[StaticData](modules/staticdata)
 Allows for easy loading of static data such as JSON and CSV files.
@@ -217,11 +217,11 @@ Contains functions that make it easier to deal with crypography and password has
 A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
 ###[Mongodb](modules/mongodb)
 A wrapper to handle Mongodb functions and connections.
-###[Memcache] (modules/memcache)
+###[Memcache](modules/memcache)
 Memcache management.
-### [Iap] (modules/iap)
+###[Iap](modules/iap)
 Apple and GooglePlay in-app-purchase validation.
-### [Wallet] (modules/wallet)
+###[Wallet](modules/wallet)
 Coin management.
 
 ***
@@ -421,7 +421,7 @@ This tells server module to execute `yourapp/controller/error/notFound.js` on HT
 
 ### Using gracenode With Apache
 
-apache configuration example
+If you insist using Apache with node.js... here is a simple apache configuration example.
 
 ```
 # proxy to nodejs process
