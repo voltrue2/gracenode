@@ -5,14 +5,13 @@ var zlib = require('zlib');
 
 // in debug mode only
 // set up exception catcher and handle if an exception is caught
-module.exports.setupExceptionHandler = function (req, res) {
+module.exports.setupExceptionHandler = function (req, res, responseObj) {
 
 	var errorCallback = function (error) {
 		
 		log.error('exception caught(url:' + req.url + '): ', error);
 		
-		var response = new Response(req, res);
-		response.error('500', 500);
+		responseObj.error('500', 500);
 	};
 
 	// if the server responded w/o an exception > remove the error listener
