@@ -67,6 +67,14 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			// create response object
 			var responseObj = response.create(server, req, res, startTime);
 
+			// override _errorHandler for responseObj.error()
+			responseObj._errorHandler = function (error, status) {
+				if (typeof error === 'string') {
+					error = new Error(error);
+				}
+				errorHandler(server, req, res, parsedUrl, requestObj, error.message, status, startTime);
+			};
+
 			// set up exception handler. default is true
 			if (config.respondOnException || config.respondOnException === undefined) {
 				// server will respond with 500 on exception
@@ -79,7 +87,7 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 				return;
 			}
 
-			log.verbose(parsedUrl.controller + '.' + parsedUrl.method + ' [' + requestObj.getMethod() + '] executed');
+			log.verbose(parsedUrl.controller + '/' + parsedUrl.method + ' [' + requestObj.getMethod() + '] executed');
 	
 			// invoke the controller method
 			methodExec(requestObj, responseObj);
@@ -182,5 +190,5 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, star
 
 	// no error controller assigned for this error
 	var responder = new response.create(server, req, res, startTime);
-	responder.error(JSON.stringify(msg), status);
+	responder._error(JSON.stringify(msg), status);
 }
