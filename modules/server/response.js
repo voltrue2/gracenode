@@ -50,14 +50,14 @@ Response.prototype.json = function (content, status) {
 };
 
 Response.prototype.html = function (content, status) {
-	log.verbose('response content type: DATA');
+	log.verbose('response content type: HTML');
 	setupFinish(this._request, this._response, this._server, this._startTime);
 	respondHTML(this._request, this._response, content, status);
 	finish(this._request, this._response, this._server);
 };
 
 Response.prototype.data = function (content, status) {
-	log.verbose('response content type: DATA');
+	log.verbose('response content type: Data');
 	setupFinish(this._request, this._response, this._server, this._startTime);
 	respondData(this._request, this._response, content, status);
 	finish(this._request, this._response, this._server);
