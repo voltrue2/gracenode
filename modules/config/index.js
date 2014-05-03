@@ -1,4 +1,4 @@
-
+var jshint = require('jshint').JSHINT;
 var fs = require('fs');
 var async = require('async');
 var configPath;
@@ -26,6 +26,12 @@ module.exports.load = function (configList, cb) {
 		fs.readFile(configPath + config, function (error, dataSource) {
 			if (!error) {
 				try {
+					dataSource = dataSource.toString();
+					if (!jshint(dataSource)) {
+						// there are lint errors
+						var errors = jshint.data().errors;
+						throw new Error('invalid configurations in (' + configPath + config + '):\n' + JSON.stringify(errors, null, 4));
+					}
 					var data = JSON.parse(dataSource);
 					for (var key in data) {
 						if (!configData[key]) {
