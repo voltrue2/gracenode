@@ -367,7 +367,6 @@ Void response.html(String content, Integer status)
 Void response.error(Mixed content, Integer status)
 </pre>
 
-
 > #### response.redirect
 
 > Redirects the request to another URL.

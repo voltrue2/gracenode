@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "framework for nodejs application",
-	"version": "0.2.25",
+	"version": "0.2.26",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -23,5 +23,15 @@
 	"contributors": [
 		{ "name": "Brian de Heus", "email": "me@brian.jp" },
 		{ "name": "Henry Obein", "email": "N/A" }
-	]
+	],
+	"keywords": [
+		"gracenode",
+		"framework",
+		"web",
+		"application",
+		"server",
+		"route",
+		"middleware"
+	],
+	"license": "MIT"
 }
