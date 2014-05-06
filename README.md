@@ -270,6 +270,18 @@ module.exports.setup = function (callback) {
 };
 ```
 
+### Using Your Custom Modules
+
+gracenode allows you to add your custom modules to be loaded and used the same way as built-in modules.
+
+To use your custom modules, add `gracenode.addModulePath('yourModuleDir/')` before you call `gracenode.setup`.
+
+```javascript
+// yourAwesomeModule is located at yourApp/yourModuleDir/yourAwesomeModule/
+gracenode.addModulePath('yourModuleDir/');
+gracenode.use('yourAwesomeModule');
+```
+
 ***
 
 ## Building a Web Server
