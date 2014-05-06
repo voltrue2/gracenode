@@ -329,6 +329,7 @@ Please refer to <a target="_blank" href="https://github.com/voltrue2/gracenode/t
         "server": {
             "respondOnException": true,
             "protocol": "http",
+            "host": "localhost",
             "port": 8000,
             "controllerPath": "controller/"
         }
@@ -383,6 +384,7 @@ This kind of rerouting can be achieved by setting "reroute" in the configuration
         "server": {
             "respondOnException": true,
             "protocol": "http",
+            "host": "localhost",
             "port": 8000,
             "controllerPath": "controller/",
             "reroute": [
