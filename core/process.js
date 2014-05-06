@@ -53,8 +53,9 @@ Process.prototype.startClusterMode = function () {
 
 //private
 Process.prototype.setupMaster = function () {
-	this.gracenode.log.setPrefix('MASTER:' + process.pid);
 	this.gracenode._isMaster = true;
+	this.gracenode.log.setPrefix('MASTER:' + process.pid);
+	this.log = this.gracenode.log.create('process');
 
 	this.log.info('running the process in cluster mode [master] (pid: ' + process.pid + ')');
 	this.log.info('number of child processes to be spawned:', this.clusterNum);

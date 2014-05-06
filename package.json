@@ -1,12 +1,12 @@
 {
 	"name": "gracenode",
-	"description": "framework for nodejs application",
-	"version": "0.2.26",
+	"description": "Framework for node.js application with extendable built-in modules for fast development.",
+	"version": "0.2.27",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/voltrue2/gracenode.git"
-  	},
+	},
 	"dependencies": {
 		"async": "= 0.2.9",
 		"uglify-js": "= 2.4.0",

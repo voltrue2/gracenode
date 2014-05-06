@@ -3,13 +3,19 @@
 ###Configuration
 *N/A*
 
-###API: *randomInt*
+####randomInt
 <pre>
 Int randomInt(Int min, Int max)
 </pre>
-Returns pseudo-random integer between min and max
+Returns a pseudo-random integer between min and max
 
-###API: *getArguments*
+####randomFloat
+<pre>
+Float randomFloat(Float min, Float max)
+</pre>
+Returns a pseudo-random floating point number between min and max
+
+####getArguments
 <pre>
 Array getArguments(Function func)
 </pre>
@@ -25,8 +31,15 @@ var args = gracenode.lib.getArguments(foo);
 // args = ["num1", "num2"];
 ```
 
-###API: *walkDir*
+####walkDir
 <pre>
 void walkDir(String path, Function callback)
 </pre>
 Recursively walks the given path and passes an array of file paths to the callback function
+
+####cloneObj
+<pre>
+Mixed cloneObj(Object obj)
+</pre>
+Returns a clone of given object. In javascript, objects are passed around as references. Use this in order to avoid mutating the original objects.
+
