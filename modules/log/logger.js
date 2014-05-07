@@ -59,7 +59,7 @@ Logger.prototype._handleLog = function (levelName, message) {
 
 	// if console is enabled, we output to console
 	if (this.config.console) {	
-		console.log('[timestamp:' + logMsg.timestamp + '] ' + logMsg.message);
+		console.log(logMsg.message);
 	}
 
 	// this log level is enabled
