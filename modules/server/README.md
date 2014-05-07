@@ -30,7 +30,7 @@ Configurations
                 "reroute": [
                         {
                                 "from": '/',
-                                "to": 'another/place'
+                                "to": '/another/place'
                         },
                         ...
                 ]

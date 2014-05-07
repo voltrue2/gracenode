@@ -74,7 +74,7 @@ function parseUrl(url) {
 
 function handleReroute(reroute, parsedUrl) {
 	var controller = parsedUrl.controller ? '/' + parsedUrl.controller : '/';
-	var method = parsedUrl.method ? parsedUrl.method + '/' : '';
+	var method = parsedUrl.method ? '/' + parsedUrl.method : '';
 	var from = controller + method;
 	if (rerouteMap[from]) {
 		var rerouteTo = rerouteMap[from];

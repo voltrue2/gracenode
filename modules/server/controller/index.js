@@ -157,6 +157,8 @@ function execRequestHook(server, req, res, requestObj, responseObj, hook, method
 function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, startTime) {
 	// default status is 404
 	status = status || 404;
+
+	log.error('(url:' + req.url + ')', msg);
 	
 	// check to see if we have error controller and method assigned
 	if (config.error && !parsedUrl.error) {

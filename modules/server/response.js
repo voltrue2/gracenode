@@ -9,7 +9,7 @@ module.exports.setupExceptionHandler = function (req, res, responseObj) {
 
 	var errorCallback = function (error) {
 		
-		log.error('exception caught(url:' + req.url + '): ', error);
+		log.error('respond on exception (url:' + req.url + '): ', error);
 		
 		responseObj.error('500', 500);
 	};
@@ -19,7 +19,7 @@ module.exports.setupExceptionHandler = function (req, res, responseObj) {
 
 		gracenode.removeListener('uncaughtException', errorCallback);
 		
-		log.verbose('server responded');
+		log.verbose('(url:' + req.url + ') server responded');
 	});
 
 	// listener for an exception
