@@ -69,10 +69,7 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 
 			// override _errorHandler for responseObj.error()
 			responseObj._errorHandler = function (error, status) {
-				if (typeof error === 'string') {
-					error = new Error(error);
-				}
-				errorHandler(server, req, res, parsedUrl, requestObj, error.message, status, startTime);
+				errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
 			};
 
 			// set up exception handler. default is true
@@ -184,11 +181,15 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, star
 		}
 	}
 
+	if (typeof msg === 'object') {
+		msg = JSON.stringify(msg);
+	}
+
 	if (parsedUrl.error) {
 		log.error('error handler configured, but failed to execute:', '(error:' + msg + ')', parsedUrl);
 	}
 
 	// no error controller assigned for this error
 	var responder = new response.create(server, req, res, startTime);
-	responder._error(JSON.stringify(msg), status);
+	responder._error(msg, status);
 }
