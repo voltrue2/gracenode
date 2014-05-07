@@ -2,9 +2,39 @@
 
 ***
 
+## Version 0.2.30
+
+Changes for version 0.2.30
+
+### Added
+
+None
+
+---
+
+### Changed
+
+#### Server module error handler.
+
+Internal error handler of server module now has consistent error data type (Error object).
+
+The response of internal errors to the client will always be a compressed string.
+
+### Depricated
+
+None
+
+---
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.29
 
-Changes for version 0.2.29.
+Changes for version 0.2.29
 
 ### Added
 

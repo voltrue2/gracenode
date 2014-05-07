@@ -58,7 +58,7 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			// validate request method
 			if (!method[requestObj.getMethod()]) {
 				var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
-				return errorHandler(server, req, res, parsedUrl, requestObj, msg, 400, startTime);
+				return errorHandler(server, req, res, parsedUrl, requestObj, new Error(msg), 400, startTime);
 			}
 
 			// controller method
@@ -92,7 +92,7 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			return;
 		}	
 		
-		return errorHandler(server, req, res, parsedUrl, requestObj, 'controller not found:' + path, 404, startTime);
+		return errorHandler(server, req, res, parsedUrl, requestObj, new Error('controller not found:' + path), 404, startTime);
 			
 
 	} catch (exception) {
@@ -181,6 +181,10 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, star
 			// we do not have request object yet
 			return module.exports.exec(server, req, res, parsedUrl, startTime);
 		}
+	}
+
+	if (msg instanceof Error) {
+		msg = msg.message;
 	}
 
 	if (typeof msg === 'object') {

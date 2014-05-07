@@ -27,6 +27,7 @@ exports.send = function (url, method, args, headers, cb) {
 			if (err) {
 				return cb(err);
 			}
+			unzipped = unzipped.toString();
 			try {
 				body = JSON.parse(unzipped);
 			} catch (e) {

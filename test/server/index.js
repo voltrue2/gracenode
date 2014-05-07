@@ -92,8 +92,10 @@ describe('gracenode server module ->', function () {
 	});
 	
 	it('Can fail request hook', function (done) {
-		request.send(domain + '/hook/failed', 'POST', { result: 'failed' }, null, function (error, body) {
+		request.send(domain + '/hook/failed', 'POST', { result: 'failed' }, null, function (error, body, status) {
 			assert(error);
+			assert(status, 403);
+			assert.equal(body, 'failed');
 			done();
 		});
 	});
@@ -102,6 +104,7 @@ describe('gracenode server module ->', function () {
 		request.send(domain + '/blah', 'GET', {}, null, function (error, body, status) {
 			assert(error);
 			assert.equal(status, 404);
+			assert.equal(body, 'controller not found:/var/www/node_modules/gracenode/test/server/controller/blah/null');
 			done();
 		});
 	});
@@ -126,6 +129,7 @@ describe('gracenode server module ->', function () {
 		request.send(domain + '/test/get', 'POST', {}, null, function (error, body, status) {
 			assert(error);
 			assert.equal(status, 400);
+			assert.equal(body, '/test/get does not accept "POST"');
 			done();
 		});
 	});
