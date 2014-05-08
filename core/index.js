@@ -26,10 +26,7 @@ function Gracenode() {
 	this._isMaster = false;
 	this._configPath = '';
 	this._configFiles = [];
-	this._modules = [
-		{ name: 'profiler', sourceName: 'profiler', config: null, path: null },
-		{ name: 'lib', sourceName: 'lib', config: null, path: null }
-	];
+	this._modules = ['profiler', 'lib'];
 	this._overrideAllowedMods = [];
 	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
 	process.chdir(this._root);
@@ -159,9 +156,9 @@ Gracenode.prototype.override = function (builtInModuleName) {
 };
 
 Gracenode.prototype.use = function (modName) {
-	this._modules.push({
-		name: modName
-	});
+	if (this._modules.indexOf(modName) === -1) {
+		this._modules.push(modName);
+	}
 };
 
 Gracenode.prototype.setup = function (cb) {
@@ -272,19 +269,18 @@ function setupProcess(that, lastCallback, cb) {
 	ps.setup();	
 }
 
-function loadModule(that, mod, cb) {
-	var name = mod.name;
+function loadModule(that, name, cb) {
 	// this variable will remember the found built-in module for allowed override case
 	var builtInMod = null;
 	try {
 		// first try inside gracenode
-		var path = that.getRootPath() + rootDirName + '/modules/' + mod.name;
+		var path = that.getRootPath() + rootDirName + '/modules/' + name;
 		fs.exists(path, function (exists) {
 			log.verbose('look for module [' + name + '] in', path);
 			if (exists) {
 				log.verbose('module [' + name + '] found');
 				// check if this module is allowed to be overridden
-				if (that._overrideAllowedMods.indexOf(mod.name) !== -1) {
+				if (that._overrideAllowedMods.indexOf(name) !== -1) {
 					// override allowed
 					log.verbose('module [' + name + '] is allowed to be overridden by custom module of the same name');
 					builtInMod = path;
@@ -326,11 +322,9 @@ function loadModule(that, mod, cb) {
 
 function setupModules(that, cb) {
 	log.verbose('start loading built-in modules');
-	async.eachSeries(that._modules, function (mod, nextCallback) {
-		
-		var name = mod.name;
+	async.eachSeries(that._modules, function (name, nextCallback) {
 
-		loadModule(that, mod, function (error, module) {
+		loadModule(that, name, function (error, module) {
 
 			if (error) {
 				return cb(error);

@@ -55,12 +55,13 @@ module.exports.readConfig = function (configIn) {
 module.exports.setup = function (cb) {
 	if (config.protocol === 'https') {
 		// https
-		return serverEngine.setup(function (error) {
+		serverEngine.setup(function (error) {
 			if (error) {
 				return cb(error);
 			}
 			controller.setup(cb);
 		});
+		return;
 	}
 	
 	log.info('server protocol: ' + config.protocol);
