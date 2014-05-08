@@ -104,23 +104,3 @@ function requestHandler(request, response) {
 		controller.exec(module.exports, request, response, parsedUrl, startTime);
 	});
 }
-
-/*
-// request listener
-function setupRequestHandler() {
-
-	log.verbose('set up server request handlers');
-
-	// server request listener
-	server.on('request', function (request, response) {
-
-		module.exports.emit('requestStart', request.url);
-
-		// response module emits server.emit('requestEnd', request.url)
-
-		router.handle(request, response, Date.now(), function (request, response, parsedUrl, startTime) {
-			controller.exec(module.exports, request, response, parsedUrl, startTime);
-		});
-	});
-}
-*/

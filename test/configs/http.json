@@ -14,7 +14,10 @@
 					"controller": "error",
 					"method": "internal"
 				}
-			}
+			},
+			"ignored": [
+				"/ignore/me"
+			]
 		}
 	}
 }

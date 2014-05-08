@@ -72,6 +72,13 @@ describe('gracenode server module ->', function () {
 		});
 	});
 
+	it('Can ignore a request', function (done) {
+		request.send(http + '/ignore/me', 'GET', {}, null, function (error, body, status) {
+			assert.equal(status, 404);
+			done();
+		});
+	});
+
 	it('Can handle a POST request', function (done) {
 		var args = {
 			boo: 'BOO',

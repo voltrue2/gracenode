@@ -37,7 +37,7 @@ module.exports.handle = function (req, res, startTime, cb) {
 	}
 	
 	// check for ignored request
-	if (config.ignored && handleIgnoredRequest(config.ignored, parsedUrl)) {
+	if (config.ignored && handleIgnoredRequest(config.ignored, req.url)) {
 		
 		log.info('request ignored:', req.url);
 
@@ -85,8 +85,8 @@ function handleReroute(reroute, parsedUrl) {
 	return null;
 }
 
-function handleIgnoredRequest(ignored, parsedUrl) {
-	if (Array.isArray(ignored) && ignored.indexOf(parsedUrl.controller) !== -1) {
+function handleIgnoredRequest(ignored, url) {
+	if (Array.isArray(ignored) && ignored.indexOf(url) !== -1) {
 		// ignored request detected
 		return true;
 	}
