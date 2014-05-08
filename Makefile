@@ -10,6 +10,12 @@ test:
 	@echo 'test gracenode:'
 	./node_modules/mocha/bin/mocha test/index.js -R spec -b
 
+.PHONY: test-all
+test-all:
+	./node_modules/mocha/bin/mocha test/index.js -R spec -b
+	./node_modules/mocha/bin/mocha test/server/index.js -R spec -b
+	./node_modules/mocha/bin/mocha test/staticdata/index.js -R spec -b
+
 .PHONY: test-module
 test-module:
 	@echo 'test gracenode module $(module):'

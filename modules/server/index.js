@@ -107,11 +107,8 @@ function setupRequestHandler() {
 
 		// response module emits server.emit('requestEnd', request.url)
 
-		router.handle(request, response, Date.now());
-	});
-
-	// router request listener
-	router.on('handled', function (request, response, parsedUrl, startTime) {
-		controller.exec(module.exports, request, response, parsedUrl, startTime);
+		router.handle(request, response, Date.now(), function (request, response, parsedUrl, startTime) {
+			controller.exec(module.exports, request, response, parsedUrl, startTime);
+		});
 	});
 }
