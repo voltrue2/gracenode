@@ -148,8 +148,14 @@ Gracenode.prototype.exit = function (error) {
 	this.emit('exit', error || 0);
 };
 
+// depricated as of version 0.2.30
 Gracenode.prototype.allowOverride = function (builtInModuleName) {
 	this._overrideAllowedMods.push(builtInModuleName);
+};
+
+Gracenode.prototype.override = function (builtInModuleName) {
+	this._overrideAllowedMods.push(builtInModuleName);
+	this.use(builtInModuleName);	
 };
 
 Gracenode.prototype.use = function (modName) {

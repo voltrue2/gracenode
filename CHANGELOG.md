@@ -20,9 +20,40 @@ Internal error handler of server module now has consistent error data type (Erro
 
 The response of internal errors to the client will always be a compressed string.
 
+#### Server module unit test added test for HTTPS server.
+
+Server module unit test now tests starting of HTTPS server.
+
+#### gracenode.override() added.
+
+Gracenode now has a new method called "override". This method allows the application to override the built-in module of the same name.
+
+Example:
+
+```
+var gn = require('gracenode');
+
+gn.addModulePath('myModules/');
+
+// this tells gracenode to use myModules/view instead of the built-in view module of gracenode
+gn.override('view');
+
+gn.setup(function () {
+	// gracenode is ready
+});
+```
+
+#### Staticdata module unit test added.
+
+Tests staticdata module.
+
+```
+make test-module module=staticdata
+```
+
 ### Depricated
 
-None
+#### gracenode.allowOverride() is now depricated and will be removed in the future version.
 
 ---
 

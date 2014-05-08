@@ -1,0 +1,22 @@
+{
+	"modules": {
+		"server": {
+			"protocol": "https",
+			"host": "localhost",
+			"port": 8090,
+			"controllerPath": "node_modules/gracenode/test/server/controller/",
+			"pemKey": "node_modules/gracenode/test/server/pem/key.pem",
+			"pemCert": "node_modules/gracenode/test/server/pem/cert.pem",
+			"reroute": [
+				{ "from": "/take/me", "to": "/land/here" },
+				{ "from": "/", "to": "/land/here" }
+			],
+			"error": {
+				"500": {
+					"controller": "error",
+					"method": "internal"
+				}
+			}
+		}
+	}
+}

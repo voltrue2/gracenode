@@ -1,7 +1,7 @@
 var request = require('../request');
 var assert = require('assert');
 
-var domain = 'http://localhost:8099';
+var domain = 'http://localhost';
 
 var hookTest = function (req, done) {
 	var result = req.data('result');
@@ -13,17 +13,38 @@ var hookTest = function (req, done) {
 };
 
 describe('gracenode server module ->', function () {
-	it('Can start HTTP server', function (done) {
+	
+	it('Can start HTTPS server', function (done) {
 		
 		var gn = require('../../');
 		
 		gn.setConfigPath('node_modules/gracenode/test/configs/');
-		gn.setConfigFiles(['server.json']);
+		gn.setConfigFiles(['https.json']);
 
 		gn.use('server');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
+			gn.server.setupRequestHooks({
+				hook: hookTest
+			});
+			gn.server.start();
+			done();
+		});
+	});
+	
+	it('Can start HTTP server', function (done) {
+		
+		var gn = require('../../');
+		
+		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigFiles(['http.json']);
+
+		gn.use('server');
+
+		gn.setup(function (error) {
+			assert.equal(error, undefined);
+			domain += ':' + gn.config.getOne('modules.server.port');
 			gn.server.setupRequestHooks({
 				hook: hookTest
 			});

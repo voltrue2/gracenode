@@ -85,7 +85,7 @@ module.exports.setupRequestHooks = function (hooks) {
 
 module.exports.start = function () {
 
-	log.info('starting server...');
+	log.verbose('starting server...');
 
 	try {
 		server = serverEngine.start();	
