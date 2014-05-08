@@ -2,6 +2,30 @@
 
 ***
 
+## Version 0.2.31
+
+Changes for version 0.2.31
+
+### Added
+
+None
+
+### Changed
+
+#### Server module performance improved.
+
+Server module now handles each request with unnecessary events.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.30
 
 Changes for version 0.2.30

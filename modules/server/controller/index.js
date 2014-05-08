@@ -2,6 +2,7 @@ var gracenode = require('../../../');
 var log = gracenode.log.create('server-controller');
 var Request = require('../request');
 var response = require('../response');
+var fs = require('fs');
 
 var config = null;
 var controllerMap = {};
@@ -15,30 +16,17 @@ module.exports.readConfig = function (configIn) {
 };
 
 module.exports.setup = function (cb) {
-	// set up a listener to map all controllers on gracenode.setup.complete
-	gracenode.once('setup.complete', function () {
-		gracenode.lib.walkDir(config.controllerPath, function (error, list) {
-			if (error) {
-				throw new Error('failed to find controller at: ' + config.controllerPath);
-			}
-			for (var i = 0, len = list.length; i < len; i++) {
-				var item = list[i].file;
-				var index = item.lastIndexOf('/');
-				var method = item.substring(index + 1, item.lastIndexOf('.'));
-				item = item.substring(0, index);
-				var controller = item.substring(item.lastIndexOf('/') + 1);
-				if (!controllerMap[controller]) {
-					controllerMap[controller] = {};
-				}
-				var path = gracenode.getRootPath() + list[i].file;
-				controllerMap[controller][method] = require(path);
-				log.info('contrlller method cached:', controller + '/' + method, path);
-			}
-		});
-
+	// map all controllers and cache them in memory
+	fs.readdir(config.controllerPath, function (error, dirList) {
+		if (error) {
+			return cb(error);
+		}
+		for (var i = 0, len = dirList.length; i < len; i++) {
+			controllerMap[dirList[i]] = true;
+			log.verbose('controller "' + dirList[i] + '" mapped');
+		}
+		cb();
 	});
-	// done. move on
-	cb();	
 };
 
 module.exports.setupRequestHooks = function (hooks) {
@@ -60,12 +48,12 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller + '/' + parsedUrl.method;
 
 	try {
-		if (controllerMap[parsedUrl.controller] && controllerMap[parsedUrl.controller][parsedUrl.method]) {
+		if (controllerMap[parsedUrl.controller]) {
 			
 			log.verbose('controller "' + parsedUrl.controller + '" found');
 	
 			// load controller method
-			var method = controllerMap[parsedUrl.controller][parsedUrl.method];
+			var method = require(path);
 
 			// validate request method
 			if (!method[requestObj.getMethod()]) {
