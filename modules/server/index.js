@@ -88,13 +88,24 @@ module.exports.start = function () {
 	log.verbose('starting server...');
 
 	try {
-		server = serverEngine.start();	
-		setupRequestHandler();
+		server = serverEngine.start(requestHandler);	
+		//setupRequestHandler();
 	} catch (exception) {
 		log.fatal(exception);
 	}
 };
 
+function requestHandler(request, response) {
+	module.exports.emit('requestStart', request.url);
+
+	// response module emits server.emit('requestEnd', request.url)
+
+	router.handle(request, response, Date.now(), function (request, response, parsedUrl, startTime) {
+		controller.exec(module.exports, request, response, parsedUrl, startTime);
+	});
+}
+
+/*
 // request listener
 function setupRequestHandler() {
 
@@ -112,3 +123,4 @@ function setupRequestHandler() {
 		});
 	});
 }
+*/

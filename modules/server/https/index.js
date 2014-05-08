@@ -42,11 +42,11 @@ module.exports.setup = function (cb) {
 	});
 };
 
-module.exports.start = function () {
-	return new Https();	
+module.exports.start = function (requestHandler) {
+	return new Https(requestHandler);	
 };
 
-function Https() {
+function Https(requestHandler) {
 	EventEmitter.call(this);
 	var that = this;
 
@@ -55,7 +55,8 @@ function Https() {
 		log.verbose('starting the server with:', options);
 
 		this.server = https.createServer(options, function (req, res) {
-			that.handleRequest(req, res);
+			log.info('request received: ' + req.method + ' (url:' + req.url + ')');
+			requestHandler(req, res);
 		});
 		this.server.listen(config.port, config.host);
 
@@ -83,10 +84,3 @@ function Https() {
 }
 
 util.inherits(Https, EventEmitter);
-
-Https.prototype.handleRequest = function (req, res) {
-	log.info('request received: ' + req.method + ' (url:' + req.url + ')');
-	this.emit('request', req, res);	
-};
-
-

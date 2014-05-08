@@ -15,18 +15,19 @@ module.exports.readConfig = function (configIn) {
 	config = configIn;
 };
 
-module.exports.start = function () {
-	return new Http();	
+module.exports.start = function (requestHandler) {
+	return new Http(requestHandler);	
 };
 
-function Http() {
+function Http(requestHandler) {
 	EventEmitter.call(this);
 	var that = this;
 
 	try {
 
 		this.server = http.createServer(function (req, res) {
-			that.handleRequest(req, res);
+			log.info('request received: ' + req.method + ' (url:' + req.url + ')');
+			requestHandler(req, res);
 		});
 		this.server.listen(config.port, config.host);
 
@@ -54,12 +55,3 @@ function Http() {
 }
 
 util.inherits(Http, EventEmitter);
-
-Http.prototype.handleRequest = function (req, res) {
-
-	log.info('request received: ' + req.method + ' (url:' + req.url + ')');
-	
-	this.emit('request', req, res);	
-};
-
-
