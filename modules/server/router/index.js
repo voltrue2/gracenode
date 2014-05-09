@@ -23,9 +23,9 @@ module.exports.readConfig = function (configIn) {
 	}
 };
 
-module.exports.handle = function (req, res, startTime, cb) {
+module.exports.handle = function (url, res) {
 	
-	var parsedUrl = parseUrl(req.url);
+	var parsedUrl = parseUrl(url);
 	
 	// check rerouting
 	if (config.reroute) {
@@ -37,27 +37,27 @@ module.exports.handle = function (req, res, startTime, cb) {
 	}
 	
 	// check for ignored request
-	if (config.ignored && handleIgnoredRequest(config.ignored, req.url)) {
+	if (config.ignored && isIgnoredRequest(config.ignored, url)) {
 		
-		log.info('request ignored:', req.url);
+		log.verbose('request ignored:', url);
 
 		// respond with 404 right away
 		res.writeHead(404, {});
 		res.end('');
 
-		return;
+		return null;
 	}
 
 	log.verbose('request resolved:', parsedUrl);
 
-	cb(req, res, parsedUrl, startTime);
+	return parsedUrl;
 
 };
 
 function parseUrl(url) {
 	var queryIndex = url.lastIndexOf('?');
 	if (queryIndex !== -1) {
-		url = url.substring(0, url.lastIndexOf('?'));
+		url = url.substring(0, queryIndex);
 	}
 	var splitted = url.split('/');
 	var parsed = splitted.filter(function (item) {
@@ -85,7 +85,7 @@ function handleReroute(reroute, parsedUrl) {
 	return null;
 }
 
-function handleIgnoredRequest(ignored, url) {
+function isIgnoredRequest(ignored, url) {
 	if (Array.isArray(ignored) && ignored.indexOf(url) !== -1) {
 		// ignored request detected
 		return true;

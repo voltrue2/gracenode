@@ -2,6 +2,32 @@
 
 ***
 
+## Version 0.2.32
+
+Changes for version 0.2.32
+
+### Added
+
+None
+
+### Changed
+
+#### Server module removed "respondOnException" behavior.
+
+Respond on exception has been removed due to its unstable nature and impact on performance.
+
+### Depricated
+
+None
+
+### Removed
+
+#### Server module removed depricated request object methods
+
+Depricated request object methods getData, postData, putData, and deleteData have been removed.
+
+***
+
 ## Version 0.2.31
 
 Changes for version 0.2.31

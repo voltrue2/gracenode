@@ -100,7 +100,9 @@ function requestHandler(request, response) {
 
 	// response module emits server.emit('requestEnd', request.url)
 
-	router.handle(request, response, Date.now(), function (request, response, parsedUrl, startTime) {
-		controller.exec(module.exports, request, response, parsedUrl, startTime);
-	});
+	// if parsedUrl returns as null, the request has been ignored
+	var parsedUrl = router.handle(request.url, response);
+	if (parsedUrl) {
+		controller.exec(module.exports, request, response, parsedUrl, Date.now());
+	}
 }

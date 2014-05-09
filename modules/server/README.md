@@ -1,9 +1,8 @@
-***
-#### <span id="server-module">server module</span>
-<a href="#top">Back to the list of built-in modules</a>
-***
+# Server Module
 
-Access
+Allows you to structurely handle HTTP/HTTPS requests.
+
+### Access
 <pre>
 gracenode.server
 </pre>
@@ -12,7 +11,6 @@ Configurations
 ```javascript
 "modules": {
         "server": {
-                "respondOnException": <boolean>
                 "protocol": "http" or "https",
                 "pemKey": "file path to pem key file" // https only
                 "pemCert": "file path to pem cert file" // https only
@@ -37,11 +35,6 @@ Configurations
         }
 }
 ```
-
-###Respond on Exception mode
-If "**respondOnException**" is set to true in the configurations, any uncaught exception in each request will be caught and result in 500 status response.
-
-Default is true.
 
 ***
 
@@ -79,7 +72,7 @@ server.on('requestEnd', function (requestUrl) {
 The event is emitted when a request hash been handled and finished sending all response data. Passes the request URL.
 ```
 server.on('requestFinish', function (requestUrl, executionTime) {
-	// do somehting
+        // do somehting
 });
 ```
 
@@ -164,13 +157,13 @@ gracenode.server.seupRequestHooks(hooks);
 
 ***
 
-### Controller
+## Controller
 Controller handles all requests to server module.
 
 Example:
 
 ```javascript
-// controller/example/foo.js > /example/foo/
+// controller/example/foo.js /example/foo/
 var gracenode = require('gracenode');
 // the first argument is **ALWAYS** requestObject
 // this will handle requests with "GET" method ONLY
@@ -181,7 +174,7 @@ module.exports.GET = function (requestObject, serverResponse) {
 // /example/foo/ will display "foo" on your browser
 ```
 
-####Translating request URL to controller/method
+###Translating request URL to controller/method
 
 gracenode's server module translates request URL to route all requests to correct controllers and methods and pass the rest of request parameters to the controller method as reuqest.parameters [array].
 
@@ -202,14 +195,14 @@ module.exports.GET = function (request, response) {
 };
 ```
 
-####Request Method Restrictions
+##Request Method Restrictions
 
 Each controller method accepts and executes requests with *declared* request method ONLY.
 
 Example:
 
 ```
-// POST /exmaple/boo > exmaple/boo.js
+// POST /exmaple/boo -> exmaple/boo.js
 module.exports.POST = function (req, res) {
         // do something
 };
@@ -238,33 +231,33 @@ Request data can be accessed according to the request methods as shown below.
 module.exports.GET = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
-	var allData = requestObject.dataAll();
+        var allData = requestObject.dataAll();
         response.json(null);
 };
 // read POST data
 module.exports.POST = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
-	var allData = requestObject.dataAll();
+        var allData = requestObject.dataAll();
         response.json(null);
 };
 // read PUT data
 module.exports.PUT = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
-	var allData = requestObject.dataAll();
+        var allData = requestObject.dataAll();
         response.json(null);
 };
 // read DELETE data
 module.exports.DELETE = function (requestObject, response) {
         // server module supports GET, POST, PUT, or DELETE
         var foo = requestObject.data('foo');
-	var allData = requestObject.dataAll();
+        var allData = requestObject.dataAll();
         response.json(null);
 };
 ```
 
-#### Request Headers
+### Request Headers
 
 Request headers are accessed as:
 
@@ -272,52 +265,52 @@ Request headers are accessed as:
 // controller file
 module.exports.GET = function (requestObject, response) {
         // server module automatically gives every contrller the following function:
-        // requestObject.headers > an instance of Headers class
+        // requestObject.headers an instance of Headers class
         var os = requestObject.headers.getOs();
 };
 ```
 
 
-#### Headers class
+## Headers class
 
 Headers object holds all request headers and related methods.
 
-> Access:
+Access:
 
->  ```javascript
+ ```javascript
 module.exports.GET = function (requestObject, response) {
         var requestHeaders = requestObject.headers;
 };
 ```
 
-> #### headers.get
+#### headers.get
 <pre>
 String get(String headerName)
 </pre>
 
-> #### headers.getOs
+#### headers.getOs
 <pre>
 String getOs()
 </pre>
 
-> #### headers.getClient
+#### headers.getClient
 <pre>
 String getClient()
 </pre>
 
-> #### headers.getDefaultLang
+#### headers.getDefaultLang
 <pre>
 String getDefaultLang
 </pre>
 
 #### Cookies
 
-> This object holds and contains all cookie related data and methods.
+This object holds and contains all cookie related data and methods.
 
-> ```javascript
+```javascript
 // controller
 module.exports.GET = function (requestObject, response) {
-	var cookies = requestObject.cookies();
+        var cookies = requestObject.cookies();
         // get
         var foo = cookies.get('foo');
         // set
@@ -327,51 +320,51 @@ module.exports.GET = function (requestObject, response) {
 
 ***
 
-#### Response class
+## Response class
 
 Response class manages all server responses to the client requests.
 
-> #### response headers
+#### response headers
 
-> Response headers can be set as shown below.
+Response headers can be set as shown below.
 
-> ```javascript
+```javascript
 // controller
 module.exports.GET = function (requestObject, response) {
         // name, value
         response.header('foo', 'foo');
 };
 ```
-> #### response.json
+#### response.json
 
-> Resonds to the client as JSON.
+Resonds to the client as JSON.
 
-> Status code is optional and default is 200.
+Status code is optional and default is 200.
 <pre>
 Void response.json(Mixed content, Integer status)
 </pre>
 
-> #### response.html
+#### response.html
 
-> Resonds to the client as HTML.
+Resonds to the client as HTML.
 
-> Status code is optional and default is 200.
+Status code is optional and default is 200.
 <pre>
 Void response.html(String content, Integer status)
 </pre>
 
-> #### response.error
-> Resonds to the client as an error. content can be JSON, String, Number.
-> Status code is optional and default is 404.
+#### response.error
+Resonds to the client as an error. content can be JSON, String, Number.
+Status code is optional and default is 404.
 <pre>
 Void response.error(Mixed content, Integer status)
 </pre>
 
-> #### response.redirect
+#### response.redirect
 
-> Redirects the request to another URL.
+Redirects the request to another URL.
 
-> ```javascript
+```javascript
 // controller
 // request URI /foo/index/
 module.exports.GET = function (requestObject, response) {
@@ -379,16 +372,16 @@ module.exports.GET = function (requestObject, response) {
 };
 ```
 
-> #### response.file (Not recommanded)
-> Resonds to the client as a static file.
-> Status code is optional and default is 200.
+#### response.file (Not recommanded)
+Resonds to the client as a static file.
+Status code is optional and default is 200.
 <pre>
 Void response.file(Binary content, Integer status)
 </pre>
 
 ***
 
-#### Congiguring Error Handlers
+## Congiguring Error Handlers
 
 Server module allows the developer to assigned specific error handling constroller end method based on HTTP response status
 
@@ -397,15 +390,16 @@ Example:
 ```
 // configurations:
 {
-	"server": {
-		"404": {
-			"controller": "error",
-			"method": "notFound"
-		}
-	}
+        "server": {
+                "404": {
+                        "controller": "error",
+                        "method": "notFound"
+                }
+        }
 }
 ```
 
 The above example assigns the controller "error" and method "notFound" (controller/error/notFound.js) to status code 404.
 
 When the server responds with status 404, the server will then execute error/notFound.js.
+

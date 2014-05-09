@@ -1,31 +1,6 @@
 var gracenode = require('../../');
 var log = gracenode.log.create('server-response');
-
 var zlib = require('zlib');
-
-// in debug mode only
-// set up exception catcher and handle if an exception is caught
-module.exports.setupExceptionHandler = function (req, res, responseObj) {
-
-	var errorCallback = function (error) {
-		
-		log.error('respond on exception (url:' + req.url + '): ', error);
-		
-		responseObj.error('500', 500);
-	};
-
-	// if the server responded w/o an exception > remove the error listener
-	res.once('end', function () {
-
-		gracenode.removeListener('uncaughtException', errorCallback);
-		
-		log.verbose('(url:' + req.url + ') server responded');
-	});
-
-	// listener for an exception
-	gracenode.once('uncaughtException', errorCallback);
-
-};
 
 module.exports.create = function (server, request, response, startTime) {
 	return new Response(server, request, response, startTime);

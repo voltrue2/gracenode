@@ -31,28 +31,6 @@ Request.prototype.setup = function (cb) {
 
 		logger.info('request body:', that._method, that.url, that._dataHandler.getAll());
 
-		// depricated and will be removed
-		that.postData = {};
-		that.postData.get = function (key) {
-			logger.warning(that.url, key, 'postData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
-			return that.data('POST', key);
-		};
-		that.getData = {};
-		that.getData.get = function (key) {
-			logger.warning(that.url, key, 'getData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
-			return that.data('GET', key);
-		};
-		that.putData = {};
-		that.putData.get = function (key) {
-			logger.warning(that.url, key, 'putData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
-			return that.data('PUT', key);
-		};
-		that.deleteData = {};
-		that.deleteData.get = function (key) {
-			logger.warning(that.url, key, 'deleteData is depricated and will be removed soon. use "data(method [string], key [string])" method instead');
-			return that.data('DELETE', key);
-		};
-
 		cb(null, that);
 	});
 };

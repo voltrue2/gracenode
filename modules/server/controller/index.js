@@ -72,12 +72,6 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 				errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
 			};
 
-			// set up exception handler. default is true
-			if (config.respondOnException || config.respondOnException === undefined) {
-				// server will respond with 500 on exception
-				response.setupExceptionHandler(req, res, responseObj);
-			}
-
 			// check for request hook
 			var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime);
 			if (requestHookExecuted) {
