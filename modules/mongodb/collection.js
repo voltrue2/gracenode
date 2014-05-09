@@ -95,7 +95,12 @@ Collection.prototype.findEach = function (query, fields, limit, sort, eachCallba
 				logger.error(error);
 				return finalCallback(error);
 			}
-			
+
+			// we exit if an empty array is found
+			if (!results.length) {
+				return finalCallback();
+			}		
+	
 			var next;
 			// check the found records
 			if (results.length < limit) {

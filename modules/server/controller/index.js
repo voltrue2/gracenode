@@ -54,15 +54,15 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 	
 			// load controller method
 			var method = require(path);
+			
+			// controller method
+			var methodExec = method[requestObj.getMethod()] || null;
 
 			// validate request method
-			if (!method[requestObj.getMethod()]) {
+			if (!methodExec) {
 				var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
 				return errorHandler(server, req, res, parsedUrl, requestObj, new Error(msg), 400, startTime);
 			}
-
-			// controller method
-			var methodExec = method[requestObj.getMethod()];
 
 			// create response object
 			var responseObj = response.create(server, req, res, startTime);

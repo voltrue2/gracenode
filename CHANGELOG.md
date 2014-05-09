@@ -1,5 +1,37 @@
 # Change Log
 
+## Version 0.2.33
+
+Changes for version 0.2.33
+
+### Added
+
+#### Unit test for mongodb module.
+
+Mongodb module now has unit test for its APIs
+
+For this unit test to properly work, you need to have mongoDB running at mongo://127.0.0.1:2701.
+
+Example:
+
+```
+make test-module=mongodb
+```
+
+### Changed
+
+#### Mongodb module findEeach function bug fix.
+
+findEach function no longer returns an empty array at the last iteration.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
 ***
 
 ## Version 0.2.32
