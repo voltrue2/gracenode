@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 0.2.34
+
+Changes for version 0.2.34
+
+### Added
+
+None
+
+#### make command added npm install.
+
+Executing `make` now also installs dependencies.
+
+### Changed
+
+#### Mongodb module's dependency version updated from 1.3.14 to 1.4.3
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 0.2.33
 
 Changes for version 0.2.33

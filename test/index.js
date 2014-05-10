@@ -1,11 +1,10 @@
+var gn = require('../');
 var assert = require('assert');
 
 describe('gracenode initialization ->', function () {
 	
 	it('Can set up gracenode', function (done) {
 	
-		var gn = require('../');
-
 		gn.setConfigPath('node_modules/gracenode/test/configs/');
 		gn.setConfigFiles(['index.json']);
 
@@ -20,6 +19,12 @@ describe('gracenode initialization ->', function () {
 			done();
 		});
 			
-	});	
+	});
+
+	it('Tests all modules', function () {
+		gn.require('test/server');	
+		gn.require('test/staticdata');	
+		gn.require('test/mongodb');	
+	});
 
 });

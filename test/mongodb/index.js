@@ -17,8 +17,8 @@ describe('mongodb module ->', function () {
 
 		console.log('For this unit test, you need to have mongodb running at mongo://127.0.0.1:27017');
 		
-		var gn = require('../../');
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		var gn = require('../../../');
+		gn.setConfigPath('node_modules/gracenode/test/tests/configs/');
 		gn.setConfigFiles(['mongodb.json']);
 		gn.use('mongodb');
 		gn.setup(function (error) {
@@ -165,6 +165,14 @@ describe('mongodb module ->', function () {
 				assert.equal(item.num, 0);
 				done();
 			});
+		});
+	});
+
+	it('Can "findAndModify" a document', function (done) {
+		collection.findAndModify({ _id: id }, ['_id'], { $set: { num: 5 } }, { new: true }, function (error, item) {
+			assert.equal(error, undefined);
+			assert.equal(item.num, 5);
+			done();
 		});
 	});
 
