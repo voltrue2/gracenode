@@ -6,7 +6,11 @@ Changes for version 0.2.34
 
 ### Added
 
-None
+### Unit test for iap module's apple purchase validation
+
+Unit test for iap module added. Currently apple purchase test is available. 
+
+`make test-iap path=/path/to/apple/receipt/sample/file service=apple`
 
 #### make command added npm install.
 
@@ -16,9 +20,17 @@ Executing `make` now also installs dependencies.
 
 #### Mongodb module's dependency version updated from 1.3.14 to 1.4.3
 
+#### Request module added new methods
+
+GET, POST, PUT, and DELETE methods are added. For more detail please refer to request module README
+
 ## Depricated
 
-None
+#### Request module depricated send method
+
+We have now depricated send method in favor of new methods GET, POST, PUT, and DELETE.
+
+This method will be removed in the future version.
 
 ## Removed
 

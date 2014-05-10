@@ -22,9 +22,9 @@ describe('gracenode initialization ->', function () {
 	});
 
 	it('Tests all modules', function () {
-		gn.require('test/server');	
-		gn.require('test/staticdata');	
-		gn.require('test/mongodb');	
+		gn.require('node_modules/gracenode/test/server');	
+		gn.require('node_modules/gracenode/test/staticdata');	
+		gn.require('node_modules/gracenode/test/mongodb');	
 	});
 
 });

@@ -1,4 +1,4 @@
-#### <span id="request-module">request module</span>
+# Request Module
 ***
 
 Access
@@ -9,29 +9,98 @@ gracenode.request
 Configurations
 N/A
 
-#####API: *send*
-<pre>
-void send(Object params, Object options, Function callback)
-</pre>
-> Sends an HTTP or HTTPS request and recieve the response
->> ```javascript
-// arguments
-// params
+### .GET(url [string], requestParams [object], options [object*], callback [function])
+
+Sends a GET request
+
+#### Options
+```
 {
-	protocol: 'http' or 'https',
-	host: 'host name',
-	path: 'URI',
-	port: int,
-	method: string,
-	data: object
+	// send extra headers
+	headers: <object>,
+	// set specific encoding
+	encoding: <string>,
+	// unzip the response body
+	gzip: <boolean>
 }
-// options
+```
+
+Example:
+
+```javascript
+gracenode.request.GET('http://xxxx.com/aaa/bbb', { test: 1 }, null, function (error, body, status) {
+	// do something
+});
+```
+
+### .POST(url [string], requestParams [object], options [object*], callback [function])
+
+Sends a POST request
+
+#### Options
+```
 {
-	headers: object,
-	timeout: int (in miliseconds)
+	// send extra headers
+	headers: <object>,
+	// set specific encoding
+	encoding: <string>,
+	// unzip the response body
+	gzip: <boolean>
 }
-// usage example
-request.send(params, options, function (error, response) {
-	// do something there
+```
+
+Example:
+
+```javascript
+gracenode.request.POST('http://xxxx.com/aaa/bbb', { test: 1 }, null, function (error, body, status) {
+	// do something
+});
+```
+
+### .PUT(url [string], requestParams [object], options [object*], callback [function])
+
+Sends a PUT request
+
+#### Options
+```
+{
+	// send extra headers
+	headers: <object>,
+	// set specific encoding
+	encoding: <string>,
+	// unzip the response body
+	gzip: <boolean>
+}
+```
+
+Example:
+
+```javascript
+gracenode.request.PUT('http://xxxx.com/aaa/bbb', { test: 1 }, null, function (error, body, status) {
+	// do something
+});
+```
+
+### .DELETE(url [string], requestParams [object], options [object*], callback [function])
+
+Sends a DELETE request
+
+#### Options
+```
+{
+	// send extra headers
+	headers: <object>,
+	// set specific encoding
+	encoding: <string>,
+	// unzip the response body
+	gzip: <boolean>
+}
+```
+
+Example:
+
+```javascript
+gracenode.request.DELETE('http://xxxx.com/aaa/bbb', { test: 1 }, null, function (error, body, status) {
+	// do something
 });
 ```

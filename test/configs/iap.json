@@ -1,0 +1,34 @@
+{
+	"modules": {
+		"log": {
+			"console": true,
+			"color": true,
+			"level": {
+				"info": true,
+				"error": true,
+				"fatal": true
+			}
+		},
+		"mysql": {
+			"test": {
+				"read": {
+					"host": "localhost",
+					"user": "dummy",
+					"password": "dummy",
+					"database": "dummy"
+				},
+				"write": {
+					"host": "localhost",
+					"user": "dummy",
+					"password": "dummy",
+					"database": "dummy"
+				}
+			}
+		},
+		"iap": {
+			"sandbox": true,
+			"sql": "test",
+			"googlePublicKeyPath": "dummy"
+		}
+	}
+}

@@ -1,4 +1,5 @@
 var assert = require('assert');
+var gn = require('../../');
 
 describe('mongodb module ->', function () {
 
@@ -17,8 +18,7 @@ describe('mongodb module ->', function () {
 
 		console.log('For this unit test, you need to have mongodb running at mongo://127.0.0.1:27017');
 		
-		var gn = require('../../../');
-		gn.setConfigPath('node_modules/gracenode/test/tests/configs/');
+		gn.setConfigPath('node_modules/gracenode/test/configs/');
 		gn.setConfigFiles(['mongodb.json']);
 		gn.use('mongodb');
 		gn.setup(function (error) {

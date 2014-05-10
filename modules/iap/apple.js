@@ -41,25 +41,16 @@ module.exports.readConfig = function (configIn) {
 module.exports.validatePurchase = function (receipt, cb) {
 	var content = { 'receipt-data': receipt };
 	log.info('validate purchase with: ' + content);
-	var params = {	
-		protocol: 'https',
-		host: host,
-		path: path,
-		method: 'POST',
-		data: content
-	};
 	var options = {
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded'
 		}
 	};
-	gracenode.request.send(params, options, function (error, res) {
+	gracenode.request.POST('https://' + host + path, content, options, function (error, data) {
 		if (error) {
 			return cb(error);
 		}
-		log.info('validation response: ', res);
-
-		var data = JSON.parse(res.data);
+		log.info('validation response: ', data);
 
 		log.verbose('response data:', data);
 

@@ -435,6 +435,23 @@ This tells server module to execute `yourapp/controller/error/notFound.js` on HT
 
 ***
 
+# Unit Test
+
+Gracenode offers unit tests for its built-in modules.
+
+Currently available tests are:
+
+```
+// tests setting up of gracenode and all module tests (Exception for iap module test)
+make test
+// tests iap module (apple purchase test)
+make test-iap path=/path/to/receipt/sample/file service=apple
+// test individual module
+make test-module module=module name
+```
+
+***
+
 ### Using gracenode With Apache
 
 If you insist using Apache with node.js... here is a simple apache configuration example.

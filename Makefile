@@ -15,4 +15,9 @@ test:
 .PHONY: test-module
 test-module:
 	@echo 'test gracenode module $(module):'
-	./node_modules/mocha/bin/mocha test/tests/$(module)/index.js -R spec -b
+	./node_modules/mocha/bin/mocha test/$(module)/index.js -R spec -b
+
+.PHONY: test-iap
+test-iap:
+	@echo 'test gracenode module iap:'
+	./node_modules/mocha/bin/mocha test/iap/index.js -R spec -b  --path=$(path) --service=$(service)

@@ -19,7 +19,7 @@ var CANCELED = 'canceled';
 
 module.exports.readConfig = function (configIn) {
 	if (!gracenode.request || !gracenode.mysql) {
-		throw new Error('iap module requires request module and mysql module');
+		throw new Error('iap module requires built-in request module and mysql module');
 	}
 	if (!configIn || !configIn.sql) {
         throw new Error('invalid configurations given:\n' + JSON.stringify(configIn, null, 4));
@@ -31,6 +31,35 @@ module.exports.readConfig = function (configIn) {
 
 	apple.readConfig(config);
 	google.readConfig(config);
+};
+
+// unit test functions
+module.exports.testApple = function (receipt, cb) {
+	apple.validatePurchase(receipt, function (error, receipt, response) {
+		if (error) {
+			return cb(error);
+		}
+		try {
+			var validateState = getValidateState(response);
+			cb(null, { validateState: validateState, status: PENDING, response: response });
+		} catch (e) {
+			return cb(e);
+		}
+	});
+};
+
+module.exports.testGoogle = function (receipt, cb) {
+	google.validatePurchase(receipt, function (error, receipt, response) {
+		if (error) {
+			return cb(error);
+		}
+		try {
+			var validateState = getValidateState(response);
+			cb(null, { validateState: validateState, status: PENDING, response: response });
+		} catch (e) {
+			return cb(e);
+		}
+	});
 };
 
 module.exports.validateApplePurchase = function (receipt, cb) {
@@ -114,31 +143,35 @@ function checkDb(receipt, finalCallback, cb) {
 
 // FIXME: on duplicate update... not really good. come up with a better way to handle this
 function storeResponse(receipt, response, validated, cb) {
-	var sql = 'INSERT INTO iap (receiptHashId, receipt, response, validateState, status, service, created, modtime) VALUES(?, ?, ?, ?, ?, ?, ?, ?)';	
-	sql += ' ON DUPLICATE KEY UPDATE response = ?, validateState = ?, modtime = ?';
-	var resStr = JSON.stringify(response);
-	var validateState = getValidateState(response);
-	var now = new Date().getTime();
-	var hash = createReceiptHash(receipt);
-	var params = [
-		hash,
-		prepareReceipt(receipt),
-		resStr,
-		validateState,
-		PENDING,
-		getService(receipt),
-		now,
-		now,
-		resStr,
-		validateState,
-		now
-	];
-	mysql.write(sql, params, function (error) {
-		if (error) {
-			return cb(error);
-		}
-		cb(null, { validateState: validateState, status: PENDING, response: response });
-	});
+	try {
+		var validateState = getValidateState(response);
+		var sql = 'INSERT INTO iap (receiptHashId, receipt, response, validateState, status, service, created, modtime) VALUES(?, ?, ?, ?, ?, ?, ?, ?)';	
+		sql += ' ON DUPLICATE KEY UPDATE response = ?, validateState = ?, modtime = ?';
+		var resStr = JSON.stringify(response);
+		var now = new Date().getTime();
+		var hash = createReceiptHash(receipt);
+		var params = [
+			hash,
+			prepareReceipt(receipt),
+			resStr,
+			validateState,
+			PENDING,
+			getService(receipt),
+			now,
+			now,
+			resStr,
+			validateState,
+			now
+		];
+		mysql.write(sql, params, function (error) {
+			if (error) {
+				return cb(error);
+			}
+			cb(null, { validateState: validateState, status: PENDING, response: response });
+		});
+	} catch (e) {
+		return cb(e);
+	}
 }
 
 function createReceiptHash(receipt) {
