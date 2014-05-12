@@ -28,6 +28,16 @@ To:
 
 `make test-iap-google key=/path/to/public/key/directory path=/path/to/receipt/sample/file`
 
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.34
 
 Changes for version 0.2.34
