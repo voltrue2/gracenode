@@ -17,6 +17,12 @@ var PENDING = 'pending';
 var HANDLED = 'handled';
 var CANCELED = 'canceled';
 
+module.exports.VALIDATED = VALIDATED;
+module.exports.ERROR = ERROR;
+module.exports.PENDING = PENDING;
+module.exports.HANDLED = HANDLED;
+module.exports.CANCELED = CANCELED;
+
 module.exports.readConfig = function (configIn) {
 	if (!gracenode.request || !gracenode.mysql) {
 		throw new Error('iap module requires built-in request module and mysql module');
@@ -60,6 +66,15 @@ module.exports.testGoogle = function (receipt, cb) {
 			return cb(e);
 		}
 	});
+};
+
+module.exports.isValidated = function (response) {
+	if (response && response.validateState) {
+		if (response.validateState === VALIDATED) {
+			return true;
+		}
+	}
+	return false;
 };
 
 module.exports.validateApplePurchase = function (receipt, cb) {

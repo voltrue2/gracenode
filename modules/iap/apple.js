@@ -40,7 +40,7 @@ module.exports.readConfig = function (configIn) {
 
 module.exports.validatePurchase = function (receipt, cb) {
 	var content = { 'receipt-data': receipt };
-	log.info('validate purchase with: ' + content);
+	log.info('validate purchase with: ', content);
 	var options = {
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded'

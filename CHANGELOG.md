@@ -1,12 +1,40 @@
 # Change Log
 
+## Version 0.2.35
+
+Changes for version 0.2.35
+
+### Added
+
+None
+
+### Changed
+
+#### Iap module added a new method isValidated
+
+This method evaluates the response of the purchase validation and returns true if the purchase is valid.
+
+#### Iap module's unit test for apple purchase syntax changed
+
+From:
+
+`make test-iap path=/path/to/apple/receipt/sample/file service=apple`
+
+To:
+
+`make test-iap-apple path=/path/to/apple/receipt/sample/file`
+
+#### Iap module added a unit test for google purchase
+
+`make test-iap-google key=/path/to/public/key/directory path=/path/to/receipt/sample/file`
+
 ## Version 0.2.34
 
 Changes for version 0.2.34
 
 ### Added
 
-### Unit test for iap module's apple purchase validation
+#### Unit test for iap module's apple purchase validation
 
 Unit test for iap module added. Currently apple purchase test is available. 
 

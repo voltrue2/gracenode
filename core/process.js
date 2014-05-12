@@ -31,12 +31,10 @@ Process.prototype.setup = function () {
 	this.log.verbose('setting up the process...');
 
 	if (this.inClusterMode && this.clusterNum > 1) {
-		// cluster mode is enabled and allowed child process is more than 1 > we are in cluster mode
 		this.startClusterMode();
 		return;
 	}
 	
-	// we are NOT in cluster mode
 	this.log.info('running the process in none-cluster mode (pid: ' + process.pid + ')');
 	
 	this.emit('nocluster.setup');
@@ -65,7 +63,7 @@ Process.prototype.setupMaster = function () {
 	// spawn workers
 	for (var i = 0; i < this.clusterNum; i++) {
 		var worker = cluster.fork();
-		this.log.info('worker spawed (pid: ' + worker.process.pid + ')');
+		this.log.info('worker spawned (pid: ' + worker.process.pid + ')');
 	}
 
 	// set up termination listener on workers

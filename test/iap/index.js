@@ -5,6 +5,7 @@ var fs = require('fs');
 var path;
 // apple or google
 var service;
+var pem;
 
 describe('iap (in-app-purchase) module ->', function () {
 	
@@ -14,8 +15,17 @@ describe('iap (in-app-purchase) module ->', function () {
 		path = process.argv[process.argv.length - 2].replace('--path=', '');
 		service = process.argv[process.argv.length - 1].replace('--service=', '');
 
-		if (service !== 'apple' && !service !== 'google') {
+		if (service !== 'apple' && service !== 'google') {
 			throw new Error('Unkown service: ' + service);
+		}
+
+		if (service === 'google') {
+			pem = process.argv[process.argv.length - 3].replace('--key=', '');
+			// override config value for pem path for google test
+			gn.on('setup.config', function () {
+				var conf = gn.config.getOne('modules.iap');
+				conf.googlePublicKeyPath = pem;
+			});
 		}
 
 		gn.setConfigPath('node_modules/gracenode/test/configs/');
@@ -38,6 +48,19 @@ describe('iap (in-app-purchase) module ->', function () {
 				case 'apple':
 					gn.iap.testApple(receipt, function (error, res) {
 						assert.equal(error, undefined);
+						assert.equal(gn.iap.isValidated(res), true);
+						console.log(res);
+						done();
+					});
+					break;
+				case 'google':
+					receipt = JSON.parse(receipt);
+					gn.iap.testGoogle(receipt, function (error, res) {
+						
+						console.log(error, res);
+
+						assert.equal(error, undefined);
+						assert.equal(gn.iap.isValidated(res), true);
 						console.log(res);
 						done();
 					});
@@ -45,22 +68,5 @@ describe('iap (in-app-purchase) module ->', function () {
 			}
 		});
 	});
-
-	/* need to think of a way to use pem key...
-	it('Can validate google purchase', function (done) {
-		fs.readFile(googlePath, function (error, data) {
-			assert.equal(error, undefined);
-			var receipt = JSON.parse(data.toString('utf8'));
-			gn.iap.testGoogle(receipt, function (error, res) {
-
-				console.log(error, res);
-
-				assert.equal(error, undefined);
-				console.log(res);
-				done();
-			});
-		});
-	});
-	*/
 
 });

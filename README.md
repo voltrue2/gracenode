@@ -328,7 +328,6 @@ Please refer to <a target="_blank" href="https://github.com/voltrue2/gracenode/t
 {
     "modules": {
         "server": {
-            "respondOnException": true,
             "protocol": "http",
             "host": "localhost",
             "port": 8000,
@@ -383,7 +382,6 @@ This kind of rerouting can be achieved by setting "reroute" in the configuration
 {
     "modules": {
         "server": {
-            "respondOnException": true,
             "protocol": "http",
             "host": "localhost",
             "port": 8000,
@@ -410,7 +408,6 @@ For example if your want to display a certain page for "404 Not Found" error, we
 {
     "modules": {
         "server": {
-            "respondOnException": true,
             "protocol": "http",
             "host": "localhost",
 	    "port": 8000,
@@ -445,7 +442,9 @@ Currently available tests are:
 // tests setting up of gracenode and all module tests (Exception for iap module test)
 make test
 // tests iap module (apple purchase test)
-make test-iap path=/path/to/receipt/sample/file service=apple
+make test-iap-apple path=/path/to/receipt/sample/file
+// tests iap module (google purchase test)
+make test-iap-google key=/path/to/public/key/directory path=/path/to/receipt/sample/file
 // test individual module
 make test-module module=module name
 ```

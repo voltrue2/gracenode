@@ -1,4 +1,6 @@
-onfigurations
+# Iap Module (in-app-purchase)
+
+## Configurations
 ```javascript
 "modules": {
         "iap": {
@@ -9,21 +11,44 @@ onfigurations
 }
 ```
 
-#####API: *validateApplePurchase*
+###API: validateApplePurchase
 
 <pre>
 void validateApplePurchase(String receipt, Function cb)
 </pre>
-> Sends an HTTPS request to Apple to validate the given receipt and responds back an object { validateState: 'validated' or 'error', status: 'pending' or 'handled' or 'canceled' }
 
-#####API: *validateGooglePurchase*
+Sends an HTTPS request to Apple to validate the given receipt and responds back an object { validateState: 'validated' or 'error', status: 'pending' or 'handled' or 'canceled' }
+
+###API: validateGooglePurchase
 
 <pre>
 void validateGooglePurchase(Object receipt, Function cb)
 </pre>
-> Validates the receipt with public key using open SSL
 
-#####API: *updateStatus*
+Validates the receipt with public key using open SSL
+
+###API: isValidated
+
+<pre>
+bool isValidated(Object validationResponse)
+</pre>
+
+Returns true if the response of the purchase validation is validated.
+
+```javascript
+gracenode.iap.validateApplePurchase(receipt, function (error, response) {
+        if (error) {
+                // handle error here
+        }
+
+        // check the validated state
+        if (gracenode.iap.isValidated(response)) {
+		// purchase has been validated
+	}
+});
+```
+
+###API: updateStatus
 
 <pre>
 void updateStatus(Mixed receipt, String status, Function cb)
@@ -39,7 +64,7 @@ gracenode.iap.validateApplePurchase(receipt, function (error, response) {
         }
 
         // check the validated state
-        if (response.validateState === 'validated') {
+        if (gracenode.iap.isValidated(response)) {
                 // Apple has validated the purchase
 
                 var hc = gracenode.wallet.create('hc');

@@ -17,7 +17,12 @@ test-module:
 	@echo 'test gracenode module $(module):'
 	./node_modules/mocha/bin/mocha test/$(module)/index.js -R spec -b
 
-.PHONY: test-iap
-test-iap:
-	@echo 'test gracenode module iap:'
-	./node_modules/mocha/bin/mocha test/iap/index.js -R spec -b  --path=$(path) --service=$(service)
+.PHONY: test-iap-apple
+test-iap-apple:
+	@echo 'test gracenode module iap apple:'
+	./node_modules/mocha/bin/mocha test/iap/index.js -R spec -b  --path=$(path) --service=apple
+
+.PHONY: test-iap-google
+test-iap-google:
+	@echo 'test gracenode module iap google:'
+	./node_modules/mocha/bin/mocha test/iap/index.js -R spec -b  --key=$(key) --path=$(path) --service=google
