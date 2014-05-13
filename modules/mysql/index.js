@@ -39,7 +39,7 @@ module.exports.readConfig = function (configIn) {
 	for (var name in configIn) {
 		for (var type in configIn[name]) {
 			var conf = configIn[name][type];
-			if (!conf.database || !conf.host || !conf.user || !conf.password) {
+			if (!conf.database || !conf.host || !conf.user) {
 				return new Error('invalid configurations for [' + name + '.' + type + ']: \n' + JSON.stringify(configIn, null, 4));
 			}
 		}

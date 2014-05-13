@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 0.2.36
+
+Changes for version 0.2.36
+
+### Added
+
+None
+
+### Changed
+
+##### mysql module now allows blank password
+
+Mysql module allows empty password for DB connections.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.35
 
 Changes for version 0.2.35
