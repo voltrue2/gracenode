@@ -42,7 +42,7 @@ module.exports.setup = function (cb) {
 			if (error) {
 				return cb(error);
 			}
-			pools[name] = db;
+			pools[name] = { db: db, database: configData.database };
 			
 			logger.info('connection pool to mongodb created [' +  name + ']');
 			
@@ -54,7 +54,7 @@ module.exports.setup = function (cb) {
 		gracenode.registerShutdownTask('mongodb', function (done) {
 			var names = Object.keys(pools);
 			async.eachSeries(names, function (name, next) {
-				pools[name].close(function (error) {
+				pools[name].db.close(function (error) {
 					if (error) {
 						logger.error('failed to close connection to mongodb [' + name + ']', error);
 					}
@@ -71,7 +71,7 @@ module.exports.setup = function (cb) {
 
 module.exports.create = function (name) {
 	if (pools[name]) {
-		return new Db(name, pools[name]);
+		return new Db(pools[name].database, pools[name].db);
 	}
 	return null;
 };
