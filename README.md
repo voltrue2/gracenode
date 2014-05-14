@@ -118,7 +118,7 @@ Allows the application to override and use custom module of the same module name
 gracenode.override('mysql')
 ```
 
-###.use(moduleName [string], params [object*])
+###.use(moduleName [string])
 Tells gracenode what modules to load when calling the setup functions.
 ```
 gracenode.use('mysql');

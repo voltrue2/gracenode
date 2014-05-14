@@ -36,7 +36,7 @@ module.exports.setup = function (cb) {
 			url += '?maxPoolSize=' + configData.poolSize;
 		}
 
-		logger.verbose('creating connection pool to mongodb [' +  name + ']');
+		logger.verbose('creating connection pool to mongodb [' +  configData.database + ']');
 
 		client.connect(url, function (error, db) {
 			if (error) {
@@ -44,7 +44,7 @@ module.exports.setup = function (cb) {
 			}
 			pools[name] = { db: db, database: configData.database };
 			
-			logger.info('connection pool to mongodb created [' +  name + ']');
+			logger.info('connection pool to mongodb created [' +  configData.database + ']');
 			
 			next();
 		});
@@ -56,9 +56,9 @@ module.exports.setup = function (cb) {
 			async.eachSeries(names, function (name, next) {
 				pools[name].db.close(function (error) {
 					if (error) {
-						logger.error('failed to close connection to mongodb [' + name + ']', error);
+						logger.error('failed to close connection to mongodb [' + pools[name].database + ']', error);
 					}
-					logger.info('connection pool to mongodb closed [' + name + ']');
+					logger.info('connection pool to mongodb closed [' + pools[name].database + ']');
 					delete pools[name];
 					next();
 				});
