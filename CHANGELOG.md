@@ -22,6 +22,10 @@ By setting null, false to "level" or omitting "level" completely, you can now st
 
 Staticdata modules no longer breaks with an exception when attempting to access values by index on none-indexed data.
 
+#### view module variable parser improved
+
+View module improved its variable replacement parser's error handling.
+
 ### Depricated
 
 None
