@@ -58,7 +58,7 @@ Parser.prototype.replace = function (that, tag, keyTag, indicator, data) {
 			for (var i = 0, len = keys.length; i < len; i++) {
 				if (keys[i] && value && value[keys[i]] !== undefined) {
 					value = value[keys[i]];
-				} else {
+				} else if (!value) {
 					log.error('unable to inject a value of a variable:', keys[i]);
 				}
 			}
