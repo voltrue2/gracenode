@@ -68,7 +68,8 @@ function parseUrl(url) {
 	return {
 		controller: parsed[0] || null,
 		method: parsed[1] || null,
-		parameters: parsed.length > 2 ? parsed.splice(2) : []
+		parameters: parsed.length > 2 ? parsed.splice(2) : [],
+		originalRequest: null
 	};
 }
 

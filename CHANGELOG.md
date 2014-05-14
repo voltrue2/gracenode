@@ -26,6 +26,10 @@ Staticdata modules no longer breaks with an exception when attempting to access 
 
 View module improved its variable replacement parser's error handling.
 
+#### server module pre-defained error controller inherits original request response status
+
+Pre-defined error handling controllers can now inherit original response status automatically.
+
 ### Depricated
 
 None
