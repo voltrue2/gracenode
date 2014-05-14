@@ -64,6 +64,20 @@ gracenode.setup(function (error) {
 });
 ```
 
+##How to start your gracenode application
+
+To start your application, simply execte your bootstrapped file as shown below:
+
+```
+node yourBootstrapped.js
+```
+
+##Daemonizing your application process
+
+Gracenode does NOT include daemonization tool as there are numbers of options available for such task.
+
+***
+
 #gracenode
 
 ##Methods
@@ -429,6 +443,33 @@ For example if your want to display a certain page for "404 Not Found" error, we
 Notice we have a configuration object called "error" in the above configurations.
 
 This tells server module to execute `yourapp/controller/error/notFound.js` on HTTP status 404.
+
+#### Request Hooks
+
+Server module can let you assign certain function(s) to be executed on requests.
+
+This is usefuly for session validation on requests etc.
+
+Example:
+
+```
+gracenode.setup(function () {
+
+	// assign session validation function to all requests under "example" controller
+	gracenode.server.setupRequestHooks({
+		example: function (request, callback) {
+			if (isSessionValid()) {
+				// session is valid. continue to execute the request
+				return cb();
+			}
+			// session is not valid. respond with error
+			cb({ code: 'invalidSession' }, 403);
+		}
+	});
+});
+```
+
+For more detailed information on request hooks, please read server module's README file.
 
 ***
 

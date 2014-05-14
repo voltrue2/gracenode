@@ -16,7 +16,7 @@ Mysql module allows empty password for DB connections.
 
 #### gracenode core: shutdown task handler better catches exceptions
 
-Gracenode core's shutdown task handler improved exception handling to prevent process from handing on exceptions.
+Gracenode core's shutdown task handler improved exception handling to prevent process from hanging on exceptions.
 
 ### Depricated
 
