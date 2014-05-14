@@ -3,11 +3,6 @@
 		"file": false,
 		"console": true,
 		"color": true,
-		"level": {
-			"info": true,
-			"warning": true,
-			"error": true,
-			"fatal": true
-		}
+		"level": {}
 	}
 }

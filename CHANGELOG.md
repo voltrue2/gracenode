@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 0.2.37
+
+Chages for version 0.2.37
+
+### Added
+
+#### encrypt module added a unit test
+
+To execute encrypt module unit test execute:
+
+`make test-module module=encrypt`
+
+### Changed
+
+None
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.36
 
 Changes for version 0.2.36

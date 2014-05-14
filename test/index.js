@@ -25,6 +25,7 @@ describe('gracenode initialization ->', function () {
 		gn.require('node_modules/gracenode/test/server');	
 		gn.require('node_modules/gracenode/test/staticdata');	
 		gn.require('node_modules/gracenode/test/mongodb');	
+		gn.require('node_modules/gracenode/test/encrypt');	
 	});
 
 });
