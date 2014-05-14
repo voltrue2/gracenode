@@ -11,6 +11,7 @@ function Response(server, request, response, startTime) {
 	this._request = request;
 	this._response = response;
 	this._startTime = startTime;
+	this._defaultStatus = 200;
 }
 
 Response.prototype.header = function (name, value) {
@@ -20,28 +21,28 @@ Response.prototype.header = function (name, value) {
 Response.prototype.json = function (content, status) {
 	log.verbose('response content type: JSON');
 	setupFinish(this._request, this._response, this._server, this._startTime);
-	respondJSON(this._request, this._response, content, status);
+	respondJSON(this._request, this._response, content, status || this._defaultStatus);
 	finish(this._request, this._response, this._server);
 };
 
 Response.prototype.html = function (content, status) {
 	log.verbose('response content type: HTML');
 	setupFinish(this._request, this._response, this._server, this._startTime);
-	respondHTML(this._request, this._response, content, status);
+	respondHTML(this._request, this._response, content, status || this._defaultStatus);
 	finish(this._request, this._response, this._server);
 };
 
 Response.prototype.data = function (content, status) {
 	log.verbose('response content type: Data');
 	setupFinish(this._request, this._response, this._server, this._startTime);
-	respondData(this._request, this._response, content, status);
+	respondData(this._request, this._response, content, status || this._defaultStatus);
 	finish(this._request, this._response, this._server);
 };
 
 Response.prototype.file = function (content, status) {
 	log.verbose('response content type: File');
 	setupFinish(this._request, this._response, this._server, this._startTime);
-	respondFILE(this._request, this._response, content, status);
+	respondFILE(this._request, this._response, content, status || this._defaultStatus);
 	finish(this._request, this._response, this._server);
 };
 
@@ -49,11 +50,16 @@ Response.prototype.error = function (content, status) {
 	this._errorHandler(content, status);
 };
 
-Response.prototype.redirect = function (content, status) {
+Response.prototype.redirect = function (content) {
 	log.verbose('response content type: Redirect');
 	setupFinish(this._request, this._response, this._server, this._startTime);
-	respondRedirect(this._request, this._response, content, status);
+	respondRedirect(this._request, this._response, content);
 	finish(this._request, this._response, this._server);
+};
+
+// internal use only
+Response.prototype._setDefaultStatus = function (status) {
+	this._defaultStatus = status;
 };
 
 // overrriden by controller
@@ -103,7 +109,6 @@ function compressContent(req, content, cb) {
 
 function respondJSON(req, res, content, status) {
 	content = content || null;
-	status = status || 200;
 	compressContent(req, JSON.stringify(content), function (error, data) {
 		
 		if (error) {
@@ -132,7 +137,6 @@ function respondJSON(req, res, content, status) {
 
 function respondHTML(req, res, content, status) {
 	content = content || null;
-	status = status || 200;
 	compressContent(req, content, function (error, data) {
 		
 		if (error) {
@@ -160,7 +164,6 @@ function respondHTML(req, res, content, status) {
 
 function respondData(req, res, content, status) {
 	content = content || null;
-	status = status || 200;
 	compressContent(req, content, function (error, data) {
 		
 		if (error) {
@@ -186,9 +189,9 @@ function respondData(req, res, content, status) {
 	});
 }
 
-function respondRedirect(req, res, content, status) {
+function respondRedirect(req, res, content) {
 	content = content || null;
-	status = status || 301;
+	var status = 301;
 	// content needs to be redirect URL
 	res.writeHead(status, {
 		Location: content
@@ -203,7 +206,6 @@ function respondRedirect(req, res, content, status) {
 
 function respondFILE(req, res, content, status) {
 	content = content || null;
-	status = status || 200;
 	var type = req.url.substring(req.url.lastIndexOf('.') + 1);
 	var contentSize = content.length;
 	res.writeHead(status, {
@@ -224,7 +226,7 @@ function respondERROR(req, res, content, status) {
 	if (content !== null && typeof content === 'object') {
 		content = JSON.stringify(content);
 	}
-	status = status || 404;
+	status = status || 400;
 	compressContent(req, content, function (error, data) {
 		
 		if (error) {

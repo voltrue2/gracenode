@@ -1,3 +1,3 @@
 module.exports.GET = function (req, res) {
-	res.json('internal error', 500);
+	res.json('internal error');
 };

@@ -67,6 +67,11 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 			// create response object
 			var responseObj = response.create(server, req, res, startTime);
 
+			// check if there was an original request (only in case of pre-defined error)
+			if (parsedUrl.originalRequest) {
+				responseObj._setDefaultStatus(parsedUrl.originalRequest.status);
+			}
+
 			// override _errorHandler for responseObj.error()
 			responseObj._errorHandler = function (error, status) {
 				errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
@@ -161,7 +166,8 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, star
 			parsedUrl.error = true; // this flag is set to prevent possible infinite loop of error on error handler
 			parsedUrl.originalRequest = {
 				controller: parsedUrl.controller,
-				method: parsedUrl.method
+				method: parsedUrl.method,
+				status: status
 			};
 			parsedUrl.controller = errorController.controller;
 			parsedUrl.method = errorController.method;
@@ -169,7 +175,7 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, star
 			log.verbose('error handler(' + status + ') configured:', errorController);
 			// check to see if we already have requestObj or not
 			if (requestObj) {
-				// we alreay have request object
+				// we already have request object
 				return handle(server, req, res, parsedUrl, requestObj, startTime);
 			}
 			// we do not have request object yet

@@ -63,8 +63,9 @@ describe('gracenode server module ->', function () {
 			foo: 'FOO'
 		};
 	
-		gn.request.GET(http + '/test/get/one/two/three', args, options, function (error, body) {
+		gn.request.GET(http + '/test/get/one/two/three', args, options, function (error, body, status) {
 			assert.equal(error, undefined);
+			assert.equal(status, 200);
 			assert.equal(body.boo, args.boo);
 			assert.equal(body.foo, args.foo);
 			assert.equal(body.parameters[0], 'one');
