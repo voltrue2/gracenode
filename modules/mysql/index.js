@@ -379,5 +379,5 @@ function endTransaction(error, transactionId, that, conn, cb) {
 }
 
 function createName(confName, conf, type) {
-	return confName + '-' + conf.database + '-' + conf.host + '-' + type;
+	return confName + ':' + conf.host + '@' + conf.database + '.' + type;
 }
