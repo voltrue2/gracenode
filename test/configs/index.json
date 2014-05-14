@@ -1,8 +1,7 @@
 {
 	"modules": {
 		"file": false,
-		"console": true,
-		"color": true,
-		"level": false
+		"console": false,
+		"color": false
 	}
 }
