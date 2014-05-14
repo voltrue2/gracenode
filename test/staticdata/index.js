@@ -46,4 +46,10 @@ describe('gracenode staticdata module ->', function () {
 		}	
 	});
 
+	it('Does not throw an exception when accessing none-indexed map data', function () {
+		var sd = gn.staticdata.create('map');
+		var map = sd.getAllByIndexName('dummy');
+		assert.equal(map, null);
+	});
+
 });

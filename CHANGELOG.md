@@ -18,6 +18,10 @@ To execute encrypt module unit test execute:
 
 By setting null, false to "level" or omitting "level" completely, you can now stop log module from logging at all.
 
+#### staticdata module no longer throws an uncaught exception on none-indexed data
+
+Staticdata modules no longer breaks with an exception when attempting to access values by index on none-indexed data.
+
 ### Depricated
 
 None

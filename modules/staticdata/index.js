@@ -269,7 +269,7 @@ StaticData.prototype.getAll = function () {
 };
 
 StaticData.prototype.getAllByIndexName = function (indexName) {
-	if (this._indexMap[indexName] === undefined) {
+	if (!this._indexMap || this._indexMap[indexName] === undefined) {
 		return null;
 	}
 
