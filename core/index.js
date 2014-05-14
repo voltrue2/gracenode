@@ -367,12 +367,17 @@ function handleShutdownTasks(cb) {
 	// execute shutdown tasks
 	async.eachSeries(gracefulWaitList, function (item, next) {
 		log.info('handling graceful exit task for', item.name);
-		item.task(function (error) {
-			if (error) {
-				log.error('shutdown task: <', item.name, '>', error);
-			}
+		try {
+			item.task(function (error) {
+				if (error) {
+					log.error('shutdown task <' + item.name + '>', error);
+				}
+				next();
+			});
+		} catch (e) {
+			log.fatal('shutdown task <' + item.name + '>', e);
 			next();
-		});
+		}
 	},
 	function () {
 		gracefulWaitList = [];

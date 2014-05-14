@@ -10,9 +10,13 @@ None
 
 ### Changed
 
-##### mysql module now allows blank password
+#### mysql module now allows blank password
 
 Mysql module allows empty password for DB connections.
+
+#### gracenode core: shutdown task handler better catches exceptions
+
+Gracenode core's shutdown task handler improved exception handling to prevent process from handing on exceptions.
 
 ### Depricated
 
