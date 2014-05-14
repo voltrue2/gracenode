@@ -33,6 +33,10 @@ var prefix = '';
 
 module.exports = new EventEmitter();
 
+loggerSource.events.on('output', function (address, name, level, data) {
+	module.exports.emit('output', address, name, level, data);
+});
+
 module.exports.readConfig = function (configIn) {
 	if (!configIn) {
 		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
@@ -55,7 +59,3 @@ module.exports.setPrefix = function (p) {
 module.exports.create = function (name) {
 	return new loggerSource.Logger(prefix, name, config);
 };
-
-loggerSource.events.on('output', function (address, name, level, data) {
-	module.exports.emit('output', address, name, level, data);
-});

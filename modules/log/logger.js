@@ -49,8 +49,12 @@ Logger.prototype.fatal = function () {
 };
 
 Logger.prototype._handleLog = function (levelName, message) {
+	// if there is no config -> we output nothing
+	if (!this.config || !this.config.level) {
+		return;
+	}
 	// check enabled or not
-	if (this.config && this.config.level && !this.config.level[levelName]) {
+	if (!this.config.level[levelName]) {
 		// not enabled
 		return;
 	}

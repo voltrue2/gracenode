@@ -14,7 +14,9 @@ To execute encrypt module unit test execute:
 
 ### Changed
 
-None
+#### log module configurations for "level"
+
+By setting null, false to "level" or omitting "level" completely, you can now stop log module from logging at all.
 
 ### Depricated
 

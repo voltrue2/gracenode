@@ -3,6 +3,6 @@
 		"file": false,
 		"console": true,
 		"color": true,
-		"level": {}
+		"level": false
 	}
 }
