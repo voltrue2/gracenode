@@ -14,6 +14,12 @@ None
 
 Server module will now look for index.js if there is no method name in the request URLs.
 
+#### view module no longer remove tabs and line breaks from HTML files
+
+View module no longer removes tabs and line breaks from HTML files.
+
+In order to include partial HTML templates in to javascript, use different file extentension such as html.part etc.
+
 ***
 
 ## Version 0.2.37
