@@ -1,13 +1,5 @@
 {
 	"modules": {
-		"log": {
-			"console": true,
-			"color": true,
-			"level": {
-				"error": true,
-				"fatal": true
-			}
-		},
 		"mongodb": {
 				"test": {
 				"host": "127.0.0.1",

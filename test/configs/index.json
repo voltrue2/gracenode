@@ -1,7 +1,16 @@
 {
 	"modules": {
-		"file": false,
-		"console": false,
-		"color": false
+		"log": {
+			"console": true,
+			"color": true,
+			"level": {
+				"verbose": true,
+				"debug": true,
+				"info": true,
+				"warning": true,
+				"error": true,
+				"fatal": true
+			}
+		}
 	}
 }

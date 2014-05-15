@@ -11,21 +11,22 @@ describe('gracenode initialization ->', function () {
 		gn.addModulePath('node_modules/gracenode/test/modules/');
 
 		// test override
-		gn.override('view');
+		gn.override('mysql');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
-			assert.equal(gn.view.test, 'test override');
+			assert.equal(gn.mysql.test, 'test override');
 			done();
 		});
 			
 	});
 
 	it('Tests all modules', function () {
-		gn.require('node_modules/gracenode/test/server');	
-		gn.require('node_modules/gracenode/test/staticdata');	
+		gn.require('node_modules/gracenode/test/view');	
 		gn.require('node_modules/gracenode/test/mongodb');	
 		gn.require('node_modules/gracenode/test/encrypt');	
+		gn.require('node_modules/gracenode/test/staticdata');	
+		gn.require('node_modules/gracenode/test/server');	
 	});
 
 });

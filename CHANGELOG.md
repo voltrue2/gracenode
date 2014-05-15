@@ -18,7 +18,19 @@ Server module will now look for index.js if there is no method name in the reque
 
 View module no longer removes tabs and line breaks from HTML files.
 
-In order to include partial HTML templates in to javascript, use different file extentension such as html.part etc.
+#### unit test added for view module
+
+View module now has unit test.
+
+`make test-module module=view` or `make test`
+
+### Depricated
+
+None
+
+### Removed
+
+None
 
 ***
 
