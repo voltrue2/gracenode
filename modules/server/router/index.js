@@ -65,9 +65,10 @@ function parseUrl(url) {
 			return item;
 		}
 	});
+	// if there is no method in URL, gracenode will look for index.js
 	return {
 		controller: parsed[0] || null,
-		method: parsed[1] || null,
+		method: parsed[1] || 'index',
 		parameters: parsed.length > 2 ? parsed.splice(2) : [],
 		originalRequest: null
 	};

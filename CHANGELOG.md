@@ -1,5 +1,21 @@
 # Change Log
 
+## Version 0.2.38
+
+Changes for version 0.2.38
+
+### Added
+
+None
+
+### Changed
+
+#### server module: auto look-up of index.js method
+
+Server module will now look for index.js if there is no method name in the request URLs.
+
+***
+
 ## Version 0.2.37
 
 Chages for version 0.2.37
