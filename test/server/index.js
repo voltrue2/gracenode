@@ -137,7 +137,7 @@ describe('gracenode server module ->', function () {
 		gn.request.GET(http + '/blah', {}, options, function (error, body, status) {
 			assert(error);
 			assert.equal(status, 404);
-			assert.equal(body, 'controller not found:/var/www/node_modules/gracenode/test/server/controller/blah/null');
+			assert.equal(body, 'controller not found:/var/www/node_modules/gracenode/test/server/controller/blah/index');
 			done();
 		});
 	});
@@ -168,11 +168,20 @@ describe('gracenode server module ->', function () {
 	});
 
 	it('Can execute pre-assigned error controller on error status 500', function (done) {
-		gn.request.GET(http + '/test/errorOut', {}, options, function (error, body) {
+		gn.request.GET(http + '/test/errorOut', {}, options, function (error, body, status) {
 			assert(error);
+			assert.equal(status, 500);
 			assert.equal(body, 'internal error');
 			done();
 		});		
+	});
+
+	it('Can auto look-up index.js for a request /test/', function () {
+		gn.request.GET(http + '/test', {}, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(status, 200);
+			assert.equal(body, 'index');
+		});
 	});
 
 });
