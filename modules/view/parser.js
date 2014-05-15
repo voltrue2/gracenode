@@ -14,11 +14,13 @@ function Parser(valueMap) {
 
 Parser.prototype.parseData = function (data) {
 	var includeList = [];
+	var replaceList = [];
 	data = this.parse(data, function (that, tag, keyTag, indicator, data) {
 		// evaluate the indicator
 		switch (indicator) {
 			case '=':
-				data = that.replace(that, tag, keyTag, indicator, data);
+				replaceList.push({ tag: tag, keyTag: keyTag, indicator: indicator });
+				//data = that.replace(that, tag, keyTag, indicator, data);
 				break;
 			case 'include':
 				includeList.push({ tag: tag, path: keyTag });
@@ -31,6 +33,7 @@ Parser.prototype.parseData = function (data) {
 	});
 	return {
 		includeList: includeList,
+		replaceList: replaceList,
 		data: data
 	};
 };

@@ -189,6 +189,12 @@ function parseContent(outputData, parser, seen, clientData, cb) {
 	var result = parser.parseData(outputData);
 	var list = result.includeList;
 	outputData = result.data;
+
+	// replace variables
+	for (var i = 0, len = result.replaceList.length; i < len; i++) {
+		var item = result.replaceList[i];
+		outputData = parser.replace(parser, item.tag, item.keyTag, item.indicator, outputData);
+	}	
 	
 	// include files asynchronously
 	async.eachSeries(list, function (item, next) {
@@ -238,7 +244,6 @@ function processFile(type, data) {
 			}
 			break;	
 		case 'css':
-		case 'html':
 			// remove line breaks and tabs
 			data = data.replace(/(\r\n|\n|\r|\t)/gm, '');
 			break;
