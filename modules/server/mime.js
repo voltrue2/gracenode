@@ -57,9 +57,20 @@ var map = {
 };
 
 module.exports = function (fileType) {
+	// mime type exception handler
+	fileType = checkTypeException(fileType);
 	var prefix = map[fileType] || null;
 	if (!prefix) {
 		return '';
 	}
 	return prefix + fileType;
 };
+
+function checkTypeException(type) {
+	switch (type) {
+		case 'jpg':
+			return 'jpeg';
+		default:
+			return type;
+	}
+}

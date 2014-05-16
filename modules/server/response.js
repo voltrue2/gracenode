@@ -242,7 +242,7 @@ function respondFILE(req, res, content, status) {
 	var contentSize = content.length;
 	res.writeHead(status, {
 		'Content-Length': contentSize,
-		'Content-Type': getFileType(type)
+		'Content-Type': getMimeType(type)
 	});
 	
 	log.verbose('response content size: (url:' + req.url + ') ' + (contentSize / 1024) + ' KB');
@@ -281,41 +281,4 @@ function respondERROR(req, res, content, status) {
 		res.end(data, 'binary');
 
 	});
-}
-
-function getFileType(type) {
-	switch (type) {
-		case 'png':
-		case 'gif':
-			return 'image/' + type;
-		case 'jpg':
-		case 'jpeg':
-			return 'image/jpeg';
-		case 'mp3':
-			return 'audio/mpeg';
-		case 'wav':
-			return 'audio/wav';
-		case 'ogg':
-			return 'application/ogg';
-		case 'oga':
-		case 'ogv':
-			return 'audio/ogg';
-		case 'midi':
-			return 'audio/midi';
-		case 'pdf':
-			return 'application/pdf';
-		case 'mpeg4':
-		case 'mpeg2':
-			return 'video/mpeg';
-		case 'css':
-			return 'text/css';
-		case 'js':
-			return 'text/javascript';
-		case 'html':
-			return 'text/html';
-		case 'xml':
-			return 'text/xml';
-		default:
-			return 'text/plain';	
-	}
 }
