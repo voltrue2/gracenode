@@ -24,6 +24,10 @@ View module now has unit test.
 
 `make test-module module=view` or `make test`
 
+#### view module now handles a new file extension .tpl
+
+For more details please read viuew module README.
+
 ### Depricated
 
 None
