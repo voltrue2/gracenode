@@ -131,7 +131,7 @@ function respondJSON(req, res, content, status) {
 			'Cache-Control': 'no-cache, must-revalidate',
 			'Connection': 'Keep-Alive',
 			'Content-Encoding': 'gzip',
-			'Content-Type': 'text/plain; charset=UTF-8',
+			'Content-Type': 'application/json; charset=UTF-8',
 			'Pragma': 'no-cache',
 			'Vary': 'Accept-Encoding',
 			'Content-Length': data.length

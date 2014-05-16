@@ -18,7 +18,9 @@
 		"cookies": "0.3.8",
 		"mongodb": "1.4.3",
 		"cron": "1.0.4",
-		"request": "2.33.0",
+		"request": "2.33.0"
+	},
+	"devDependencies": {
 		"mocha": "1.17.1"
 	},
 	"engine": "node >= 0.10.20",
