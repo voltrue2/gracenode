@@ -1,6 +1,6 @@
 (function (window) {
 	/**
-	* Usage: var myTween = new window.core.wuic.Tween(window.core.wuic.Tween.Linear, startValue, endValue, delayInSecond, durationInSecond);
+	* Usage: var myTween = new window.Tween(window.Tween.Linear, startValue, endValue, delayInSecond, durationInSecond);
 			myTween.on('change', function (currentValue) {
 				// we update with currentValue
 			});
