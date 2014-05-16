@@ -1,6 +1,7 @@
 var gracenode = require('../../');
 var log = gracenode.log.create('server-response');
 var zlib = require('zlib');
+var getMimeType = require('./mime');
 
 module.exports.create = function (server, request, response, startTime) {
 	return new Response(server, request, response, startTime);
@@ -51,10 +52,11 @@ Response.prototype.error = function (content, status) {
 };
 
 Response.prototype.download = function (content, fileName, status) {
-	log.verbose('response content type: Download');
+	var fileType = fileName.substring(fileName.lastIndexOf('.') + 1);
+	log.verbose('response content type:', fileType);
 	this.header('Content-Disposition', 'attachment; filename=' + fileName);
 	setupFinish(this._request, this._response, this._server, this._startTime);
-	respondData(this._request, this._response, content, status || this._defaultStatus);
+	respondDownload(this._request, this._response, content, fileType, status || this._defaultStatus);
 	finish(this._request, this._response, this._server);
 };
 
@@ -185,6 +187,33 @@ function respondData(req, res, content, status) {
 			'Connection': 'Keep-Alive',
 			'Content-Encoding': 'gzip',
 			'Content-Type': 'text/plain; charset=UTF-8',
+			'Pragma': 'no-cache',
+			'Vary': 'Accept-Encoding',
+			'Content-Length': data.length
+		});
+
+		responseLog(req, status);		
+
+		res.end(data, 'binary');		
+
+	});
+}
+
+function respondDownload(req, res, content, type, status) {
+	content = content || null;
+	compressContent(req, content, function (error, data) {
+		
+		if (error) {
+			log.error('compression error: (url:' + req.url + ')', error);
+			status = 500;
+			data = error;
+		}
+
+		res.writeHead(status, {
+			'Cache-Control': 'no-cache, must-revalidate',
+			'Connection': 'Keep-Alive',
+			'Content-Encoding': 'gzip',
+			'Content-Type': getMimeType(type) + '; charset=UTF-8',
 			'Pragma': 'no-cache',
 			'Vary': 'Accept-Encoding',
 			'Content-Length': data.length
