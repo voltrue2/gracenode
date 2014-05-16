@@ -8,12 +8,12 @@
 		"url": "https://github.com/voltrue2/gracenode.git"
 	},
 	"dependencies": {
-		"async": "0.2.9",
-		"uglify-js": "2.4.0",
+		"async": "0.8.0",
+		"uglify-js": "2.4.13",
 		"memcached": "0.2.8",
 		"mysql": "2.0.1",
-		"jshint": "2.2.0",
-		"bcrypt": "0.7.7",
+		"jshint": "2.5.0",
+		"bcrypt": "0.7.8",
 		"node-uuid": "1.4.1",
 		"cookies": "0.3.8",
 		"mongodb": "1.4.3",
@@ -21,7 +21,7 @@
 		"request": "2.33.0"
 	},
 	"devDependencies": {
-		"mocha": "1.17.1"
+		"mocha": "1.18.2"
 	},
 	"engine": "node >= 0.10.20",
 	"contributors": [

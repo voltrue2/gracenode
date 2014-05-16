@@ -1,5 +1,5 @@
 var gn = require('../../../');
-var logger = gn.log.create('overridden-view');
+var logger = gn.log.create('overridden-mysql');
 
 module.exports.readConfig = function () {
 	logger.info('overriden view.readConfig');
