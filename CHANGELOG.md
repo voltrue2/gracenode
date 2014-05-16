@@ -21,6 +21,8 @@ var csvData = 'colum A,column B\nAAA,BBB\nCCC,DDD';
 response.download(csvData, 'example.csv');
 ```
 
+#### server module corrected mime type of json response
+
 ### Depricated
 
 None

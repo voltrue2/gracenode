@@ -1,6 +1,8 @@
 var app = 'application/';
 var aud = 'audio/';
 var tx = 'text/';
+var img = 'image/';
+var vd = 'video/';
 var map = {
 	'atom+xml': app,
 	'ecmascript': app,
@@ -24,8 +26,6 @@ var map = {
 	'xnacl': app,
 	'basic': aud,
 	'L24': aud,
-	'mp4': aud,
-	'mpeg': aud,
 	'opus': aud,
 	'ogg': aud,
 	'vorbis': aud,
@@ -40,7 +40,20 @@ var map = {
 	'rtf': tx,
 	'vcard': tx,
 	'vnd.abc': tx,
-	'xml': tx
+	'xml': tx,
+	'gif': img,
+	'jpeg': img,
+	'pjpeg': img,
+	'png': img,
+	'svg+xml': img,
+	'vnd.djvu': img,
+	'avi': vd,
+	'mpeg': vd,
+	'mp4': vd,
+	'quicktime': vd,
+	'x-matroska': vd,
+	'x-ms-wmv': vd,
+	'x-flv': vd
 };
 
 module.exports = function (fileType) {
