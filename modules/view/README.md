@@ -37,7 +37,9 @@ hello world
 <pre>
 void load(String vilewFilePath, Function callback)
 </pre>
-> Loads a view file.
+
+Loads a view file.
+
 ```javascript
 // controller file
 module.exports.index = function (req, res) {
@@ -71,9 +73,34 @@ module.exports.index = function (req, res) {
 (:include content/ :)
 </div>
 ```
->> All included files have access to the variables assigned by **assign** function.
->>> All assigned variables are also available as Javascript variables in the client under window.gracenode object
+
+All included files have access to the variables assigned by **assign** function.
+
+All assigned variables are also available as Javascript variables in the client under window.gracenode object
+
+##### .tpl files
+
+When including files with .tpl, view module will remove tags and line breaks. This is useful when you need to inject HTML in to javascript code etc.
+
+Example:
+
+File to be included:
+
+```
+<div>Test</div>
+<div>Test2</div>
+```
+
+Javascript code to include the file above:
+
+```
+var htmlTpl = '(:include view/test/test.html.tpl :)';
+// this will be:
+// var htmlTpl = '<div>Test</div><div>Test2</div>';
+```
 
 ###### Notes
-> There is no **if** nor **for-loop** in view module because view template files are just template files and should not contain any sort of logic.
->> If you need to generate a list of items or change the display depending on certain conditions, please use *Javascript* to do so. After all we are using Nodejs.
+
+There is no **if** nor **for-loop** in view module because view template files are just template files and should not contain any sort of logic.
+
+If you need to generate a list of items or change the display depending on certain conditions, please use *Javascript* to do so. After all we are using Nodejs.
