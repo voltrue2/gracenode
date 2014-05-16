@@ -20,7 +20,6 @@ Parser.prototype.parseData = function (data) {
 		switch (indicator) {
 			case '=':
 				replaceList.push({ tag: tag, keyTag: keyTag, indicator: indicator });
-				//data = that.replace(that, tag, keyTag, indicator, data);
 				break;
 			case 'include':
 				includeList.push({ tag: tag, path: keyTag });

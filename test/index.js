@@ -12,7 +12,7 @@ describe('gracenode initialization ->', function () {
 
 		// test override
 		gn.override('mysql');
-
+		
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
 			assert.equal(gn.mysql.test, 'test override');
@@ -20,7 +20,7 @@ describe('gracenode initialization ->', function () {
 		});
 			
 	});
-
+	
 	it('Tests all modules', function () {
 		gn.require('node_modules/gracenode/test/view');	
 		gn.require('node_modules/gracenode/test/mongodb');	

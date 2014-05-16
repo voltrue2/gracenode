@@ -5,11 +5,10 @@ var config = require('../modules/config');
 var logger = require('../modules/log');
 var log = logger.create('gracenode');
 var util = require('util');
-var fs = require('fs');
-var modPaths = [];
 var gracefulWaitList = []; // list of tasks to be executed before shutting down gracenode
 
 var Process = require('./process');
+var Module = require('./module');
 
 // overwridden by calling _setLogCleaner from log module
 // shutdown task for log module. this will be executed at the very end
@@ -26,29 +25,18 @@ function Gracenode() {
 	this._isMaster = false;
 	this._configPath = '';
 	this._configFiles = [];
-	this._modules = ['profiler', 'lib'];
-	this._overrideAllowedMods = [];
+	//this._modules = ['profiler', 'lib'];
+	//this._overrideAllowedMods = [];
 	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
 	process.chdir(this._root);
 	log.verbose('Working directory changed to', this._root);
+
+	this._module = new Module(this, rootDirName);
+	this._module.use('profiler');
+	this._module.use('lib');
 }
 
 util.inherits(Gracenode, EventEmitter);
-
-// internal use only
-Gracenode.prototype._addLogCleaner = function (name, func) {
-	var cleaner = function (done) {
-		log.info('shutting down log module...');
-		func(function (error) {
-			if (error) {
-				log.error(error);
-			}
-			log.info('log module gracefully shutdown');
-			done();
-		});
-	};
-	logCleaners.push(cleaner);
-};
 
 Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
@@ -60,52 +48,6 @@ Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 
 Gracenode.prototype.require = function (path) {
 	return require(this.getRootPath() + path);
-};
-
-// finds a schema.sql under given module's directory
-// never use this function in production, but setup script only
-Gracenode.prototype.getModuleSchema = function (modName, cb) {
-	var prefix = this.getRootPath();
-	var pathList = [rootDirName + '/modules/'];
-	pathList = pathList.concat(modPaths);
-	async.eachSeries(pathList, function (path, callback) {
-		var filePath = prefix + path + modName + '/schema.sql';
-		log.verbose('looking for ' + filePath);	
-		fs.exists(filePath, function (exists) {
-			if (exists) {
-				log.verbose(filePath + ' found');
-				fs.readFile(filePath, 'utf-8', function (error, sql) {
-					if (error) {
-						return cb(error);
-					}
-
-					log.verbose('module schema:', sql);
-
-					// remove line breaks and tabs
-					sql = sql.replace(/(\n|\t)/g, '');
-					// separate sql statements
-					var sqlList = sql.split(';');
-					// remove empty entry in the array
-					var list = [];
-					for (var i = 0, len = sqlList.length; i < len; i++) {
-						if (sqlList[i] !== '') {
-							list.push(sqlList[i]);
-						}
-					}
-
-					log.verbose('module schema queries:', list);
-
-					cb(null, list);
-				});
-				return;
-			}
-			callback();
-		});
-	},
-	function () {
-		log.verbose(modName + ' schema.sql not found');
-		cb(null, []);
-	});
 };
 
 Gracenode.prototype.getRootPath = function () {
@@ -134,11 +76,7 @@ Gracenode.prototype.setConfigFiles = function (fileList) {
 };
 
 Gracenode.prototype.addModulePath = function (path) {
-	if (modPaths.indexOf(path) !== -1) {
-		return log.warning('module path has already been added:', path);
-	}
-	modPaths.push(path);
-	log.verbose('module path has been added:', path);
+	this._module.addModulePath(path);
 };
 
 Gracenode.prototype.exit = function (error) {
@@ -147,18 +85,15 @@ Gracenode.prototype.exit = function (error) {
 
 // depricated as of version 0.2.30
 Gracenode.prototype.allowOverride = function (builtInModuleName) {
-	this._overrideAllowedMods.push(builtInModuleName);
+	this._module._overrides.push(builtInModuleName);
 };
 
 Gracenode.prototype.override = function (builtInModuleName) {
-	this._overrideAllowedMods.push(builtInModuleName);
-	this.use(builtInModuleName);	
+	this._module.override(builtInModuleName);
 };
 
 Gracenode.prototype.use = function (modName) {
-	if (this._modules.indexOf(modName) === -1) {
-		this._modules.push(modName);
-	}
+	this._module.use(modName);
 };
 
 Gracenode.prototype.setup = function (cb) {
@@ -196,6 +131,27 @@ Gracenode.prototype.setup = function (cb) {
 
 		that._profiler.stop();
 	});
+};
+
+// finds a schema.sql under given module's directory
+// never use this function in production, but setup script only
+Gracenode.prototype.getModuleSchema = function (modName, cb) {
+	this._module.getModuleSchema(modName, cb);
+};
+
+// internal use only
+Gracenode.prototype._addLogCleaner = function (name, func) {
+	var cleaner = function (done) {
+		log.info('shutting down log module...');
+		func(function (error) {
+			if (error) {
+				log.error(error);
+			}
+			log.info('log module gracefully shutdown');
+			done();
+		});
+	};
+	logCleaners.push(cleaner);
 };
 
 function setupConfig(that, lastCallback, cb) {
@@ -269,95 +225,8 @@ function setupProcess(that, lastCallback, cb) {
 	ps.setup();	
 }
 
-function loadModule(that, name, cb) {
-	// this variable will remember the found built-in module for allowed override case
-	var builtInMod = null;
-	try {
-		// first try inside gracenode
-		var path = that.getRootPath() + rootDirName + '/modules/' + name;
-		fs.exists(path, function (exists) {
-			log.verbose('look for module [' + name + '] in', path);
-			if (exists) {
-				log.verbose('module [' + name + '] found');
-				// check if this module is allowed to be overridden
-				if (that._overrideAllowedMods.indexOf(name) !== -1) {
-					// override allowed
-					log.verbose('module [' + name + '] is allowed to be overridden by custom module of the same name');
-					builtInMod = path;
-				} else {
-					// override NOT allowed
-					return cb(null, require(path));
-				}
-			}
-			// try other path(s)
-			async.eachSeries(modPaths, function (dir, callback) {
-				dir = that.getRootPath() + dir + name;
-				fs.exists(dir, function (exists) {
-					log.verbose('look for module [' + name + '] in', dir);
-					if (exists) {
-						log.verbose('module [' + name + '] found');
-						if (builtInMod) {
-							log.verbose('override the built-in module with the custom module [' + name + ']');
-						}
-						return cb(null, require(dir));
-					}
-					callback();
-				});
-			},
-			function () {
-				// check if we found module or not
-				if (builtInMod) {
-					// overriding was allowed but custom module to override the built-in module was NOT found > use the built-in module
-					log.verbose('load the built-in module [' + name + ']');
-					return cb(null, require(builtInMod));
-				}
-				// no module by the given name was found
-				cb(new Error('failed to find module [' + name + ']'));
-			});
-		});
-	} catch (exception) {
-		cb(exception);
-	}
-}
-
 function setupModules(that, cb) {
-	log.verbose('start loading built-in modules');
-	async.eachSeries(that._modules, function (name, nextCallback) {
-
-		loadModule(that, name, function (error, module) {
-
-			if (error) {
-				return cb(error);
-			}
-
-			that[name] = module;
-
-			if (typeof module.readConfig === 'function') {
-				log.verbose('module [' + name + '] reading configurations: modules.' + name);
-				var status = module.readConfig(config.getOne('modules.' + name));
-				if (status instanceof Error) {
-					return cb(status);
-				}
-			}
-		
-			if (typeof module.setup === 'function') {
-				module.setup(function (error) {
-					if (error) {
-						return cb(error);
-					}
-					that._profiler.mark('module [' + name + '] loaded');
-					log.verbose('module [' + name + '] loaded');
-					that.emit('setup.' + name);
-					nextCallback();
-				});
-			} else {
-				that._profiler.mark('module [' + name + '] loaded');
-				log.verbose('module [' + name + '] loaded');
-				that.emit('setup.' + name);
-				nextCallback();
-			}
-		});
-	}, cb);
+	that._module.load(cb);
 }
 
 function handleShutdownTasks(cb) {
