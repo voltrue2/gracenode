@@ -90,7 +90,12 @@ function setupFinish(req, res, server, startTime) {
 	// this will be called when the server sends the response data and finishes it.
 	res.once('finish', function () {
 		var execTime = Date.now() - startTime;
-		log.info('request execution time: (url:' + req.url + ') (took:' + execTime + 'ms)');
+		var msg = 'request responded: (url:' + req.url + ') (took:' + execTime + 'ms) (status:' + res.statusCode + ')';
+		if (res.statusCode > 399) {
+			log.error(msg);	
+		} else {
+			log.info(msg);
+		}
 		server.emit('requestFinish', req.url, execTime);
 	});
 }
@@ -111,7 +116,7 @@ function compressContent(req, content, cb) {
 		if (error) {
 			return cb(error);
 		}
-		log.info('compressed content size: (url:' + req.url + ') ' + (compressedData.length / 1024) + ' KB');
+		log.verbose('compressed content size: (url:' + req.url + ') ' + (compressedData.length / 1024) + ' KB');
 
 		cb(null, compressedData);
 	});
@@ -136,8 +141,6 @@ function respondJSON(req, res, content, status) {
 			'Vary': 'Accept-Encoding',
 			'Content-Length': data.length
 		});
-
-		responseLog(req, status);		
 
 		res.end(data, 'binary');		
 
@@ -165,8 +168,6 @@ function respondHTML(req, res, content, status) {
 			'Content-Length': data.length
 		});
 
-		responseLog(req, status);		
-
 		res.end(data, 'binary');		
 
 	});
@@ -191,8 +192,6 @@ function respondData(req, res, content, status) {
 			'Vary': 'Accept-Encoding',
 			'Content-Length': data.length
 		});
-
-		responseLog(req, status);		
 
 		res.end(data, 'binary');		
 
@@ -219,8 +218,6 @@ function respondDownload(req, res, content, type, status) {
 			'Content-Length': data.length
 		});
 
-		responseLog(req, status);		
-
 		res.end(data, 'binary');		
 
 	});
@@ -236,8 +233,6 @@ function respondRedirect(req, res, content) {
 	
 	log.verbose('redirect to: ', content);
 
-	responseLog(req, status);
-
 	res.end();
 }
 
@@ -251,8 +246,6 @@ function respondFILE(req, res, content, status) {
 	});
 	
 	log.verbose('response content size: (url:' + req.url + ') ' + (contentSize / 1024) + ' KB');
-
-	responseLog(req, status);		
 
 	res.end(content, 'binary');
 
@@ -283,22 +276,11 @@ function respondERROR(req, res, content, status) {
 			'Content-Length': data.length
 		});
 		
-		log.error('response content size: (url:' + req.url + ') ' + (contentSize / 1024) + ' KB');
-	
-		responseLog(req, status);		
+		log.verbose('response content size: (url:' + req.url + ') ' + (contentSize / 1024) + ' KB');
 	
 		res.end(data, 'binary');
 
 	});
-}
-
-function responseLog(req, status) {
-	var msg = 'response: (url:' + req.url + ') (status:' + status + ')';
-	if (status >= 400) {
-		log.error(msg);
-	} else {
-		log.info(msg);
-	}
 }
 
 function getFileType(type) {

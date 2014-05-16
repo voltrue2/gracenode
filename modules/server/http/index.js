@@ -26,7 +26,6 @@ function Http(requestHandler) {
 	try {
 
 		this.server = http.createServer(function (req, res) {
-			log.info('request received: ' + req.method + ' (url:' + req.url + ')');
 			requestHandler(req, res);
 		});
 		this.server.listen(config.port, config.host);

@@ -55,7 +55,6 @@ function Https(requestHandler) {
 		log.verbose('starting the server with:', options);
 
 		this.server = https.createServer(options, function (req, res) {
-			log.info('request received: ' + req.method + ' (url:' + req.url + ')');
 			requestHandler(req, res);
 		});
 		this.server.listen(config.port, config.host);
