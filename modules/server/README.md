@@ -354,11 +354,36 @@ Void response.html(String content, Integer status)
 </pre>
 
 #### response.error
+
 Resonds to the client as an error. content can be JSON, String, Number.
+
 Status code is optional and default is 404.
+
 <pre>
 Void response.error(Mixed content, Integer status)
 </pre>
+
+#### response.data
+
+Response to the client with raw data. Used to let the client download data as a file.
+
+<pre>
+Void response.data(Mixed data)
+</pre>
+
+Example:
+
+```
+// API to download a CSV file format
+module.exports.GET = function (requestObj, response) {
+	var filename = 'test.csv';
+	var csvData = 'columnA,columnB\nAAA,BBB\nCCC,DDD\nEEE,FFF';
+	// set response headers
+	response.header('Content-Disposition', 'attachment; filename=' + filename);
+	response.header('Content-Type', 'csv');
+	response.data(csvData);
+};
+```
 
 #### response.redirect
 
