@@ -51,6 +51,7 @@ Response.prototype.error = function (content, status) {
 };
 
 Response.prototype.download = function (content, fileName, status) {
+	log.verbose('response content type: Download');
 	this.header('Content-Disposition', 'attachment; filename=' + fileName);
 	setupFinish(this._request, this._response, this._server, this._startTime);
 	respondData(this._request, this._response, content, status || this._defaultStatus);

@@ -1,5 +1,34 @@
 # Change Log
 
+## Version 0.2.39
+
+Changes for version 0.2.39
+
+### Added
+
+None
+
+### Changed
+
+#### server module: new response method added. response.download
+
+A new method download added for file downloads.
+
+Example: 
+
+```
+var csvData = 'colum A,column B\nAAA,BBB\nCCC,DDD';
+response.download(csvData, 'example.csv');
+```
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
 ## Version 0.2.38
 
 Changes for version 0.2.38
