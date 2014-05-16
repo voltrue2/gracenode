@@ -137,7 +137,6 @@ describe('gracenode server module ->', function () {
 		gn.request.GET(http + '/blah', {}, options, function (error, body, status) {
 			assert(error);
 			assert.equal(status, 404);
-			assert.equal(body, 'controller not found:/var/www/node_modules/gracenode/test/server/controller/blah/index');
 			done();
 		});
 	});

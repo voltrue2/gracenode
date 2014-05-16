@@ -20,6 +20,14 @@ describe('gracenode initialization ->', function () {
 		});
 			
 	});
+
+	it('Can get SQL schema', function (done) {
+		gn.getModuleSchema('wallet', function (error, sqlList) {
+			assert.equal(error, undefined);
+			assert.notEqual(sqlList.length, 0);
+			done();
+		});
+	});
 	
 	it('Tests all modules', function () {
 		gn.require('node_modules/gracenode/test/view');	
