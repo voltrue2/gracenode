@@ -363,12 +363,22 @@ Status code is optional and default is 404.
 Void response.error(Mixed content, Integer status)
 </pre>
 
+#### response.download
+
+Let the client download data as a file.
+
+<pre>
+Void response.download(String data, String fileName, int status);
+</pre>
+
 #### response.data
 
 Response to the client with raw data. Used to let the client download data as a file.
 
+Typically, you should be using response.download() instead for file downloads.
+
 <pre>
-Void response.data(Mixed data)
+Void response.data(String data)
 </pre>
 
 Example:

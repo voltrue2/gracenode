@@ -50,6 +50,13 @@ Response.prototype.error = function (content, status) {
 	this._errorHandler(content, status);
 };
 
+Response.prototype.download = function (content, fileName, status) {
+	this.header('Content-Disposition', 'attachment; filename=' + fileName);
+	setupFinish(this._request, this._response, this._server, this._startTime);
+	respondData(this._request, this._response, content, status || this._defaultStatus);
+	finish(this._request, this._response, this._server);
+};
+
 Response.prototype.redirect = function (content) {
 	log.verbose('response content type: Redirect');
 	setupFinish(this._request, this._response, this._server, this._startTime);
