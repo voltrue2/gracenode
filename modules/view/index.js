@@ -244,6 +244,7 @@ function processFile(type, data) {
 			}
 			break;	
 		case 'css':
+		case 'tpl':
 			// remove line breaks and tabs
 			data = data.replace(/(\r\n|\n|\r|\t)/gm, '');
 			break;
