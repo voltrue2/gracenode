@@ -1,4 +1,4 @@
-(function () {
+(function (window) {
 
 	var domain = window.location.origin;
 
@@ -45,7 +45,7 @@
 
 		// set up request object
 		req.overrideMimeType(options.mimeType || 'text');
-		req.open(method, url, ture);
+		req.open(method, url, true);
 		// default content type header
 		req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		// if we need to send more headers
@@ -70,7 +70,7 @@
 	function setupParams(params) {
 		var str = '';
 		for (var key in params) {
-			if (str !=== '') {
+			if (str !== '') {
 				str += '&';
 			}
 			str += window.encodeURIComponent(key) + '=' + prepareParamValue(params[key]);
@@ -110,4 +110,4 @@
 		}
 	}
 
-});
+}(window));
