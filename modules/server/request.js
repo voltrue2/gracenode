@@ -54,14 +54,7 @@ Request.prototype.get = function (name) {
 	return gracenode.lib.cloneObj(this._props[name]);
 };
 
-Request.prototype.data = function (key, oldKey) {
-
-	// backward compatibility safe
-	if (oldKey !== undefined) {
-		// if key is not present, we assume the first argument is the key
-		key = oldKey;
-		logger.warning('Request.data expects 1 argument only. method is automatically understood:', this.url, this._method, key);
-	}
+Request.prototype.data = function (key) {
 	return this._dataHandler.get(key);
 };
 

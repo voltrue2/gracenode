@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 0.2.40
+
+Changes for version 0.2.40
+
+### Added
+
+None
+
+### Changed
+
+None
+
+### Depricated
+
+None
+
+### Removed
+
+#### Depricated function gracenode.allowOverride is now removed
+
+gracenode.allowOverride function has been depricated since version 0.2.30 in favor of gracenode.override and now it has been removed.
+
 ## Version 0.2.39
 
 Changes for version 0.2.39

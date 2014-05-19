@@ -83,11 +83,6 @@ Gracenode.prototype.exit = function (error) {
 	this.emit('exit', error || 0);
 };
 
-// depricated as of version 0.2.30
-Gracenode.prototype.allowOverride = function (builtInModuleName) {
-	this._module._overrides.push(builtInModuleName);
-};
-
 Gracenode.prototype.override = function (builtInModuleName) {
 	this._module.override(builtInModuleName);
 };
