@@ -1,7 +1,7 @@
 {
 	"modules": {
 		"staticdata": {
-			"path": "node_modules/gracenode/test/staticdata/data/",
+			"path": "gracenode/test/staticdata/data/",
 			"delimiter": "\t",
 			"index": {
 				"map.csv": [ "name" ]

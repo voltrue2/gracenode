@@ -18,7 +18,7 @@ describe('mongodb module ->', function () {
 
 		console.log('For this unit test, you need to have mongodb running at mongo://127.0.0.1:27017');
 		
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['mongodb.json']);
 		gn.use('mongodb');
 		gn.setup(function (error) {

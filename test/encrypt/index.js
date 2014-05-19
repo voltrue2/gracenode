@@ -8,7 +8,7 @@ describe('encrypt module ->', function () {
 
 	it('Can create a hash', function (done) {
 		
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['index.json']);
 
 		gn.use('encrypt');

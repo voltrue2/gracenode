@@ -28,7 +28,7 @@ describe('iap (in-app-purchase) module ->', function () {
 			});
 		}
 
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['iap.json']);
 		gn.use('request');
 		gn.use('mysql');

@@ -5,7 +5,7 @@ module.exports = Module;
 
 function Module(gn, rootPath) {
 	this._gn = gn;
-	this._builtInPath = gn.getRootPath() + rootPath + '/modules/';
+	this._builtInPath = rootPath + '/modules/';
 	this._use = [];
 	this._overrides = [];
 	this._modPaths = [];
