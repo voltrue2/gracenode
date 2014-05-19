@@ -26,7 +26,7 @@ module.exports.randomFloat = function (min, max) {
 	var offset = max - min;
 	var rand   = Math.random() * (offset + 1);
 
-	return rand;
+	return rand + min;
 
 };
 
