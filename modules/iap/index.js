@@ -11,17 +11,11 @@ var config = null;
 var mysql = null;
 
 // constants
-var VALIDATED = 'validated';
-var ERROR = 'error';
-var PENDING = 'pending';
-var HANDLED = 'handled';
-var CANCELED = 'canceled';
-
-module.exports.VALIDATED = VALIDATED;
-module.exports.ERROR = ERROR;
-module.exports.PENDING = PENDING;
-module.exports.HANDLED = HANDLED;
-module.exports.CANCELED = CANCELED;
+var VALIDATED = module.exports.VALIDATED = 'validated';
+var ERROR     = module.exports.ERROR     = 'error';
+var PENDING   = module.exports.PENDING   = 'pending';
+var HANDLED   = module.exports.HANDLED   = 'handled';
+var CANCELED  = module.exports.CANCELED  = 'canceled';
 
 module.exports.readConfig = function (configIn) {
 	if (!gracenode.request || !gracenode.mysql) {

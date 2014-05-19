@@ -1,4 +1,6 @@
 var bcrypt = require('bcrypt');
+var gracenode = require('../../');
+var log  = gracenode.log.create('encrypt');
 var uuid = require('node-uuid');
 
 module.exports.createHash = function (str, cost, cb) {
@@ -40,6 +42,7 @@ module.exports.uuid = function (version, options, buffer, offset) {
 		case 4:
 			return uuid.v4(options || null, buffer || null, offset || null);
 		default:
+			log.warn('Missing \'version\' parameter when generating a UUID.');
 			return null;
 	}
 };
