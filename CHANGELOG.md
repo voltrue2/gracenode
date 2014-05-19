@@ -1,5 +1,33 @@
 # Change Log
 
+## Version 0.2.40-b
+
+Changes for version 0.2.40-b
+
+### Added
+
+None
+
+### Changed
+
+#### server module pre-defined error handling bug fix
+
+Server module's pre-defined error handling on 404 had an issue of not correctly executing the assigned error controller.
+
+Now this issue has been fixed.
+
+### Depricated
+
+None
+
+***
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.40-a
 
 Changes for version 0.2.40-a

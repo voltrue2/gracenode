@@ -138,6 +138,7 @@ function errorHandler(server, req, res, parsedUrl, requestObj, msg, status, star
 			};
 			parsedUrl.controller = errorController.controller;
 			parsedUrl.method = errorController.method;
+			delete parsedUrl.notFound;
 			// we have the error controller assigned for this error
 			log.verbose('error handler(' + status + ') configured:', errorController);
 			// check to see if we already have requestObj or not
