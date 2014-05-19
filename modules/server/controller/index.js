@@ -47,64 +47,67 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 	// path: controllerDirectory/methodFile
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller + '/' + parsedUrl.method;
 
-	try {
-		if (controllerMap[parsedUrl.controller]) {
-			
-			log.verbose('controller "' + parsedUrl.controller + '" found');
-	
+
+	if (controllerMap[parsedUrl.controller]) {
+		
+		log.verbose('controller "' + parsedUrl.controller + '" found');
+
+		var method;
+
+		// Much better for performance. Should not have too many variables in your try/catch block.
+		try {
+		
 			// load controller method
-			var method = require(path);
+			method = require(path);
+
+		} catch (exception) {
 			
-			// controller method
-			var methodExec = method[requestObj.getMethod()] || null;
-
-			// validate request method
-			if (!methodExec) {
-				var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
-				return errorHandler(server, req, res, parsedUrl, requestObj, new Error(msg), 400, startTime);
+			if (exception.message === 'Cannot find module \'' + path + '\'') {
+				return errorHandler(server, req, res, parsedUrl, requestObj, exception, 404, startTime);
 			}
 
-			// create response object
-			var responseObj = response.create(server, req, res, startTime);
+			log.fatal('exception caught:', exception);
+			return errorHandler(server, req, res, parsedUrl, requestObj, exception, 500, startTime);		
 
-			// check if there was an original request (only in case of pre-defined error)
-			if (parsedUrl.originalRequest) {
-				responseObj._setDefaultStatus(parsedUrl.originalRequest.status);
-			}
-
-			// override _errorHandler for responseObj.error()
-			responseObj._errorHandler = function (error, status) {
-				errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
-			};
-
-			// check for request hook
-			var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime);
-			if (requestHookExecuted) {
-				return;
-			}
-
-			log.verbose(parsedUrl.controller + '/' + parsedUrl.method + ' [' + requestObj.getMethod() + '] executed');
-	
-			// invoke the controller method
-			methodExec(requestObj, responseObj);
-
-			return;
-		}	
-		
-		return errorHandler(server, req, res, parsedUrl, requestObj, new Error('controller not found:' + path), 404, startTime);
-			
-
-	} catch (exception) {
-		
-		if (exception.message === 'Cannot find module \'' + path + '\'') {
-			return errorHandler(server, req, res, parsedUrl, requestObj, exception, 404, startTime);
 		}
 
-		log.fatal('exception caught:', exception);
+		// controller method
+		var methodExec = method[requestObj.getMethod()] || null;
 
-		errorHandler(server, req, res, parsedUrl, requestObj, exception, 500, startTime);		
+		// validate request method
+		if (!methodExec) {
+			var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
+			return errorHandler(server, req, res, parsedUrl, requestObj, new Error(msg), 400, startTime);
+		}
 
-	}
+		// create response object
+		var responseObj = response.create(server, req, res, startTime);
+
+		// check if there was an original request (only in case of pre-defined error)
+		if (parsedUrl.originalRequest) {
+			responseObj._setDefaultStatus(parsedUrl.originalRequest.status);
+		}
+
+		// override _errorHandler for responseObj.error()
+		responseObj._errorHandler = function (error, status) {
+			errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
+		};
+
+		// check for request hook
+		var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime);
+		if (requestHookExecuted) {
+			return;
+		}
+
+		log.verbose(parsedUrl.controller + '/' + parsedUrl.method + ' [' + requestObj.getMethod() + '] executed');
+
+		// invoke the controller method
+		methodExec(requestObj, responseObj);
+
+		return;
+	}	
+	
+	return errorHandler(server, req, res, parsedUrl, requestObj, new Error('controller not found:' + path), 404, startTime);
 
 }
 

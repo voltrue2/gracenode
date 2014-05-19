@@ -8,20 +8,35 @@ var validationPatterns = {
     password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
 
+/**
+* The random functions work as follows:
+*
+* Lets say we need a random number between 50 and 60.
+* We substract 50 from 60, which leaves us with 10.
+* We then find a random number in 10.
+* Add this number to the minimum value.
+*
+* Previously, by returning MIN if RAND is smaller than MIN, we create an unfair bias towards
+* the MIN number. For example, randomInt(99,100) is going to return 99, 
+* 99% of time time. Not 50% as it should be.
+*/
+
 module.exports.randomFloat = function (min, max) {
-	var rand = Math.random() * ((max - min) + min);
-	if (rand < min) {
-		return min;
-	}
+
+	var offset = max - min;
+	var rand   = Math.random() * (offset + 1);
+
 	return rand;
+
 };
 
 module.exports.randomInt = function (min, max) {
-	var rand = Math.floor(Math.random() * (max + 1));
-	if (rand < min) {
-		return min;
-	}
-	return rand;
+
+	var offset = max - min;
+	var rand   = Math.floor(Math.random() * (offset + 1));
+
+	return rand + min;
+
 };
 
 module.exports.randomArray = function (list) {
