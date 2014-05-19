@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 0.2.40-a
+
+Changes for version 0.2.40-a
+
+### Added
+
+None
+
+### Changed
+
+#### server module's router for "not found"
+
+Server module's router now correctly uses the property in parsed URL object for not found 404 error.
+
+### Depricated
+
+None
+
+***
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.40
 
 Changes for version 0.2.40
