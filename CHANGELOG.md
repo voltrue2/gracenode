@@ -10,7 +10,9 @@ None
 
 ### Changed
 
-None
+#### lib mdodule random function improved
+
+Lib module's randomInt and randomFloat improved their random logic for better performance and better randomness.
 
 ### Depricated
 
