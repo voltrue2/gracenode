@@ -14,6 +14,10 @@ None
 
 Lib module's randomInt and randomFloat improved their random logic for better performance and better randomness.
 
+#### server module routing and contorller management
+
+Performance of router and controller management improved.
+
 ### Depricated
 
 None
