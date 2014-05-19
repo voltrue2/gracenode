@@ -175,11 +175,12 @@ describe('gracenode server module ->', function () {
 		});		
 	});
 
-	it('Can auto look-up index.js for a request /test/', function () {
+	it('Can auto look-up index.js for a request /test/', function (done) {
 		gn.request.GET(http + '/test', {}, options, function (error, body, status) {
 			assert.equal(error, undefined);
 			assert.equal(status, 200);
 			assert.equal(body, 'index');
+			done();
 		});
 	});
 

@@ -69,7 +69,7 @@ function send(url, method, args, options, cb) {
 			try {
 				body = JSON.parse(unzipped);
 			} catch (e) {
-				return cb(new Error(unzipped), unzipped, res.statusCode);
+				body = unzipped;
 			}
 			cb(res.statusCode > 399 ? new Error(res.statusCode) : null, body, res.statusCode);
 		});

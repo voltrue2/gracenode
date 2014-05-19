@@ -47,7 +47,6 @@ function handle(server, req, res, parsedUrl, requestObj, startTime) {
 	// path: controllerDirectory/methodFile
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller + '/' + parsedUrl.method;
 
-
 	if (controllerMap[parsedUrl.controller]) {
 		
 		log.verbose('controller "' + parsedUrl.controller + '" found');
