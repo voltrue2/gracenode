@@ -99,13 +99,12 @@
 			if (req.responseText) {
 				// is it a JSON?
 				try {
-					cb(error, JSON.parse(req.responseText), req.status);
+					res = JSON.parse(req.responseText);
 				} catch (e) {
 					// it is not a JSON
-					cb(error, req.responseText, req.status);
+					res = req.responseText;
 				}
 			}
-			// there is no response body...
 			cb(error, res, req.status);
 		}
 	}
