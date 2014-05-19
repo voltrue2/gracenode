@@ -1,5 +1,5 @@
 var bcrypt = require('bcrypt');
-var gracenode = require('gracenode');
+var gracenode = require('../../');
 var log  = gracenode.log.create('encrypt');
 var uuid = require('node-uuid');
 
