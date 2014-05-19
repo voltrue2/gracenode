@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 0.2.41
+
+### Added
+
+#### new unit test added to server module
+
+Test for pre-defined 404 error handling has been added.
+
+### Changed
+
+None
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.40-b
 
 Changes for version 0.2.40-b

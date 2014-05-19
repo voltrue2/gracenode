@@ -175,6 +175,20 @@ describe('gracenode server module ->', function () {
 		});		
 	});
 
+	it('Can execute pre-assigned error controller on error status 404', function (done) {
+		// we hack configs
+		gn.config.getOne('modules.server').error['404'] = {
+			controller: 'error',
+			method: 'notFound'
+		};
+		gn.request.GET(http + '/iAmNotHere', {}, options, function (error, body, status) {
+			assert(error);
+			assert.equal(status, 404);
+			assert.equal(body, 'not found');
+			done();
+		});		
+	});
+
 	it('Can auto look-up index.js for a request /test/', function (done) {
 		gn.request.GET(http + '/test', {}, options, function (error, body, status) {
 			assert.equal(error, undefined);
