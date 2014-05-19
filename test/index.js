@@ -5,10 +5,10 @@ describe('gracenode initialization ->', function () {
 	
 	it('Can set up gracenode', function (done) {
 	
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['index.json']);
 
-		gn.addModulePath('node_modules/gracenode/test/modules/');
+		gn.addModulePath('gracenode/test/modules/');
 
 		// test override
 		gn.override('mysql');
@@ -30,11 +30,11 @@ describe('gracenode initialization ->', function () {
 	});
 	
 	it('Tests all modules', function () {
-		gn.require('node_modules/gracenode/test/view');	
-		gn.require('node_modules/gracenode/test/mongodb');	
-		gn.require('node_modules/gracenode/test/encrypt');	
-		gn.require('node_modules/gracenode/test/staticdata');	
-		gn.require('node_modules/gracenode/test/server');	
+		gn.require('gracenode/test/view');	
+		gn.require('gracenode/test/mongodb');	
+		gn.require('gracenode/test/encrypt');	
+		gn.require('gracenode/test/staticdata');	
+		gn.require('gracenode/test/server');	
 	});
 
 });

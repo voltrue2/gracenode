@@ -1,4 +1,3 @@
-var rootDirName = 'node_modules/gracenode';
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');
@@ -25,13 +24,13 @@ function Gracenode() {
 	this._isMaster = false;
 	this._configPath = '';
 	this._configFiles = [];
-	//this._modules = ['profiler', 'lib'];
-	//this._overrideAllowedMods = [];
-	this._root = __dirname.substring(0, __dirname.lastIndexOf(rootDirName));
-	process.chdir(this._root);
-	log.verbose('Working directory changed to', this._root);
-
-	this._module = new Module(this, rootDirName);
+	var roots = findRoots();
+	this._appRoot = roots.app;
+	this._root = roots.gracenode;
+	process.chdir(this._appRoot);
+	console.log('Working directory changed to', this._appRoot);
+	console.log('gracenode root path:', this._root);
+	this._module = new Module(this, this._root);
 	this._module.use('profiler');
 	this._module.use('lib');
 }
@@ -51,7 +50,7 @@ Gracenode.prototype.require = function (path) {
 };
 
 Gracenode.prototype.getRootPath = function () {
-	return this._root;
+	return this._appRoot;
 };
 
 Gracenode.prototype.isMaster = function () {
@@ -66,7 +65,7 @@ Gracenode.prototype.getProcessType = function () {
 };
 
 Gracenode.prototype.setConfigPath = function (configPath) {
-	this._configPath = this._root + configPath;
+	this._configPath = this._appRoot + configPath;
 	log.verbose('configuration path:', this._configPath);
 };
 
@@ -149,6 +148,30 @@ Gracenode.prototype._addLogCleaner = function (name, func) {
 	logCleaners.push(cleaner);
 };
 
+function findRoots() {
+	var appRoot;
+	var root;
+	// find app root path
+	// remove core directory name from the path
+	var path = __dirname;
+	root = path.replace('/core', '');
+	// remove gracenode directory name from the path
+	appRoot = root.substring(0, root.lastIndexOf('/'));
+	// if there is node_modules directory, remove it from the path
+	var index = appRoot.indexOf('node_modules');
+	if (index !== -1) {
+		appRoot = appRoot.replace('node_modules', '');
+	}
+	if (appRoot.substring(appRoot.length - 1) !== '/') {
+		appRoot += '/';
+	}
+	if (root.substring(root.length - 1) !== '/') {
+		root += '/';
+	}
+	// find gracenode root path
+	return { app: appRoot, gracenode: root };
+}
+
 function setupConfig(that, lastCallback, cb) {
 	config.setPath(that._configPath);
 	config.load(that._configFiles, function (error) {
@@ -187,7 +210,7 @@ function setupProfiler(that, lastCallback, cb) {
 	var profiler = require('../modules/profiler');
 
 	// gracenode profiler
-	that._profiler = profiler.create(rootDirName);
+	that._profiler = profiler.create(that._root);
 	that._profiler.start();	
 
 	// profiler for others

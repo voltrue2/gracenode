@@ -4,7 +4,7 @@ var gn = require('../../');
 describe('gracenode staticdata module ->', function () {
 
 	it('Can load a CSV file', function (done) {
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['staticdata.json']);		
 		gn.use('staticdata');
 		gn.setup(function (error) {

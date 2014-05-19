@@ -21,7 +21,7 @@ describe('gracenode server module ->', function () {
 	
 	it('Can start HTTPS server', function (done) {
 		
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['https.json']);
 
 		gn.use('request');
@@ -40,7 +40,7 @@ describe('gracenode server module ->', function () {
 
 	it('Can start HTTP server', function (done) {
 		
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['http.json']);
 		
 		gn.use('request');
