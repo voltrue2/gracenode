@@ -2,10 +2,8 @@ var gracenode = require('../../../');
 var log = gracenode.log.create('server-controller');
 var Request = require('../request');
 var response = require('../response');
-var fs = require('fs');
 
 var config = null;
-var controllerMap = {};
 var requestHooks = null;
 
 module.exports.readConfig = function (configIn) {
@@ -15,25 +13,17 @@ module.exports.readConfig = function (configIn) {
 	config = configIn;
 };
 
-module.exports.setup = function (cb) {
-	// map all controllers and cache them in memory
-	fs.readdir(config.controllerPath, function (error, dirList) {
-		if (error) {
-			return cb(error);
-		}
-		for (var i = 0, len = dirList.length; i < len; i++) {
-			controllerMap[dirList[i]] = true;
-			log.verbose('controller "' + dirList[i] + '" mapped');
-		}
-		cb();
-	});
-};
-
 module.exports.setupRequestHooks = function (hooks) {
 	requestHooks = hooks;
 };
 
 module.exports.exec = function (server, req, res, parsedUrl, startTime) {
+	
+	// check for not found error
+	if (parsedUrl.error) {
+		return errorHandler(server, req, res, parsedUrl, null, parsedUrl.error, 404, startTime);
+	}
+
 	var request = new Request(req, res, parsedUrl.parameters);
 	request.setup(function (error) {
 		if (error) {
@@ -46,68 +36,43 @@ module.exports.exec = function (server, req, res, parsedUrl, startTime) {
 function handle(server, req, res, parsedUrl, requestObj, startTime) {
 	// path: controllerDirectory/methodFile
 	var path = gracenode.getRootPath() + config.controllerPath + parsedUrl.controller + '/' + parsedUrl.method;
-
-	if (controllerMap[parsedUrl.controller]) {
-		
-		log.verbose('controller "' + parsedUrl.controller + '" found');
-
-		var method;
-
-		// Much better for performance. Should not have too many variables in your try/catch block.
-		try {
-		
-			// load controller method
-			method = require(path);
-
-		} catch (exception) {
-			
-			if (exception.message === 'Cannot find module \'' + path + '\'') {
-				return errorHandler(server, req, res, parsedUrl, requestObj, exception, 404, startTime);
-			}
-
-			log.fatal('exception caught:', exception);
-			return errorHandler(server, req, res, parsedUrl, requestObj, exception, 500, startTime);		
-
-		}
-
-		// controller method
-		var methodExec = method[requestObj.getMethod()] || null;
-
-		// validate request method
-		if (!methodExec) {
-			var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
-			return errorHandler(server, req, res, parsedUrl, requestObj, new Error(msg), 400, startTime);
-		}
-
-		// create response object
-		var responseObj = response.create(server, req, res, startTime);
-
-		// check if there was an original request (only in case of pre-defined error)
-		if (parsedUrl.originalRequest) {
-			responseObj._setDefaultStatus(parsedUrl.originalRequest.status);
-		}
-
-		// override _errorHandler for responseObj.error()
-		responseObj._errorHandler = function (error, status) {
-			errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
-		};
-
-		// check for request hook
-		var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime);
-		if (requestHookExecuted) {
-			return;
-		}
-
-		log.verbose(parsedUrl.controller + '/' + parsedUrl.method + ' [' + requestObj.getMethod() + '] executed');
-
-		// invoke the controller method
-		methodExec(requestObj, responseObj);
-
-		return;
-	}	
 	
-	return errorHandler(server, req, res, parsedUrl, requestObj, new Error('controller not found:' + path), 404, startTime);
+	log.verbose('controller "' + parsedUrl.controller + '" found');
 
+	var method = require(path);
+
+	// controller method
+	var methodExec = method[requestObj.getMethod()] || null;
+
+	// validate request method
+	if (!methodExec) {
+		var msg = requestObj.url + ' does not accept "' + requestObj.getMethod() + '"';
+		return errorHandler(server, req, res, parsedUrl, requestObj, new Error(msg), 400, startTime);
+	}
+
+	// create response object
+	var responseObj = response.create(server, req, res, startTime);
+
+	// check if there was an original request (only in case of pre-defined error)
+	if (parsedUrl.originalRequest) {
+		responseObj._setDefaultStatus(parsedUrl.originalRequest.status);
+	}
+
+	// override _errorHandler for responseObj.error()
+	responseObj._errorHandler = function (error, status) {
+		errorHandler(server, req, res, parsedUrl, requestObj, error, status, startTime);
+	};
+
+	// check for request hook
+	var requestHookExecuted = handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime);
+	if (requestHookExecuted) {
+		return;
+	}
+
+	log.verbose(parsedUrl.controller + '/' + parsedUrl.method + ' [' + requestObj.getMethod() + '] executed');
+
+	// invoke the controller method
+	methodExec(requestObj, responseObj);
 }
 
 function handleRequestHook(server, req, res, requestObj, responseObj, methodExec, parsedUrl, startTime) {

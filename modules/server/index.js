@@ -23,7 +23,7 @@
 
 var gracenode = require('../../');
 var log = gracenode.log.create('server');
-
+var async = require('async');
 var http = require('./http');
 var https = require('./https');
 var router = require('./router');
@@ -53,20 +53,16 @@ module.exports.readConfig = function (configIn) {
 };
 
 module.exports.setup = function (cb) {
+	var list = [];
 	if (config.protocol === 'https') {
-		// https
-		return serverEngine.setup(function (error) {
-			if (error) {
-				return cb(error);
-			}
-			controller.setup(cb);
-		});
+		list.push(serverEngine.setup);
 	}
 	
 	log.info('server protocol: ' + config.protocol);
 
-	// http
-	controller.setup(cb);
+	list.push(router.setup);
+
+	async.series(list, cb);
 };
 
 /*
