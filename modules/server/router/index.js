@@ -90,13 +90,13 @@ function parseUrl(url) {
 	// if there is no method in URL, gracenode will look for index.js
 	var method = parsed[1] || 'index';
 
-	var error = null;
+	var notFound = null;
 	
 	// check the controller map
 	if (!controllerMap[controller]) {
-		error = new Error('controller ' + controller + ' not found');
+		notFound = new Error('controller ' + controller + ' not found');
 	} else if (!controllerMap[controller][method]) {
-		error = new Error('controller method ' + controller + '/' + method + ' not found');
+		notFound = new Error('controller method ' + controller + '/' + method + ' not found');
 	}
 	
 	return {
@@ -104,7 +104,7 @@ function parseUrl(url) {
 		method: method,
 		parameters: parsed.length > 2 ? parsed.splice(2) : [],
 		originalRequest: null,
-		error: error
+		notFound: notFound
 	};
 }
 

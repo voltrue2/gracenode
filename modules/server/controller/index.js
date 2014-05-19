@@ -20,8 +20,8 @@ module.exports.setupRequestHooks = function (hooks) {
 module.exports.exec = function (server, req, res, parsedUrl, startTime) {
 	
 	// check for not found error
-	if (parsedUrl.error) {
-		return errorHandler(server, req, res, parsedUrl, null, parsedUrl.error, 404, startTime);
+	if (parsedUrl.notFound) {
+		return errorHandler(server, req, res, parsedUrl, null, parsedUrl.notFound, 404, startTime);
 	}
 
 	var request = new Request(req, res, parsedUrl.parameters);
