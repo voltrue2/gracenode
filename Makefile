@@ -10,12 +10,12 @@ init:
 .PHONY: test
 test:
 	@echo 'test gracenode:'
-	./node_modules/mocha/bin/mocha test/index.js -R spec -b
+	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b
 
 .PHONY: test-module
 test-module:
 	@echo 'test gracenode module $(module):'
-	./node_modules/mocha/bin/mocha test/$(module)/index.js -R spec -b
+	./node_modules/mocha/bin/mocha test/$(module)/index.js -s 10 -R spec -b
 
 .PHONY: test-iap-apple
 test-iap-apple:

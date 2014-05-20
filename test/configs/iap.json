@@ -28,8 +28,7 @@
 		},
 		"iap": {
 			"sandbox": true,
-			"sql": "test",
-			"googlePublicKeyPath": "dummy"
+			"sql": "test"
 		}
 	}
 }
