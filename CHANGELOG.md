@@ -1,6 +1,26 @@
 # Change Log
 
-## Version 0.2.41
+## Version 0.2.43
+
+### Added
+
+None
+
+### Changed
+
+#### iap module for google performance improvement
+
+Iap module for google now reads public key file on setup of gracenode for better performance.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+## Version 0.2.42
 
 ### Added
 
