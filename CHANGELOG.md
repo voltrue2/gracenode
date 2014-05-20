@@ -4,6 +4,28 @@
 
 ### Added
 
+None
+
+### Changed
+
+#### server module refactored
+
+Server module has been refactored for better performance.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
+## Version 0.2.41
+
+### Added
+
 #### new unit test added to server module
 
 Test for pre-defined 404 error handling has been added.

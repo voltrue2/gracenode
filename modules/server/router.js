@@ -1,5 +1,4 @@
-
-var gracenode = require('../../../');
+var gracenode = require('../../');
 var log = gracenode.log.create('server-router');
 
 var EventEmitter = require('events').EventEmitter;
@@ -98,6 +97,8 @@ function parseUrl(url) {
 	} else if (!controllerMap[controller][method]) {
 		notFound = new Error('controller method ' + controller + '/' + method + ' not found');
 	}
+
+	log.verbose('controller and method found: ', controller + '/' + method);
 	
 	return {
 		controller: controller,

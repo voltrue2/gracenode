@@ -1,10 +1,9 @@
-
 var fs = require('fs');
 var util = require('util');
 var https = require('https');
 var EventEmitter = require('events').EventEmitter;
 
-var gracenode = require('../../../');
+var gracenode = require('../../');
 var log = gracenode.log.create('server-https');
 
 var config = null;

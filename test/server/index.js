@@ -117,22 +117,6 @@ describe('gracenode server module ->', function () {
 		});
 	});
 
-	it('Can pass request hook', function (done) {
-		gn.request.POST(http + '/hook/success', { result: 'success' }, options, function (error, body) {
-			assert.equal(error, undefined);
-			done();
-		});
-	});
-	
-	it('Can fail request hook', function (done) {
-		gn.request.POST(http + '/hook/failed', { result: 'failed' }, options, function (error, body, status) {
-			assert(error);
-			assert(status, 403);
-			assert.equal(body, 'failed');
-			done();
-		});
-	});
-
 	it('Can respond with 404 on none existing URI', function (done) {
 		gn.request.GET(http + '/blah', {}, options, function (error, body, status) {
 			assert(error);
@@ -194,6 +178,22 @@ describe('gracenode server module ->', function () {
 			assert.equal(error, undefined);
 			assert.equal(status, 200);
 			assert.equal(body, 'index');
+			done();
+		});
+	});
+
+	it('Can pass request hook', function (done) {
+		gn.request.POST(http + '/hook/success', { result: 'success' }, options, function (error, body) {
+			assert.equal(error, undefined);
+			done();
+		});
+	});
+	
+	it('Can fail request hook', function (done) {
+		gn.request.POST(http + '/hook/failed', { result: 'failed' }, options, function (error, body, status) {
+			assert(error);
+			assert(status, 403);
+			assert.equal(body, 'failed');
 			done();
 		});
 	});

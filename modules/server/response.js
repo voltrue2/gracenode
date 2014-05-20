@@ -3,8 +3,8 @@ var log = gracenode.log.create('server-response');
 var zlib = require('zlib');
 var getMimeType = require('./mime');
 
-module.exports.create = function (server, request, response, startTime) {
-	return new Response(server, request, response, startTime);
+module.exports.create = function (resource) {
+	return new Response(resource.server, resource.rawRequest, resource.rawResponse, resource.startTime);
 };
 
 function Response(server, request, response, startTime) {

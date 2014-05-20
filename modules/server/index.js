@@ -28,6 +28,9 @@ var http = require('./http');
 var https = require('./https');
 var router = require('./router');
 var controller = require('./controller');
+var resource = require('./resource');
+var serverError = require('./error');
+var hook = require('./hook');
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -50,6 +53,7 @@ module.exports.readConfig = function (configIn) {
 	serverEngine.readConfig(config);
 	router.readConfig(config);
 	controller.readConfig(config);
+	serverError.readConfig(config);
 };
 
 module.exports.setup = function (cb) {
@@ -76,7 +80,7 @@ hooks: {
 // use case example: session check etc
 module.exports.setupRequestHooks = function (hooks) {
 	log.verbose('setting up request hooks:', hooks);
-	controller.setupRequestHooks(hooks);
+	hook.setupRequestHooks(hooks);
 };
 
 module.exports.start = function () {
@@ -99,6 +103,9 @@ function requestHandler(request, response) {
 	// if parsedUrl returns as null, the request has been ignored
 	var parsedUrl = router.handle(request.url, response);
 	if (parsedUrl) {
-		controller.exec(module.exports, request, response, parsedUrl, Date.now());
+		// create resource
+		var resc = resource.create(module.exports, request, response, parsedUrl, Date.now());
+		// execute controller
+		controller.exec(resc);
 	}
 }
