@@ -11,9 +11,11 @@ Returns a pseudo-random integer between min and max
 
 ####randomFloat
 <pre>
-Float randomFloat(Float min, Float max)
+Float randomFloat(Float min, Float max, Int precision)
 </pre>
 Returns a pseudo-random floating point number between min and max
+
+The thrid argument "precision" is optional and default is 2.
 
 ####getArguments
 <pre>

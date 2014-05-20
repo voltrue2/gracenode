@@ -28,6 +28,38 @@ describe('gracenode initialization ->', function () {
 			done();
 		});
 	});
+
+	it('Can generate random int', function () {
+		var total = 100;
+		var one = 0;
+		var zero = 0;
+		for (var i = 0; i < total; i++) {
+			var rand = gn.lib.randomInt(0, 1);
+			if (rand) {
+				one++;
+			} else {
+				zero++;
+			}
+		}
+		// roughly 50%
+		if (one < 40 || one > 60 ) {
+			throw new Error('inaccurate randomness');
+		}
+	});
+
+	it('Can generate random float', function () {
+		var total = 100;
+		var min = 0;
+		var max = 0;
+		for (var i = 0; i < total; i++) {
+			var rand = gn.lib.randomFloat(0.1, 0.2);
+			if (rand > 0.1) {
+				min++;
+			} else {
+				max++;
+			}
+		}
+	});
 	
 	it('Tests all modules', function () {
 		gn.require('gracenode/test/view');	

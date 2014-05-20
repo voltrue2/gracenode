@@ -12,6 +12,10 @@ None
 
 Server module has been refactored for better performance.
 
+#### lib module randomFloat bug fix
+
+If you pass float numbers smaller than 1, the function had a chance of returning greater than max given.
+
 ### Depricated
 
 None
