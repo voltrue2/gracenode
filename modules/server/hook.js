@@ -44,7 +44,7 @@ function execHook(hook, resource, requestObj, responseObj, methodFunc) {
 	logger.verbose('request hook found for (url:' + url + ')');
 	hook(requestObj, function (error, status) {
 		if (error) {
-			logger.error('request hook executed with an error (url:' + url + '):', '(status: ' + status + ')', error);
+			logger.error('request hook executed with an error (url:' + url + '):', '(status: ' + status + ')');
 			var sError = serverError.create(resource);
 			sError.setRequest(requestObj);
 			sError.setResponse(responseObj);

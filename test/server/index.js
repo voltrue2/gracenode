@@ -17,6 +17,16 @@ var hookTest = function (req, done) {
 	}
 };
 
+var hookTest2 = function (req, done) {
+	var result = req.data('result');
+
+	if (result === 'success') {
+		return done();
+	} else {
+		return done(new Error('failed'), 401);
+	}
+};
+
 describe('gracenode server module ->', function () {
 	
 	it('Can start HTTPS server', function (done) {
@@ -50,7 +60,8 @@ describe('gracenode server module ->', function () {
 			assert.equal(error, undefined);
 			http += ':' + gn.config.getOne('modules.server.port');
 			gn.server.setupRequestHooks({
-				hook: hookTest
+				hook: hookTest,
+				hook2: hookTest2
 			});
 			gn.server.start();
 			done();
@@ -150,7 +161,7 @@ describe('gracenode server module ->', function () {
 		});
 	});
 
-	it('Can execute pre-assigned error controller on error status 500', function (done) {
+	it('Can execute pre-defined error controller on error status 500', function (done) {
 		gn.request.GET(http + '/test/errorOut', {}, options, function (error, body, status) {
 			assert(error);
 			assert.equal(status, 500);
@@ -192,8 +203,22 @@ describe('gracenode server module ->', function () {
 	it('Can fail request hook', function (done) {
 		gn.request.POST(http + '/hook/failed', { result: 'failed' }, options, function (error, body, status) {
 			assert(error);
-			assert(status, 403);
+			assert.equal(status, 403);
 			assert.equal(body, 'failed');
+			done();
+		});
+	});
+	
+	it('Can fail request hook and execute pre-defined error controller', function (done) {
+		// we hack configs
+		gn.config.getOne('modules.server').error['401'] = {
+			controller: 'error',
+			method: 'unauthorized'
+		};
+		gn.request.POST(http + '/hook2/failed', { result: 'failed' }, options, function (error, body, status) {
+			assert(error);
+			assert.equal(status, 401);
+			assert.equal(body, 'pre-defined fail');
 			done();
 		});
 	});
