@@ -7,10 +7,10 @@ describe('gracenode initialization ->', function () {
 
 		console.log('**WARNING** This test requires in-app-purchase module and async module installed in ../gracenode/node_modules/ to work properly');
 	
-		gn.setConfigPath('gracenode/test/configs/');
+		gn.setConfigPath('node_modules/gracenode/test/configs/');
 		gn.setConfigFiles(['setup.json']);
 
-		gn.addModulePath('gracenode/test/modules/');
+		gn.addModulePath('node_modules/gracenode/test/modules/');
 
 		// test override use
 		gn.override('mysql');
@@ -22,7 +22,7 @@ describe('gracenode initialization ->', function () {
 		gn.use('test');
 
 		// test 3rd party node module use with custom driver
-		gn.use('in-app-purchase', { name: null, driver: gn.require('gracenode/test/drivers/in-app-purchase') });
+		gn.use('in-app-purchase', { name: null, driver: gn.require('node_modules/gracenode/test/drivers/in-app-purchase') });
 
 		// test 3rd party node module use with alternate name
 		gn.use('async', { name: 'async2' });

@@ -23,17 +23,24 @@ describe('iap (in-app-purchase) module ->', function () {
 			pem = process.argv[process.argv.length - 3].replace('--key=', '');
 			// override config value for pem path for google test
 			gn.on('setup.config', function () {
-				var conf = gn.config.getOne('modules.iap');
+				var conf = gn.config.getOne('modules.gracenode-iap');
 				conf.googlePublicKeyPath = pem;
 			});
 		}
 
-		gn.setConfigPath('gracenode/test/configs/');
+		gn.setConfigPath('node_modules/gracenode/test/configs/');
 		gn.setConfigFiles(['iap.json']);
-		gn.use('request');
 		gn.use('mysql');
-		gn.use('iap');
+		gn.use('request');
+		gn.use('gracenode-iap');
 		gn.setup(function (error) {
+			assert.equal(error, undefined);
+			done();
+		});
+	});
+
+	it('Can get schema SQL', function (done) {
+		gn.getModuleSchema('iap', function (error, sqlList) {
 			assert.equal(error, undefined);
 			done();
 		});

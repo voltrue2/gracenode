@@ -43,7 +43,7 @@ Module.prototype.override = function (name, options) {
 
 Module.prototype.getModuleSchema = function (name, cb) {
 	var that = this;
-	var paths = [this._builtInPath];
+	var paths = [this._builtInPath, this._appNodeModulePath];
 	paths = paths.concat(this._modPaths);
 	async.eachSeries(paths, function (path, next) {
 		var filePath = path + name + '/schema.sql';
@@ -225,7 +225,7 @@ Module.prototype._require = function (name, path, builtInPath) {
 
 Module.prototype._readConfig = function (name, mod) {
 	if (typeof mod.readConfig === 'function') {
-		this._logger.verbose('module [' + name + '] reading configurations');
+		this._logger.verbose('module [' + name + '] reading configurations from modules.' + name);
 		var status = mod.readConfig(this._gn.config.getOne('modules.' + name));
 		if (status instanceof Error) {
 			return status;

@@ -26,7 +26,7 @@
 				}
 			}
 		},
-		"iap": {
+		"gracenode-iap": {
 			"sandbox": true,
 			"sql": "test"
 		}
