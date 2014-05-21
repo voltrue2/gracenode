@@ -127,14 +127,14 @@ gracenode.use('mysql');
 gracenode.use('myModule');
 ```
 
-With the optional second argument objects, you can give the module an alternate name.
+With the optional second argument options, you can give the module an alternate name.
 
 ```
 gracenode.use('mysql', { name: 'mysql2' });
 // accessing this module will be gracenode.mysql2
 ```
 
-Also if you are using 3rd party node module as gracenode module, the you can apply a driver to that module by:
+Also if you are using 3rd party node module as gracenode module, you can apply a driver to that module by:
 
 ```
 gracenode.use('async', { name: 'async2', driver: { config: <*function>, setup: <*function>, shutdown: <*function>, expose: <*function> } });
