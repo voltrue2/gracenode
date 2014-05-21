@@ -23,6 +23,29 @@
 					"options": null
 				}
 			}
+		},
+		"gracenode-iap": {
+			"sandbox": true,
+			"sql": "dummy"
+		},
+		"gracenode-mysql": {
+			"dummy": {
+				"read": {
+					"database": "dummy_read",
+					"host": "localhost",
+					"user": "dummy_user",
+					"password": "dummy_pass"
+				},
+				"write": {
+					"database": "dummy_write",
+					"host": "localhost",
+					"user": "dummy_user",
+					"password": "dummy_pass"
+				}
+			}
+		},
+		"gracenode-staticdata": {
+			"path": "node_modules/gracenode/test/staticdata/"
 		}
 	}
 }

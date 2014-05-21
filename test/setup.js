@@ -3,7 +3,7 @@ var assert = require('assert');
 
 describe('gracenode initialization ->', function () {
 	
-	it('Can set up gracenode', function (done) {
+	it('Can set up gracenode modules', function (done) {
 
 		console.log('**WARNING** This test requires in-app-purchase module and async module installed in ../gracenode/node_modules/ to work properly');
 	
@@ -11,9 +11,6 @@ describe('gracenode initialization ->', function () {
 		gn.setConfigFiles(['setup.json']);
 
 		gn.addModulePath('node_modules/gracenode/test/modules/');
-
-		// test override use
-		gn.override('mysql');
 	
 		// test built-in module use
 		gn.use('encrypt');
@@ -27,13 +24,20 @@ describe('gracenode initialization ->', function () {
 		// test 3rd party node module use with alternate name
 		gn.use('async', { name: 'async2' });
 
+		// test gracenode module use
+		gn.use('gracenode-mysql');
+		gn.use('gracenode-iap');
+		gn.use('gracenode-staticdata');
+
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
-			assert.equal(gn.mysql.test, 'test override');
 			assert(gn.encrypt.uuid);
 			assert(gn.test.loaded());
 			assert(gn.inAppPurchase.validate);
 			assert(gn.async2);
+			assert(gn.iap);
+			assert(gn.mysql);
+			assert(gn.staticdata);
 			done();
 		});
 			
