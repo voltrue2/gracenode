@@ -4,6 +4,8 @@ var assert = require('assert');
 describe('gracenode initialization ->', function () {
 	
 	it('Can set up gracenode', function (done) {
+
+		console.log('**WARNING** This test requires in-app-purchase module and async module installed in ../gracenode/node_modules/ to work properly');
 	
 		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['setup.json']);
@@ -20,10 +22,10 @@ describe('gracenode initialization ->', function () {
 		gn.use('test');
 
 		// test 3rd party node module use with custom driver
-		gn.use('in-app-purchase', gn.require('gracenode/test/drivers/in-app-purchase'));
-	
-		// test 3rd part node module with bilt-in driver
-		gn.use('redis');
+		gn.use('in-app-purchase', { name: null, driver: gn.require('gracenode/test/drivers/in-app-purchase') });
+
+		// test 3rd party node module use with alternate name
+		gn.use('async', { name: 'async2' });
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
@@ -31,7 +33,7 @@ describe('gracenode initialization ->', function () {
 			assert(gn.encrypt.uuid);
 			assert(gn.test.loaded());
 			assert(gn.inAppPurchase.validate);
-			assert(gn.redis);
+			assert(gn.async2);
 			done();
 		});
 			

@@ -118,12 +118,29 @@ Allows the application to override and use custom module of the same module name
 gracenode.override('mysql')
 ```
 
-###.use(moduleName [string])
+###.use(moduleName [string], options [*object])
+
 Tells gracenode what modules to load when calling the setup functions.
+
 ```
 gracenode.use('mysql');
 gracenode.use('myModule');
 ```
+
+With the optional second argument objects, you can give the module an alternate name.
+
+```
+gracenode.use('mysql', { name: 'mysql2' });
+// accessing this module will be gracenode.mysql2
+```
+
+Also if you are using 3rd party node module as gracenode module, the you can apply a driver to that module by:
+
+```
+gracenode.use('async', { name: 'async2', driver: { config: <*function>, setup: <*function>, shutdown: <*function>, expose: <*function> } });
+```
+
+For more details on module drivers, please read <a href="#module-driver">here</a>.
 
 ###.setup(callback [function])
 Start the setting up of gracenode modules.
@@ -200,6 +217,58 @@ Spawns forked process(es) if allowed
 	"max": <integer> // number of maximum child processes allowed
 }
 ```
+
+***
+
+#Module Drivers
+
+A module driver is an object to be applied to a 3rd party node module to make it behaive as gracenode module.
+
+Example:
+
+```
+// a driver for redis module
+/app/drivers/redis/index.js
+```
+
+```
+// what is inside redis module driver
+var mod;
+var config;
+var clients = {};
+// this function is a requirement.
+// every module driver must have this function
+exports.set = function (redis) {
+	mod = redis;
+};
+// an optional function to load configurations on gracenode.setup
+exports.config = function (configIn) {
+	if (!configIn.clients) {
+		throw new Error('invalid configurations given:\n' + JSON.stringify(configIn));
+	}
+	config = configIn;
+};
+// an optional asynchronous function to be exected on gracenode.setup
+exports.setup = function (cb) {
+	for (var name in config.clients) {
+		clients[name] = mod.createClient(config.clients[name].port, config.clients[name].host, config.clients[name].options);
+	}
+	cb();
+};
+// an optional function to register shutdown task to gracenode
+exports.shutdown = function (gracenode, done) {
+	// do your clean up here
+	done();
+};
+// an optional function to let you decide how you want to expose the module
+exports.expose = function () {
+	// this function MUST return a module object
+	// here we are exposing redis clients as redis module
+	return clients;
+};
+```
+
+***
 
 #Default Modules
 By default gracenode automatically loads the following modules. Click on the link to read more about them.

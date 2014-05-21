@@ -1,10 +1,8 @@
 var gn;
-var builtInDriverPath;
 var drivers = {};
 
 module.exports.setup = function (gracenode) {
 	gn = gracenode;
-	builtInDriverPath = gn._root + 'drivers/';
 };
 
 module.exports.addDriver = function (moduleName, driver) {
@@ -51,10 +49,5 @@ function getDriver(moduleName) {
 	if (drivers[moduleName]) {
 		return drivers[moduleName];
 	}
-	// look in the built-in drivers
-	try {
-		return require(builtInDriverPath + moduleName);
-	} catch (e) {
-		return null;
-	}
+	return null;
 }

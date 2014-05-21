@@ -23,19 +23,21 @@ Module.prototype.addModulePath = function (path) {
 	}
 };
 
-Module.prototype.use = function (name, driver) {
-	if (this._use.indexOf(name) === -1) {
-		if (driver) {
-			modDriver.addDriver(name, driver);
-		}
-		return this._use.push(name);
+Module.prototype.use = function (name, options) {
+	if (options && options.driver) {
+		modDriver.addDriver(name, options.driver);
 	}
+	var altName = null;
+	if (options && options.name) {
+		altName = options.name;
+	}
+	this._use.push({ name: name, altName: altName });
 };
 
-Module.prototype.override = function (name, driver) {
+Module.prototype.override = function (name, options) {
 	if (this._overrides.indexOf(name) === -1) {
 		this._overrides.push(name);
-		return this.use(name, driver);
+		return this.use(name, options);
 	}
 };
 
@@ -72,17 +74,32 @@ Module.prototype.getModuleSchema = function (name, cb) {
 };
 
 Module.prototype.load = function (cb) {
+	// look for module name conflicts
+	var seen = [];
+	for (var i = 0, len = this._use.length; i < len; i++) {
+		var mod = this._use[i];
+		var name = mod.altName || mod.name;
+		if (seen.indexOf(name) === -1) {
+			seen.push(name);
+		} else {
+			this._logger.error(mod);
+			return cb('module name coflict detected');
+		}
+	}
 	this._logger = this._gn.log.create('module');
 	this._logger.verbose('start loading modules');
 	var that = this;
-	async.eachSeries(this._use, function (name, next) {
+	async.eachSeries(this._use, function (modObj, next) {
+		var name = modObj.name;
+		var altName = modObj.altName;
 		// load one module at a time
 		that._loadOne(name, function (error, module) {
 			if (error) {
 				return next(error);
 			}
 			// append loaded module to gracenode
-			var modName = createModuleName(name);
+			var modName = altName || name;
+			modName = createModuleName(modName);
 			that._gn[modName] = module;
 			// handle config
 			var err = that._readConfig(name, module, next);

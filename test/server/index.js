@@ -52,9 +52,6 @@ describe('gracenode server module ->', function () {
 		
 		gn.setConfigPath('gracenode/test/configs/');
 		gn.setConfigFiles(['http.json']);
-		
-		gn.use('request');
-		gn.use('server');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
