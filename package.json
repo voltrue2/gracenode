@@ -19,7 +19,7 @@
 		"mongodb": "1.4.3",
 		"cron": "1.0.4",
 		"request": "2.33.0",
-    	"multiparty": "3.2.6"
+		"multiparty": "3.2.6"
 	},
 	"devDependencies": {
 		"mocha": "1.18.2"
