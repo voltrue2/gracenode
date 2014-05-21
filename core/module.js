@@ -1,14 +1,19 @@
 var async = require('async');
 var fs = require('fs');
+var modDriver = require('./driver');
+
+var modulePrefix = 'gracenode-';
 
 module.exports = Module;
 
 function Module(gn, rootPath) {
 	this._gn = gn;
-	this._builtInPath = rootPath + '/modules/';
+	this._builtInPath = rootPath + 'modules/';
+	this._appNodeModulePath = gn.getRootPath() + 'node_modules/';
 	this._use = [];
 	this._overrides = [];
 	this._modPaths = [];
+	modDriver.setup(gn);
 }
 
 Module.prototype.addModulePath = function (path) {
@@ -18,16 +23,19 @@ Module.prototype.addModulePath = function (path) {
 	}
 };
 
-Module.prototype.use = function (name) {
+Module.prototype.use = function (name, driver) {
 	if (this._use.indexOf(name) === -1) {
+		if (driver) {
+			modDriver.addDriver(name, driver);
+		}
 		return this._use.push(name);
 	}
 };
 
-Module.prototype.override = function (name) {
+Module.prototype.override = function (name, driver) {
 	if (this._overrides.indexOf(name) === -1) {
 		this._overrides.push(name);
-		return this.use(name);
+		return this.use(name, driver);
 	}
 };
 
@@ -69,12 +77,13 @@ Module.prototype.load = function (cb) {
 	var that = this;
 	async.eachSeries(this._use, function (name, next) {
 		// load one module at a time
-		that._load(name, function (error, module) {
+		that._loadOne(name, function (error, module) {
 			if (error) {
 				return next(error);
 			}
 			// append loaded module to gracenode
-			that._gn[name] = module;
+			var modName = createModuleName(name);
+			that._gn[modName] = module;
 			// handle config
 			var err = that._readConfig(name, module, next);
 			if (err) {
@@ -86,6 +95,9 @@ Module.prototype.load = function (cb) {
 					return next(err);
 				}
 				var msg = 'module [' + name + '] loaded';
+				if (modName !== name) {
+					msg += ' as ' + modName;
+				}
 				that._logger.verbose(msg);
 				that._gn._profiler.mark(msg);
 				that._gn.emit('setup.' + name);
@@ -95,7 +107,7 @@ Module.prototype.load = function (cb) {
 	}, cb);
 };
 
-Module.prototype._load = function (name, cb) {
+Module.prototype._loadOne = function (name, cb) {
 	// this variable will remember the found built-in module path for override case
 	var builtInPath;
 	try {
@@ -144,8 +156,36 @@ Module.prototype._loadExternal = function (name, builtInPath, cb) {
 			next();
 		}); 
 	}, function () {
-		// we found no module...
-		cb();
+		// we found no module... in module paths
+		// now try node_modules of the application
+		that._loadFromNodeModules(name, builtInPath, function (error, module) {
+			if (error) {
+				return cb(error);
+			}
+			cb(module);
+		});
+	});
+};
+
+Module.prototype._loadFromNodeModules = function (name, builtInPath, cb) {
+	var that = this;
+	this._logger.verbose('looking for module [' + name + '] in ', this._appNodeModulePath);
+	fs.exists(this._appNodeModulePath + name, function (exists) {
+		if (!exists) {
+			return cb();
+		}
+		var mod = that._require(name, that._appNodeModulePath + name, builtInPath);
+		// check to see if there is a driver for this module
+		var applied = modDriver.applyDriver(name, mod);
+		if (!applied) {
+			that._logger.verbose('no driver found for module [' + name + ']');
+		} else if (applied instanceof Error) {
+			// there was an error while applying the driver to the module
+			return cb(applied, mod);
+		} else {
+			that._logger.verbose('driver found for module [' + name + ']');
+		}
+		cb(null, mod);
 	});
 };
 
@@ -186,3 +226,16 @@ Module.prototype._setup = function (name, module, cb) {
 	// no setup function for this module
 	cb();
 };
+
+// -ed names will be camel-cased
+function createModuleName(name) {
+	// remove gracenode prefix
+	name = name.replace(modulePrefix, '');
+	var sep = name.split('-');
+	var camelCased = sep[0];
+	for (var i = 1, len = sep.length; i < len; i++) {
+		var firstChar = sep[i].substring(0, 1).toUpperCase();
+		camelCased += firstChar + sep[i].substring(1);
+	}
+	return camelCased;
+}

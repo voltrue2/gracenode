@@ -46,20 +46,6 @@ describe('gracenode initialization ->', function () {
 			throw new Error('inaccurate randomness');
 		}
 	});
-
-	it('Can generate random float', function () {
-		var total = 100;
-		var min = 0;
-		var max = 0;
-		for (var i = 0; i < total; i++) {
-			var rand = gn.lib.randomFloat(0.1, 0.2);
-			if (rand > 0.1) {
-				min++;
-			} else {
-				max++;
-			}
-		}
-	});
 	
 	it('Tests all modules', function () {
 		gn.require('gracenode/test/view');	

@@ -86,8 +86,8 @@ Gracenode.prototype.override = function (builtInModuleName) {
 	this._module.override(builtInModuleName);
 };
 
-Gracenode.prototype.use = function (modName) {
-	this._module.use(modName);
+Gracenode.prototype.use = function (modName, driver) {
+	this._module.use(modName, driver);
 };
 
 Gracenode.prototype.setup = function (cb) {

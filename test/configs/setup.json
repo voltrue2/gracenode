@@ -1,0 +1,28 @@
+{
+	"modules": {
+		"log": {
+			"console": true,
+			"color": true,
+			"level": {
+				"verbose": true,
+				"debug": true,
+				"info": true,
+				"warning": true,
+				"error": true,
+				"fatal": true
+			}
+		},
+		"in-app-purchase": {
+			"sandbox": true
+		},
+		"redis": {
+			"clients": {
+				"test1": {
+					"host": "localhost",
+					"port": 6379,
+					"options": null
+				}
+			}
+		}
+	}
+}
