@@ -5,6 +5,7 @@ var headers = require('./headers');
 var Cookies = require('cookies');
 var queryString = require('querystring');
 var url = require('url');
+var multiparty = require('multiparty');
 
 module.exports = Request;
 
@@ -63,65 +64,94 @@ Request.prototype.dataAll = function () {
 };
 
 Request.prototype.extractQueries = function (req, cb) {
-	switch (req.method) {
-		case 'POST':
-			var body = '';
-			req.on('data', function (data) {
-				body += data;
-			});
-			req.on('end', function () {
-				var post = readRequestBody(req.url, req.headers, body);
-				cb(null, queryDataHandler.createGetter(post));
-			});
-			req.on('error', function (error) {
-				cb(error);
-			});
-			break;
-		case 'PUT':
-			var putBody = '';
-			req.on('data', function (data) {
-				putBody += data;
-			});
-			req.on('end', function () {
-				var put = readRequestBody(req.url, req.headers, putBody);
-				cb(null, queryDataHandler.createGetter(put));
-			});
-			req.on('error', function (error) {
-				cb(error);
-			});
-			break;
-		case 'DELETE':
-			var deleteBody = '';
-			req.on('data', function (data) {
-				deleteBody += data;
-			});
-			req.on('end', function () {
-				var del = queryString.parse(deleteBody);
-				cb(null, queryDataHandler.createGetter(del));
-			});
-			req.on('error', function (error) {
-				cb(error);
-			});
-			break;
-		case 'GET':
-			var parsed = url.parse(req.url, true);
-			var getBody = '';
-			req.on('data', function (data) {
-				getBody += data;
-			});
-			req.on('end', function () {
-				var get = queryString.parse(getBody);
-				for (var key in parsed.query) {
-					get[key] = parsed.query[key];
-				}
-				cb(null, queryDataHandler.createGetter(get));
-			});
-			break;
-		default:
-			logger.warning('only POST, PUT, DELETE, and GET are supported');
-			cb(null, queryDataHandler.createGetter({}));
-			break;
+
+	if (req.headers['content-type'] && req.headers['content-type'].indexOf('multipart') >= 0) {
+
+		var form = new multiparty.Form();
+
+		form.parse(req, function(error, fields, files) {
+
+			if (error) {
+				return cb(error);
+			}
+
+			var obj   = fields;
+			obj.files = [];
+
+			for (var f in files) {
+
+				obj.files.push(files[f][0]);
+
+			}
+
+			cb(null, queryDataHandler.createGetter(obj));
+			
+		});
+
+	} else {
+
+		switch (req.method) {
+			case 'POST':
+				var body = '';
+				req.on('data', function (data) {
+					body += data;
+				});
+				req.on('end', function () {
+					var post = readRequestBody(req.url, req.headers, body);
+					cb(null, queryDataHandler.createGetter(post));
+				});
+				req.on('error', function (error) {
+					cb(error);
+				});
+				break;
+			case 'PUT':
+				var putBody = '';
+				req.on('data', function (data) {
+					putBody += data;
+				});
+				req.on('end', function () {
+					var put = readRequestBody(req.url, req.headers, putBody);
+					cb(null, queryDataHandler.createGetter(put));
+				});
+				req.on('error', function (error) {
+					cb(error);
+				});
+				break;
+			case 'DELETE':
+				var deleteBody = '';
+				req.on('data', function (data) {
+					deleteBody += data;
+				});
+				req.on('end', function () {
+					var del = queryString.parse(deleteBody);
+					cb(null, queryDataHandler.createGetter(del));
+				});
+				req.on('error', function (error) {
+					cb(error);
+				});
+				break;
+			case 'GET':
+				var parsed = url.parse(req.url, true);
+				var getBody = '';
+				req.on('data', function (data) {
+					getBody += data;
+				});
+				req.on('end', function () {
+					var get = queryString.parse(getBody);
+					for (var key in parsed.query) {
+						get[key] = parsed.query[key];
+					}
+					cb(null, queryDataHandler.createGetter(get));
+				});
+				break;
+			default:
+				logger.warning('only POST, PUT, DELETE, and GET are supported');
+				cb(null, queryDataHandler.createGetter({}));
+				break;
+		}
+
 	}
+	
 };
 
 
