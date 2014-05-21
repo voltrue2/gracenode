@@ -16,6 +16,10 @@ None
 
 #### module system
 
+#### gracenode.override
+
+Since gracenode will not have built-in modules, the purpose of this function has lost its meaning.
+
 ### Removed
 
 None
