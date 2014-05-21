@@ -1,5 +1,127 @@
 # Change Log
 
+## Version 0.2.43
+
+### Added
+
+None
+
+### Changed
+
+#### iap module for google performance improvement
+
+Iap module for google now reads public key file on setup of gracenode for better performance.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+## Version 0.2.42
+
+### Added
+
+None
+
+### Changed
+
+#### server module refactored
+
+Server module has been refactored for better performance.
+
+#### lib module randomFloat bug fix
+
+If you pass float numbers smaller than 1, the function had a chance of returning greater than max given.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
+## Version 0.2.41
+
+### Added
+
+#### new unit test added to server module
+
+Test for pre-defined 404 error handling has been added.
+
+### Changed
+
+None
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+***
+
+## Version 0.2.40-b
+
+Changes for version 0.2.40-b
+
+### Added
+
+None
+
+### Changed
+
+#### server module pre-defined error handling bug fix
+
+Server module's pre-defined error handling on 404 had an issue of not correctly executing the assigned error controller.
+
+Now this issue has been fixed.
+
+### Depricated
+
+None
+
+***
+
+### Removed
+
+None
+
+***
+
+## Version 0.2.40-a
+
+Changes for version 0.2.40-a
+
+### Added
+
+None
+
+### Changed
+
+#### server module's router for "not found"
+
+Server module's router now correctly uses the property in parsed URL object for not found 404 error.
+
+### Depricated
+
+None
+
+***
+
+### Removed
+
+None
+
+***
+
 ## Version 0.2.40
 
 Changes for version 0.2.40
@@ -10,7 +132,13 @@ None
 
 ### Changed
 
-None
+#### lib mdodule random function improved
+
+Lib module's randomInt and randomFloat improved their random logic for better performance and better randomness.
+
+#### server module routing and contorller management
+
+Performance of router and controller management improved.
 
 ### Depricated
 

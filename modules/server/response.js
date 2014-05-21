@@ -3,8 +3,8 @@ var log = gracenode.log.create('server-response');
 var zlib = require('zlib');
 var getMimeType = require('./mime');
 
-module.exports.create = function (server, request, response, startTime) {
-	return new Response(server, request, response, startTime);
+module.exports.create = function (resource) {
+	return new Response(resource.server, resource.rawRequest, resource.rawResponse, resource.startTime);
 };
 
 function Response(server, request, response, startTime) {
@@ -79,7 +79,6 @@ Response.prototype._errorHandler = function () {
 
 Response.prototype._error = function (content, status) {
 	log.verbose('response content type: Error');
-	log.error('(url:' + this._request.url + ')', content);
 	setupFinish(this._request, this._response, this._server, this._startTime);
 	respondERROR(this._request, this._response, content, status);
 	finish(this._request, this._response, this._server);

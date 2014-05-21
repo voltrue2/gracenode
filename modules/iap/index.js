@@ -33,6 +33,14 @@ module.exports.readConfig = function (configIn) {
 	google.readConfig(config);
 };
 
+module.exports.setup = function (cb) {
+	if (!config.googlePublicKeyPath) {
+		// no google iap
+		return cb();
+	}
+	google.setup(cb);
+};
+
 // unit test functions
 module.exports.testApple = function (receipt, cb) {
 	apple.validatePurchase(receipt, function (error, receipt, response) {

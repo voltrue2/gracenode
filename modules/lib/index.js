@@ -1,4 +1,3 @@
-
 var fs = require('fs');
 var gracenode = require('../../');
 var log = gracenode.log.create('lib');
@@ -21,13 +20,10 @@ var validationPatterns = {
 * 99% of time time. Not 50% as it should be.
 */
 
-module.exports.randomFloat = function (min, max) {
-
+module.exports.randomFloat = function (min, max, precision) {
+	precision = precision || 2;
 	var offset = max - min;
-	var rand   = Math.random() * (offset + 1);
-
-	return rand + min;
-
+	return parseFloat(Math.min(min + (Math.random() * offset), max).toFixed(precision));
 };
 
 module.exports.randomInt = function (min, max) {
