@@ -140,7 +140,7 @@ Also if you are using 3rd party node module as gracenode module, the you can app
 gracenode.use('async', { name: 'async2', driver: { config: <*function>, setup: <*function>, shutdown: <*function>, expose: <*function> } });
 ```
 
-For more details on module drivers, please read <a href="#module-driver">here</a>.
+For more details on module drivers, please read <a href="#mod-driver">here</a>.
 
 ###.setup(callback [function])
 Start the setting up of gracenode modules.
@@ -220,9 +220,8 @@ Spawns forked process(es) if allowed
 
 ***
 
-<div class="module-driver">
+<span class="mod-driver"></span>
 #Module Drivers
-</div>
 
 A module driver is an object to be applied to a 3rd party node module to make it behaive as gracenode module.
 
