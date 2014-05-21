@@ -1,5 +1,35 @@
 # Change Log
 
+## Version 0.3.0
+
+### Added
+
+#### module driver system
+
+This system is to replace the current built-in and external module system.
+
+#### Changed
+
+None
+
+### Depricated
+
+#### module system
+
+### Removed
+
+None
+
+# Future backward compatibility break
+
+We will be removing the current module system and moving to module dirver system.
+
+The current built-in modules will be all externalized and required to be included in your application's package.json.
+
+As of version 0.3.0, we still have the current module system and the new driver system.
+
+***
+
 ## Version 0.2.43
 
 ### Added
