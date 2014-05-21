@@ -69,7 +69,7 @@ Request.prototype.extractQueries = function (req, cb) {
 
 		var form = new multiparty.Form();
 
-		form.parse(req, function(error, fields, files) {
+		form.parse(req, function (error, fields, files) {
 
 			if (error) {
 				return cb(error);
