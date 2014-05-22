@@ -17,8 +17,8 @@ module.exports.applyDriver = function (name, module) {
 	if (!driver) {
 		return false;
 	}
-	// set module to driver
-	driver.set(module);
+	// pass module to driver
+	driver.module = module;
 	// configuration driver
 	if (typeof driver.config === 'function') {
 		module.readConfig = driver.config;

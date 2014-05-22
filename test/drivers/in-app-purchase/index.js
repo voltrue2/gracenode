@@ -1,13 +1,12 @@
-var mod;
+exports.module = null;
 
-module.exports.set = function (module) {
-	mod = module;
-}; 
-
-module.exports.config = function (configIn) {
-	mod.config(configIn);
+exports.config = function (configIn) {
+	exports.module.config(configIn);
 };
 
-module.exports.setup = function (cb) {
+exports.setup = function (cb) {
+	if (!module.exports.module.isValidated) {
+		return cb(new Error('failed to get module'));
+	}
 	cb();
 };

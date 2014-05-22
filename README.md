@@ -343,14 +343,12 @@ Example:
 
 ```
 // what is inside redis module driver
-var mod;
 var config;
 var clients = {};
-// this function is a requirement.
-// every module driver must have this function
-exports.set = function (redis) {
-	mod = redis;
-};
+
+// gracenode will assign the module object to this
+exports.module = null;
+
 // an optional function to load configurations on gracenode.setup
 exports.config = function (configIn) {
 	if (!configIn.clients) {
@@ -361,7 +359,7 @@ exports.config = function (configIn) {
 // an optional asynchronous function to be exected on gracenode.setup
 exports.setup = function (cb) {
 	for (var name in config.clients) {
-		clients[name] = mod.createClient(config.clients[name].port, config.clients[name].host, config.clients[name].options);
+		clients[name] = exports.module.createClient(config.clients[name].port, config.clients[name].host, config.clients[name].options);
 	}
 	cb();
 };
