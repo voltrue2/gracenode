@@ -31,6 +31,7 @@ describe('gracenode initialization ->', function () {
 		gn.use('gracenode-encrypt');
 		gn.use('gracenode-cron');
 		gn.use('gracenode-server');
+		gn.use('gracenode-view');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
@@ -43,10 +44,24 @@ describe('gracenode initialization ->', function () {
 			assert(gn.staticdata.create);
 			assert(gn.encrypt.uuid);
 			assert(gn.cron.create);
-			gn.server.start();
 			done();
 		});
 			
+	});
+
+	it('Can start a server', function () {
+		gn.server.start();
+	});
+
+	it('Can load a view content', function (done) {
+		var view = gn.view.create();
+		view.assign('test', 'TEST');
+		view.load('node_modules/gracenode/test/view/test.html', function (error, content) {
+			assert.equal(error, undefined);
+			assert(content);
+			console.log(content);
+			done();
+		});
 	});
 
 });
