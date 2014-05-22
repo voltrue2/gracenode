@@ -287,23 +287,23 @@ module.exports.readConfig = function (configurations) {
 
 gracenode has a way to integrate with 3rd party node modules as its own modules.
 
-To add your faivorite modules, in your package.json add:
+To add your favorite modules, in your package.json add:
 
 ```
 {
 	"dependencies": {
 		"gracenode": "",
-		"my-faivorite-module": ""
+		"my-favorite-module": ""
 	}
 }
 ```
 
-To use your faivorite module, in your bootstrap code, add:
+To use your favorite module, in your bootstrap code, add:
 
 ```
 var gracenode = require('graceode');
 // this will tell gracenode to load this module as its module
-gracenode.use('my-faivorite-module');
+gracenode.use('my-favorite-module');
 // to access the loaded modue
 gracenode.myFaivoriteModule
 ```
@@ -317,14 +317,14 @@ To load your module with alternative name:
 ```
 var gracenode = require('graceode');
 // this will tell gracenode to load this module as its module
-gracenode.use('my-faivorite-module', 'myFav');
+gracenode.use('my-favorite-module', 'myFav');
 // to access the loaded modue
 gracenode.myFav
 ```
 
 Now some modules need to be set up and prepared before they are ready to be used,
 
-gracenode has a way to make sure your faivorite modules are ready when you access them.
+gracenode has a way to make sure your favorite modules are ready when you access them.
 
 We will be talking about "module drivers" below to explain how gracenode does it.
 
