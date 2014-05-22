@@ -1,5 +1,6 @@
-gracenode
-©2013 - 2014 Nobuyori Takahashi < <voltrue2@yahoo.com> >
+#gracenode
+
+©Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
 ##Installation
 
@@ -111,13 +112,6 @@ gracenode.addModulePath('mymodules/');
 gracenode.use('mymodule');
 ```
 
-###.override(moduleName [string])
-Allows the application to override and use custom module of the same module name instead of the built-in module from gracenode
-```
-// this will load and use the custom module called "mysql"
-gracenode.override('mysql')
-```
-
 ###.use(moduleName [string], options [*object])
 
 Tells gracenode what modules to load when calling the setup functions.
@@ -220,56 +214,6 @@ Spawns forked process(es) if allowed
 
 ***
 
-#Module Drivers
-
-A module driver is an object to be applied to a 3rd party node module to make it behaive as gracenode module.
-
-Example:
-
-```
-// a driver for redis module
-/app/drivers/redis/index.js
-```
-
-```
-// what is inside redis module driver
-var mod;
-var config;
-var clients = {};
-// this function is a requirement.
-// every module driver must have this function
-exports.set = function (redis) {
-	mod = redis;
-};
-// an optional function to load configurations on gracenode.setup
-exports.config = function (configIn) {
-	if (!configIn.clients) {
-		throw new Error('invalid configurations given:\n' + JSON.stringify(configIn));
-	}
-	config = configIn;
-};
-// an optional asynchronous function to be exected on gracenode.setup
-exports.setup = function (cb) {
-	for (var name in config.clients) {
-		clients[name] = mod.createClient(config.clients[name].port, config.clients[name].host, config.clients[name].options);
-	}
-	cb();
-};
-// an optional function to register shutdown task to gracenode
-exports.shutdown = function (gracenode, done) {
-	// do your clean up here
-	done();
-};
-// an optional function to let you decide how you want to expose the module
-exports.expose = function () {
-	// this function MUST return a module object
-	// here we are exposing redis clients as redis module
-	return clients;
-};
-```
-
-***
-
 #Default Modules
 By default gracenode automatically loads the following modules. Click on the link to read more about them.
 ###[Config](modules/config)
@@ -336,6 +280,105 @@ module.exports.readConfig = function (configurations) {
 	config = configurations;
 };
 ```
+
+***
+
+### How to Use Your Favorite Node Module with gracenode
+
+gracenode has a way to integrate with 3rd party node modules as its own modules.
+
+To add your faivorite modules, in your package.json add:
+
+```
+{
+	"dependencies": {
+		"gracenode": "",
+		"my-faivorite-module": ""
+	}
+}
+```
+
+To use your faivorite module, in your bootstrap code, add:
+
+```
+var gracenode = require('graceode');
+// this will tell gracenode to load this module as its module
+gracenode.use('my-faivorite-module');
+// to access the loaded modue
+gracenode.myFaivoriteModule
+```
+
+Notice the hyphened module name was transformed to camel-cased name.
+
+gracenode automatically transforms hyphened names to camel-cased name.
+
+To load your module with alternative name:
+
+```
+var gracenode = require('graceode');
+// this will tell gracenode to load this module as its module
+gracenode.use('my-faivorite-module', 'myFav');
+// to access the loaded modue
+gracenode.myFav
+```
+
+Now some modules need to be set up and prepared before they are ready to be used,
+
+gracenode has a way to make sure your faivorite modules are ready when you access them.
+
+We will be talking about "module drivers" below to explain how gracenode does it.
+
+***
+
+### Module Drivers
+
+A module driver is an object to be applied to a 3rd party node module to make it behaive as gracenode module.
+
+Example:
+
+```
+// a driver for redis module
+/app/drivers/redis/index.js
+```
+
+```
+// what is inside redis module driver
+var mod;
+var config;
+var clients = {};
+// this function is a requirement.
+// every module driver must have this function
+exports.set = function (redis) {
+	mod = redis;
+};
+// an optional function to load configurations on gracenode.setup
+exports.config = function (configIn) {
+	if (!configIn.clients) {
+		throw new Error('invalid configurations given:\n' + JSON.stringify(configIn));
+	}
+	config = configIn;
+};
+// an optional asynchronous function to be exected on gracenode.setup
+exports.setup = function (cb) {
+	for (var name in config.clients) {
+		clients[name] = mod.createClient(config.clients[name].port, config.clients[name].host, config.clients[name].options);
+	}
+	cb();
+};
+// an optional function to register shutdown task to gracenode
+exports.shutdown = function (gracenode, done) {
+	// do your clean up here
+	done();
+};
+// an optional function to let you decide how you want to expose the module
+exports.expose = function () {
+	// this function MUST return a module object
+	// here we are exposing redis clients as redis module
+	return clients;
+};
+```
+
+***
 
 #### .setup(callback [function])
 

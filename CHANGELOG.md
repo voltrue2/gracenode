@@ -6,7 +6,7 @@
 
 #### module driver system
 
-This system is to replace the current built-in and external module system.
+To allow 3rd party node modules to behave as gracenode modules.
 
 #### Changed
 
@@ -14,11 +14,13 @@ None
 
 ### Depricated
 
-#### module system
+#### built-in module system
+
+Current built-in modules will be removed from gracenode and will be available on NPM repo as gracenode modules.
 
 #### gracenode.override
 
-Since gracenode will not have built-in modules, the purpose of this function has lost its meaning.
+Because gracenode.use() function now allows you to change the name of modules, gracenode.override has lost its purpose.
 
 ### Removed
 
@@ -26,7 +28,7 @@ None
 
 # Future backward compatibility break
 
-We will be removing the current module system and moving to module dirver system.
+We will be removing the current built-in module system.
 
 The current built-in modules will be all externalized and required to be included in your application's package.json.
 
