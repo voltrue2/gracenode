@@ -28,6 +28,9 @@ describe('gracenode initialization ->', function () {
 		gn.use('gracenode-mysql');
 		gn.use('gracenode-iap');
 		gn.use('gracenode-staticdata');
+		gn.use('gracenode-encrypt');
+		gn.use('gracenode-cron');
+		gn.use('gracenode-server');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
@@ -37,7 +40,10 @@ describe('gracenode initialization ->', function () {
 			assert(gn.async2);
 			assert(gn.iap);
 			assert(gn.mysql);
-			assert(gn.staticdata);
+			assert(gn.staticdata.create);
+			assert(gn.encrypt.uuid);
+			assert(gn.cron.create);
+			gn.server.start();
 			done();
 		});
 			
