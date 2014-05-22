@@ -36,6 +36,7 @@ describe('gracenode initialization ->', function () {
 		gn.use('gracenode-udp');
 		gn.use('gracenode-session');
 		gn.use('gracenode-wallet');
+		gn.use('gracenode-memcache');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
@@ -48,6 +49,7 @@ describe('gracenode initialization ->', function () {
 			assert(gn.staticdata.create);
 			assert(gn.encrypt.uuid);
 			assert(gn.cron.create);
+			assert(gn.memcache.create);
 			done();
 		});
 			

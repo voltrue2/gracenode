@@ -72,6 +72,11 @@
 		"gracenode-wallet": {
 			"names": ["testWallet"],
 			"sql": "dummy"
+		},
+		"gracenode-memcache": {
+			"hosts": ["localhost"],
+			"ttl": 10000,
+			"options": null
 		}
 	}
 }
