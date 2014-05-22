@@ -68,6 +68,10 @@
 		},
 		"gracenode-session": {
 			"ttl":  1000
+		},
+		"gracenode-wallet": {
+			"names": ["testWallet"],
+			"sql": "dummy"
 		}
 	}
 }

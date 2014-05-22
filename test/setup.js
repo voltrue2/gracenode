@@ -35,6 +35,7 @@ describe('gracenode initialization ->', function () {
 		gn.use('gracenode-request');
 		gn.use('gracenode-udp');
 		gn.use('gracenode-session');
+		gn.use('gracenode-wallet');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
@@ -50,6 +51,14 @@ describe('gracenode initialization ->', function () {
 			done();
 		});
 			
+	});
+
+	it('Can get iap module schema SQL', function (done) {
+		gn.getModuleSchema('iap', function (error, sqlList) {
+			assert.equal(error, undefined);
+			assert(sqlList.length);
+			done();
+		});
 	});
 
 	it('Can start a server', function () {
@@ -115,6 +124,14 @@ describe('gracenode initialization ->', function () {
 				assert.equal(v, 100);
 				done();
 			});
+		});
+	});
+
+	it('Can get wallet module schema SQL', function (done) {
+		gn.getModuleSchema('wallet', function (error, sqlList) {
+			assert.equal(error, undefined);
+			assert(sqlList.length);
+			done();
 		});
 	});
 
