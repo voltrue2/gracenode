@@ -214,6 +214,44 @@ Spawns forked process(es) if allowed
 
 ***
 
+#Modules
+
+gracenode framework is modular. And it allows you to extending by adding wither your custom modules and/or 3rd party node modules.
+
+### Loading modules from your application locally
+
+If you have modules that you wish to use, but they are not packaged, gracenode will let you use those modules by:
+
+```
+var gracenode = require('gracenode');
+gracenode.addModulePath('path/to/your/modules/directory/');
+gracenode.use('moduleNameYouWantToUse');
+```
+
+### Loading modules as dependencies of your application
+
+If you wish to use modules that are available from NPM or git repositories, gracenode handles them by:
+
+Add the modules as your dependencies in package.json.
+
+```
+"dependencies": {
+	"gracenode": "",
+	"gracenode-server": "",
+	"gracenode-mongodb": ""
+}
+```
+
+Then use the modules.
+
+```
+var gracenode = require('gracenode');
+gracenode.use('gracenode-server');
+gracenode.use('gracenode-mongodb');
+```
+
+***
+
 #Default Modules
 By default gracenode automatically loads the following modules. Click on the link to read more about them.
 ###[Config](modules/config)
