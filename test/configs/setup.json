@@ -57,6 +57,17 @@
 			"host": "localhost",
 			"port": 8000,
 			"controllerPath": "node_modules/gracenode/test/server/controller/"
+		},
+		"gracenode-udp": {
+			"servers": [
+				{ "name": "test", "host": "localhost", "port": 8999 }
+			],
+			"requests": {
+				"test": { "host": "localhost", "port": 8999 }
+			}
+		},
+		"gracenode-session": {
+			"ttl":  1000
 		}
 	}
 }

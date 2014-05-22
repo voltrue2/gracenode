@@ -32,6 +32,9 @@ describe('gracenode initialization ->', function () {
 		gn.use('gracenode-cron');
 		gn.use('gracenode-server');
 		gn.use('gracenode-view');
+		gn.use('gracenode-request');
+		gn.use('gracenode-udp');
+		gn.use('gracenode-session');
 
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
@@ -61,6 +64,57 @@ describe('gracenode initialization ->', function () {
 			assert(content);
 			console.log(content);
 			done();
+		});
+	});
+
+	it('Can send an HTTP GET request', function (done) {
+		gn.request.GET('http://localhost:8000/test/get', { boo: 1, foo: 1 }, { gzip: true }, function (error, body, status) {
+			console.log(error, body, status);
+			assert.equal(error, undefined);
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('Can start a UDP server', function (done) {
+		gn.udp.startServers(function (error) {
+			assert.equal(error, undefined);
+			done();
+		});
+	});
+	
+	it('Can send and receive a message', function (done) {
+		var server = gn.udp.getServerByName('test');
+		server.on('message', function (msg) {
+			console.log('message received:', msg.toString());
+			assert.equal(msg.toString(), 'hello');
+			done();
+		});
+		server.on('error', function (error) {
+			throw new Error(error);
+		});
+		gn.udp.send('test', 'hello', null, function () {});
+	});
+
+	it('Can set up session', function (done) {
+		var value = {};
+
+		gn.session.setGetter(function (id, cb) {
+			cb(null, value[id]);
+		});
+
+		gn.session.setSetter(function (id, val, cb) {
+			value[id] = val;
+			cb();
+		});
+
+		gn.session.set('test', 100, function (error, sessionId) {
+			assert.equal(error, undefined);
+			gn.session.get(sessionId, function (error, v) {
+				assert.equal(error, undefined);
+				assert.equal(v, 100);
+				done();
+			});
 		});
 	});
 
