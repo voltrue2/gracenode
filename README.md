@@ -395,7 +395,7 @@ module.exports.setup = function (callback) {
 };
 ```
 
-### Using Your Custom Modules
+### Using Your Custom Modules (moodule loading system)
 
 gracenode allows you to add your custom modules to be loaded and used the same way as built-in modules.
 
@@ -429,7 +429,7 @@ gn.setConfigPath('configurations/');
 gn.setConfigFiles(['config.json']);
 
 // tell gracenode to load server module
-gn.use('server');
+gn.use('gracenode-server');
 
 gn.setup(function (error) {
     if (error) {
