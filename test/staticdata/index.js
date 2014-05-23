@@ -41,7 +41,7 @@ describe('gracenode staticdata module ->', function () {
 	it('Can get a data object by indexed column from a CSV file', function () {
 		var sd = gn.staticdata.create('map');
 		var usa = sd.getOneByIndex('name', 'US');
-		assert.equal(usa.value, 'United States of America');
+		assert.equal(usa.value, 'United States of America,US,USA');
 	});
 
 	it('Can get all data objects by indexed column from a CSV file', function () {
