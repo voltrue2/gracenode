@@ -13,7 +13,6 @@ function Module(gn, rootPath) {
 	this._use = [];
 	this._overrides = [];
 	this._modPaths = [];
-	modDriver.setup(gn);
 }
 
 Module.prototype.addModulePath = function (path) {
@@ -86,6 +85,9 @@ Module.prototype.load = function (cb) {
 			return cb('module name coflict detected');
 		}
 	}
+	// set up module driver manager
+	modDriver.setup(this._gn);
+	// start loading
 	this._logger = this._gn.log.create('module');
 	this._logger.verbose('start loading modules');
 	var that = this;
@@ -194,13 +196,9 @@ Module.prototype._loadFromNodeModules = function (name, builtInPath, cb) {
 		var mod = that._require(name, that._appNodeModulePath + name, builtInPath);
 		// check to see if there is a driver for this module
 		var applied = modDriver.applyDriver(name, mod);
-		if (!applied) {
-			that._logger.verbose('no driver found for module [' + name + ']');
-		} else if (applied instanceof Error) {
+		if (applied instanceof Error) {
 			// there was an error while applying the driver to the module
 			return cb(applied, mod);
-		} else {
-			that._logger.verbose('driver found for module [' + name + ']');
 		}
 		cb(null, mod);
 	});

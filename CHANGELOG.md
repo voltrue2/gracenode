@@ -1,5 +1,47 @@
 # Change Log
 
+## Version 0.3.1
+
+### Added
+
+None
+
+### Changed
+
+#### Deleted driver search log from module management to driver managent
+
+#### gracenode-server module added support for HEAD request method
+
+Built-in server module has also added the change.
+
+#### gracenode-request module added support for HEAD request method
+
+Built-in request module also added the change.
+
+#### unit test
+
+An issue with gracenode path has been solved.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+# Future backward compatibility break
+
+We will be removing the current built-in module system.
+
+The current built-in modules will be all externalized and required to be included in your application's package.json.
+
+As of version 0.3.1, we still have the current module system and the new driver system.
+
+Planned removal of the built-in modules is version 1.0.0
+
+***
+
 ## Version 0.3.0
 
 ### Added

@@ -1,14 +1,15 @@
 var gn = require('../');
+var prefix = require('./prefix');
 var assert = require('assert');
 
 describe('gracenode initialization ->', function () {
 	
 	it('Can set up gracenode', function (done) {
 	
-		gn.setConfigPath('gracenode/test/configs/');
+		gn.setConfigPath(prefix + 'gracenode/test/configs/');
 		gn.setConfigFiles(['index.json']);
 
-		gn.addModulePath('gracenode/test/modules/');
+		gn.addModulePath(prefix + 'gracenode/test/modules/');
 
 		// test override
 		gn.override('mysql');
@@ -48,11 +49,11 @@ describe('gracenode initialization ->', function () {
 	});
 	
 	it('Tests all modules', function () {
-		gn.require('gracenode/test/view');	
-		gn.require('gracenode/test/mongodb');	
-		gn.require('gracenode/test/encrypt');	
-		gn.require('gracenode/test/staticdata');	
-		gn.require('gracenode/test/server');	
+		gn.require(prefix + 'gracenode/test/view');	
+		gn.require(prefix + 'gracenode/test/mongodb');	
+		gn.require(prefix + 'gracenode/test/encrypt');	
+		gn.require(prefix + 'gracenode/test/staticdata');	
+		gn.require(prefix + 'gracenode/test/server');	
 	});
 
 });

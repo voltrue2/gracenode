@@ -18,6 +18,10 @@ module.exports.GET = function (url, args, options, cb) {
 	send(url, 'get', args, options, cb);
 };
 
+module.exports.HEAD = function (url, args, options, cb) {
+	send(url, 'head', args, options, cb);
+};
+
 module.exports.POST = function (url, args, options, cb) {
 	send(url, 'post', args, options, cb);
 };
@@ -41,6 +45,8 @@ function send(url, method, args, options, cb) {
 	};
 	if (method === 'get') {
 		params.form = args;
+	} else if (method === 'head') {
+		params.body = null;
 	} else {
 		params.body = args;
 		params.json = true;
@@ -63,7 +69,7 @@ function send(url, method, args, options, cb) {
 		}
 		zlib.gunzip(body, function (err, unzipped) {
 			if (err) {
-				return cb(err);
+				return cb(err, body, res.statusCode);
 			}
 			unzipped = unzipped.toString();
 			try {

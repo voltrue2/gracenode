@@ -1,6 +1,6 @@
 var assert = require('assert');
 var gn = require('../../');
-
+var prefix = require('../prefix');
 var http = 'http://localhost';
 var https = 'https://localhost';
 
@@ -31,8 +31,15 @@ describe('gracenode server module ->', function () {
 	
 	it('Can start HTTPS server', function (done) {
 		
-		gn.setConfigPath('gracenode/test/configs/');
-		gn.setConfigFiles(['https.json']);
+		gn.setConfigPath(prefix + 'gracenode/test/configs/');
+		gn.setConfigFiles(['index.json', 'https.json']);
+
+		gn.on('setup.config', function () {
+			var conf = gn.config.getOne('modules.server');
+			conf.pemKey = prefix + conf.pemKey;
+			conf.pemCert = prefix + conf.pemCert;
+			conf.controllerPath = prefix + conf.controllerPath;
+		});
 
 		gn.use('request');
 		gn.use('server');
@@ -50,7 +57,7 @@ describe('gracenode server module ->', function () {
 
 	it('Can start HTTP server', function (done) {
 		
-		gn.setConfigPath('gracenode/test/configs/');
+		gn.setConfigPath(prefix + 'gracenode/test/configs/');
 		gn.setConfigFiles(['http.json']);
 
 		gn.setup(function (error) {
@@ -79,6 +86,19 @@ describe('gracenode server module ->', function () {
 			assert.equal(body.parameters[0], 'one');
 			assert.equal(body.parameters[1], 'two');
 			assert.equal(body.parameters[2], 'three');
+			done();
+		});
+	});
+
+	it('Can handle a HEAD request', function (done) {
+		var args = {
+			boo: 'BOO',
+			foo: 'FOO'
+		};
+	
+		gn.request.HEAD(http + '/test/head', args, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(status, 200);
 			done();
 		});
 	});

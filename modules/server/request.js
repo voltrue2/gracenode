@@ -92,60 +92,22 @@ Request.prototype.extractQueries = function (req, cb) {
 
 		switch (req.method) {
 			case 'POST':
-				var body = '';
-				req.on('data', function (data) {
-					body += data;
-				});
-				req.on('end', function () {
-					var post = readRequestBody(req.url, req.headers, body);
-					cb(null, queryDataHandler.createGetter(post));
-				});
-				req.on('error', function (error) {
-					cb(error);
-				});
+				extractReqData(req, cb);
 				break;
 			case 'PUT':
-				var putBody = '';
-				req.on('data', function (data) {
-					putBody += data;
-				});
-				req.on('end', function () {
-					var put = readRequestBody(req.url, req.headers, putBody);
-					cb(null, queryDataHandler.createGetter(put));
-				});
-				req.on('error', function (error) {
-					cb(error);
-				});
+				extractReqData(req, cb);
 				break;
 			case 'DELETE':
-				var deleteBody = '';
-				req.on('data', function (data) {
-					deleteBody += data;
-				});
-				req.on('end', function () {
-					var del = queryString.parse(deleteBody);
-					cb(null, queryDataHandler.createGetter(del));
-				});
-				req.on('error', function (error) {
-					cb(error);
-				});
+				extractReqData(req, cb);
 				break;
 			case 'GET':
-				var parsed = url.parse(req.url, true);
-				var getBody = '';
-				req.on('data', function (data) {
-					getBody += data;
-				});
-				req.on('end', function () {
-					var get = queryString.parse(getBody);
-					for (var key in parsed.query) {
-						get[key] = parsed.query[key];
-					}
-					cb(null, queryDataHandler.createGetter(get));
-				});
+				extractReqGETData(req, cb);
+				break;
+			case 'HEAD':
+				extractReqGETData(req, cb);
 				break;
 			default:
-				logger.warning('only POST, PUT, DELETE, and GET are supported');
+				logger.warning('only POST, PUT, DELETE, HEAD, and GET are supported');
 				cb(null, queryDataHandler.createGetter({}));
 				break;
 		}
@@ -154,6 +116,34 @@ Request.prototype.extractQueries = function (req, cb) {
 	
 };
 
+function extractReqData(req, cb) {
+	var body = '';
+	req.on('data', function (data) {
+		body += data;
+	});
+	req.on('end', function () {
+		var data = readRequestBody(req.url, req.headers, body);
+		cb(null, queryDataHandler.createGetter(data));
+	});
+	req.on('error', function (error) {
+		cb(error);
+	});
+}
+
+function extractReqGETData(req, cb) {
+	var parsed = url.parse(req.url, true);
+	var getBody = '';
+	req.on('data', function (data) {
+		getBody += data;
+	});
+	req.on('end', function () {
+		var get = queryString.parse(getBody);
+		for (var key in parsed.query) {
+			get[key] = parsed.query[key];
+		}
+		cb(null, queryDataHandler.createGetter(get));
+	});
+}
 
 function readRequestBody(url, headers, body) {
 	var reqBody;

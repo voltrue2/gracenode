@@ -1,5 +1,6 @@
 var assert = require('assert');
 var gn = require('../../');
+var prefix = require('../prefix');
 
 describe('encrypt module ->', function () {
 
@@ -8,7 +9,7 @@ describe('encrypt module ->', function () {
 
 	it('Can create a hash', function (done) {
 		
-		gn.setConfigPath('gracenode/test/configs/');
+		gn.setConfigPath(prefix + 'gracenode/test/configs/');
 		gn.setConfigFiles(['index.json']);
 
 		gn.use('encrypt');

@@ -1,12 +1,21 @@
 var assert = require('assert');
 var gn = require('../../');
+var prefix = require('../prefix');
 
 describe('gracenode staticdata module ->', function () {
 
 	it('Can load a CSV file', function (done) {
-		gn.setConfigPath('gracenode/test/configs/');
+		gn.setConfigPath(prefix + 'gracenode/test/configs/');
 		gn.setConfigFiles(['staticdata.json']);		
 		gn.use('staticdata');
+
+		gn.on('setup.config', function () {
+			var sd = gn.config.getOne('modules.staticdata');
+			if (sd.path.indexOf('node_modules') === -1) {
+				sd.path = prefix + sd.path;
+			}
+		});
+
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
 			assert(gn.staticdata.create('map'));

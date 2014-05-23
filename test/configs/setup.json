@@ -45,7 +45,7 @@
 			}
 		},
 		"gracenode-staticdata": {
-			"path": "node_modules/gracenode/test/staticdata/"
+			"path": "gracenode/test/staticdata/"
 		},
 		"gracenode-cron": {
 			"test": {
@@ -56,7 +56,7 @@
 			"protocol": "http",
 			"host": "localhost",
 			"port": 8000,
-			"controllerPath": "node_modules/gracenode/test/server/controller/"
+			"controllerPath": "gracenode/test/server/controller/"
 		},
 		"gracenode-udp": {
 			"servers": [

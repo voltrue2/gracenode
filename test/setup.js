@@ -1,4 +1,5 @@
 var gn = require('../');
+var prefix = require('./prefix');
 var assert = require('assert');
 
 describe('gracenode initialization ->', function () {
@@ -7,10 +8,10 @@ describe('gracenode initialization ->', function () {
 
 		console.log('**WARNING** This test requires in-app-purchase module and async module installed in ../gracenode/node_modules/ to work properly');
 	
-		gn.setConfigPath('node_modules/gracenode/test/configs/');
+		gn.setConfigPath(prefix + 'gracenode/test/configs/');
 		gn.setConfigFiles(['setup.json']);
 
-		gn.addModulePath('node_modules/gracenode/test/modules/');
+		gn.addModulePath(prefix + 'gracenode/test/modules/');
 	
 		// test built-in module use
 		gn.use('encrypt');
@@ -19,10 +20,17 @@ describe('gracenode initialization ->', function () {
 		gn.use('test');
 
 		// test 3rd party node module use with custom driver
-		gn.use('in-app-purchase', { name: null, driver: gn.require('node_modules/gracenode/test/drivers/in-app-purchase') });
+		gn.use('in-app-purchase', { name: null, driver: gn.require(prefix + 'gracenode/test/drivers/in-app-purchase') });
 
 		// test 3rd party node module use with alternate name
 		gn.use('async', { name: 'async2' });
+
+		gn.on('setup.config', function () {
+			var sd = gn.config.getOne('modules.gracenode-staticdata');
+			sd.path = prefix + sd.path;
+			var sv = gn.config.getOne('modules.gracenode-server');
+			sv.controllerPath = prefix + sv.controllerPath;
+		});
 
 		// test gracenode module use
 		gn.use('gracenode-mysql');
@@ -70,7 +78,7 @@ describe('gracenode initialization ->', function () {
 	it('Can load a view content', function (done) {
 		var view = gn.view.create();
 		view.assign('test', 'TEST');
-		view.load('node_modules/gracenode/test/view/test.html', function (error, content) {
+		view.load(prefix + 'gracenode/test/view/test.html', function (error, content) {
 			assert.equal(error, undefined);
 			assert(content);
 			console.log(content);
@@ -80,6 +88,37 @@ describe('gracenode initialization ->', function () {
 
 	it('Can send an HTTP GET request', function (done) {
 		gn.request.GET('http://localhost:8000/test/get', { boo: 1, foo: 1 }, { gzip: true }, function (error, body, status) {
+			console.log(error, body, status);
+			assert.equal(error, undefined);
+			assert.equal(body.boo, 1);
+			assert.equal(body.foo, 1);
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('Can send an HTTP POST request', function (done) {
+		gn.request.POST('http://localhost:8000/test/post', { boo: 1 }, { gzip: true }, function (error, body, status) {
+			console.log(error, body, status);
+			assert.equal(error, undefined);
+			assert.equal(body, 1);
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('Can send an HTTP PUT request', function (done) {
+		gn.request.PUT('http://localhost:8000/test/put', { boo: 1 }, { gzip: true }, function (error, body, status) {
+			console.log(error, body, status);
+			assert.equal(error, undefined);
+			assert.equal(body, 1);
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('Can send an HTTP HEAD request', function (done) {
+		gn.request.HEAD('http://localhost:8000/test/head', { boo: 1, foo: 1 }, { gzip: true }, function (error, body, status) {
 			console.log(error, body, status);
 			assert.equal(error, undefined);
 			assert.equal(status, 200);
