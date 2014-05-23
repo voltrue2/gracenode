@@ -21,7 +21,7 @@ var EventEmitter = require('events').EventEmitter;
 var fileWatcher = new EventEmitter();
 
 var gracenode = require('../../');
-var csvParser = require('./csv');
+var csv = require('./csv');
 var log = gracenode.log.create('staticdata');
 
 var config;
@@ -122,7 +122,7 @@ function readFile(path, cb) {
 		if (data instanceof Error) {
 			return cb(data);
 		}
-		
+	
 		// create index map(s) if asked
 		var indexMap = null;
 		var fileName = name + '.' + type;
@@ -165,7 +165,6 @@ function setupChangeListener(path) {
 }
 
 function toObject(data) {
-	var csv = csvParser.create(quote, delimiter);
 	var obj =  csv.toObject(data);
 	log.verbose(obj);
 	return obj;

@@ -1,5 +1,5 @@
-name	value
-US	United States of America\,US\,USA
-JA	日本
-RU	Россия
-CN	中國
+name,value,id,code,key
+US,United States of America\,US\,USA,1,"100",true
+JA,日本,2,null,true
+RU,Россия,3,"300",false
+CN,中國	4,"400",false
