@@ -10,11 +10,11 @@ None
 
 #### Deleted driver search log from module management to driver managent
 
-#### gracenode-server module added support for HEAD request method
+#### gracenode-server module (v0.1.1) added support for HEAD request method
 
 Built-in server module has also added the change.
 
-#### gracenode-request module added support for HEAD request method
+#### gracenode-request module (v0.1.1) added support for HEAD request method
 
 Built-in request module also added the change.
 
