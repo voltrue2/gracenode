@@ -1,5 +1,5 @@
-name	value	id	code	key
-US	United States of America\,US\,USA	1	"100"	true
-JA	日本	2	null	true
-RU	Россия	3	"300"	false
-CN	中國	4	"400"	false
+name,value,id,code,key,desc
+US,United States of America\,US\,USA,1,"100",true,"lalala"
+JA,日本,2,null,true,"aaa\,bbb\,ccc"
+RU,Россия,3,"300",false,"11111"
+CN,中國,4,"400",false,5454544

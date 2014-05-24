@@ -68,10 +68,28 @@ function separateColumns(row) {
 		tmp = tmp.replace(separated, '');
 		index = tmp.indexOf(delimiter);
 	}
+	// check for the left over
+	if (tmp !== '') {
+		if (escapedCol !== '') {
+			// both tmp and escapedCol
+			columns.push(typeCast(escapedCol + tmp));
+		} else {
+			// tmp only
+			columns.push(typeCast(tmp));
+		}
+	}
 	return columns;
 }
 
 function typeCast(data) {
+	// strip double quotes
+	if (data.indexOf('"') === 0) {
+		data = data.substring(1);
+	}
+	if (data.substring(data.length - 1) === '"') {
+		data = data.substring(0, data.length - 1);
+	}
+	// cast type
 	if (data && data.indexOf('0x') === -1 && !isNaN(data)) {
 		// numeric data
 		var intOrHexVal = parseInt(data, 10);
