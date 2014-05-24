@@ -46,7 +46,7 @@
 		},
 		"gracenode-staticdata": {
 			"path": "gracenode/test/staticdata/",
-			"delimiter": "\t"
+			"delimiter": ","
 		},
 		"gracenode-cron": {
 			"test": {

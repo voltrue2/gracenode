@@ -114,6 +114,10 @@ function typeCast(data) {
 			try {
 				return JSON.parse(data);
 			} catch (e) {
+				// remove unnecessary backslash
+				while (data.indexOf(escaped) !== -1) {
+					data = data.replace(escaped, delimiter);
+				}
 				return data;
 			}
 	}
