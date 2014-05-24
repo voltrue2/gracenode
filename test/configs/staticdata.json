@@ -2,7 +2,7 @@
 	"modules": {
 		"staticdata": {
 			"path": "gracenode/test/staticdata/data/",
-			"delimiter": ",",
+			"delimiter": "\t",
 			"index": {
 				"map.csv": [ "name" ]
 			}

@@ -22,6 +22,7 @@ var fileWatcher = new EventEmitter();
 
 var gracenode = require('../../');
 var csv = require('./csv');
+var parser = require('./parser');
 var log = gracenode.log.create('staticdata');
 
 var config;
@@ -42,6 +43,8 @@ module.exports.readConfig = function (configIn) {
 	if (config.quote !== undefined) {
 		quote = config.quote;
 	}
+	// set up CSV parser
+	csv.setup(delimiter);
 };
 
 module.exports.setup = function (cb) {
@@ -165,7 +168,8 @@ function setupChangeListener(path) {
 }
 
 function toObject(data) {
-	var obj =  csv.toObject(data);
+	var parsedCSV =  csv.parse(data);
+	var obj = parser.execute(parsedCSV);
 	log.verbose(obj);
 	return obj;
 }
