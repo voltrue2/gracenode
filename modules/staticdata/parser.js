@@ -11,20 +11,9 @@ module.exports.execute = function (parsedCSV) {
 		}
 		var item = {};
 		for (var j = 0; j < jen; j++) {
-			var value = treatValue(row[j]);
-			item[labels[j]] = value;
+			item[labels[j]] = row[j];
 		}
 		list.push(item);
 	}
 	return list;
 };
-
-function treatValue(value) {
-	if (typeof value === 'string') {
-		// remove possible escape
-		while (value.indexOf('\\') !== -1) {
-			value = value.replace('\\', '');
-		}
-	}
-	return value;
-}
