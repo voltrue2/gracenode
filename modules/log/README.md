@@ -10,6 +10,8 @@ var log = gracenode.log.create('nameToBeDisplayed');
 {
 	"modules":
 		"log": {
+			"bufferSize": <int> // log data buffer size in memory (bytes),
+			"bufferFlushInterval": <int> // log data buffer auto flush interval in milliseconds,
 			"file": "<log directory path> or false"
 			"remote": {
 				"host": "<host name or ip address>",
@@ -30,6 +32,12 @@ var log = gracenode.log.create('nameToBeDisplayed');
 		}
 }
 ```
+
+### Buffering
+
+Log module buffers log data in memory before outputting.
+
+The defualt buffer size is 8kb (8129 bytes) and default bufferFlushInterval is 5 seconds (5000 ms).
 
 #### file
 

@@ -12,6 +12,12 @@ None
 
 gracenode's core driver has improved error checks.
 
+#### log module buffering
+
+Log module now buffers log data and flushes to file/remote/event when buffer is full.
+
+It also flushes the log data at every x seconds.
+
 ### Depricated
 
 None
