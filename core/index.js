@@ -283,7 +283,6 @@ function setupListeners(that) {
 				cleaner(next);
 			},
 			function () {
-				log.info('exit gracenode');
 				process.exit(error ? 1: 0);
 			});
 		});
