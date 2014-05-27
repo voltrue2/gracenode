@@ -136,12 +136,10 @@ Gracenode.prototype.getModuleSchema = function (modName, cb) {
 // internal use only
 Gracenode.prototype._addLogCleaner = function (name, func) {
 	var cleaner = function (done) {
-		log.info('shutting down log module...');
 		func(function (error) {
 			if (error) {
 				log.error(error);
 			}
-			log.info('log module gracefully shutdown');
 			done();
 		});
 	};
@@ -292,15 +290,13 @@ function setupListeners(that) {
 	});
 	
 	process.on('uncaughtException', function (error) {
-		log.fatal('gracenode detected an uncaught exception');
-		log.fatal(error);
+		log.fatal('gracenode detected an uncaught exception', error);
 		that.emit('uncaughtException', error);
 	});
 
 	process.on('SIGINT', function () {
 		log.info('SIGINT caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
-			log.info('shutdown gracenode');
 			that.emit('shutdown');
 			that.exit();
 		});
@@ -309,7 +305,6 @@ function setupListeners(that) {
 	process.on('SIGQUIT', function () {
 		log.info('SIGQUIT caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
-			log.info('quit gracenode');
 			that.emit('shutdown');
 			that.exit();
 		});
@@ -318,7 +313,6 @@ function setupListeners(that) {
 	process.on('SIGTERM', function () {
 		log.info('SIGTERM caught: shutting down gracenode...');
 		handleShutdownTasks(function () {
-			log.info('terminate gracenode');
 			that.emit('shutdown');
 			that.exit();
 		});
