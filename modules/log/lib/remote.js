@@ -16,7 +16,8 @@ module.exports.setup = function (configIn) {
 	config = configIn;
 };
 
-module.exports.log = function (levelName, msg) {
+// cb is optional for auto buffer flushing
+module.exports.log = function (levelName, msg, cb) {
 	// check config
 	if (!config || !config.port || !config.host) {
 		console.error('Error: missing remoteServer configurations');
@@ -41,5 +42,8 @@ module.exports.log = function (levelName, msg) {
 		
 		// close socket
 		client.close();
+		if (cb) {
+			cb();
+		}
 	});
 };

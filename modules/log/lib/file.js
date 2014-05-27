@@ -35,9 +35,10 @@ module.exports.setup = function (gn, levelMap, path) {
 	});
 };
 
-module.exports.log = function (levelName, msg) {
+// cb is optional for auto buffer flushing
+module.exports.log = function (levelName, msg, cb) {
 	var stream = getWriteStream(levelName);
-	stream.write(msg.message + '\n');
+	stream.write(msg.message + '\n', cb);
 };
 
 function getWriteStream(levelName) {

@@ -1,3 +1,4 @@
+var async = require('async');
 var gracenode;
 var ip = require('./lib/ip');
 var msg = require('./lib/msg');
@@ -33,35 +34,16 @@ function Logger(prefix, name, config) {
 	var that = this;
 	if (gracenode) {
 		gracenode._addLogCleaner('exit', function (done) {
-			that._autoFlush();
-			done();
+			that._autoFlush(done);
 		});
 	}
 	// auto flush buffered log data at x miliseconds
 	// Node.js timer implementation should be effecient for handling lots of timers
 	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
 	setTimeout(function () {
-		that._autoFlush();
+		that._autoFlush(function () { /* we do not need to keep track of this */ });
 	}, autoFlushInterval);
 }
-
-Logger.prototype._autoFlush = function () {
-	var flushed = buff.flushAll();
-	for (var level in flushed) {
-		// if there is no config -> we output nothing
-		if (!this.config || !this.config.level) {
-			continue;
-		}
-		// check enabled or not
-		if (!this.config.level[level]) {
-			// not enabled
-			continue;
-		}
-		if (flushed[level]) {
-			this._outputLog(level, flushed[level]);
-		}
-	}
-};
 
 Logger.prototype.verbose = function () {
 	this._handleLog('verbose', arguments);
@@ -125,4 +107,42 @@ Logger.prototype._outputLog = function (levelName, bufferedMsg) {
 	}
 	
 	events.emit('output', address, this.name, levelName, bufferedMsg);
+};
+
+Logger.prototype._autoFlush = function (cb) {
+	var that = this;
+	var flushed = buff.flushAll();
+	var list = Object.keys(flushed);
+	async.each(list, function (level, callback) {
+		// if there is no config -> we output nothing
+		if (!that.config || !that.config.level) {
+			return callback();
+		}
+		// check enabled or not
+		if (!that.config.level[level]) {
+			// not enabled
+			return callback();
+		}
+		if (!flushed[level]) {
+			return callback();
+		}
+		var data = flushed[level];
+		var fileLog = function (next) {
+			if (that.config.file) {
+				return file.log(level, data, next);
+			}
+			next();
+		};
+		var remoteLog = function (next) {
+			if (that.config.remote) {
+				return remote.log(level, data, next);
+			}
+			next();
+		};
+		if (that.config.console) {
+			console.log(data.message);
+		}
+		events.emit('output', address, that.name, level, data);
+		async.series([fileLog, remoteLog], callback);
+	}, cb);
 };
