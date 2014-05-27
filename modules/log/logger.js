@@ -38,6 +38,8 @@ function Logger(prefix, name, config) {
 		});
 	}
 	// auto flush buffered log data at x miliseconds
+	// Node.js timer implementation should be effecient for handling lots of timers
+	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
 	setTimeout(function () {
 		that._autoFlush();
 	}, autoFlushInterval);
