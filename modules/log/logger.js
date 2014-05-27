@@ -43,6 +43,15 @@ function Logger(prefix, name, config) {
 	setTimeout(function () {
 		var flushed = buff.flushAll();
 		for (var level in flushed) {
+			// if there is no config -> we output nothing
+			if (!that.config || !that.config.level) {
+				continue;
+			}
+			// check enabled or not
+			if (!that.config.level[level]) {
+				// not enabled
+				continue;
+			}
 			that._outputLog(level, flushed[level]);
 		}
 	}, autoFlushInterval);
