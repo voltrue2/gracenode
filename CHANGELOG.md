@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 0.3.6
+## Version 0.3.7
 
 ### Added
 
@@ -8,7 +8,37 @@ None
 
 ### Changed
 
-gracenode's core driver has improved error checks.
+#### improved log module buffering
+
+Log module's auto buffer flushing is improved.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+# Future backward compatibility break
+
+We will be removing the current built-in module system.
+
+The current built-in modules will be all externalized and required to be included in your application's package.json.
+
+As of version 0.3.7, we still have the current module system and the new driver system.
+
+Planned removal of the built-in modules is version 1.0.0
+
+***
+
+## Version 0.3.6
+
+### Added
+
+None
+
+### Changed
 
 #### log module buffering
 
