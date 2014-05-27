@@ -33,29 +33,32 @@ function Logger(prefix, name, config) {
 	var that = this;
 	if (gracenode) {
 		gracenode.on('exit', function () {
-			var flushed = buff.flushAll();
-			for (var level in flushed) {
-				that._outputLog(level, flushed[level]);
-			}
+			that._autoFlush();
 		});
 	}
 	// auto flush buffered log data at x miliseconds
 	setTimeout(function () {
-		var flushed = buff.flushAll();
-		for (var level in flushed) {
-			// if there is no config -> we output nothing
-			if (!that.config || !that.config.level) {
-				continue;
-			}
-			// check enabled or not
-			if (!that.config.level[level]) {
-				// not enabled
-				continue;
-			}
-			that._outputLog(level, flushed[level]);
-		}
+		that._autoFlush();
 	}, autoFlushInterval);
 }
+
+Logger.prototype._autoFlush = function () {
+	var flushed = buff.flushAll();
+	for (var level in flushed) {
+		// if there is no config -> we output nothing
+		if (!this.config || !this.config.level) {
+			continue;
+		}
+		// check enabled or not
+		if (!this.config.level[level]) {
+			// not enabled
+			continue;
+		}
+		if (flushed[level]) {
+			this._outputLog(level, flushed[level]);
+		}
+	}
+};
 
 Logger.prototype.verbose = function () {
 	this._handleLog('verbose', arguments);
