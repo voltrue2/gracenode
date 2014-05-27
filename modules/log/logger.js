@@ -32,8 +32,9 @@ function Logger(prefix, name, config) {
 	this.config = config || {};
 	var that = this;
 	if (gracenode) {
-		gracenode.on('exit', function () {
+		gracenode._addLogCleaner('exit', function (done) {
 			that._autoFlush();
+			done();
 		});
 	}
 	// auto flush buffered log data at x miliseconds

@@ -44,10 +44,13 @@ module.exports.add = function (level, msg) {
 };
 
 module.exports.flush = function (level) {
-	var data = buff[level].data;
-	buff[level].data = [];
-	buff[level].size = 0;
-	return { message: data.join('\n') };
+	if (buff[level].size) {
+		var data = buff[level].data;
+		buff[level].data = [];
+		buff[level].size = 0;
+		return { message: data.join('\n') };
+	}
+	return null;
 };
 
 module.exports.flushAll = function () {
