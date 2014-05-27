@@ -37,13 +37,19 @@ function Logger(prefix, name, config) {
 			that._autoFlush(done);
 		});
 	}
+	this._timerFlush();
+}
+
+Logger.prototype._timerFlush = function () {
 	// auto flush buffered log data at x miliseconds
 	// Node.js timer implementation should be effecient for handling lots of timers
 	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
+	var that = this;
 	setTimeout(function () {
 		that._autoFlush(function () { /* we do not need to keep track of this */ });
+		that._timerFlush();
 	}, autoFlushInterval);
-}
+};
 
 Logger.prototype.verbose = function () {
 	this._handleLog('verbose', arguments);
