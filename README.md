@@ -1,7 +1,5 @@
 #gracenode
 
-![gracenode](http://gracenode.org/favicon.ico)
-
 ©Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
 Framework for node.js application with extendable module management system for fast and clean development.
