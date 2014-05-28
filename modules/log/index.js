@@ -1,30 +1,3 @@
-
-/*
- *  configurations
- *
- * {
- *		"log": {
-			"remote": {
-				"host": 
-				"port": 
-			},
-			"file": <path to log directory> or false
-			"console": true/false,
- *			"color": true/false,
-			"showHidden": true/false: default is false
-			"depth": 4 default is 4
- *			"level": {
-				"verbose": <boolean>
-				"debug": <boolean>
-				"info": <boolean>
-				"warning": <boolean>
-				"error": <boolean>
-				"fatal": <boolean>
-*			}
- *		}
- * }
- *
- * */
 var loggerSource = require('./logger');
 var EventEmitter = require('events').EventEmitter;
 
