@@ -41,6 +41,20 @@ Refer to each module's README.md for more detail on configurations.
 
 ##Bootstrapping gracenode
 
+To use gracenode modules, add the following to your package.json:
+
+```
+// we are using gracenode-server, gracenode-view, and gracenode-mysql modules
+{
+	"dependencies": {
+		"gracenode": "",
+		"gracenode-server": "",
+		"gracenode-view": "",
+		"gracenode-mysql": ""
+	}
+}
+```
+
 gracenode needs to be set up for it to run correctly. In your application add:
 
 ```
@@ -51,9 +65,9 @@ gracenode.setConfigPath('configs/');
 gracenode.setConfigFiles(['conf.json']);
 
 // decide what module(s) of gracenode to use in your application.
-gracenode.use('server');
-gracenode.use('view');
-gracenode.use('mysql');
+gracenode.use('gracenode-server');
+gracenode.use('gracenode-view');
+gracenode.use('gracenode-mysql');
 
 // now start the set up process
 gracenode.setup(function (error) {
@@ -263,31 +277,32 @@ Used to profile your application so you can easily determine bottlenecks in your
 ###[Lib](modules/lib)
 Contains a plethora of commonly used functions like random integer generation.
 #Additional Modules
-###[Cron](modules/cron)
+These modules are specifically designed to function as gracenode modules.
+###[gracenode-cron](https://github.com/briandeheus/gracenode-cron)
 Module to run, start, stop, and setup cron tasks
-###[StaticData](modules/staticdata)
+###[gracenode-staticdata](https://github.com/voltrue2/gracenode-staticdata)
 Allows for easy loading of static data such as JSON and CSV files.
-###[Request](modules/request)
+###[gracenode-request](https://github.com/voltrue2/gracenode-request)
 Handles requests to the server.
-###[Server](modules/server)
+###[gracenode-server](https://github.com/voltrue2/gracenode-server)
 Handles requests to the server.
-###[UDP](modules/udp)
+###[gracenode-udp](https://github.com/voltrue2/gracenode-udp)
 A module that makes it easier to handle UDP traffic from and to your server.
-###[View](modules/view)
+###[gracenode-view](https://github.com/voltrue2/gracenode-view)
 Manages, loads and creates views you can server to clients.
-###[Session](modules/session)
+###[gracenode-session](https://github.com/voltrue2/gracenode-session)
 Handles sessions and automatically expires them if they are not accessed within a preset amount of time.
-###[Encrypt](modules/encrypt)
+###[gracenode-encrypt](https://github.com/voltrue2/gracenode-encrypt)
 Contains functions that make it easier to deal with crypography and password hashing.
-###[MySQL](modules/mysql)
+###[gracenode-mysql](https://github.com/voltrue2/gracenode-mysql)
 A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
-###[Mongodb](modules/mongodb)
+###[gracenode-mongodb](https://github.com/voltrue2/gracenode-mongodb)
 A wrapper to handle Mongodb functions and connections.
-###[Memcache](modules/memcache)
+###[gracenode-memcache](https://github.com/voltrue2/gracenode-memcache)
 Memcache management.
-###[Iap](modules/iap)
+###[gracenode-iap](https://github.com/voltrue2/gracenode-iap)
 Apple and GooglePlay in-app-purchase validation.
-###[Wallet](modules/wallet)
+###[gracenode-wallet](https://github.com/voltrue2/gracenode-wallet)
 Coin management.
 
 ***

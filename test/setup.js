@@ -97,6 +97,7 @@ describe('gracenode initialization ->', function () {
 		});
 	});
 
+
 	it('Can send an HTTP POST request', function (done) {
 		gn.request.POST('http://localhost:8000/test/post', { boo: 1 }, { gzip: true }, function (error, body, status) {
 			console.log(error, body, status);
