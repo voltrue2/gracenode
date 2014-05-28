@@ -2,6 +2,14 @@
 
 ©Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
+##Notice
+
+From version 1.0.0, we will be removing all additional modules from gracenode.
+
+To use these additional modules, you will need to added them to your application's package.json as dependencies.
+
+Please see the list of gracenode modules on NPM repository <a target="_blank" href="https://www.npmjs.org/~voltrue2">here</a>.
+
 ##Installation
 
 ###Installation via NPM

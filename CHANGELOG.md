@@ -14,7 +14,26 @@ Minor improvements in timed-auto-buffer-flush. Now the autoFlush waits for the p
 
 ### Depricated
 
-None
+#### additional built-in modules
+
+Additional modules to be separated from gracenode core are now depricated.
+
+Modules to be separated:
+
+- server
+- view
+- mysql
+- mongodb
+- mysql
+- memcache
+- encrypt
+- staticdata
+- session
+- request
+- cron
+- iap
+- udp
+- wallet
 
 ### Removed
 
