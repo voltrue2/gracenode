@@ -8,7 +8,7 @@ None
 
 ### Changed
 
-#### log module timed auto buffer flush improved
+#### log module's  timed-auto-buffer-flush improved
 
 Minor improvements in timed-auto-buffer-flush. Now the autoFlush waits for the previous operation to finish.
 
