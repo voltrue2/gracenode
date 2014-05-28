@@ -2,6 +2,8 @@
 
 ©Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
+Framework for node.js application with extendable module management system for fast and clean development.
+
 ##Notice
 
 From version 1.0.0, we will be removing all additional modules from gracenode.
