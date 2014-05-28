@@ -46,8 +46,9 @@ Logger.prototype._timerFlush = function () {
 	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
 	var that = this;
 	setTimeout(function () {
-		that._autoFlush(function () { /* we do not need to keep track of this */ });
-		that._timerFlush();
+		that._autoFlush(function () {
+			that._timerFlush();
+		});
 	}, autoFlushInterval);
 };
 
