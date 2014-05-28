@@ -6,7 +6,9 @@
 
 From version 1.0.0, we will be removing all additional modules from gracenode.
 
-To use these additional modules, you will need to added them to your application's package.json as dependencies.
+To use these additional modules, you will need to add them to your application's package.json as dependencies.
+
+For more detail on modules to be separated please read <a target="_blank" href="https://github.com/voltrue2/gracenode/blob/develop/CHANGELOG.md#version-039">here</a>.
 
 Please see the list of gracenode modules on NPM repository <a target="_blank" href="https://www.npmjs.org/~voltrue2">here</a>.
 
