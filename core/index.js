@@ -41,7 +41,7 @@ Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
 		return log.error('argument 2 must be a function');
 	}
-	log.info('graceful shutdown task for ' + name + ' has been registered');
+	log.verbose('graceful shutdown task for ' + name + ' has been registered');
 	gracefulWaitList.push({ name: name, task: taskFunc });
 };
 
