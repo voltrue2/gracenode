@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 0.3.12
+## Version 0.3.13
 
 ### Added
 
@@ -8,9 +8,9 @@ None
 
 ### Changed
 
-#### log module's remote logging issue fixed
+#### Log module buffer flush interval fixed
 
-Log module's remote logging's issue with uncaught exception has been fixed.
+Log module's optional configuration "bufferFlushInterval" is no longer undefined.
 
 ### Depricated
 
