@@ -16,6 +16,10 @@ Log module's event "output" now passes an array of buffered log data which conta
 
 Config module now handles error on invalid configurations and configurations not found better.
 
+#### core module loader check improved
+
+Core's module loader checks for module configurations not found error now handles the error before the module.
+
 ### Depricated
 
 None
