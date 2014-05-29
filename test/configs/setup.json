@@ -1,6 +1,8 @@
 {
 	"modules": {
 		"log": {
+			"bufferFlushInterval": 1000,
+			"bufferSize": 1024,
 			"console": true,
 			"color": true,
 			"level": {

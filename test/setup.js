@@ -177,4 +177,8 @@ describe('gracenode initialization ->', function () {
 		});
 	});
 
+	it('Can flush all logs before exit', function (done) {
+		gn.log.forceFlush(done);
+	});
+
 });

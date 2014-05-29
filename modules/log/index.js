@@ -32,3 +32,7 @@ module.exports.setPrefix = function (p) {
 module.exports.create = function (name) {
 	return loggerSource.create(prefix, name, config);
 };
+
+module.exports.forceFlush = function (cb) {
+	loggerSource.forceFlush(cb);
+};

@@ -109,6 +109,20 @@ gracenode.log.on('output', function (address, name, level, messageObj) {
 });
 ```
 
+***
+
+###.forceFlush(callback [function])
+
+Forcefully flushes all buffered log data and write immediately.
+
+###.create(logName [string])
+
+Returns an instance of logger object.
+
+***
+
+## Logger Object
+
 ###API: *verbose*
 
 <pre>

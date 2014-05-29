@@ -40,10 +40,15 @@ module.exports._timerFlush = function () {
 	// Node.js timer implementation should be effecient for handling lots of timers
 	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
 	setTimeout(function () {
-		async.eachSeries(loggers, function (logger, next) {
-			logger._autoFlush(next);
-		}, module.exports._timerFlush);
+		module.exports.forceFlush(module.exports._timerFlush);
 	}, autoFlushInterval);
+};
+
+module.exports.forceFlush = function (cb) {
+	async.each(loggers, function (logger, next) {
+		logger._autoFlush(next);
+	}, cb);
+
 };
 
 function Logger(prefix, name, config) {
