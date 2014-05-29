@@ -12,6 +12,9 @@
 				"fatal": true
 			}
 		},
+		"test": {
+
+		},
 		"in-app-purchase": {
 			"sandbox": true
 		},
@@ -78,6 +81,9 @@
 			"hosts": ["localhost"],
 			"ttl": 10000,
 			"options": null
+		},
+		"gracenode-view": {
+
 		}
 	}
 }

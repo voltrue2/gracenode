@@ -11,6 +11,9 @@
 				"error": true,
 				"fatal": true
 			}
+		},
+		"view": {
+
 		}
 	}
 }

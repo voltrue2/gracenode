@@ -10,13 +10,9 @@ describe('gracenode initialization ->', function () {
 		gn.setConfigFiles(['index.json']);
 
 		gn.addModulePath(prefix + 'gracenode/test/modules/');
-
-		// test override
-		gn.override('mysql');
 		
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
-			assert.equal(gn.mysql.test, 'test override');
 			done();
 		});
 			
