@@ -38,7 +38,7 @@ module.exports.setup = function (gn, levelMap, path) {
 // cb is optional for auto buffer flushing
 module.exports.log = function (levelName, msg, cb) {
 	var stream = getWriteStream(levelName);
-	stream.write(msg.message + '\n', cb);
+	stream.write(msg + '\n', cb);
 };
 
 function getWriteStream(levelName) {

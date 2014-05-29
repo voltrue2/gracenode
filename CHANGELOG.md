@@ -1,5 +1,37 @@
 # Change Log
 
+## Version 0.3.11
+
+### Added
+
+None
+
+### Changed
+
+#### Critical buf fix in log module's file and remote
+
+The bug in log module's file write and remote send has been fixed.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+# Future backward compatibility break
+
+We will be removing the current built-in module system.
+
+The current built-in modules will be all externalized and required to be included in your application's package.json.
+
+As of version 0.3.11, we still have the current module system and the new driver system.
+
+Planned removal of the built-in modules is version 1.0.0
+
+***
+
 ## Version 0.3.10
 
 ### Added

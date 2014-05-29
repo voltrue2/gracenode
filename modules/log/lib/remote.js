@@ -27,8 +27,7 @@ module.exports.log = function (levelName, msg, cb) {
 	var data = {
 		address: address,
 		name: levelName,
-		message: msg.message,
-		timestamp: msg.timestamp
+		message: msg,
 	};
 	data = new Buffer(JSON.stringify(data));
 	// set up UDP sender
