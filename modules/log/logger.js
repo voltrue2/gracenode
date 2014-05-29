@@ -22,7 +22,7 @@ module.exports.setup = function (gn, config) {
 	buff.setup(config.bufferSize);
 	gracenode = gn;
 	if (config.bufferFlushInterval) {
-		autoFlushInterval = config.buggerFlushInterval;
+		autoFlushInterval = config.bufferFlushInterval;
 	}
 	module.exports._timerFlush();
 };
