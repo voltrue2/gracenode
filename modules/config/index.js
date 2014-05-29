@@ -84,6 +84,7 @@ module.exports.getOne = function (propName) {
 		} else {
 			// if the configurations you are looking for is not found, return null
 			conf = null;
+			break;
 		}
 	}
 	if (!found) {
