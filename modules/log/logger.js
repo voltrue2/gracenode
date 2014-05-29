@@ -114,7 +114,7 @@ Logger.prototype._outputLog = function (levelName, bufferedMsg) {
 	}
 
 	if (this.config.remote) {
-		remote.log(levelName, bufferedMsg.messages('\n'));
+		remote.log(levelName, bufferedMsg.messages.join('\n'));
 	}
 	
 	events.emit('output', address, this.name, levelName, bufferedMsg);
