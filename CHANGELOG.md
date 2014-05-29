@@ -26,7 +26,7 @@ We will be removing the current built-in module system.
 
 The current built-in modules will be all externalized and required to be included in your application's package.json.
 
-As of version 0.3.12, we still have the current module system and the new driver system.
+As of version 0.3.13, we still have the current module system and the new driver system.
 
 Planned removal of the built-in modules is version 1.0.0
 
