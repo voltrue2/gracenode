@@ -1,5 +1,41 @@
 # Change Log
 
+## Version 0.3.10
+
+### Added
+
+None
+
+### Changed
+
+#### log module's event now passes an array of buffered log data
+
+Log module's event "output" now passes an array of buffered log data which contains messages and timestamps.
+
+#### config module error handling improved
+
+Config module now handles error on invalid configurations and configurations not found better.
+
+### Depricated
+
+None
+
+### Removed
+
+None
+
+# Future backward compatibility break
+
+We will be removing the current built-in module system.
+
+The current built-in modules will be all externalized and required to be included in your application's package.json.
+
+As of version 0.3.10, we still have the current module system and the new driver system.
+
+Planned removal of the built-in modules is version 1.0.0
+
+***
+
 ## Version 0.3.9
 
 ### Added

@@ -91,7 +91,6 @@ Logger.prototype._handleLog = function (levelName, message) {
 
 	// add log message to buffer. buffer will flush overflowed log message
 	var bufferedMsg = buff.add(levelName, logMsg);
-	
 	if (bufferedMsg) {
 		// this log level is enabled and there is flushed out log data
 		this._outputLog(levelName, bufferedMsg);
@@ -99,18 +98,17 @@ Logger.prototype._handleLog = function (levelName, message) {
 };
 
 Logger.prototype._outputLog = function (levelName, bufferedMsg) {
-
 	// if console is enabled, we output to console
 	if (this.config.console) {	
-		console.log(bufferedMsg.message);
+		console.log(bufferedMsg.messages.join('\n'));
 	}
 
 	if (this.config.file) {
-		file.log(levelName, bufferedMsg);
+		file.log(levelName, bufferedMsg.messages.join('\n'));
 	}
 
 	if (this.config.remote) {
-		remote.log(levelName, bufferedMsg);
+		remote.log(levelName, bufferedMsg.messages.join('\n'));
 	}
 	
 	events.emit('output', address, this.name, levelName, bufferedMsg);
@@ -136,18 +134,18 @@ Logger.prototype._autoFlush = function (cb) {
 		var data = flushed[level];
 		var fileLog = function (next) {
 			if (that.config.file) {
-				return file.log(level, data, next);
+				return file.log(level, data.messages.join('\n'), next);
 			}
 			next();
 		};
 		var remoteLog = function (next) {
 			if (that.config.remote) {
-				return remote.log(level, data, next);
+				return remote.log(level, data.messages.join('\n'), next);
 			}
 			next();
 		};
 		if (that.config.console) {
-			console.log(data.message);
+			console.log(data.messages.join('\n'));
 		}
 		events.emit('output', address, that.name, level, data);
 		async.series([fileLog, remoteLog], callback);

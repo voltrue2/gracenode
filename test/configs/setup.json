@@ -71,7 +71,7 @@
 			"ttl":  1000
 		},
 		"gracenode-wallet": {
-			"names": ["testWallet"],
+			"names": ["dummy"],
 			"sql": "dummy"
 		},
 		"gracenode-memcache": {

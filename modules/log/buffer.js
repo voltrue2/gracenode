@@ -1,26 +1,32 @@
 var buff = {
 	'verbose': {
-		data: [],
+		messages: [],
+		timestamps: [],
 		size: 0
 	},
 	'debug': {
-		data: [],
+		messages: [],
+		timestamps: [],
 		size: 0
 	},
 	'info': {
-		data: [],
+		messages: [],
+		timestamps: [],
 		size: 0
 	},
 	'warning': {
-		data: [],
+		messages: [],
+		timestamps: [],
 		size: 0
 	},
 	'error': {
-		data: [],
+		messages: [],
+		timestamps: [],
 		size: 0
 	},
 	'fatal': {
-		data: [],
+		messages: [],
+		timestamps: [],
 		size: 0
 	}
 };
@@ -34,9 +40,9 @@ module.exports.setup = function (config) {
 };
 
 module.exports.add = function (level, msg) {
-	var data = msg.message;
-	buff[level].data.push(msg.message);
-	buff[level].size += Buffer.byteLength(data);
+	buff[level].messages.push(msg.message);
+	buff[level].timestamps.push(msg.timestamp);
+	buff[level].size += Buffer.byteLength(msg.message);
 	if (buff[level].size > limit) {
 		return module.exports.flush(level);
 	}
@@ -45,10 +51,14 @@ module.exports.add = function (level, msg) {
 
 module.exports.flush = function (level) {
 	if (buff[level].size) {
-		var data = buff[level].data;
-		buff[level].data = [];
+		var data = { 
+			messages: buff[level].messages,
+			timestamps: buff[level].timestamps
+		};
+		buff[level].messages = [];
+		buff[level].timestamps = [];
 		buff[level].size = 0;
-		return { message: data.join('\n') };
+		return data;
 	}
 	return null;
 };

@@ -72,12 +72,22 @@ module.exports.getOne = function (propName) {
 	} else {
 		propNames.push(propName);
 	}
+	// this is to indicate if we found a match of configurations at least once or not
+	// if found is false, we return null
+	var found = false;
 	var conf = configData;
 	for (var i = 0, len = propNames.length; i < len; i++) {
 		var prop = propNames[i];
 		if (conf[prop] !== undefined) {
 			conf = conf[prop];
+			found = true;
+		} else {
+			// if the configurations you are looking for is not found, return null
+			conf = null;
 		}
+	}
+	if (!found) {
+		conf = null;
 	}
 	return conf;
 };
