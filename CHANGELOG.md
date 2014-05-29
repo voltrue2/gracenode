@@ -10,7 +10,7 @@ None
 
 #### log module's remote logging issue fixed
 
-Log module's remote logging's issue has been fixed.
+Log module's remote logging's issue with uncaught exception has been fixed.
 
 ### Depricated
 
