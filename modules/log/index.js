@@ -1,4 +1,5 @@
 var loggerSource = require('./logger');
+var buff = require('./buffer');
 var EventEmitter = require('events').EventEmitter;
 
 var config = null;
@@ -30,5 +31,7 @@ module.exports.setPrefix = function (p) {
 };
 
 module.exports.create = function (name) {
-	return new loggerSource.Logger(prefix, name, config);
+	var logger = new loggerSource.Logger(prefix, name, config);
+	buff.addLogger(logger);
+	return logger;
 };

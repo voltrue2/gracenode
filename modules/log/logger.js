@@ -8,7 +8,6 @@ var buff = require('./buffer');
 var EventEmitter = require('events').EventEmitter;
 var events = new EventEmitter();
 var address = null;
-var autoFlushInterval = 5000;
 
 module.exports.setup = function (gn, config) {
 	ip.setup();
@@ -16,11 +15,8 @@ module.exports.setup = function (gn, config) {
 	msg.setup(config);
 	file.setup(gn, config.level, config.file);
 	remote.setup(config.remote);
-	buff.setup(config.bufferSize);
+	buff.setup(config.bufferSize, config.bufferFlushInterval);
 	gracenode = gn;
-	if (config && config.bufferFlushInterval) {
-		autoFlushInterval = config.buggerFlushInterval;
-	}
 };
 
 module.exports.Logger = Logger;
@@ -37,20 +33,7 @@ function Logger(prefix, name, config) {
 			that._autoFlush(done);
 		});
 	}
-	this._timerFlush();
 }
-
-Logger.prototype._timerFlush = function () {
-	// auto flush buffered log data at x miliseconds
-	// Node.js timer implementation should be effecient for handling lots of timers
-	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
-	var that = this;
-	setTimeout(function () {
-		that._autoFlush(function () {
-			that._timerFlush();
-		});
-	}, autoFlushInterval);
-};
 
 Logger.prototype.verbose = function () {
 	this._handleLog('verbose', arguments);

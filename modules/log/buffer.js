@@ -1,3 +1,4 @@
+var async = require('async');
 var buff = {
 	'verbose': {
 		messages: [],
@@ -32,11 +33,23 @@ var buff = {
 };
 // default 8 KB
 var limit = 8192;
+// default is 5 seconds
+var autoFlushInterval = 5000;
+// a list of logger objects
+var loggers = [];
 
-module.exports.setup = function (config) {
-	if (config) {
-		limit = config;
+module.exports.setup = function (size, interval) {
+	if (size) {
+		limit = size;
 	}
+	if (interval) {
+		autoFlushInterval = interval;
+	}
+	module.exports._timerFlush();
+};
+
+module.exports.addLogger = function (logger) {
+	loggers.push(logger);
 };
 
 module.exports.add = function (level, msg) {
@@ -69,4 +82,15 @@ module.exports.flushAll = function () {
 		flushed[level] = module.exports.flush(level);
 	}
 	return flushed;
+};
+
+module.exports._timerFlush = function () {
+	// auto flush buffered log data at x miliseconds
+	// Node.js timer implementation should be effecient for handling lots of timers
+	// https://github.com/joyent/node/blob/master/deps/uv/src/unix/timer.c #120
+	setTimeout(function () {
+		async.eachSeries(loggers, function (logger, next) {
+			logger._autoFlush(next);
+		}, module.exports._timerFlush);
+	}, autoFlushInterval);
 };
