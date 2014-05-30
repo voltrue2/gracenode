@@ -49,7 +49,6 @@ describe('gracenode initialization ->', function () {
 		gn.require(prefix + 'gracenode/test/mongodb');	
 		gn.require(prefix + 'gracenode/test/encrypt');	
 		gn.require(prefix + 'gracenode/test/staticdata');	
-		gn.require(prefix + 'gracenode/test/server');	
 	});
 
 });
