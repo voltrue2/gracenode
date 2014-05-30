@@ -657,14 +657,9 @@ Gracenode offers unit tests for its built-in modules.
 Currently available tests are:
 
 ```
-// tests setting up of gracenode and all module tests (Exception for iap module test)
-make test
-// tests iap module (apple purchase test)
-make test-iap-apple path=/path/to/receipt/sample/file
-// tests iap module (google purchase test)
-make test-iap-google key=/path/to/public/key/directory path=/path/to/receipt/sample/file
-// test individual module
-make test-module module=module name
+// tests setting up of gracenode with gracenode mudles.
+// You need to have gracenode modules installed in the same directory as gracenod for this test to work.
+make test-setup
 ```
 
 ***
