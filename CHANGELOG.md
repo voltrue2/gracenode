@@ -36,6 +36,14 @@ We removed the test for built-in mongodb module. gracenode-mongodb module packag
 
 We removed the test for built-in staticdata module. gracenode-staticdata module package now has the test instead.
 
+#### Built-in iap module's unit test removed.
+
+We removed the test for built-in iap module. gracenode-iap module package now has the test instead.
+
+#### Bug fix in core/index.js
+
+The bug in SIGINT, SIGQUIT, and SIGTERM exit fails has been fixed.
+
 # Future backward compatibility break
 
 We will be removing the current built-in module system.

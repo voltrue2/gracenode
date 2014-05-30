@@ -296,7 +296,7 @@ function setupListeners(that) {
 
 	process.on('SIGINT', function () {
 		log.info('SIGINT caught: shutting down gracenode...');
-		handleShutdownTasks(function () {
+		handleShutdownTasks(that, function () {
 			that.emit('shutdown');
 			that.exit();
 		});
@@ -304,7 +304,7 @@ function setupListeners(that) {
 
 	process.on('SIGQUIT', function () {
 		log.info('SIGQUIT caught: shutting down gracenode...');
-		handleShutdownTasks(function () {
+		handleShutdownTasks(that, function () {
 			that.emit('shutdown');
 			that.exit();
 		});
@@ -312,7 +312,7 @@ function setupListeners(that) {
 
 	process.on('SIGTERM', function () {
 		log.info('SIGTERM caught: shutting down gracenode...');
-		handleShutdownTasks(function () {
+		handleShutdownTasks(that, function () {
 			that.emit('shutdown');
 			that.exit();
 		});
