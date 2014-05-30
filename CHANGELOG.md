@@ -28,6 +28,10 @@ We removed the test for built-in server module. gracenode-server module package 
 
 We removed the test for built-in view module. gracenode-view module package now has the test instead.
 
+#### Built-in mongodb module's unit test removed.
+
+We removed the test for built-in mongodb module. gracenode-mongodb module package now has the test instead.
+
 # Future backward compatibility break
 
 We will be removing the current built-in module system.

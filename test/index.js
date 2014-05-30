@@ -43,12 +43,5 @@ describe('gracenode initialization ->', function () {
 			throw new Error('inaccurate randomness');
 		}
 	});
-	
-	it('Tests all modules', function () {
-		gn.require(prefix + 'gracenode/test/view');	
-		gn.require(prefix + 'gracenode/test/mongodb');	
-		gn.require(prefix + 'gracenode/test/encrypt');	
-		gn.require(prefix + 'gracenode/test/staticdata');	
-	});
 
 });
