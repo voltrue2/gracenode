@@ -82,7 +82,7 @@ Module.prototype.load = function (cb) {
 			seen.push(name);
 		} else {
 			this._logger.error(mod);
-			return cb('module name coflict detected');
+			return cb(new Error('module name coflict detected'));
 		}
 	}
 	// set up module driver manager
