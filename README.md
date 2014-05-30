@@ -203,7 +203,7 @@ var mymod = gracenode.require('mydir/mymod');
 ###.getModuleSchema(moduleName [string], callback [function])
 Finds and returns an array of schema SQL queries (only for modules with schema.sql file in the directory)
 ```
-gracenode.getModuleSchema('wallet', function (error, sqlList) {
+gracenode.getModuleSchema('gracenode-wallet', function (error, sqlList) {
 	// execute queries	
 });
 ```
@@ -225,6 +225,8 @@ Emitted when a specific module has been setup.
 Emitted when gracenode caught an uncaught exception.
 ###exit
 Emitted when gracenode exits.
+###shutdown.taskName
+Emitted when gracenode's module finished executing shutdown task.
 ###shutdown
 Emitted when gracenode detects SIGINT. This is before exit is emitted.
 

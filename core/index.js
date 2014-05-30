@@ -245,7 +245,7 @@ function setupModules(that, cb) {
 	that._module.load(cb);
 }
 
-function handleShutdownTasks(cb) {
+function handleShutdownTasks(that, cb) {
 	if (!gracefulWaitList.length) {
 		return cb();
 	}
@@ -257,6 +257,7 @@ function handleShutdownTasks(cb) {
 				if (error) {
 					log.error('shutdown task <' + item.name + '>', error);
 				}
+				that.emit('shutdown.' + item.name);
 				next();
 			});
 		} catch (e) {
@@ -275,7 +276,7 @@ function setupListeners(that) {
 
 	that.on('exit', function (error) {
 		log.info('exit caught: shutting down gracenode...');
-		handleShutdownTasks(function () {
+		handleShutdownTasks(that, function () {
 			if (error) {
 				log.fatal('exit gracenode with an error:', error);
 			}
