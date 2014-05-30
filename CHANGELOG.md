@@ -20,7 +20,9 @@ None
 
 ### Removed
 
-None
+#### Built-in server module's unit test removed.
+
+We removed the test for built-in server module. gracenode-server module package now has the test instead.
 
 # Future backward compatibility break
 
