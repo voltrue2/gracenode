@@ -12,9 +12,6 @@ describe('gracenode initialization ->', function () {
 		gn.setConfigFiles(['setup.json']);
 
 		gn.addModulePath(prefix + 'gracenode/test/modules/');
-	
-		// test built-in module use
-		gn.use('encrypt');
 
 		// test external module use
 		gn.use('test');

@@ -24,6 +24,11 @@ module.exports.setup = function (gn, config) {
 	if (config.bufferFlushInterval) {
 		autoFlushInterval = config.bufferFlushInterval;
 	}
+	// register graceful shutdown task to flush all log data before exit
+	gracenode._addLogCleaner('exit', function (done) {
+		module.exports.forceFlush(done);
+	});
+	// auto flush log data at every x milliseconds
 	module.exports._timerFlush();
 };
 
@@ -55,12 +60,6 @@ function Logger(prefix, name, config) {
 	this.prefix = prefix;
 	this.name = name;
 	this.config = config || {};
-	var that = this;
-	if (gracenode) {
-		gracenode._addLogCleaner('exit', function (done) {
-			that._autoFlush(done);
-		});
-	}
 }
 
 Logger.prototype.verbose = function () {
@@ -126,14 +125,14 @@ Logger.prototype._outputLog = function (levelName, bufferedMsg) {
 };
 
 Logger.prototype._autoFlush = function (cb) {
+	// if there is no config -> we output nothing
+	if (!this.config || !this.config.level) {
+		return cb();
+	}
 	var that = this;
 	var flushed = buff.flushAll();
 	var list = Object.keys(flushed);
 	async.each(list, function (level, callback) {
-		// if there is no config -> we output nothing
-		if (!that.config || !that.config.level) {
-			return callback();
-		}
 		// check enabled or not
 		if (!that.config.level[level]) {
 			// not enabled

@@ -1,5 +1,62 @@
 # Change Log
 
+## Version 1.0.0
+
+# Backward compatibility break
+
+Gracenode framework has removed all internal additional modules.
+
+In order to use the former built-in modules, you will need to add them to your package.json as dependencies:
+
+```
+"dependencies": {
+	"gracenode": "1.0.0",
+	"gracende-server": "0.1.8",
+	"gracenode-view": "0.1.2"
+}
+```
+
+Here is the list of additional modules for gracenode:
+
+These modules can be installed from NPM.
+
+###[gracenode-cron](https://github.com/briandeheus/gracenode-cron)
+Module to run, start, stop, and setup cron tasks
+###[gracenode-staticdata](https://github.com/voltrue2/gracenode-staticdata)
+Allows for easy loading of static data such as JSON and CSV files.
+###[gracenode-request](https://github.com/voltrue2/gracenode-request)
+Handles requests to the server.
+###[gracenode-server](https://github.com/voltrue2/gracenode-server)
+Handles requests to the server.
+###[gracenode-udp](https://github.com/voltrue2/gracenode-udp)
+A module that makes it easier to handle UDP traffic from and to your server.
+###[gracenode-view](https://github.com/voltrue2/gracenode-view)
+Manages, loads and creates views you can server to clients.
+###[gracenode-session](https://github.com/voltrue2/gracenode-session)
+Handles sessions and automatically expires them if they are not accessed within a preset amount of time.
+###[gracenode-encrypt](https://github.com/voltrue2/gracenode-encrypt)
+Contains functions that make it easier to deal with crypography and password hashing.
+###[gracenode-mysql](https://github.com/voltrue2/gracenode-mysql)
+A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
+###[gracenode-mongodb](https://github.com/voltrue2/gracenode-mongodb)
+A wrapper to handle Mongodb functions and connections.
+###[gracenode-memcache](https://github.com/voltrue2/gracenode-memcache)
+Memcache management.
+###[gracenode-iap](https://github.com/voltrue2/gracenode-iap)
+Apple and GooglePlay in-app-purchase validation.
+###[gracenode-wallet](https://github.com/voltrue2/gracenode-wallet)
+Coin management.
+
+### Log module, Profile module, and Lib module are still part of gracenode framework.
+
+## Changed
+
+#### Log module performance improved
+
+Log module's auto flushing on gracenode exit is now centralized for better performance.
+
+***
+
 ## Version 0.3.14
 
 ### Added

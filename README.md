@@ -445,23 +445,6 @@ exports.expose = function () {
 
 ***
 
-#### .setup(callback [function])
-
-An optional function for your module to be executed on process start.
-
-Useful when your module needs to pre-process something before the application is ready.
-
-Example:
-
-```javascript
-// setup function is asynchronus. Be sure to call the callback function when you are done.
-module.exports.setup = function (callback) {
-	// we are working magic here...
-	// all done!
-	callback();
-};
-```
-
 ### Using Your Custom Modules (moodule loading system)
 
 gracenode allows you to add your custom modules to be loaded and used the same way as built-in modules.
@@ -518,7 +501,7 @@ Please refer to <a target="_blank" href="https://github.com/voltrue2/gracenode/t
 // this the minimum requirements for server module to run
 {
     "modules": {
-        "server": {
+        "gracenode-server": {
             "protocol": "http",
             "host": "localhost",
             "port": 8000,
@@ -572,7 +555,7 @@ This kind of rerouting can be achieved by setting "reroute" in the configuration
 ```
 {
     "modules": {
-        "server": {
+        "gracenode-server": {
             "protocol": "http",
             "host": "localhost",
             "port": 8000,
@@ -598,7 +581,7 @@ For example if your want to display a certain page for "404 Not Found" error, we
 ```
 {
     "modules": {
-        "server": {
+        "gracenode-server": {
             "protocol": "http",
             "host": "localhost",
 	    "port": 8000,
@@ -661,31 +644,3 @@ Currently available tests are:
 // You need to have gracenode modules installed in the same directory as gracenod for this test to work.
 make test-setup
 ```
-
-***
-
-### Using gracenode With Apache
-
-If you insist using Apache with node.js... here is a simple apache configuration example.
-
-```
-# proxy to nodejs process
-<VirtualHost *:80>
-    ServerAdmin yourname@yourdomain.com
-    DocumentRoot /var/www/yourdomain.com/htdocs
-    ServerName yourdomain.com
-
-    ProxyRequests off
-
-    <Proxy *>
-        Order deny,allow
-        Allow from all
-    </Proxy>
-
-    ProxyPreserveHost on
-    ProxyPass / http://yourdomain.com:8000/ # proxy everything else to gracenode
-    ProxyPassReverse / yourdomain.com:8000/
-
-</VirtualHost>
-```
-
