@@ -244,7 +244,7 @@ Spawns forked process(es) if allowed
 
 #Modules
 
-gracenode framework is modular. And it allows you to extending by adding wither your custom modules and/or 3rd party node modules.
+gracenode framework is modular. And it allows you to extending by adding your custom modules and/or 3rd party node modules.
 
 ### Loading modules from your application locally
 
@@ -445,7 +445,7 @@ exports.expose = function () {
 
 ***
 
-### Using Your Custom Modules (moodule loading system)
+### Using Your Custom Modules (module loading system)
 
 gracenode allows you to add your custom modules to be loaded and used the same way as built-in modules.
 
@@ -642,5 +642,5 @@ Currently available tests are:
 ```
 // tests setting up of gracenode with gracenode mudles.
 // You need to have gracenode modules installed in the same directory as gracenod for this test to work.
-make test-setup
+make test
 ```

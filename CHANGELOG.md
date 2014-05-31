@@ -1,5 +1,33 @@
 # Change Log
 
+## Version 1.0.1
+
+## Added
+
+None
+
+## Changed
+
+#### Unit test updated
+
+To execute the unit test, execute the following:
+
+`make test`
+
+The test requires that you have all gracenode modules installed in the same directory as your gracenode.
+
+## Depricated
+
+None
+
+## Removed
+
+#### gracenode.override() removed
+
+The depricated (version 0.3.0) gracenode method .override() has now been removed from this version.
+
+***
+
 ## Version 1.0.0
 
 # Backward compatibility break

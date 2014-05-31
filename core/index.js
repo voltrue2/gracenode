@@ -82,10 +82,6 @@ Gracenode.prototype.exit = function (error) {
 	this.emit('exit', error || 0);
 };
 
-Gracenode.prototype.override = function (builtInModuleName) {
-	this._module.override(builtInModuleName);
-};
-
 Gracenode.prototype.use = function (modName, driver) {
 	this._module.use(modName, driver);
 };

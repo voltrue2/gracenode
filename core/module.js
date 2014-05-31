@@ -33,13 +33,6 @@ Module.prototype.use = function (name, options) {
 	this._use.push({ name: name, altName: altName });
 };
 
-Module.prototype.override = function (name, options) {
-	if (this._overrides.indexOf(name) === -1) {
-		this._overrides.push(name);
-		return this.use(name, options);
-	}
-};
-
 Module.prototype.getModuleSchema = function (name, cb) {
 	var that = this;
 	var paths = [this._builtInPath, this._appNodeModulePath];
