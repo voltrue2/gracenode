@@ -16,8 +16,11 @@ describe('gracenode initialization ->', function () {
 		// test external module use
 		gn.use('test');
 
-		// test 3rd party node module use with custom driver
-		gn.use('in-app-purchase', { name: null, driver: gn.require(prefix + 'gracenode/test/drivers/in-app-purchase') });
+		// test externam module with hyphnes
+		gn.use('test-me');
+
+		// test driver
+		gn.use('test-driver', { driver: gn.require(prefix + 'gracenode/test/drivers/test-driver') });
 
 		// test 3rd party node module use with alternate name
 		gn.use('async', { name: 'async2' });
@@ -47,7 +50,8 @@ describe('gracenode initialization ->', function () {
 			assert.equal(error, undefined);
 			assert(gn.encrypt.uuid);
 			assert(gn.test.loaded());
-			assert(gn.inAppPurchase.validate);
+			assert(gn.testMe);
+			assert(gn.testDriver.test);
 			assert(gn.async2);
 			assert(gn.iap);
 			assert(gn.mysql);

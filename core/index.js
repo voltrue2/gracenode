@@ -108,7 +108,6 @@ Gracenode.prototype.setup = function (cb) {
 	];
 	async.waterfall(setupList, function (error) {
 		if (error) {
-			log.fatal(error);
 			log.fatal('gracenode failed to set up');
 			return that.exit(error);
 		}

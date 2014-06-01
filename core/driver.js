@@ -52,11 +52,7 @@ module.exports.applyDriver = function (name, module) {
 	// exposure driver to expose the module as
 	if (typeof driver.expose === 'function') {
 		logger.verbose('applying driver.expose to module [' + name + ']');
-		var exposed = driver.expose();
-		if (!exposed) {
-			return new Error('invalid driver.expose given for module [' + name + '] (driver.expose must return the module object to be exposed)');
-		}
-		module = exposed;
+		module.expose = driver.expose;
 	}
 	return true;
 };

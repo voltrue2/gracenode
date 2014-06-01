@@ -1,8 +1,9 @@
 {
 	"modules": {
 		"log": {
-			"bufferFlushInterval": 1000,
-			"bufferSize": 1024,
+			"depth": 10,
+			"bufferFlushInterval": 0,
+			"bufferSize": 1,
 			"console": true,
 			"color": true,
 			"level": {
@@ -17,8 +18,8 @@
 		"test": {
 
 		},
-		"in-app-purchase": {
-			"sandbox": true
+		"test-driver": {
+			"driverTest": true
 		},
 		"redis": {
 			"clients": {

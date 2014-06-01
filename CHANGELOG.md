@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.0.2
+
+## Added
+
+None
+
+## Changed
+
+#### Core module has removed the remaining override logic
+
+#### Core module improved module name conflict checks
+
+#### Core module loading simplified and performace improved
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.1
 
 ## Added

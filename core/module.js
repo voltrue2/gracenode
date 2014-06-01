@@ -8,11 +8,11 @@ module.exports = Module;
 
 function Module(gn, rootPath) {
 	this._gn = gn;
-	this._builtInPath = rootPath + 'modules/';
-	this._appNodeModulePath = gn.getRootPath() + 'node_modules/';
 	this._use = [];
-	this._overrides = [];
-	this._modPaths = [];
+	this._modPaths = [
+		rootPath + 'modules/',
+		gn.getRootPath() + 'node_modules/'
+	];
 }
 
 Module.prototype.addModulePath = function (path) {
@@ -26,18 +26,16 @@ Module.prototype.use = function (name, options) {
 	if (options && options.driver) {
 		modDriver.addDriver(name, options.driver);
 	}
-	var altName = null;
+	var modName = createModuleName(name);
 	if (options && options.name) {
-		altName = options.name;
+		modName = options.name;
 	}
-	this._use.push({ name: name, altName: altName });
+	this._use.push({ name: name, modName: modName });
 };
 
 Module.prototype.getModuleSchema = function (name, cb) {
 	var that = this;
-	var paths = [this._builtInPath, this._appNodeModulePath];
-	paths = paths.concat(this._modPaths);
-	async.eachSeries(paths, function (path, next) {
+	async.eachSeries(this._modPaths, function (path, next) {
 		var filePath = path + name + '/schema.sql';
 		that._logger.verbose('looking for', filePath);
 		fs.readFile(filePath, 'utf-8', function (error, sql) {
@@ -70,14 +68,16 @@ Module.prototype.load = function (cb) {
 	var seen = [];
 	for (var i = 0, len = this._use.length; i < len; i++) {
 		var mod = this._use[i];
-		var name = mod.altName || mod.name;
+		var name = mod.modName;
 		if (seen.indexOf(name) === -1) {
 			seen.push(name);
 		} else {
 			this._logger.error(mod);
-			return cb(new Error('module name coflict detected'));
+			return cb(new Error('module name coflict detected: module name [' + name + ']'));
 		}
 	}
+	// reverse the order of module paths to check for custom modules first
+	this._modPaths.reverse();
 	// set up module driver manager
 	modDriver.setup(this._gn);
 	// start loading
@@ -86,15 +86,12 @@ Module.prototype.load = function (cb) {
 	var that = this;
 	async.eachSeries(this._use, function (modObj, next) {
 		var name = modObj.name;
-		var altName = modObj.altName;
+		var modName = modObj.modName;
 		// load one module at a time
 		that._loadOne(name, function (error, module) {
 			if (error) {
 				return next(error);
 			}
-			// append loaded module to gracenode
-			var modName = altName || name;
-			modName = createModuleName(modName);
 			that._gn[modName] = module;
 			// handle config
 			var err = that._readConfig(name, module, next);
@@ -110,6 +107,12 @@ Module.prototype.load = function (cb) {
 				if (modName !== name) {
 					msg += ' as ' + modName;
 				}
+
+				// if driver is present and the driver has expose()
+				if (module.expose) {
+					that._gn[modName] = module.expose();
+				}
+
 				that._logger.verbose(msg);
 				that._gn._profiler.mark(msg);
 				that._gn.emit('setup.' + name);
@@ -120,98 +123,34 @@ Module.prototype.load = function (cb) {
 };
 
 Module.prototype._loadOne = function (name, cb) {
-	// this variable will remember the found built-in module path for override case
-	var builtInPath;
-	try {
-		// try gracenode module first
-		var that = this;
-		var path = this._builtInPath + name;
-		this._logger.verbose('looking for module [' + name + '] in', path);
-		fs.exists(path, function (exists) {
-			if (exists) {
-				// try to require the module
-				var mod = that._require(name, path, null);
-				if (mod) {
-					// we have required the module, done
-					return cb(null, mod);
-				}
-				// we have NOT required the module
-				builtInPath = path;
-			}
-			// try other path(s)
-			that._loadExternal(name, builtInPath, function (found) {
-				// check if we found the module or not
-				if (!found) {
-					return cb(new Error('failed to find module [' + name + ']'));	
-				}
-				cb(null, found);
-			});
-		});
-	} catch (e) {
-		cb(e);
-	}
-};
-
-Module.prototype._loadExternal = function (name, builtInPath, cb) {
 	var that = this;
 	async.eachSeries(this._modPaths, function (dir, next) {
 		var path = dir + name;
 		that._logger.verbose('looking for module [' + name + '] in', path);
-		fs.exists(path, function (exists) {
-			if (exists) {
-				var mod = that._require(name, path, builtInPath);
-				if (mod) {
-					// we have required it, done
-					return cb(mod);
-				}		
+		var mod = that._require(name, path);
+		if (mod) {
+			var applied = modDriver.applyDriver(name, mod);
+			if (applied instanceof Error) {
+				return cb(applied, mod);
 			}
-			next();
-		}); 
-	}, function () {
-		// we found no module... in module paths
-		// now try node_modules of the application
-		that._loadFromNodeModules(name, builtInPath, function (error, module) {
-			if (error) {
-				return cb(error);
-			}
-			cb(module);
-		});
+			return cb(null, mod);
+		}
+		next();
+	},
+	function () {
+		// we could not find the module...
+		cb(new Error('module [' + name + '] not found'));
 	});
 };
 
-Module.prototype._loadFromNodeModules = function (name, builtInPath, cb) {
-	var that = this;
-	this._logger.verbose('looking for module [' + name + '] in ', this._appNodeModulePath);
-	fs.exists(this._appNodeModulePath + name, function (exists) {
-		if (!exists) {
-			return cb();
-		}
-		var mod = that._require(name, that._appNodeModulePath + name, builtInPath);
-		// check to see if there is a driver for this module
-		var applied = modDriver.applyDriver(name, mod);
-		if (applied instanceof Error) {
-			// there was an error while applying the driver to the module
-			return cb(applied, mod);
-		}
-		cb(null, mod);
-	});
-};
-
-Module.prototype._require = function (name, path, builtInPath) {
-	this._logger.verbose('module [' + name + '] found in', path);
-	// check if this module is to be overridden
-	if (this._overrides.indexOf(name) !== -1) {
-		if (builtInPath && builtInPath !== path) {
-			// we found the module that will override the built-in module
-			this._logger.verbose('module [' + name + '] found and overridden with', path);
-			return require(path);
-		}
-		// is to be overridden
-		this._logger.verbose('module [' + name + '] will be overridden by a custom module of the same name');
+Module.prototype._require = function (name, path) {
+	try {
+		var mod = require(path);
+		this._logger.verbose('module [' + name + '] found in', path);
+		return mod;
+	} catch (e) {
 		return null;
 	}
-	// is NOT to be overridden
-	return require(path);
 };
 
 Module.prototype._readConfig = function (name, mod) {
