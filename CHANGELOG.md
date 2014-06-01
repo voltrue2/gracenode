@@ -14,6 +14,8 @@ None
 
 #### Core module loading simplified and performace improved
 
+#### Core driver expose has been fixed
+
 ## Depricated
 
 None
