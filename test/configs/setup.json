@@ -2,7 +2,6 @@
 	"modules": {
 		"log": {
 			"depth": 10,
-			"bufferSize": 0,
 			"console": true,
 			"color": true,
 			"level": {

@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.0.4
+
+## Added
+
+None
+
+## Changed
+
+#### Log module log data buffer
+
+Log module no longer uses buffer for console logging (Node.js sdtout stream) as it is considered a development tool.
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.3
 
 ## Added

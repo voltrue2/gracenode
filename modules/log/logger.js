@@ -98,6 +98,11 @@ Logger.prototype._handleLog = function (levelName, message) {
 	}
 
 	var logMsg = msg.create(this.prefix, this.name, levelName, message);
+	
+	// if console is enabled, we output to console
+	if (this.config.console) {	
+		console.log(logMsg.message);
+	}
 
 	// add log message to buffer. buffer will flush overflowed log message
 	var bufferedMsg = buff.add(levelName, logMsg);
@@ -108,11 +113,6 @@ Logger.prototype._handleLog = function (levelName, message) {
 };
 
 Logger.prototype._outputLog = function (levelName, bufferedMsg) {
-	// if console is enabled, we output to console
-	if (this.config.console) {	
-		console.log(bufferedMsg.messages.join('\n'));
-	}
-
 	if (this.config.file) {
 		file.log(levelName, bufferedMsg.messages.join('\n'));
 	}
