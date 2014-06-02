@@ -6,7 +6,7 @@ describe('gracenode initialization ->', function () {
 	
 	it('Can set up gracenode modules', function (done) {
 
-		console.log('**NOTICE: This test requires in-app-purchase module and async module installed in ../gracenode/node_modules/ to work properly');
+		console.log('**NOTICE: This test requires async module installed in ../gracenode/node_modules/ to work properly');
 	
 		gn.setConfigPath(prefix + 'gracenode/test/configs/');
 		gn.setConfigFiles(['setup.json']);
