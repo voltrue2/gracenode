@@ -154,9 +154,6 @@ Logger.prototype._autoFlush = function (cb) {
 			}
 			next();
 		};
-		if (that.config.console) {
-			console.log(data.messages.join('\n'));
-		}
 		events.emit('output', address, that.name, level, data);
 		async.series([fileLog, remoteLog], callback);
 	}, cb);
