@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.0.3
+
+## Added
+
+None
+
+## Changed
+
+#### Improved profiler module set up in core index
+
+#### Removed redundant configuration call for log module in core index
+
+#### Improved error catching of module driver .expose()
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.2
 
 ## Added

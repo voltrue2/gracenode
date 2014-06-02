@@ -182,13 +182,14 @@ function setupConfig(that, lastCallback, cb) {
 }
 
 function setupLog(that, lastCallback, cb) {
+	var conf = config.getOne('modules.log');
 	logger.gracenode = that;
-	logger.readConfig(config.getOne('modules.log'));
+	logger.readConfig(conf);
 	logger.setup(function (error) {
 		if (error) {
 			return lastCallback(error);
 		}
-		log.config = config.getOne('modules.log');
+		log.config = conf;
 		that.log = logger;
 		
 		log.verbose('log is ready');
@@ -205,9 +206,6 @@ function setupProfiler(that, lastCallback, cb) {
 	// gracenode profiler
 	that._profiler = profiler.create(that._root);
 	that._profiler.start();	
-
-	// profiler for others
-	that.profiler = profiler;
 
 	log.verbose('profiler is ready');
 

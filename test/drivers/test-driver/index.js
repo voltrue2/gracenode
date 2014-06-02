@@ -11,8 +11,9 @@ exports.setup = function (cb) {
 };
 
 exports.expose = function () {
-	return {
+	var exposed = {
 		module: module,
 		test: config
-	}
+	};
+	return exposed;
 };

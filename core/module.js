@@ -110,7 +110,11 @@ Module.prototype.load = function (cb) {
 
 				// if driver is present and the driver has expose()
 				if (module.expose) {
-					that._gn[modName] = module.expose();
+					var exposedMod = module.expose();
+					if (!exposedMod) {
+						return cb(new Error('module [' + modName + '] driver.expose must return exposed module object'));
+					}
+					that._gn[modName] = exposedMod;
 				}
 
 				that._logger.verbose(msg);
