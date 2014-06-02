@@ -34,7 +34,7 @@ var buff = {
 var limit = 8192;
 
 module.exports.setup = function (size) {
-	if (size) {
+	if (size !== undefined && size !== null) {
 		limit = size;
 	}
 };

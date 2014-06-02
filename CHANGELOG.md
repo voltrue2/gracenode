@@ -14,6 +14,8 @@ None
 
 #### Improved error catching of module driver .expose()
 
+#### Log module's bufferSize can now be 0
+
 ## Depricated
 
 None
