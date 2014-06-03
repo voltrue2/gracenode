@@ -13,10 +13,6 @@ var log = gracenode.log.create('nameToBeDisplayed');
 			"bufferSize": <int> // log data buffer size in memory (bytes),
 			"bufferFlushInterval": <int> // log data buffer auto flush interval in milliseconds,
 			"file": "<log directory path> or false"
-			"remote": {
-				"host": "<host name or ip address>",
-				"port"" "<port>"
-			},
 			"console": true or false,
 			"color": true or false,
 			"showHidden": true or false, // show hidden properties of object
@@ -46,12 +42,6 @@ If the path to file is set, gracenode will log into files.
 Log files are auto-rotated by YYYY/MM/DD.
 
 `"file": "path to log file directory" or false/null`
-
-#### remote
-
-If the desitination host and port are set, gracenode will send log to an external server via UDP (v4).
-
-`"remote": { "host": "xxxx", "port": yyyy } or false/null`
 
 #### console
 

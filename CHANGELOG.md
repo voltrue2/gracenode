@@ -12,9 +12,13 @@ None
 
 Log module no longer uses buffer for console logging (Node.js sdtout stream) as it is considered a development tool.
 
-## Depricated
+#### Core module improved module name conflicts detection and warning
 
-None
+## Deprecated
+
+#### Log module's optional configuration "remote"
+
+Log module has deprecated an optional configuration "remote" to send log data via UDP.
 
 ## Removed
 
@@ -38,7 +42,7 @@ None
 
 #### Log module's bufferSize can now be 0
 
-## Depricated
+## Deprecated
 
 None
 
@@ -64,7 +68,7 @@ None
 
 #### Core driver expose has been fixed
 
-## Depricated
+## Deprecated
 
 None
 
@@ -90,7 +94,7 @@ To execute the unit test, execute the following:
 
 The test requires that you have all gracenode modules installed in the same directory as your gracenode.
 
-## Depricated
+## Deprecated
 
 None
 
@@ -98,7 +102,7 @@ None
 
 #### gracenode.override() removed
 
-The depricated (version 0.3.0) gracenode method .override() has now been removed from this version.
+The deprecated (version 0.3.0) gracenode method .override() has now been removed from this version.
 
 ***
 
@@ -173,7 +177,7 @@ this method will force the log data buffer to flush the log buffer and write imm
 
 None
 
-### Depricated
+### Deprecated
 
 None
 
@@ -227,7 +231,7 @@ None
 
 Log module's optional configuration "bufferFlushInterval" is no longer undefined.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -259,7 +263,7 @@ None
 
 The bug in log module's file write and remote send has been fixed.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -299,7 +303,7 @@ Config module now handles error on invalid configurations and configurations not
 
 Core's module loader checks for module configurations not found error now handles the error before the module.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -331,11 +335,11 @@ None
 
 Minor improvements in timed-auto-buffer-flush. Now the autoFlush waits for the previous operation to finish.
 
-### Depricated
+### Deprecated
 
 #### additional built-in modules
 
-Additional modules to be separated from gracenode core are now depricated.
+Additional modules to be separated from gracenode core are now deprecated.
 
 Modules to be separated:
 
@@ -382,7 +386,7 @@ None
 
 "The log module's timer based auto-flush stops flushing automatically" has been fixed.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -414,7 +418,7 @@ None
 
 Log module's auto buffer flushing is improved.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -448,7 +452,7 @@ Log module now buffers log data and flushes to file/remote/event when buffer is 
 
 It also flushes the log data at every x seconds.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -478,7 +482,7 @@ None
 
 #### core driver improved checks
 
-### Depricated
+### Deprecated
 
 None
 
@@ -510,7 +514,7 @@ None
 
 Escaped values are now correctly parsed
 
-### Depricated
+### Deprecated
 
 None
 
@@ -542,7 +546,7 @@ None
 
 Escaped values are now correctly parsed
 
-### Depricated
+### Deprecated
 
 None
 
@@ -574,7 +578,7 @@ None
 
 Staticdata module's CSV parser fixed for parsing data with repeated commans in a single line.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -604,7 +608,7 @@ Planned removal of the built-in modules is version 1.0.0
 
 None
 
-### Depricated
+### Deprecated
 
 None
 
@@ -646,7 +650,7 @@ Built-in request module also added the change.
 
 An issue with gracenode path has been solved.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -678,7 +682,7 @@ To allow 3rd party node modules to behave as gracenode modules.
 
 None
 
-### Depricated
+### Deprecated
 
 #### built-in module system
 
@@ -718,7 +722,7 @@ Iap module for google now reads public key file on setup of gracenode for better
 
 Server module can now handle request body with multipart header properly
 
-### Depricated
+### Deprecated
 
 None
 
@@ -742,7 +746,7 @@ Server module has been refactored for better performance.
 
 If you pass float numbers smaller than 1, the function had a chance of returning greater than max given.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -764,7 +768,7 @@ Test for pre-defined 404 error handling has been added.
 
 None
 
-### Depricated
+### Deprecated
 
 None
 
@@ -790,7 +794,7 @@ Server module's pre-defined error handling on 404 had an issue of not correctly 
 
 Now this issue has been fixed.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -816,7 +820,7 @@ None
 
 Server module's router now correctly uses the property in parsed URL object for not found 404 error.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -846,15 +850,15 @@ Lib module's randomInt and randomFloat improved their random logic for better pe
 
 Performance of router and controller management improved.
 
-### Depricated
+### Deprecated
 
 None
 
 ### Removed
 
-#### Depricated function gracenode.allowOverride is now removed
+#### Deprecated function gracenode.allowOverride is now removed
 
-gracenode.allowOverride function has been depricated since version 0.2.30 in favor of gracenode.override and now it has been removed.
+gracenode.allowOverride function has been deprecated since version 0.2.30 in favor of gracenode.override and now it has been removed.
 
 ## Version 0.2.39
 
@@ -881,7 +885,7 @@ response.download(csvData, 'example.csv');
 
 #### gracenode core module loader improved
 
-### Depricated
+### Deprecated
 
 None
 
@@ -917,7 +921,7 @@ View module now has unit test.
 
 For more details please read viuew module README.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -957,7 +961,7 @@ View module improved its variable replacement parser's error handling.
 
 Pre-defined error handling controllers can now inherit original response status automatically.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -985,7 +989,7 @@ Mysql module allows empty password for DB connections.
 
 Gracenode core's shutdown task handler improved exception handling to prevent process from hanging on exceptions.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -1023,7 +1027,7 @@ To:
 
 `make test-iap-google key=/path/to/public/key/directory path=/path/to/receipt/sample/file`
 
-### Depricated
+### Deprecated
 
 None
 
@@ -1057,11 +1061,11 @@ Executing `make` now also installs dependencies.
 
 GET, POST, PUT, and DELETE methods are added. For more detail please refer to request module README
 
-## Depricated
+## Deprecated
 
-#### Request module depricated send method
+#### Request module deprecated send method
 
-We have now depricated send method in favor of new methods GET, POST, PUT, and DELETE.
+We have now deprecated send method in favor of new methods GET, POST, PUT, and DELETE.
 
 This method will be removed in the future version.
 
@@ -1095,7 +1099,7 @@ make test-module=mongodb
 
 findEach function no longer returns an empty array at the last iteration.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -1119,15 +1123,15 @@ None
 
 Respond on exception has been removed due to its unstable nature and impact on performance.
 
-### Depricated
+### Deprecated
 
 None
 
 ### Removed
 
-#### Server module removed depricated request object methods
+#### Server module removed deprecated request object methods
 
-Depricated request object methods getData, postData, putData, and deleteData have been removed.
+Deprecated request object methods getData, postData, putData, and deleteData have been removed.
 
 ***
 
@@ -1145,7 +1149,7 @@ None
 
 Server module now handles each request with unnecessary events.
 
-### Depricated
+### Deprecated
 
 None
 
@@ -1204,9 +1208,9 @@ Tests staticdata module.
 make test-module module=staticdata
 ```
 
-### Depricated
+### Deprecated
 
-#### gracenode.allowOverride() is now depricated and will be removed in the future version.
+#### gracenode.allowOverride() is now deprecated and will be removed in the future version.
 
 ---
 
@@ -1253,7 +1257,7 @@ Server module outputs error log on response errors.
 
 ---
 
-### Depricated
+### Deprecated
 
 None
 

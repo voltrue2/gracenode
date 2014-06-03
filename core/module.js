@@ -1,7 +1,8 @@
 var async = require('async');
 var fs = require('fs');
 var modDriver = require('./driver');
-
+var moduleMap = {};
+var conflictedModules = [];
 var modulePrefix = 'gracenode-';
 
 module.exports = Module;
@@ -64,64 +65,70 @@ Module.prototype.getModuleSchema = function (name, cb) {
 };
 
 Module.prototype.load = function (cb) {
-	// look for module name conflicts
-	var seen = [];
-	for (var i = 0, len = this._use.length; i < len; i++) {
-		var mod = this._use[i];
-		var name = mod.modName;
-		if (seen.indexOf(name) === -1) {
-			seen.push(name);
-		} else {
-			this._logger.error(mod);
-			return cb(new Error('module name coflict detected: module name [' + name + ']'));
-		}
-	}
-	// reverse the order of module paths to check for custom modules first
-	this._modPaths.reverse();
 	// set up module driver manager
 	modDriver.setup(this._gn);
 	// start loading
 	this._logger = this._gn.log.create('module');
 	this._logger.verbose('start loading modules');
 	var that = this;
-	async.eachSeries(this._use, function (modObj, next) {
-		var name = modObj.name;
-		var modName = modObj.modName;
-		// load one module at a time
-		that._loadOne(name, function (error, module) {
-			if (error) {
-				return next(error);
+	// map all modules first
+	this._mapModules(function (error) {
+		if (error) {
+			return cb(error);
+		}
+		// check for conflicted module names
+		for (var i = 0, len = that._use.length; i < len; i++) {
+			var mod = that._use[i];
+			var name = mod.modName;
+			if (conflictedModules.indexOf(name) !== -1) {
+				that._logger.error(mod);
+				return cb(new Error('module name coflict detected: module name [' + name + ']'));
 			}
-			that._gn[modName] = module;
-			// handle config
-			var err = that._readConfig(name, module, next);
-			if (err) {
-				return cb(err);
-			}
-			// handle setup
-			that._setup(name, module, function (err) {
-				if (err) {
-					return next(err);
+		}
+		// now start loading modules
+		async.eachSeries(that._use, function (modObj, next) {
+			var name = modObj.name;
+			var modName = modObj.modName;
+			// load one module at a time
+			that._loadOne(name, function (error, module) {
+				if (error) {
+					return next(error);
 				}
-				var msg = 'module [' + name + '] loaded';
-				if (modName !== name) {
-					msg += ' as ' + modName;
-				}
-
-				// if driver is present and the driver has expose()
-				if (module.expose) {
-					var exposedMod = module.expose();
-					if (!exposedMod) {
-						return cb(new Error('module [' + modName + '] driver.expose must return exposed module object'));
-					}
-					that._gn[modName] = exposedMod;
-				}
-
-				that._logger.verbose(msg);
-				that._gn._profiler.mark(msg);
-				that._gn.emit('setup.' + name);
-				next();
+				that._prepareModule(name, modName, module, next, cb);
 			});
+		}, cb);
+	});
+};
+
+Module.prototype._mapModules = function (cb) {
+	var that = this;
+	// remember the module names to detect module name conflict(s) in different module paths
+	var seen = [];
+	async.each(this._modPaths, function (path, next) {
+		fs.readdir(path, function (error, list) {
+			if (error) {
+				return cb(error);
+			}
+			for (var i = 0, len = list.length; i < len; i++) {
+				var modName = list[i];
+				that._logger.verbose('module mapped [' + path + ']:', modName);
+				var key = path + modName;
+				// check for module name conflict
+				if (seen.indexOf(modName) !== -1) {
+					that._logger.warning('module [' + modName + '] has a name conflict');
+					that._logger.warning(key);
+					for (var keyPath in moduleMap) {
+						if (moduleMap[keyPath] === modName) {
+							that._logger.warning(keyPath);
+							conflictedModules.push(modName);
+							break;
+						}
+					}
+				}
+				seen.push(modName);
+				moduleMap[key] = modName;
+			}
+			next();
 		});
 	}, cb);
 };
@@ -148,13 +155,47 @@ Module.prototype._loadOne = function (name, cb) {
 };
 
 Module.prototype._require = function (name, path) {
-	try {
+	var found = moduleMap[path];
+	if (found) {
 		var mod = require(path);
 		this._logger.verbose('module [' + name + '] found in', path);
 		return mod;
-	} catch (e) {
-		return null;
 	}
+	return null;
+};
+
+Module.prototype._prepareModule = function (name, modName, module, next, cb) {
+	var that = this;
+	this._gn[modName] = module;
+	// handle config
+	var err = that._readConfig(name, module, next);
+	if (err) {
+		return cb(err);
+	}
+	// handle setup
+	this._setup(name, module, function (err) {
+		if (err) {
+			return next(err);
+		}
+		var msg = 'module [' + name + '] loaded';
+		if (modName !== name) {
+			msg += ' as ' + modName;
+		}
+
+		// if driver is present and the driver has expose()
+		if (module.expose) {
+			var exposedMod = module.expose();
+			if (!exposedMod) {
+				return cb(new Error('module [' + modName + '] driver.expose must return exposed module object'));
+			}
+			that._gn[modName] = exposedMod;
+		}
+
+		that._logger.verbose(msg);
+		that._gn._profiler.mark(msg);
+		that._gn.emit('setup.' + name);
+		next();
+	});
 };
 
 Module.prototype._readConfig = function (name, mod) {
