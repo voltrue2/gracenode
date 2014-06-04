@@ -35,7 +35,13 @@ module.exports._setInternalPrefix = function (p) {
 };
 
 module.exports.create = function (name) {
-	return loggerSource.create(prefix + appPrefix, name, config);
+	var p = prefix;
+	if (prefix !== '') {
+		p = prefix + '][' + appPrefix;
+	} else if (appPrefix) {
+		p = appPrefix;
+	}
+	return loggerSource.create(p, name, config);
 };
 
 module.exports.forceFlush = function (cb) {
