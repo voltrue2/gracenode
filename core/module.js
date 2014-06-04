@@ -2,7 +2,6 @@ var async = require('async');
 var fs = require('fs');
 var modDriver = require('./driver');
 var moduleMap = {};
-var conflictedModules = [];
 var modulePrefix = 'gracenode-';
 
 module.exports = Module;
@@ -76,15 +75,6 @@ Module.prototype.load = function (cb) {
 		if (error) {
 			return cb(error);
 		}
-		// check for conflicted module names
-		for (var i = 0, len = that._use.length; i < len; i++) {
-			var mod = that._use[i];
-			var name = mod.modName;
-			if (conflictedModules.indexOf(name) !== -1) {
-				that._logger.error(mod);
-				return cb(new Error('module name coflict detected: module name [' + name + ']'));
-			}
-		}
 		// now start loading modules
 		async.eachSeries(that._use, function (modObj, next) {
 			var name = modObj.name;
@@ -103,7 +93,7 @@ Module.prototype.load = function (cb) {
 Module.prototype._mapModules = function (cb) {
 	var that = this;
 	// remember the module names to detect module name conflict(s) in different module paths
-	var seen = [];
+	var seen = {};
 	async.each(this._modPaths, function (path, next) {
 		fs.readdir(path, function (error, list) {
 			if (error) {
@@ -112,21 +102,16 @@ Module.prototype._mapModules = function (cb) {
 			for (var i = 0, len = list.length; i < len; i++) {
 				var modName = list[i];
 				that._logger.verbose('module mapped [' + path + ']:', modName);
-				var key = path + modName;
-				// check for module name conflict
-				if (seen.indexOf(modName) !== -1) {
-					that._logger.warning('module [' + modName + '] has a name conflict');
-					that._logger.warning(key);
-					for (var keyPath in moduleMap) {
-						if (moduleMap[keyPath] === modName) {
-							that._logger.warning(keyPath);
-							conflictedModules.push(modName);
-							break;
-						}
-					}
+				var modulePath = path + modName;
+				if (seen[modName]) {
+					// there is at least more than one module with the same name
+					seen[modName].push(modulePath);
+					that._logger.fatal('conflicted modules:', seen[modName]);
+					return cb(new Error('module name coflict detected: module name [' + modName + ']'));
 				}
-				seen.push(modName);
-				moduleMap[key] = modName;
+				// no name conflicts
+				seen[modName] = [modulePath];
+				moduleMap[modulePath] = modName;
 			}
 			next();
 		});

@@ -1,5 +1,23 @@
 # Change Log
 
+## Version 1.0.5
+
+## Added
+
+None
+
+## Changed
+
+#### Core module has improved module name conflit checks
+
+## Deprecated
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.4
 
 ## Added
