@@ -20,11 +20,11 @@ function Gracenode() {
 	// listeners
 	setupListeners(this);
 	// variables
+	var roots = findRoots();
 	this._pid = null;
 	this._isMaster = false;
 	this._configPath = '';
 	this._configFiles = [];
-	var roots = findRoots();
 	this._appRoot = roots.app;
 	this._root = roots.gracenode;
 	process.chdir(this._appRoot);
@@ -128,7 +128,13 @@ Gracenode.prototype.getModuleSchema = function (modName, cb) {
 	this._module.getModuleSchema(modName, cb);
 };
 
-// internal use only
+// internal use only for core process
+// this will be overridden by core process if we are in cluster mode
+Gracenode.prototype._gracefulClusterExit = function (cb) {
+	cb();
+};
+
+// internal use only for log module
 Gracenode.prototype._addLogCleaner = function (name, func) {
 	var cleaner = function (done) {
 		func(function (error) {
@@ -268,7 +274,7 @@ function handleShutdownTasks(that, cb) {
 function setupListeners(that) {
 
 	that.on('exit', function (error) {
-		log.info('exit caught: shutting down gracenode...');
+		log.info('shutting down gracenode...');
 		handleShutdownTasks(that, function () {
 			if (error) {
 				log.fatal('exit gracenode with an error:', error);
@@ -277,7 +283,9 @@ function setupListeners(that) {
 				cleaner(next);
 			},
 			function () {
-				process.exit(error ? 1: 0);
+				that._gracefulClusterExit(function () {
+					process.exit(error ? 1: 0);
+				});
 			});
 		});
 	});

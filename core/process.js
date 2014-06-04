@@ -60,27 +60,34 @@ Process.prototype.setupMaster = function () {
 	
 	var that = this;
 
+	var onGracefulExit = function () {
+		that.log.info('worker (pid:' + this.process.pid + ') has gracefully shutdown');
+	};
+
 	// spawn workers
 	for (var i = 0; i < this.clusterNum; i++) {
 		var worker = cluster.fork();
+		worker.on('disconnect', onGracefulExit);
 		this.log.info('worker spawned (pid: ' + worker.process.pid + ')');
 	}
 
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
-		that.log.error('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
+		var logger = that.log.info;
+		if (code > 0) {
+			logger = that.log.error;
+		}
+		logger.apply(that.log, ['worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code]);	
 	});
 
-	// set up listener on master process shutdown
-	this.gracenode.on('shutdown', function (signal) {
+	// set up graceful shutdown of cluster workers on master exit
+	this.gracenode._gracefulClusterExit = function (cb) {
 		that.log.info('shutting down all workers...');
-		var workers = cluster.workers;
-		for (var id in workers) {
-			var worker = workers[id];
-			worker.kill(signal);
-			that.log.info('shutting down worker (pid: ' + worker.process.pid + ')');
-		}
-	});
+		cluster.disconnect(function () {
+			that.log.info('all workers have gracefully shutdown');
+			cb();
+		});	
+	};
 
 	this.log.info('master has been set up');
 

@@ -10,6 +10,8 @@ None
 
 #### Core module has improved module name conflit checks
 
+#### Core process has improved cluster mode graceful exit of worker processes
+
 ## Deprecated
 
 ## Removed
