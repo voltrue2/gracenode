@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var config = null;
 var prefix = '';
+var appPrefix = '';
 
 module.exports = new EventEmitter();
 
@@ -26,11 +27,15 @@ module.exports.setup = function (cb) {
 };
 
 module.exports.setPrefix = function (p) {
+	appPrefix = p;
+};
+
+module.exports._setInternalPrefix = function (p) {
 	prefix = p;
 };
 
 module.exports.create = function (name) {
-	return loggerSource.create(prefix, name, config);
+	return loggerSource.create(prefix + appPrefix, name, config);
 };
 
 module.exports.forceFlush = function (cb) {

@@ -52,7 +52,7 @@ Process.prototype.startClusterMode = function () {
 //private
 Process.prototype.setupMaster = function () {
 	this.gracenode._isMaster = true;
-	this.gracenode.log.setPrefix('MASTER:' + process.pid);
+	this.gracenode.log._setInternalPrefix('MASTER:' + process.pid);
 	this.log = this.gracenode.log.create('process');
 
 	this.log.info('running the process in cluster mode [master] (pid: ' + process.pid + ')');
@@ -97,7 +97,7 @@ Process.prototype.setupMaster = function () {
 // private 
 Process.prototype.setupWorker = function () {
 	this.gracenode._isMaster = false;
-	this.gracenode.log.setPrefix('WORKER:' + process.pid);
+	this.gracenode.log._setInternalPrefix('WORKER:' + process.pid);
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
 	
 	this.emit('cluster.worker.setup', process.pid);

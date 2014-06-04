@@ -1,5 +1,32 @@
 # Change Log
 
+## Version 1.0.6
+
+## Added
+
+None
+
+## Changed
+
+#### Log module added `.setPrefix`
+
+You can now set prefix to every logging output in your application by invoking `.setPrefix`.
+
+```
+// set prefix when log is ready
+gracenode.on('setup.log', function () {
+	gracenode.log.setPrefix('PREFIX');
+});
+```
+
+## Deprecated
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.5
 
 ## Added

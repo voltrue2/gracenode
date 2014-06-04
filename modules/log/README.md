@@ -101,6 +101,10 @@ gracenode.log.on('output', function (address, name, level, messageObj) {
 
 ***
 
+###.setPrefix(prefix [string])
+
+Sets a prefix for each logging.
+
 ###.forceFlush(callback [function])
 
 Forcefully flushes all buffered log data and write immediately.

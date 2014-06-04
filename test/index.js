@@ -46,6 +46,11 @@ describe('gracenode initialization ->', function () {
 		gn.use('gracenode-wallet');
 		gn.use('gracenode-memcache');
 
+		// test prefix of log
+		gn.on('setup.log', function () {
+			gn.log.setPrefix('UNIT TEST');
+		});
+
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
 			assert(gn.encrypt.uuid);

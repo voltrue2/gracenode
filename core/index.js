@@ -224,13 +224,13 @@ function setupProcess(that, lastCallback, cb) {
 	var ps = new Process(that);
 	ps.on('cluster.master.setup', function (pid) {
 		that._pid = pid;
-		logger.setPrefix('MASTER:' + pid);
+		logger._setInternalPrefix('MASTER:' + pid);
 		log = logger.create('gracenode');
 		lastCallback();
 	});
 	ps.on('cluster.worker.setup', function (pid) {
 		that._pid = pid;
-		logger.setPrefix('WORKER:' + pid);
+		logger._setInternalPrefix('WORKER:' + pid);
 		log = logger.create('gracenode');
 		cb(null, that);
 	});
