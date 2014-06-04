@@ -19,6 +19,8 @@ gracenode.on('setup.log', function () {
 });
 ```
 
+#### Core process now respawns a new worker on an error termination
+
 ## Deprecated
 
 ## Removed

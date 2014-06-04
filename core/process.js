@@ -1,6 +1,9 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
+var badSignals = [
+	'SIGKILL'
+];
 
 module.exports = Process;
 
@@ -74,8 +77,11 @@ Process.prototype.setupMaster = function () {
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
 		var logger = that.log.info;
-		if (code > 0) {
+		if (code > 0 || badSignals.indexOf(signal) !== -1) {
 			logger = that.log.error;
+			// the worker died from an error, re-spawn it
+			var newWorker = cluster.fork();
+			that.log.info('worker respawned because a worker has died (pid:' + newWorker.process.pid + ')');
 		}
 		logger.apply(that.log, ['worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code]);	
 	});
