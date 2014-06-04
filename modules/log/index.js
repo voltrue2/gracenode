@@ -36,7 +36,7 @@ module.exports._setInternalPrefix = function (p) {
 
 module.exports.create = function (name) {
 	var p = prefix;
-	if (prefix !== '') {
+	if (prefix !== '' && appPrefix) {
 		p = prefix + '][' + appPrefix;
 	} else if (appPrefix) {
 		p = appPrefix;
