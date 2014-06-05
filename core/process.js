@@ -1,9 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
-var badSignals = [
-	'SIGKILL'
-];
 
 module.exports = Process;
 
@@ -64,7 +61,7 @@ Process.prototype.setupMaster = function () {
 	var that = this;
 
 	var onGracefulExit = function () {
-		that.log.info('worker (pid:' + this.process.pid + ') has gracefully shutdown');
+		that.log.info('worker (pid:' + this.process.pid + ') has disconnected');
 	};
 
 	// spawn workers
@@ -76,14 +73,12 @@ Process.prototype.setupMaster = function () {
 
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
-		var logger = that.log.info;
-		if (code > 0 || badSignals.indexOf(signal) !== -1) {
-			logger = that.log.error;
-			// the worker died from an error, re-spawn it
+		if (!worker.suicide && signal) {
+			// the worker died from an error, spawn it
 			var newWorker = cluster.fork();
-			that.log.info('worker respawned because a worker has died (pid:' + newWorker.process.pid + ')');
+			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
 		}
-		logger.apply(that.log, ['worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code]);	
+		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
 	});
 
 	// set up graceful shutdown of cluster workers on master exit
@@ -104,6 +99,7 @@ Process.prototype.setupMaster = function () {
 Process.prototype.setupWorker = function () {
 	this.gracenode._isMaster = false;
 	this.gracenode.log._setInternalPrefix('WORKER:' + process.pid);
+	this.log = this.gracenode.log.create('child-process');
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
 	
 	this.emit('cluster.worker.setup', process.pid);
