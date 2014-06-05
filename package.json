@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js application with extendable module management system for fast and clean development.",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -24,10 +24,7 @@
 		"framework",
 		"web",
 		"application",
-		"enterprise",
 		"modules",
-		"server",
-		"routing",
 		"middleware",
 		"large-scale",
 		"scalable"

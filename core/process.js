@@ -30,6 +30,8 @@ util.inherits(Process, EventEmitter);
 Process.prototype.setup = function () {
 	this.log.verbose('setting up the process...');
 
+	this.listeners();
+
 	if (this.inClusterMode && this.clusterNum > 1) {
 		this.startClusterMode();
 		return;
@@ -81,6 +83,7 @@ Process.prototype.setupMaster = function () {
 		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
 	});
 
+	/*
 	// set up graceful shutdown of cluster workers on master exit
 	this.gracenode._gracefulClusterExit = function (cb) {
 		that.log.info('shutting down all workers...');
@@ -89,7 +92,8 @@ Process.prototype.setupMaster = function () {
 			cb();
 		});	
 	};
-
+	*/
+	
 	this.log.info('master has been set up');
 
 	this.emit('cluster.master.setup', process.pid);
@@ -103,4 +107,35 @@ Process.prototype.setupWorker = function () {
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
 	
 	this.emit('cluster.worker.setup', process.pid);
+};
+
+// private 
+Process.prototype.exit = function () {
+	if (this.gracenode._isMaster) {
+		cluster.disconnect();
+	}
+	this.emit('shutdown');
+	this.gracenode.exit();
+};
+
+// private
+Process.prototype.listeners = function () {
+
+	var that = this;
+	
+	process.on('SIGINT', function () {
+		that.log.info('SIGINT caught: shutting down gracenode...');
+		that.exit();
+	});
+
+	process.on('SIGQUIT', function () {
+		that.log.info('SIGQUIT caught: shutting down gracenode...');
+		that.exit();
+	});
+
+	process.on('SIGTERM', function () {
+		that.log.info('SIGTERM caught: shutting down gracenode...');
+		that.exit();
+	});
+
 };

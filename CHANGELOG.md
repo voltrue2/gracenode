@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.0.7
+
+## Added
+
+None
+
+## Changed
+
+#### Log module has rearranged the log prefix order
+
+#### Core process has improved the graceful exit of child processes in cluster mode
+
+## Depriceted
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.6
 
 ## Added

@@ -79,7 +79,8 @@ Gracenode.prototype.addModulePath = function (path) {
 };
 
 Gracenode.prototype.exit = function (error) {
-	this.emit('exit', error || 0);
+	//this.emit('exit', error || 0);
+	this._shutdown(error || 0);
 };
 
 Gracenode.prototype.use = function (modName, driver) {
@@ -145,6 +146,27 @@ Gracenode.prototype._addLogCleaner = function (name, func) {
 		});
 	};
 	logCleaners.push(cleaner);
+};
+
+// internal use only by core index and process
+// cb is optional
+Gracenode.prototype._shutdown = function (error, cb) {
+	log.info('shutting down gracenode...');
+	var that = this;
+	handleShutdownTasks(that, function () {
+		if (error) {
+			log.fatal('exit gracenode with an error:', error);
+		}
+		async.eachSeries(logCleaners, function (cleaner, next) {
+			cleaner(next);
+		},
+		function () {
+			process.exit(error ? 1: 0);
+			if (typeof cb === 'function') {
+				cb();
+			}
+		});
+	});
 };
 
 function findRoots() {
@@ -272,7 +294,13 @@ function handleShutdownTasks(that, cb) {
 }
 
 function setupListeners(that) {
+	
+	process.on('uncaughtException', function (error) {
+		log.fatal('gracenode detected an uncaught exception', error);
+		that.emit('uncaughtException', error);
+	});
 
+	/*
 	that.on('exit', function (error) {
 		log.info('shutting down gracenode...');
 		handleShutdownTasks(that, function () {
@@ -318,4 +346,5 @@ function setupListeners(that) {
 			that.exit();
 		});
 	});
+	*/
 }

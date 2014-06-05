@@ -19,7 +19,7 @@ module.exports.create = function (prefix, logName, levelName, args) {
 	var ymd = date.getFullYear() + '/' + pad(date.getMonth() + 1, 2) + '/' + pad(date.getDate(), 2);
 	var his = pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2) + ':' + pad(date.getSeconds(), 2) + ':' + pad(date.getMilliseconds(), 3); 
 	var timestamp = ymd + ' ' + his;
-	var msg = [(prefix ? '[' + prefix + '] ' : '') + '[' + timestamp + '] <' + levelName + '> [' + logName + ']'];
+	var msg = ['[' + timestamp + ']' + (prefix ? '[' + prefix + ']' : '') + '<' + levelName + '>[' + logName + ']'];
 	for (var key in args) {
 		msg.push(createMsg(args[key]));
 	}
