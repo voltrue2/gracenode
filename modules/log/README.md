@@ -17,17 +17,56 @@ var log = gracenode.log.create('nameToBeDisplayed');
 			"color": true or false,
 			"showHidden": true or false, // show hidden properties of object
 			"depth": <integer> // recursive depth of object
-			"level": {
-				"verbose": <boolean>
-				"debug": <boolean>
-				"info": <boolean>
-				"warning": <boolean>
-				"error": <boolean>
-				"fatal": <boolean>
-			}
+			"level": [
+				"verbose",
+				"debug",
+				"info",
+				"warning",
+				"error",
+				"fatal",
+			]
 		}
 }
 ```
+
+### Configurations for log levels
+
+There are 6 log levels in log module:
+
+`verbose, debug, info, warning, error, fatal`
+
+Example:
+
+```
+"modules": {
+	"log": {
+		"console": true,
+		"color": true,
+		"level": [
+			"info",
+			"warning",
+			"error",
+			"fatal"
+		]
+	}
+}
+```
+
+The above configurations will enable `info`, `warning`, `error`, and `fatal`.
+
+The same configurations can be done by:
+
+```
+"modules": {
+	"log": {
+		"console": true,
+		"color": true,
+		"level": ">= info"
+	}
+}
+```
+
+***
 
 ### Buffering
 
@@ -46,6 +85,8 @@ Log files are auto-rotated by YYYY/MM/DD.
 #### console
 
 If set to true, gracenode will send log to stdout stream of node.js process.
+
+Log module uses console object of node.js. This is a blocking operation. It is better to turn this option off in production.
 
 `"console": true or false`
 

@@ -4,14 +4,15 @@
 			"depth": 10,
 			"console": true,
 			"color": true,
-			"level": {
-				"verbose": true,
-				"debug": true,
-				"info": true,
-				"warning": true,
-				"error": true,
-				"fatal": true
-			}
+			"#level": [
+				"verbose",
+				"debug",
+				"info",
+				"warning",
+				"error",
+				"fatal"
+			],
+			"level": ">= verbose"
 		},
 		"test": {
 

@@ -1,5 +1,75 @@
 # Change Log
 
+## Version 1.0.8
+
+## Added
+
+None
+
+## Changed
+
+#### Log module's configurations now accepts "level" as an array or a string
+
+Now you can set level configurations of log module as:
+
+```
+"modules": {
+	"log": {
+		"console": true,
+		"color": true,
+		"level": [
+			"verbose",
+			"debug",
+			"info",
+			"warning",
+			"error",
+			"fatal"
+		]
+	}
+}
+```
+
+Above is equivalent to 
+
+```
+"modules": {
+	"log": {
+		"console": true,
+		"color": true,
+		"level": {
+			"verbose": true,
+			"debug": true,
+			"info": true,
+			"warning": true,
+			"error": true,
+			"fatal": true
+		}
+	}
+}
+```
+
+Above is equivalent to 
+
+```
+"modules": {
+	"log": {
+		"console": true,
+		"color": true,
+		"level": ">= verbose"
+	}
+}
+```
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.7
 
 ## Added
