@@ -60,6 +60,8 @@ Above is equivalent to
 }
 ```
 
+#### Version of dependencies update
+
 ## Depricated
 
 None
