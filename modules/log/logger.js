@@ -100,8 +100,12 @@ Logger.prototype._handleLog = function (levelName, message) {
 	var logMsg = msg.create(this.prefix, this.name, levelName, message);
 	
 	// if console is enabled, we output to console
-	if (this.config.console) {	
-		console.log(logMsg.message);
+	if (this.config.console) {
+		if (levelName === 'error') {
+			console.error(logMsg.message);
+		} else {
+			console.log(logMsg.message);
+		}
 	}
 
 	// add log message to buffer. buffer will flush overflowed log message
