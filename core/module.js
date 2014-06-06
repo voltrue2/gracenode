@@ -23,6 +23,12 @@ Module.prototype.addModulePath = function (path) {
 };
 
 Module.prototype.use = function (name, options) {
+	
+	if (name === 'gracenode') {
+		// cannot load itself as a module
+		throw new Error('gracenode cannot load gracenode as a module...');
+	}	
+
 	if (options && options.driver) {
 		modDriver.addDriver(name, options.driver);
 	}
@@ -30,6 +36,7 @@ Module.prototype.use = function (name, options) {
 	if (options && options.name) {
 		modName = options.name;
 	}
+
 	this._use.push({ name: name, modName: modName });
 };
 
