@@ -111,8 +111,10 @@ Process.prototype.exit = function () {
 		});
 	}
 	
-	// worker process
-	cluster.worker.disconnect();
+	if (this.gracenode._inClusterMode) {
+		// worker process
+		cluster.worker.disconnect();
+	}
 	this.emit('shutdown');
 	this.gracenode.exit();
 };
