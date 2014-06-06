@@ -112,7 +112,11 @@ Process.prototype.setupWorker = function () {
 // private 
 Process.prototype.exit = function () {
 	if (this.gracenode._isMaster) {
-		cluster.disconnect();
+		var that = this;
+		return cluster.disconnect(function () {
+			that.emit('shutdown');
+			that.gracenode.exit();
+		});
 	}
 	this.emit('shutdown');
 	this.gracenode.exit();
