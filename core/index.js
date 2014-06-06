@@ -129,12 +129,6 @@ Gracenode.prototype.getModuleSchema = function (modName, cb) {
 	this._module.getModuleSchema(modName, cb);
 };
 
-// internal use only for core process
-// this will be overridden by core process if we are in cluster mode
-Gracenode.prototype._gracefulClusterExit = function (cb) {
-	cb();
-};
-
 // internal use only for log module
 Gracenode.prototype._addLogCleaner = function (name, func) {
 	var cleaner = function (done) {
@@ -300,51 +294,4 @@ function setupListeners(that) {
 		that.emit('uncaughtException', error);
 	});
 
-	/*
-	that.on('exit', function (error) {
-		log.info('shutting down gracenode...');
-		handleShutdownTasks(that, function () {
-			if (error) {
-				log.fatal('exit gracenode with an error:', error);
-			}
-			async.eachSeries(logCleaners, function (cleaner, next) {
-				cleaner(next);
-			},
-			function () {
-				that._gracefulClusterExit(function () {
-					process.exit(error ? 1: 0);
-				});
-			});
-		});
-	});
-	
-	process.on('uncaughtException', function (error) {
-		log.fatal('gracenode detected an uncaught exception', error);
-		that.emit('uncaughtException', error);
-	});
-
-	process.on('SIGINT', function () {
-		log.info('SIGINT caught: shutting down gracenode...');
-		handleShutdownTasks(that, function () {
-			that.emit('shutdown');
-			that.exit();
-		});
-	});
-
-	process.on('SIGQUIT', function () {
-		log.info('SIGQUIT caught: shutting down gracenode...');
-		handleShutdownTasks(that, function () {
-			that.emit('shutdown');
-			that.exit();
-		});
-	});
-
-	process.on('SIGTERM', function () {
-		log.info('SIGTERM caught: shutting down gracenode...');
-		handleShutdownTasks(that, function () {
-			that.emit('shutdown');
-			that.exit();
-		});
-	});
-	*/
 }

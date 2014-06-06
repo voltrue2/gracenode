@@ -82,17 +82,6 @@ Process.prototype.setupMaster = function () {
 		}
 		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
 	});
-
-	/*
-	// set up graceful shutdown of cluster workers on master exit
-	this.gracenode._gracefulClusterExit = function (cb) {
-		that.log.info('shutting down all workers...');
-		cluster.disconnect(function () {
-			that.log.info('all workers have gracefully shutdown');
-			cb();
-		});	
-	};
-	*/
 	
 	this.log.info('master has been set up');
 
@@ -111,13 +100,19 @@ Process.prototype.setupWorker = function () {
 
 // private 
 Process.prototype.exit = function () {
+	
 	if (this.gracenode._isMaster) {
+		// master process
 		var that = this;
 		return cluster.disconnect(function () {
+			that.log.info('all child processes have disconnected: exiting master process...');
 			that.emit('shutdown');
 			that.gracenode.exit();
 		});
 	}
+	
+	// worker process
+	cluster.worker.disconnect();
 	this.emit('shutdown');
 	this.gracenode.exit();
 };
