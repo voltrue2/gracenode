@@ -6,7 +6,7 @@
 ####args
 
 <pre>
-mixed(String key)
+mixed argv(String key)
 </pre>
 Returns true or a value associated to the key given as an argument.
 
@@ -16,9 +16,9 @@ Example:
 node myGracenodeApp/ -test --hello=world
 
 // in your application:
-var value = gracenode.lib.args('test');
+var value = gracenode.lib.argv('test');
 // this will return true.
-var value = gracenode.lib.args('hello');
+var value = gracenode.lib.argv('hello');
 // this will return 'world'.
 ```
 
