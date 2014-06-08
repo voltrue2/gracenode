@@ -3,7 +3,7 @@
 ###Configuration
 *N/A*
 
-####args
+####argv
 
 <pre>
 mixed argv(String key)
