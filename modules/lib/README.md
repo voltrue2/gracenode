@@ -3,6 +3,46 @@
 ###Configuration
 *N/A*
 
+####args
+
+<pre>
+mixed(String key)
+</pre>
+Returns true or a value associated to the key given as an argument.
+
+Example:
+
+```
+node myGracenodeApp/ -test --hello=world
+
+// in your application:
+var value = gracenode.lib.args('test');
+// this will return true.
+var value = gracenode.lib.args('hello');
+// this will return 'world'.
+```
+
+####typeCast
+
+<pre>
+mixed typeCast(String value);
+</pre>
+
+Converts a given string value to  appropriate data type
+
+Example:
+
+```
+var num = gracenode.lib.typeCast('100');
+// 100
+var float = gracenode.lib.typeCast('1.5');
+// 1.5
+var truthy = gracenode.lib.typeCast('true');
+// true
+var obj = gracenode.lib.typeCast('{"example":1,"blah":"test"}');
+// { example: 1, blah: 'test' }
+```
+
 ####randomInt
 <pre>
 Int randomInt(Int min, Int max)

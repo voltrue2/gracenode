@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 1.0.9
+
+## Added
+
+#### Lib module added .args()
+
+Parses arguments (process.argv) and return the value.
+
+#### Lib module added .typeCast()
+
+Converts a string to  appropriate data type.
+
+## Changed
+
+None
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.8
 
 ## Added
