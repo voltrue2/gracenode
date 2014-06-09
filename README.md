@@ -479,9 +479,20 @@ gracenode.use('yourAwesomeModule');
 
 ## Building a Web Server
 
-gracenode has a built-in module called "server". This module allows you to create and run either HTTP or HTTPS server.
+gracenode-server module allows you to create and run either HTTP or HTTPS server.
 
-For more details about server module please read <a target="_blank" href="https://github.com/voltrue2/gracenode/tree/master/modules/server">here</a>.
+For more details about server module please read <a target="_blank" href="https://github.com/voltrue2/gracenode-server">here</a>.
+
+#### How to add gracenode-server module to your application
+
+Add the following in your package.json
+
+```
+"dependencies": {
+	"gracenode": ">= 1.0.0",
+	"gracenode-server": "0.1.10"
+}
+```
 
 #### How to tell gracenode to use server module
 
@@ -511,9 +522,9 @@ gn.setup(function (error) {
 });
 ```
 
-#### How to configure server module
+#### How to configure gracenode-server module
 
-Please refer to <a target="_blank" href="https://github.com/voltrue2/gracenode/tree/master/modules/server">server module README</a> for more details.
+Please refer to <a target="_blank" href="https://github.com/voltrue2/gracenode-server">server module README</a> for more details.
 
 ```
 // this the minimum requirements for server module to run
