@@ -9,6 +9,7 @@ function Process(gracenode) {
 	this.gracenode = gracenode;
 	this.log = this.gracenode.log.create('process');
 	this.config = this.gracenode.config.getOne('cluster');
+	
 	if (!this.config) {
 		// no configurations for cluster mode provided
 		this.config = {};

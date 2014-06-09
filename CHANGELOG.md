@@ -10,6 +10,8 @@ None
 
 #### Log module now has .warn() as an alias of .warning()
 
+#### .argv() now returns the argument value with proper data type (integer, string, array...)
+
 ## Depricated
 
 None

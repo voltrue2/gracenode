@@ -1,6 +1,4 @@
 var fs = require('fs');
-var gracenode = require('../../');
-var log = gracenode.log.create('lib');
 var validationPatterns = {
 	numeric: /^\d+$/,
     alphaNumeric: /^[a-z0-9]+$/i,
@@ -136,7 +134,6 @@ module.exports.walkDir = function (path, cb) {
 			return cb(error);
 		}
 		if (!stat.isDirectory()) {
-			log.verbose('file:', path);
 			res.push({ file: path, stat: stat });
 			return cb(null, res);
 		}
@@ -167,7 +164,6 @@ module.exports.walkDir = function (path, cb) {
 							}
 						});
 					}
-					log.verbose('file:', filePath);
 					res.push({ file: filePath, stat: stat });
 					pending--;
 					if (!pending) {
@@ -214,7 +210,6 @@ module.exports.ord = function (str) {
 	}
 	
 	if (0xdc00 <= code && code <= 0xdfff) {
-		log.error('invalid value given to ord:', code);
 		return null;
 	}
 

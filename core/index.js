@@ -36,7 +36,7 @@ function Gracenode() {
 	this._module.use('profiler');
 	this._module.use('lib');
 	// parse argv arguments
-	this._argv = parseArgv();
+	this._argv = parseArgv(this);
 }
 
 util.inherits(Gracenode, EventEmitter);
@@ -303,9 +303,10 @@ function setupListeners(that) {
 
 }
 
-function parseArgv() {
+function parseArgv(that) {
 	var argv = {};
 	var prev = null;
+	var lib = require(that._root + 'modules/lib');
 	// first element is the path of node
 	// second element is the path of app
 	for (var i = 2, len = process.argv.length; i < len; i++) {
@@ -313,12 +314,12 @@ function parseArgv() {
 		if (arg.indexOf('=') !== -1) {
 			// format: --name=value
 			var sep = arg.split('=');
-			argv[sep[0]] = sep[1];
+			argv[sep[0]] = lib.typeCase(sep[1]);
 			continue;
 		}
 		if (prev && arg.indexOf('-') === -1) {
 			// format: -name value
-			argv[prev] = arg;
+			argv[prev] = lib.typeCast(arg);
 			continue;
 		}
 		// format: -argument or -argument value
