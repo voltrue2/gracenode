@@ -27,12 +27,16 @@ function Gracenode() {
 	this._configFiles = [];
 	this._appRoot = roots.app;
 	this._root = roots.gracenode;
+	// change the root path of the application
 	process.chdir(this._appRoot);
 	console.log('Working directory changed to', this._appRoot);
 	console.log('gracenode root path:', this._root);
+	// set up to load default modules except for log module
 	this._module = new Module(this, this._root);
 	this._module.use('profiler');
 	this._module.use('lib');
+	// parse argv arguments
+	this._argv = parseArgv();
 }
 
 util.inherits(Gracenode, EventEmitter);
@@ -85,6 +89,10 @@ Gracenode.prototype.exit = function (error) {
 
 Gracenode.prototype.use = function (modName, driver) {
 	this._module.use(modName, driver);
+};
+
+Gracenode.prototype.argv = function (key) {
+	return this._argv[key] || null;
 };
 
 Gracenode.prototype.setup = function (cb) {
@@ -294,4 +302,30 @@ function setupListeners(that) {
 		that.emit('uncaughtException', error);
 	});
 
+}
+
+function parseArgv() {
+	var argv = {};
+	var prev = null;
+	// first element is the path of node
+	// second element is the path of app
+	for (var i = 2, len = process.argv.length; i < len; i++) {
+		var arg = process.argv[i];
+		if (arg.indexOf('=') !== -1) {
+			// format: --name=value
+			var sep = arg.split('=');
+			argv[sep[0]] = sep[1];
+			continue;
+		}
+		if (prev && arg.indexOf('-') === -1) {
+			// format: -name value
+			argv[prev] = arg;
+			continue;
+		}
+		// format: -argument or -argument value
+		argv[arg] = true;
+		prev = arg;
+	}
+	console.log('arguments:', argv);
+	return argv;
 }

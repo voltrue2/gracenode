@@ -51,6 +51,10 @@ describe('gracenode initialization ->', function () {
 			gn.log.setPrefix('UNIT TEST');
 		});
 
+		// test argv
+		assert.equal(gn.argv('-s'), 10);
+		assert.equal(gn.argv('-R'), 'spec');
+
 		gn.setup(function (error) {
 			assert.equal(error, undefined);
 			assert(gn.encrypt.uuid);

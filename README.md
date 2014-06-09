@@ -109,6 +109,24 @@ Gracenode does NOT include daemonization tool as there are numbers of options av
 
 ##Methods
 
+###.argv(argumentName [string])
+
+Returns true or a value associated to the key given as an argument.
+
+Example:
+
+```
+node myGracenodeApp/ -test -yay good  --hello=world
+
+// in your application:
+var value = gracenode.argv('-test');
+// this will return true.
+var value = gracenode.argv('-yay');
+// this will return 'good'.
+var value = gracenode.argv('--hello');
+// this will return 'world'.
+```
+
 ###.setConfigPath(configDirectoryPath [string])
 Tells gracenode where to find the configuraitons files.
 ```

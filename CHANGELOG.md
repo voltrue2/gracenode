@@ -4,7 +4,7 @@
 
 ## Added
 
-#### Lib module added .argv()
+#### gracenode added .argv()
 
 Parses arguments (process.argv) and return the value.
 

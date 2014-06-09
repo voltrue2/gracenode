@@ -6,27 +6,6 @@ var validationPatterns = {
     alphaNumeric: /^[a-z0-9]+$/i,
     password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
-var argv = {};
-
-module.exports.setup = function (cb) {
-	// first element is the path of node
-	// second element is the path of app
-	for (var i = 2, len = process.argv.length; i < len; i++) {
-		var arg = process.argv[i];
-		if (arg.indexOf('=') !== -1) {
-			var sep = arg.split('=');
-			argv[sep[0].replace('--', '')] = module.exports.typeCast(sep[1]);
-			continue;			
-		}
-		argv[arg.replace('-', '')] = true;
-	}
-	log.verbose('arguments:', argv); 
-	cb();
-};
-
-module.exports.argv = function (key) {
-	return argv[key] || null;
-};
 
 module.exports.typeCast = function (data) {
 	if (isNaN(data)) {
