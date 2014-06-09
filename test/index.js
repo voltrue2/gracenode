@@ -68,6 +68,15 @@ describe('gracenode initialization ->', function () {
 			assert(gn.encrypt.uuid);
 			assert(gn.cron.create);
 			assert(gn.memcache.create);
+
+			var logger = gn.log.create('test');
+			logger.verbose('test');
+			logger.debug('test');
+			logger.info('test');
+			logger.warn('test');
+			logger.error('test');
+			logger.fatal('test');
+
 			done();
 		});
 			

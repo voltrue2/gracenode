@@ -21,7 +21,7 @@ var log = gracenode.log.create('nameToBeDisplayed');
 				"verbose",
 				"debug",
 				"info",
-				"warning",
+				"warn",
 				"error",
 				"fatal",
 			]
@@ -33,7 +33,7 @@ var log = gracenode.log.create('nameToBeDisplayed');
 
 There are 6 log levels in log module:
 
-`verbose, debug, info, warning, error, fatal`
+`verbose, debug, info, warn, error, fatal`
 
 Example:
 
@@ -44,7 +44,7 @@ Example:
 		"color": true,
 		"level": [
 			"info",
-			"warning",
+			"warn",
 			"error",
 			"fatal"
 		]
@@ -52,7 +52,7 @@ Example:
 }
 ```
 
-The above configurations will enable `info`, `warning`, `error`, and `fatal`.
+The above configurations will enable `info`, `warn`, `error`, and `fatal`.
 
 The same configurations can be done by:
 
@@ -119,11 +119,30 @@ Log module has 6 log levels. If set to false, gracenode will ignored that level.
 Each log level can be configured.
 
 ```
+"level": ">= verbose"
+```
+
+Or
+
+```
+"level": [
+	"verbose",
+	"debug",
+	"info",
+	"warn",
+	"error",
+	"fatal"
+]
+```
+
+Or
+
+```
 "level": {
     "verbose": <boolean>,
     "debug": <boolean>,
     "info": <boolean>,
-    "warning": <boolean>,
+    "warn": <boolean>,
     "error": <boolean>,
     "fatal": <boolean>
 }
@@ -137,7 +156,7 @@ Each log level can be configured.
 gracenode.log.on('output', function (address, name, level, messageObj) {
 	// address: IP address of the server
 	// name: the name that was set on gracenode.log.create()
-	// level: verbose, debug, info, warning, error, or fatal
+	// level: verbose, debug, info, warn, error, or fatal
 	// messageObj: { message, timestamp }
 });
 ```
@@ -178,8 +197,14 @@ void debug(mixed data, [...])
 void info(mixed data, [...])
 </pre>
 
-###API: *warning*
+###API: *warn*
 
+<pre>
+void warn(mixed data, [...])
+</pre>
+
+###API: *warning*
+Alias of warn
 <pre>
 void warning(mixed data, [...])
 </pre>

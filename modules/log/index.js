@@ -19,11 +19,15 @@ module.exports.readConfig = function (configIn) {
 	config = configIn;
 
 	if (config.level && typeof config.level === 'string') {
+		// for backward compatibility:
+		if (config.level.indexOf('warning') !== -1) {
+			config.level = config.level.replace('warning', 'warn');
+		}
 		// we now support a string format of level
 		// e.i. "level": ">= info"
 		var sep = config.level.split(' ');
 		var operators = ['>', '<', '>=', '<=', '='];
-		var levels = ['verbose', 'debug', 'info', 'warning', 'error', 'fatal'];
+		var levels = ['verbose', 'debug', 'info', 'warn', 'error', 'fatal'];
 		var level = {};
 		var op = null;
 		var lvl = null;
@@ -56,11 +60,21 @@ module.exports.readConfig = function (configIn) {
 		// we now support an array format of level
 		var levelObj = {};
 		for (var i = 0, len = config.level.length; i < len; i++) {
+			// for backward compatibility:
+			if (config.level[i] === 'warning') {
+				config.level[i] = 'warn';
+			}
 			levelObj[config.level[i]] = true;
 		}
 		config.level = levelObj;
 	}
 	
+	// for backward compatibility:
+	if (config.level.warning) {
+		config.level.warn = config.level.warning;
+		delete config.level.warning;
+	}
+
 	return true;
 };
 

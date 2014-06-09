@@ -21,7 +21,7 @@ module.exports.create = function (name, msgItem) {
 		case 'info':
 			res = '\033[0;32m' + msgItem + '\033[0m';
 			break;
-		case 'warning':
+		case 'warn':
 			res = '\033[1;35m' + msgItem + '\033[0m';
 			break;
 		case 'error':

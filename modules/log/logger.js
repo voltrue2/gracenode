@@ -75,7 +75,12 @@ Logger.prototype.info = function () {
 };
 
 Logger.prototype.warning = function () {
-	this._handleLog('warning', arguments);
+	this._handleLog('warn', arguments);
+};
+
+// alias of warning
+Logger.prototype.warn = function () {
+	this._handleLog('warn', arguments);
 };
 
 Logger.prototype.error = function () {

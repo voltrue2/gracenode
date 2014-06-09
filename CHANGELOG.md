@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.0.10
+
+## Added
+
+None
+
+## Changed
+
+#### Log module now has .warn() as an alias of .warning()
+
+## Depricated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.9
 
 ## Added

@@ -83,7 +83,6 @@ Gracenode.prototype.addModulePath = function (path) {
 };
 
 Gracenode.prototype.exit = function (error) {
-	//this.emit('exit', error || 0);
 	this._shutdown(error || 0);
 };
 

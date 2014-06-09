@@ -14,7 +14,7 @@ var buff = {
 		timestamps: [],
 		size: 0
 	},
-	'warning': {
+	'warn': {
 		messages: [],
 		timestamps: [],
 		size: 0
