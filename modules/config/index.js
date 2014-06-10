@@ -30,7 +30,7 @@ module.exports.load = function (configList, cb) {
 					if (!jshint(dataSource)) {
 						// there are lint errors
 						var errors = jshint.data().errors;
-						throw new Error('invalid configurations in (' + configPath + config + '):\n' + JSON.stringify(errors, null, 4));
+						throw new Error('invalid configurations in a configuration file: ' + configPath + config + '\n' + formatLintErrors(errors));
 					}
 					var data = JSON.parse(dataSource);
 					for (var key in data) {
@@ -101,3 +101,12 @@ module.exports.getMany = function (propNameList) {
 	}
 	return res;
 };
+
+function formatLintErrors(errors) {
+	var str = '\n';
+	for (var i = 0, len = errors.length; i < len; i++) {
+		var error = errors[i];
+		str += 'Line:' + error.line + ' (code:' + error.code + ') ' + error.reason + ': ' + error.evidence + '\n';
+	}
+	return str;
+}
