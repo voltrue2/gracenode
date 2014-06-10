@@ -112,7 +112,7 @@ Process.prototype.exit = function () {
 		});
 	}
 	
-	if (this.inClusterMode) {
+	if (this.inClusterMode && this.clusterNum > 1) {
 		// worker process
 		this.log.info('disconnecting process...');
 		cluster.worker.disconnect();
