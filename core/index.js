@@ -149,9 +149,8 @@ Gracenode.prototype._addLogCleaner = function (name, func) {
 	logCleaners.push(cleaner);
 };
 
-// internal use only by core index and process
-// cb is optional
-Gracenode.prototype._shutdown = function (error, cb) {
+// internal use only by core index
+Gracenode.prototype._shutdown = function (error) {
 	log.info('shutting down gracenode...');
 	var that = this;
 	handleShutdownTasks(that, function () {
@@ -163,9 +162,6 @@ Gracenode.prototype._shutdown = function (error, cb) {
 		},
 		function () {
 			process.exit(error ? 1: 0);
-			if (typeof cb === 'function') {
-				cb();
-			}
 		});
 	});
 };

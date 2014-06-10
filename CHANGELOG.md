@@ -12,6 +12,8 @@ None
 
 #### .argv() now returns the argument value with proper data type (integer, string, array...)
 
+#### Core process cleaned up some code
+
 ## Depricated
 
 None

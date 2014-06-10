@@ -112,8 +112,9 @@ Process.prototype.exit = function () {
 		});
 	}
 	
-	if (this.gracenode._inClusterMode) {
+	if (this.inClusterMode) {
 		// worker process
+		this.log.info('disconnecting process...');
 		cluster.worker.disconnect();
 	}
 	this.emit('shutdown');
