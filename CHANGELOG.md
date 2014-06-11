@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.0.11
+
+## Added
+
+None
+
+## Changed
+
+#### Core now outputs stack trace on uncaught exception log
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.10
 
 ## Added
@@ -16,7 +36,7 @@ None
 
 #### Core process cleaned up some code
 
-## Depricated
+## Deprecated
 
 None
 
@@ -42,7 +62,7 @@ Converts a string to  appropriate data type.
 
 None
 
-## Depricated
+## Deprecated
 
 None
 
@@ -114,7 +134,7 @@ Above is equivalent to
 
 #### Version of dependencies update
 
-## Depricated
+## Deprecated
 
 None
 

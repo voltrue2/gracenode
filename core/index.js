@@ -293,7 +293,7 @@ function handleShutdownTasks(that, cb) {
 function setupListeners(that) {
 	
 	process.on('uncaughtException', function (error) {
-		log.fatal('gracenode detected an uncaught exception', error);
+		log.fatal('gracenode detected an uncaught exception', error, error.stack);
 		that.emit('uncaughtException', error);
 	});
 
