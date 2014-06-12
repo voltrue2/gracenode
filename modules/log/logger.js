@@ -70,6 +70,13 @@ Logger.prototype.debug = function () {
 	this._handleLog('debug', arguments);
 };
 
+Logger.prototype.trace = function () {
+	var traceError = new Error('<stack trace>');
+	var trace = traceError.stack.replace('Error: ', '');
+	this._handleLog('trace', arguments);
+	this._handleLog('trace', [trace]);
+};
+
 Logger.prototype.info = function () {
 	this._handleLog('info', arguments);
 };

@@ -20,6 +20,7 @@ var log = gracenode.log.create('nameToBeDisplayed');
 			"level": [
 				"verbose",
 				"debug",
+				"trace",
 				"info",
 				"warn",
 				"error",
@@ -31,9 +32,9 @@ var log = gracenode.log.create('nameToBeDisplayed');
 
 ### Configurations for log levels
 
-There are 6 log levels in log module:
+There are 7 log levels in log module:
 
-`verbose, debug, info, warn, error, fatal`
+`verbose, debug, trace, info, warn, error, fatal`
 
 Example:
 
@@ -65,6 +66,12 @@ The same configurations can be done by:
 	}
 }
 ```
+
+***
+
+### trace()
+
+`.trace()` outputs a stack trace for debugging.
 
 ***
 

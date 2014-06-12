@@ -18,6 +18,9 @@ module.exports.create = function (name, msgItem) {
 		case 'debug':
 			res = '\033[1;34m' + msgItem + '\033[0m';
 			break;
+		case 'trace':
+			res = '\033[0;33m' + msgItem + '\033[0m';
+			break;
 		case 'info':
 			res = '\033[0;32m' + msgItem + '\033[0m';
 			break;

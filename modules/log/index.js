@@ -27,7 +27,7 @@ module.exports.readConfig = function (configIn) {
 		// e.i. "level": ">= info"
 		var sep = config.level.split(' ');
 		var operators = ['>', '<', '>=', '<=', '='];
-		var levels = ['verbose', 'debug', 'info', 'warn', 'error', 'fatal'];
+		var levels = ['verbose', 'debug', 'trace', 'info', 'warn', 'error', 'fatal'];
 		var level = {};
 		var op = null;
 		var lvl = null;

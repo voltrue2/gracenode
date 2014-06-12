@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 1.0.12
+
+## Added
+
+#### Log module added a new log method .trace()
+
+`.trace()` outputs a stack trace for debugging.
+
+New Log Levels:
+
+`verbose -> debug -> trace -> info -> warn -> error -> fatal`
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.11
 
 ## Added

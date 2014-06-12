@@ -9,6 +9,11 @@ var buff = {
 		timestamps: [],
 		size: 0
 	},
+	'trace': {
+		messages: [],
+		timestamps: [],
+		size: 0
+	},
 	'info': {
 		messages: [],
 		timestamps: [],
