@@ -16,27 +16,32 @@ var logCleaners = [];
 module.exports.Gracenode = Gracenode;
 
 function Gracenode() {
-	EventEmitter.call(this);
-	// listeners
-	setupListeners(this);
-	// variables
-	var roots = findRoots();
-	this._pid = null;
-	this._isMaster = false;
-	this._configPath = '';
-	this._configFiles = [];
-	this._appRoot = roots.app;
-	this._root = roots.gracenode;
-	// change the root path of the application
-	process.chdir(this._appRoot);
-	console.log('Working directory changed to', this._appRoot);
-	console.log('gracenode root path:', this._root);
-	// set up to load default modules except for log module
-	this._module = new Module(this, this._root);
-	this._module.use('profiler');
-	this._module.use('lib');
-	// parse argv arguments
-	this._argv = parseArgv(this);
+	try {
+		EventEmitter.call(this);
+		// listeners
+		setupListeners(this);
+		// variables
+		var roots = findRoots();
+		this._pid = null;
+		this._isMaster = false;
+		this._configPath = '';
+		this._configFiles = [];
+		this._appRoot = roots.app;
+		this._root = roots.gracenode;
+		// change the root path of the application
+		process.chdir(this._appRoot);
+		console.log('<info>[gracenode] Working directory changed to', this._appRoot);
+		console.log('<info>[gracenode] gracenode root path:', this._root);
+		// set up to load default modules except for log module
+		this._module = new Module(this, this._root);
+		this._module.use('profiler');
+		this._module.use('lib');
+		// parse argv arguments
+		this._argv = parseArgv(this);
+	} catch (exception) {
+		console.error('<fatal>[gracenode]', exception);
+		console.trace();
+	}
 }
 
 util.inherits(Gracenode, EventEmitter);
@@ -322,6 +327,6 @@ function parseArgv(that) {
 		argv[arg] = true;
 		prev = arg;
 	}
-	console.log('arguments:', argv);
+	console.log('<info>[gracenode] arguments:', argv);
 	return argv;
 }

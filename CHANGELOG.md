@@ -14,7 +14,7 @@ New Log Levels:
 
 ## Changed
 
-None
+#### Improved gracenode setup error catch
 
 ## Deprecated
 

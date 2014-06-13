@@ -42,7 +42,7 @@ module.exports.load = function (configList, cb) {
 						}
 					}
 				
-					console.log(configPath + config + ' loaded');
+					console.log('<info>[config]', configPath + config + ' loaded');
 				
 				} catch (exception) {
 					error = exception;	
@@ -53,7 +53,7 @@ module.exports.load = function (configList, cb) {
 	},
 	function (error) {
 		if (error) {
-			console.error(error);
+			console.error('<error>[config]', error);
 			console.trace();
 		}
 		cb(error);
