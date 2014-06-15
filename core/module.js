@@ -50,7 +50,7 @@ Module.prototype.getModuleSchema = function (name, cb) {
 				// not found. try next path
 				return next();
 			}
-			that._logger.verbose('module schema:', sql);
+			that._logger.verbose('module schema:\n', sql);
 			// remove line breaks and tabs
 			sql = sql.replace(/(\n|\t)/g, '');
 			// separate sql statements
@@ -65,7 +65,7 @@ Module.prototype.getModuleSchema = function (name, cb) {
 			cb(null, list);
 		});
 	}, function () {
-		that._logger.verbose('sql schema for module [' + name + '] not found');
+		that._logger.error('sql schema for module [' + name + '] not found');
 		cb(null, []);
 	});
 };
@@ -87,12 +87,11 @@ Module.prototype.load = function (cb) {
 			var name = modObj.name;
 			var modName = modObj.modName;
 			// load one module at a time
-			that._loadOne(name, function (error, module) {
-				if (error) {
-					return next(error);
-				}
-				that._prepareModule(name, modName, module, next, cb);
-			});
+			var module = that._require(name);
+			if (!module) {
+				return cb(new Error('module [' + name + '] not found'));
+			}
+			that._prepareModule(name, modName, module, next, cb);
 		}, cb);
 	});
 };
@@ -118,37 +117,16 @@ Module.prototype._mapModules = function (cb) {
 				}
 				// no name conflicts
 				seen[modName] = [modulePath];
-				moduleMap[modulePath] = modName;
+				moduleMap[modName] = modulePath;
 			}
 			next();
 		});
 	}, cb);
 };
 
-Module.prototype._loadOne = function (name, cb) {
-	var that = this;
-	async.eachSeries(this._modPaths, function (dir, next) {
-		var path = dir + name;
-		that._logger.verbose('looking for module [' + name + '] in', path);
-		var mod = that._require(name, path);
-		if (mod) {
-			var applied = modDriver.applyDriver(name, mod);
-			if (applied instanceof Error) {
-				return cb(applied, mod);
-			}
-			return cb(null, mod);
-		}
-		next();
-	},
-	function () {
-		// we could not find the module...
-		cb(new Error('module [' + name + '] not found'));
-	});
-};
-
-Module.prototype._require = function (name, path) {
-	var found = moduleMap[path];
-	if (found) {
+Module.prototype._require = function (name) {
+	var path = moduleMap[name];
+	if (path) {
 		var mod = require(path);
 		this._logger.verbose('module [' + name + '] found in', path);
 		return mod;
@@ -159,6 +137,11 @@ Module.prototype._require = function (name, path) {
 Module.prototype._prepareModule = function (name, modName, module, next, cb) {
 	var that = this;
 	this._gn[modName] = module;
+	// apply driver if available
+	var applied = modDriver.applyDriver(name, module);
+	if (applied instanceof Error) {
+		return cb(applied, module);
+	}
 	// handle config
 	var err = that._readConfig(name, module, next);
 	if (err) {
@@ -183,7 +166,7 @@ Module.prototype._prepareModule = function (name, modName, module, next, cb) {
 			that._gn[modName] = exposedMod;
 		}
 
-		that._logger.verbose(msg);
+		that._logger.info(msg);
 		that._gn._profiler.mark(msg);
 		that._gn.emit('setup.' + name);
 		next();

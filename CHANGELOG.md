@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.0.13
+
+## Added
+
+None
+
+## Changed
+
+#### Minor improvements in gracenode.setup()
+
+#### Performance improvements in core module loading
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.12
 
 ## Added
