@@ -40,6 +40,7 @@ Module.prototype.use = function (name, options) {
 	this._use.push({ name: name, modName: modName });
 };
 
+// TODO: need to add support for more than SQL
 Module.prototype.getModuleSchema = function (name, cb) {
 	var that = this;
 	async.eachSeries(this._modPaths, function (path, next) {
