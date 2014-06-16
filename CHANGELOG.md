@@ -12,6 +12,8 @@ None
 
 #### Performance improvements in core module loading
 
+#### Performance improvements in core .getModuleSchema()
+
 ## Deprecated
 
 None

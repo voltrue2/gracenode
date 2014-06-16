@@ -43,13 +43,13 @@ Module.prototype.use = function (name, options) {
 // TODO: need to add support for more than SQL
 Module.prototype.getModuleSchema = function (name, cb) {
 	var that = this;
-	async.eachSeries(this._modPaths, function (path, next) {
-		var filePath = path + name + '/schema.sql';
+	var path = moduleMap[name];
+	if (path) {
+		var filePath = path + '/schema.sql';
 		that._logger.verbose('looking for', filePath);
 		fs.readFile(filePath, 'utf-8', function (error, sql) {
 			if (error) {
-				// not found. try next path
-				return next();
+				return cb(error);
 			}
 			that._logger.verbose('module schema:\n', sql);
 			// remove line breaks and tabs
@@ -65,10 +65,11 @@ Module.prototype.getModuleSchema = function (name, cb) {
 			}
 			cb(null, list);
 		});
-	}, function () {
-		that._logger.error('sql schema for module [' + name + '] not found');
-		cb(null, []);
-	});
+		return;
+	}
+	this._logger.error('sql schema for module [' + name + '] not found');
+	cb(null, []);
+	
 };
 
 Module.prototype.load = function (cb) {
