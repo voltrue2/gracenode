@@ -165,7 +165,7 @@ gracenode.use('mysql');
 gracenode.use('myModule');
 ```
 
-With the optional second argument options, you can give the module an alternate name.
+With the optional second argument, you can give the module an alternate name.
 
 ```
 gracenode.use('mysql', { name: 'mysql2' });
@@ -402,7 +402,7 @@ To load your module with alternative name:
 ```
 var gracenode = require('graceode');
 // this will tell gracenode to load this module as its module
-gracenode.use('my-favorite-module', 'myFav');
+gracenode.use('my-favorite-module', { name: 'myFav' });
 // to access the loaded modue
 gracenode.myFav
 ```
