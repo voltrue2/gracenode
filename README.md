@@ -262,7 +262,7 @@ Spawns forked process(es) if allowed
 
 #Modules
 
-gracenode framework is modular. And it allows you to extending by adding your custom modules and/or 3rd party node modules.
+gracenode framework is modular. And it allows you to extend it by adding your custom modules and/or 3rd party node modules.
 
 ### Loading modules from your application locally
 
