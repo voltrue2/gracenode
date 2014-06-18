@@ -99,9 +99,9 @@ Gracenode.prototype.argv = function (key) {
 	return this._argv.get(key);
 };
 
-Gracenode.prototype.defineOption = function (argName, description) {
+Gracenode.prototype.defineOption = function (argName, description, callback) {
 	console.log('<verbose>[gracenode] define argv option:', argName, description);
-	this._argv.defineOption(argName, description);
+	this._argv.defineOption(argName, description, callback);
 };
 
 Gracenode.prototype.setup = function (cb) {
@@ -112,7 +112,11 @@ Gracenode.prototype.setup = function (cb) {
 		return this.exit(new Error('configuration files not set'));
 	}
 	// parse argv arguments
-	this._argv.parse();
+	try {
+		this._argv.parse();
+	} catch (e) {
+		return console.error(e, e.stack);
+	}
 	// start gracenode
 	var that = this;
 	var starter = function (callback) {
@@ -136,6 +140,8 @@ Gracenode.prototype.setup = function (cb) {
 		log.verbose('gracenode set up complete');
 
 		that.emit('setup.complete');
+
+		that._argv.execDefinedOptions();
 		
 		cb();
 

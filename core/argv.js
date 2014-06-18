@@ -20,7 +20,7 @@ Argv.prototype.parse = function () {
 		if (arg.indexOf('=') !== -1) {
 			// format: --name=value
 			var sep = arg.split('=');
-			this._argv[sep[0]] = lib.typeCase(sep[1]);
+			this._argv[sep[0]] = lib.typeCast(sep[1]);
 			continue;
 		}
 		if (prev && arg.indexOf('-') === -1) {
@@ -38,8 +38,6 @@ Argv.prototype.parse = function () {
 	if (help) {
 		return this._showHelp();
 	}
-	// execute defined option(s)
-	this._execDefinedOptions();
 };
 
 Argv.prototype.get = function (arg) {
@@ -67,12 +65,17 @@ Argv.prototype.defineOption = function (arg, desc, cb) {
 	}
 };
 
-Argv.prototype._execDefinedOptions = function () {
-	for (var arg in this._def) {
-		var option = this.get(arg);
-		if (option && typeof this._def[arg].callback === 'function') {
-			this._def[arg].callback(option);
+Argv.prototype.execDefinedOptions = function () {
+	try {
+		for (var arg in this._def) {
+			var option = this.get(arg);
+			if (option && typeof this._def[arg].callback === 'function') {
+				this._def[arg].callback(option);
+			}
 		}
+	} catch (e) {
+		var logger = this._gn.log.create('argv');
+		logger.error(e);
 	}
 };
 
