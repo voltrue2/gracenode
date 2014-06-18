@@ -115,7 +115,8 @@ Gracenode.prototype.setup = function (cb) {
 	try {
 		this._argv.parse();
 	} catch (e) {
-		return console.error(e, e.stack);
+		console.error(e);
+		console.trace();
 	}
 	// start gracenode
 	var that = this;
