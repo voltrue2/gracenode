@@ -1,5 +1,38 @@
 # Change Log
 
+## Version 1.0.14
+
+## Added
+
+#### gracenode.defineOption() added
+
+gracenode.defineOption allows you to define a command line option and add a shor t description for `--help`
+
+#### gracenode has now --help option
+
+`node myGracenodeApp/ --help` will display defined options and descriptions set by `.defineOption()`.
+
+## Changed
+
+#### gracenode.argv() now supports combined options
+
+granode.argv() can now understand options combined such as `-abc`.
+
+```
+node myGracenodeApp/ -abc
+// -abc is equivalent to givning -a -b -c
+```
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.13
 
 ## Added
