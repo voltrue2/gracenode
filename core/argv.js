@@ -66,11 +66,12 @@ Argv.prototype.defineOption = function (arg, desc) {
 };
 
 Argv.prototype._showHelp = function () {
-	console.log('gracenode command help:');
+	console.log('\ngracenode command help:\n');
 	for (var arg in this._def) {
 		var spaces = this._createSpaces(this._maxLen - arg.length);
-		console.log(arg + spaces, this._def[arg]);
+		console.log('    ' + arg + spaces, this._def[arg]);
 	}
+	console.log('\n');
 	// we do not execute anything else in help mode
 	this._gn.exit();
 };
