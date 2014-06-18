@@ -23,7 +23,7 @@ Argv.prototype.parse = function () {
 			this._argv[sep[0]] = lib.typeCast(sep[1]);
 			continue;
 		}
-		if (prev && arg.indexOf('-') === -1) {
+		if (prev && arg.indexOf('-') !== 0) {
 			// format: -name value
 			this._argv[prev] = lib.typeCast(arg);
 			continue;

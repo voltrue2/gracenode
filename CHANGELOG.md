@@ -8,8 +8,6 @@ None
 
 ## Changed
 
-#### Client js request bug fix
-
 #### gracenode.defineOption added third argument
 
 `defineOption()` now allows you to define the callback function for the option.
@@ -23,6 +21,8 @@ gracenode.defineOption('--test', 'This is a test option', function (value) {
 	// do something
 });
 ```
+
+#### Client js request bug fix
 
 ## Deprecated
 
