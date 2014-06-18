@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.0.15
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix in --help option
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.14
 
 ## Added
