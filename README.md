@@ -142,9 +142,20 @@ var c = gracenode.argv('-c');
 // true
 ```
 
-###.defineOption(argumentName [string], description [srting])
+###.defineOption(argumentName [string], description [srting], optionExecution [*function])
 
-Defines an option and add short description for `--help`
+Defines an option and add short description for `--help` and function to be executed if the option is given.
+
+Example:
+
+```
+// node myGracenodeApp/ --test=1234
+
+gracenode.defineOption('--test', 'Test option description', function (value) {
+	// value is 1234
+	// do something
+});
+```
 
 ### --help
 

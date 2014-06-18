@@ -1,5 +1,39 @@
 # Change Log
 
+## Version 1.0.16
+
+## Added
+
+None
+
+## Changed
+
+#### Client js request bug fix
+
+#### gracenode.defineOption added third argument
+
+`defineOption()` now allows you to define the callback function for the option.
+
+```
+gracenode.defineOption('-a', 'A is the first letter of the alphabet.', function (value) {
+	// this callback will be executed if option -a is given
+});
+
+gracenode.defineOption('--test', 'This is a test option', function (value) {
+	// do something
+});
+```
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.15
 
 ## Added

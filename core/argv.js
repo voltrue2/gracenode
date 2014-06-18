@@ -36,8 +36,10 @@ Argv.prototype.parse = function () {
 	// check if --help option is present or not
 	var help = this.get(HELP);
 	if (help) {
-		this._showHelp();
+		return this._showHelp();
 	}
+	// execute defined option(s)
+	this._execDefinedOptions();
 };
 
 Argv.prototype.get = function (arg) {
@@ -58,10 +60,19 @@ Argv.prototype.get = function (arg) {
 	return this._argv[arg] || null;
 };
 
-Argv.prototype.defineOption = function (arg, desc) {
-	this._def[arg] = desc;
+Argv.prototype.defineOption = function (arg, desc, cb) {
+	this._def[arg] = { desc: desc, callback: cb };
 	if (arg.length > this._maxLen) {
 		this._maxLen = arg.length;
+	}
+};
+
+Argv.prototype._execDefinedOptions = function () {
+	for (var arg in this._def) {
+		var option = this.get(arg);
+		if (option && typeof this._def[arg].callback === 'function') {
+			this._def[arg].callback(option);
+		}
 	}
 };
 
@@ -69,7 +80,7 @@ Argv.prototype._showHelp = function () {
 	console.log('\ngracenode command help:\n');
 	for (var arg in this._def) {
 		var spaces = this._createSpaces(this._maxLen - arg.length);
-		console.log('    ' + arg + spaces + ':', this._def[arg]);
+		console.log('    ' + arg + spaces + ':', this._def[arg].desc);
 	}
 	console.log('\n');
 	// we do not execute anything else in help mode
