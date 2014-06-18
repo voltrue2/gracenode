@@ -28,7 +28,9 @@
 		"modules",
 		"middleware",
 		"large-scale",
-		"scalable"
+		"scalable",
+		"management",
+		"command"
 	],
 	"license": "MIT"
 }
