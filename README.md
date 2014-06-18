@@ -116,16 +116,39 @@ Returns true or a value associated to the key given as an argument.
 Example:
 
 ```
-node myGracenodeApp/ -test -yay good  --hello=world
+node myGracenodeApp/ -t -y good  --hello=world
 
 // in your application:
-var value = gracenode.argv('-test');
+var value = gracenode.argv('-t');
 // this will return true.
-var value = gracenode.argv('-yay');
+var value = gracenode.argv('-y');
 // this will return 'good'.
 var value = gracenode.argv('--hello');
 // this will return 'world'.
 ```
+
+Combined options Example:
+
+```
+node myGracenodeApp/ -abc
+
+// in your application
+-abc is equivalent to -a -b -c
+var a = gracenode.argv('-a');
+// true
+var b = gracenode.argv('-b');
+// true
+var c = gracenode.argv('-c');
+// true
+```
+
+###.defineOption(argumentName [string], description [srting])
+
+Defines an option and add short description for `--help`
+
+### --help
+
+gracenode has --help option and displays defined command options set by `.defineOption()`.
 
 ###.setConfigPath(configDirectoryPath [string])
 Tells gracenode where to find the configuraitons files.

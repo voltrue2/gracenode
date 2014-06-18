@@ -6,6 +6,7 @@ var log = logger.create('gracenode');
 var util = require('util');
 var gracefulWaitList = []; // list of tasks to be executed before shutting down gracenode
 
+var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
 
@@ -36,8 +37,7 @@ function Gracenode() {
 		this._module = new Module(this, this._root);
 		this._module.use('profiler');
 		this._module.use('lib');
-		// parse argv arguments
-		this._argv = parseArgv(this);
+		this._argv = new Argv(this);
 	} catch (exception) {
 		console.error('<fatal>[gracenode]', exception);
 		console.trace();
@@ -96,7 +96,12 @@ Gracenode.prototype.use = function (modName, driver) {
 };
 
 Gracenode.prototype.argv = function (key) {
-	return this._argv[key] || null;
+	return this._argv.get(key);
+};
+
+Gracenode.prototype.defineOption = function (argName, description) {
+	console.log('<verbose>[gracenode] define argv option:', argName, description);
+	this._argv.defineOption(argName, description);
 };
 
 Gracenode.prototype.setup = function (cb) {
@@ -106,6 +111,9 @@ Gracenode.prototype.setup = function (cb) {
 	if (!this._configFiles.length) {
 		return this.exit(new Error('configuration files not set'));
 	}
+	// parse argv arguments
+	this._argv.parse();
+	// start gracenode
 	var that = this;
 	var starter = function (callback) {
 		log.verbose('gracenode is starting...');
@@ -302,31 +310,4 @@ function setupListeners(that) {
 		that.emit('uncaughtException', error);
 	});
 
-}
-
-function parseArgv(that) {
-	var argv = {};
-	var prev = null;
-	var lib = require(that._root + 'modules/lib');
-	// first element is the path of node
-	// second element is the path of app
-	for (var i = 2, len = process.argv.length; i < len; i++) {
-		var arg = process.argv[i];
-		if (arg.indexOf('=') !== -1) {
-			// format: --name=value
-			var sep = arg.split('=');
-			argv[sep[0]] = lib.typeCase(sep[1]);
-			continue;
-		}
-		if (prev && arg.indexOf('-') === -1) {
-			// format: -name value
-			argv[prev] = lib.typeCast(arg);
-			continue;
-		}
-		// format: -argument or -argument value
-		argv[arg] = true;
-		prev = arg;
-	}
-	console.log('<info>[gracenode] arguments:', argv);
-	return argv;
 }

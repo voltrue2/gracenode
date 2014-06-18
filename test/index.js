@@ -51,11 +51,14 @@ describe('gracenode initialization ->', function () {
 			gn.log.setPrefix('UNIT TEST');
 		});
 
-		// test argv
-		assert.equal(gn.argv('-s'), 10);
-		assert.equal(gn.argv('-R'), 'spec');
+		gn.defineOption('-s', 'Option given from mocha');
+		gn.defineOption('-R', 'Option given from mocha');
 
 		gn.setup(function (error) {
+			// test argv
+			assert.equal(gn.argv('-s'), 10);
+			assert.equal(gn.argv('-R'), 'spec');
+			// test the rest
 			assert.equal(error, undefined);
 			assert(gn.encrypt.uuid);
 			assert(gn.test.loaded());
