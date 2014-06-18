@@ -21,7 +21,7 @@
 		if (!params) {
 			params = {};
 		}
-		if (options) {
+		if (!options) {
 			options = {};
 		}
 
