@@ -4,6 +4,7 @@
 var cl = console.log;
 console.log = function () {};
 
+var exec = require('child_process').exec;
 var async = require('async');
 var fs = require('fs');
 var gn = require('../');
@@ -73,6 +74,12 @@ gn.defineOption('-l', 'Lint target (-l [file path]) Javascript(s).', function (p
 	dirCheck(path, function () {
 		logger.info('[DONE]');
 		gn.exit();
+	});
+});
+
+gn.defineOption('--install', 'Installs the executable gracenode command to user\'s home directory.', function () {
+	exec('ln -s ' + gn._root + 'scripts/gracenode ~/gracenode', function (error) {
+		gn.exit(error);
 	});
 });
 

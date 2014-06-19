@@ -294,6 +294,21 @@ Spawns forked process(es) if allowed
 
 ***
 
+##Executable gracenode command
+
+Gracenode framework has an executable command `gracenode`.
+
+To install the command to user's home directory execute the following from the root of gracenode:
+
+`scripts/gracenode --install`
+
+####Avialable Options
+
+`-V` Shows the current installed version of gracenode.
+`-l [target path]` Lints file(s)
+
+***
+
 #Modules
 
 gracenode framework is modular. And it allows you to extend it by adding your custom modules and/or 3rd party node modules.
