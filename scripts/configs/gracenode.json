@@ -1,0 +1,12 @@
+{
+	"cluster": {
+		"enabled": false
+	},
+	"modules": {
+		"log": {
+			"console": true,
+			"color": true,
+			"level": ">= info"
+		}
+	}
+}

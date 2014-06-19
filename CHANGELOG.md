@@ -1,5 +1,35 @@
 # Change Log
 
+## Version 1.0.17
+
+## Added
+
+#### Executable gracenode command added
+
+Gracenode now has an executable command `scripts/gracenode`
+
+To lint javascript file(s):
+
+`scripts/gracenode -l path/to/files/or/directory`
+
+To show gracenode version:
+
+`scripts/gracenode -V`
+
+## Changed
+
+#### gracenode.defineOption's option parsing improved
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.16
 
 ## Added

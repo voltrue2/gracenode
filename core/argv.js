@@ -49,7 +49,7 @@ Argv.prototype.get = function (arg) {
 		// - format -> this format supports combining multiple options: -abc is a combination of -a, -b, and -c
 		arg = arg.replace('-', '');
 		for (var key in this._argv) {
-			if (key.indexOf('-') === 0 && key.indexOf(arg) !== -1) {
+			if (key.indexOf('--') !== 0 && key.indexOf('-') === 0 && key.indexOf(arg) !== -1) {
 				return this._argv[key];
 			}
 		}
@@ -67,11 +67,17 @@ Argv.prototype.defineOption = function (arg, desc, cb) {
 
 Argv.prototype.execDefinedOptions = function () {
 	try {
+		var executed = false;
 		for (var arg in this._def) {
 			var option = this.get(arg);
 			if (option && typeof this._def[arg].callback === 'function') {
+				executed = true;
 				this._def[arg].callback(option);
 			}
+		}
+		if (!executed) {
+			// no options. we did nothing
+			this._showHelp();
 		}
 	} catch (e) {
 		var logger = this._gn.log.create('argv');

@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+
+// override console.log
+var cl = console.log;
+console.log = function () {};
+
+var async = require('async');
+var fs = require('fs');
+var gn = require('../');
+gn.setConfigPath('node_modules/gracenode/scripts/configs/');
+gn.setConfigFiles(['gracenode.json']);
+
+gn.defineOption('-V', 'Show version of gracenode', function () {
+	var logger = gn.log.create('gracenode command version');
+	var package = require('../package.json');
+	logger.info('gracenode v' + package.version);
+	gn.exit();
+});
+
+gn.defineOption('-l', 'Lint target (-l [file path]) Javascript(s).', function (path) {
+	var jshint = require('jshint').JSHINT;
+	var logger = gn.log.create('gracenode command lint');
+	var lint = function (path, next) {
+		logger.info('linting:', path);
+		fs.readFile(path, function (error, data) {
+			if (error) {
+				logger.error(path);
+				return gn.exit(error);
+			}
+			var linted = jshint(data.toString());
+			if (!linted) {
+				var errors = jshint.data().errors;
+				for (var i = 0, len = errors.length; i < len; i++) {
+					var e = errors[i];
+					if (e) {
+						logger.error(path, 'Line:', e.line, e.reason, e.evidence);
+					}
+				}
+				return gn.exit(new Error('[lint error: ' + path + ']'));
+			}
+			logger.info(path, '[passed]');
+			next();
+		});
+	};
+	var dirCheck = function (path, next) {
+		fs.lstat(path, function (error, stat) {
+			if (error) {
+				logger.error(path);
+				return gn.exit(error);
+			}
+			if (stat.isDirectory()) {
+				// it is a directory
+				gn.lib.walkDir(path, function (error, list) {
+					if (error) {
+						logger.error(path);
+						return gn.exit(error);
+					}
+					async.each(list, function (item, done) {
+						lint(item.file, done);
+					}, next);
+				});
+				return;
+			}
+			// it is a file, lint now
+			lint(path, next);
+		});
+	};
+	
+	if (typeof path !== 'string') {
+		gn.exit(new Error('invalid option'));	
+	}
+
+	dirCheck(path, function () {
+		logger.info('[DONE]');
+		gn.exit();
+	});
+});
+
+// bring back console.log
+console.log = cl;
+
+gn.setup(function () {});
