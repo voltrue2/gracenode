@@ -5,6 +5,8 @@ init:
 	chmod +x .git/hooks/pre-commit
 	@echo 'install dependencies'
 	npm install
+	@echo 'install executable command gracenode'
+	scripts/gracenode --install
 	@echo 'done'
 
 .PHONY: test
