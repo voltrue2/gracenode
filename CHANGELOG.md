@@ -20,6 +20,8 @@ To show gracenode version:
 
 #### gracenode.defineOption's option parsing improved
 
+#### make command now installs executable command gracenode to user's home directory
+
 ## Deprecated
 
 None
