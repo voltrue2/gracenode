@@ -10,6 +10,21 @@
 
 ## Executable gracenode -l now ignores none-javascript files
 
+## Command-line argument parser improved
+
+The parser for command-line argments now support multiple values per options:
+
+Example:
+
+```
+node yourApp -p /xxx/yyy/zzz/ /aaa/bbb/ccc/
+
+// your option definition
+gracenode.defineOption('-p', 'Awesome option -p.', function (paths) {
+	// paths is an array that contains ['/xxx/yyy/zzz', '/aaa/bbb/ccc/']
+});
+```
+
 ## Deprecated
 
 None

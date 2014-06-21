@@ -25,7 +25,10 @@ Argv.prototype.parse = function () {
 		}
 		if (prev && arg.indexOf('-') !== 0) {
 			// format: -name value
-			this._argv[prev] = lib.typeCast(arg);
+			if (this._argv[prev] === true) {
+				this._argv[prev] = [];
+			}
+			this._argv[prev].push(lib.typeCast(arg));
 			continue;
 		}
 		// format: -argument or -argument value
@@ -50,7 +53,11 @@ Argv.prototype.get = function (arg) {
 		arg = arg.replace('-', '');
 		for (var key in this._argv) {
 			if (key.indexOf('--') !== 0 && key.indexOf('-') === 0 && key.indexOf(arg) !== -1) {
-				return this._argv[key];
+				var values = this._argv[key];
+				if (values.length === 1) {
+					return values[0];
+				}
+				return values;
 			}
 		}
 	}

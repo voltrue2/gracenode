@@ -18,11 +18,10 @@ gn.defineOption('-V', 'Show version of gracenode', function () {
 	gn.exit();
 });
 
-gn.defineOption('-l', 'Lint target (-l [file path]) Javascript(s).', function (path) {
+gn.defineOption('-l', 'Lint target (-l [file path(s)]) Javascript(s).', function (paths) {
 	var jshint = require('jshint').JSHINT;
 	var logger = gn.log.create('gracenode command lint');
 	var lint = function (path, next) {
-		logger.info('linting:', path);
 		fs.readFile(path, function (error, data) {
 			if (error) {
 				logger.error(path);
@@ -71,11 +70,16 @@ gn.defineOption('-l', 'Lint target (-l [file path]) Javascript(s).', function (p
 		});
 	};
 	
-	if (typeof path !== 'string') {
-		gn.exit(new Error('invalid option'));	
+	if (typeof paths === 'string') {
+		paths = [paths];
 	}
 
-	dirCheck(path, function () {
+	async.eachSeries(paths, function (path, next) {
+		dirCheck(path, function () {
+			next();
+		});
+	},
+	function () {
 		logger.info('[DONE]');
 		gn.exit();
 	});

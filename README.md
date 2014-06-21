@@ -142,6 +142,14 @@ var c = gracenode.argv('-c');
 // true
 ```
 
+```
+node myGracenodeApp/ -p aaa bbb ccc
+
+// in your application
+var p = gracenode.argv('-p');
+// ['aaa', 'bbb', 'ccc']
+```
+
 ###.defineOption(argumentName [string], description [srting], optionExecution [*function])
 
 Defines an option and add short description for `--help` and function to be executed if the option is given.
