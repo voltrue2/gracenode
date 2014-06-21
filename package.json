@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js application with extendable module management system for fast and clean development.",
-	"version": "1.0.17",
+	"version": "1.0.18",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -15,6 +15,25 @@
 		"mocha": "1.20.1"
 	},
 	"engine": "node >= 0.10.20",
+	"jshintConfig": {
+		"node": true,
+		"bitwise": false,
+		"camelcase": true,
+		"curly": true,
+		"eqeqeq": true,
+		"forin": false,
+		"immed": true,
+		"latedef": false,
+		"newcap": true,
+		"noarg": true,
+		"noempty": true,
+		"undef": true,
+		"unused": true,
+		"nonew": true,
+		"white": true,
+		"maxdepth": 5,
+		"quotmark": "single"
+	},
 	"contributors": [
 		{ "name": "Brian de Heus", "email": "me@brian.jp" },
 		{ "name": "Henry Obein", "email": "N/A" }

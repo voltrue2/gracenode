@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.0.18
+
+## Added
+
+#### Custom jshint configurations added to package.json
+
+## Changed
+
+## Executable gracenode -l now ignores none-javascript files
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.17
 
 ## Added

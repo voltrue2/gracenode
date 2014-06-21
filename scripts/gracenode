@@ -28,13 +28,17 @@ gn.defineOption('-l', 'Lint target (-l [file path]) Javascript(s).', function (p
 				logger.error(path);
 				return gn.exit(error);
 			}
+			if (path.lastIndexOf('.js') === -1) {
+				// it is not a javascript
+				return next();
+			}
 			var linted = jshint(data.toString());
 			if (!linted) {
 				var errors = jshint.data().errors;
 				for (var i = 0, len = errors.length; i < len; i++) {
 					var e = errors[i];
 					if (e) {
-						logger.error(path, 'Line:', e.line, e.reason, e.evidence);
+						logger.error(path, 'line:', e.line, 'col:', e.reason, e.evidence);
 					}
 				}
 				return gn.exit(new Error('[lint error: ' + path + ']'));
