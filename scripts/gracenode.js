@@ -86,18 +86,19 @@ gn.defineOption('-l', 'Lint target (-l [file path(s)]) Javascript(s).', function
 });
 
 gn.defineOption('--install', 'Installs the executable gracenode command to /usr/local/bin.', function () {
+	var dist = '~/bin/gracenode';
 	var dir = function (cb) {
 		exec('mkdir ~/bin/', function () {
 			cb();
 		});
 	};
 	var link = function (cb) {
-		exec('ln -s ' + gn._root + 'scripts/gracenode.js /usr/local/bin/gracenode', function (error) {
+		exec('ln -s ' + gn._root + 'scripts/gracenode.js ' + dist, function (error) {
 			cb(error);
 		});
 	};
 	var chmod = function (cb) {
-		exec('chmod +x /usr/local/bin/gracenode', function (error) {
+		exec('chmod +x ' + dist, function (error) {
 			cb(error);
 		});
 	};

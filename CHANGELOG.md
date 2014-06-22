@@ -12,7 +12,7 @@ None
 
 #### Executable gracenode install updated
 
-Executing `node scripts/gracenode.js --install` will now install executable command `gracenode` in `/usr/local/bin`
+Executing `node scripts/gracenode.js --install` will now install executable command `gracenode` in `~/bin/`
 
 ## Deprecated
 
