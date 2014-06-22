@@ -51,8 +51,14 @@ describe('gracenode initialization ->', function () {
 			gn.log.setPrefix('UNIT TEST');
 		});
 
-		gn.defineOption('-s', 'Option given from mocha');
-		gn.defineOption('-R', 'Option given from mocha');
+		gn.defineOption('-s', 'Option given from mocha', function (val) {
+			var logger = gn.log.create('argv');
+			logger.debug('-s caught:', val);
+		});
+		gn.defineOption('-R', 'Option given from mocha', function (val) {
+			var logger = gn.log.create('argv');
+			logger.debug('-R caught:', val);
+		});
 
 		gn.setup(function (error) {
 			// test argv
