@@ -61,10 +61,17 @@ Process.prototype.setupMaster = function () {
 	this.log.info('running the process in cluster mode [master] (pid: ' + process.pid + ')');
 	this.log.info('number of child processes to be spawned:', this.clusterNum);
 	
+	var workerPidList = [];
 	var that = this;
 
 	var onGracefulExit = function () {
+		workerPidList.splice(workerPidList.indexOf(this.process.pid, 1));
 		that.log.info('worker (pid:' + this.process.pid + ') has disconnected');
+		if (workerPidList.length === 0) {
+			that.log.info('all child processes have gracefully disconnected: exiting master process...');
+			that.emit('shutdown');
+			that.gracenode.exit();
+		}
 	};
 
 	// spawn workers
@@ -72,13 +79,20 @@ Process.prototype.setupMaster = function () {
 		var worker = cluster.fork();
 		worker.on('disconnect', onGracefulExit);
 		this.log.info('worker spawned (pid: ' + worker.process.pid + ')');
+		workerPidList.push(worker.process.pid);
 	}
+
+	this.log.verbose('child process pid list:', workerPidList);
 
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
+		// remove the dead pid from the list
+		workerPidList.splice(workerPidList.indexOf(worker.process.pid, 1));
 		if (!worker.suicide && signal) {
 			// the worker died from an error, spawn it
 			var newWorker = cluster.fork();
+			// add the new pid to the list
+			workerPidList.push(newWorker.process.pid);
 			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
 		}
 		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
@@ -95,23 +109,20 @@ Process.prototype.setupWorker = function () {
 	this.gracenode.log._setInternalPrefix('WORKER:' + process.pid);
 	this.log = this.gracenode.log.create('child-process');
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
-	
 	this.emit('cluster.worker.setup', process.pid);
 };
 
 // private 
-Process.prototype.exit = function () {
-	
+Process.prototype.exit = function (sig) {
 	if (this.gracenode._isMaster) {
-		// master process
-		var that = this;
-		return cluster.disconnect(function () {
-			that.log.info('all child processes have disconnected: exiting master process...');
-			that.emit('shutdown');
-			that.gracenode.exit();
-		});
+		this.log.info(sig, 'caught: gracefully terminating child processes');
+		// master process will wait for all child processes to gracefully exit
+		for (var id in cluster.workers) {
+			cluster.workers[id].kill('SIGTERM');
+		}
+		return;
 	}
-	
+	this.log.info(sig, 'caught: shutting down gracenode...');
 	if (this.inClusterMode && this.clusterNum > 1) {
 		// worker process
 		this.log.info('disconnecting process...');
@@ -127,18 +138,15 @@ Process.prototype.listeners = function () {
 	var that = this;
 	
 	process.on('SIGINT', function () {
-		that.log.info('SIGINT caught: shutting down gracenode...');
-		that.exit();
+		that.exit('SIGINT');
 	});
 
 	process.on('SIGQUIT', function () {
-		that.log.info('SIGQUIT caught: shutting down gracenode...');
-		that.exit();
+		that.exit('SIGQUIT');
 	});
 
 	process.on('SIGTERM', function () {
-		that.log.info('SIGTERM caught: shutting down gracenode...');
-		that.exit();
+		that.exit('SIGTERM');
 	});
 
 };

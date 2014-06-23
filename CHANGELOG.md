@@ -8,6 +8,10 @@ None
 
 ## Changed
 
+#### Core process improved
+
+The way master process handles graceful shutdown of each child processes haves improved.
+
 #### Minor improvements
 
 #### Executable gracenode install updated
