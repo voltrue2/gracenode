@@ -79,14 +79,16 @@ module.exports.cloneObj = function (obj, props) {
 	if (obj === null || typeof obj !== 'object') {
 		return obj;
 	}
+	var isArray = false;
 	var res = null;
 	if (Array.isArray(obj)) {
 		res = [];
+		isArray = true;
 	} else {
 		res = {};
 	}
 	for (var key in obj) {
-		if (props && props.indexOf(key) === -1) {
+		if (!isArray && props && props.indexOf(key) === -1) {
 			continue;
 		}
 		if (obj[key] !== null && typeof obj[key] === 'object') {
