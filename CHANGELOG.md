@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.0.20
+
+## Added
+
+None
+
+## Changed
+
+#### Core process graceful shutdown improved
+
+Core process improved the way it handles graceful shutdown in preparation for built-in daemonization feature.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.19
 
 ## Added
