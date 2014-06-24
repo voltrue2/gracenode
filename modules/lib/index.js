@@ -74,7 +74,8 @@ module.exports.getArguments = function (func) {
 	return args.length === 1 && !args[0] ? [] : args;
 };
 
-module.exports.cloneObj = function (obj) {
+// props [optional]: an array of properties to retrive and ignore the rest
+module.exports.cloneObj = function (obj, props) {
 	if (obj === null || typeof obj !== 'object') {
 		return obj;
 	}
@@ -85,8 +86,11 @@ module.exports.cloneObj = function (obj) {
 		res = {};
 	}
 	for (var key in obj) {
+		if (props && props.indexOf(key) === -1) {
+			continue;
+		}
 		if (obj[key] !== null && typeof obj[key] === 'object') {
-			res[key] = module.exports.cloneObj(obj[key]);
+			res[key] = module.exports.cloneObj(obj[key], props);
 		} else {
 			res[key] = obj[key];
 		}

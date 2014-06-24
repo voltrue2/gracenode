@@ -100,4 +100,28 @@ describe('gracenode initialization ->', function () {
 		});
 	});
 
+	it('Can clone objects with all properties', function () {
+		var original = {
+			a: 100,
+			b: 'B',
+			c: [1,2,3]
+		};
+		var cloned = gn.lib.cloneObj(original);
+		assert.equal(original.a, cloned.a);
+		assert.equal(original.b, cloned.b);
+		assert.equal(JSON.stringify(original.c), JSON.stringify(cloned.c));
+	});
+
+	it('Can clone objects with selected properties', function () {
+		var original = {
+			a: 100,
+			b: 'B',
+			c: [1,2,3]
+		};
+		var cloned = gn.lib.cloneObj(original, ['a', 'b']);
+		assert.equal(original.a, cloned.a);
+		assert.equal(original.b, cloned.b);
+		assert.equal(cloned.c, undefined);
+	});
+
 });

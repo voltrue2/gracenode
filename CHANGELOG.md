@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.0.21
+
+## Added
+
+None
+
+## Changed
+
+#### Lib module's cloneBoj() now supports selective property copy
+
+Lib module's `cloneObj()` now accepts a second argument optionally as an array of property names to clone only the given properties.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.20
 
 ## Added
