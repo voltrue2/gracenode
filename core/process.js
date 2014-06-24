@@ -121,13 +121,19 @@ Process.prototype.setupWorker = function () {
 
 // private 
 Process.prototype.exit = function (sig) {
-	if (cluster.isMaster) {
+	if (this.inClusterMode && cluster.isMaster) {
 		// master process will wait for all child processes to gracefully exit
 		this.log.info(sig, 'caught: gracefully terminating child processes');
 		for (var id in cluster.workers) {
 			this.log.info('gracefully terminating worker (pid:' + cluster.workers[id].process.pid + ')');
 			cluster.workers[id].kill('SIGTERM');
 		}
+		return;
+	}
+	if (!this.inClusterMode) {
+		this.log.info(sig, 'caught: gracefully exiting...');
+		this.emit('shutdown');
+		this.gracenode.exit();
 	}
 };
 

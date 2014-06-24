@@ -12,6 +12,8 @@ None
 
 Lib module's `cloneObj()` now accepts a second argument optionally as an array of property names to clone only the given properties.
 
+#### Core process fix for none-cluster mode graceful exit
+
 ## Deprecated
 
 None
