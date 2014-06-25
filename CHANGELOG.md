@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.0.22
+
+## Added
+
+None
+
+## Changed
+
+#### Core process gracefuly shutdown improved
+
+When workers die unexceptedly, the former graceful shutdown method had a hole where respawned works could become zombie workers.
+
+Now the issue has been fixed properly.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.21
 
 ## Added

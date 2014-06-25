@@ -14,7 +14,7 @@ function Process(gracenode) {
 		// no configurations for cluster mode provided
 		this.config = {};
 	}	
-	
+	this.isShutdown = false; // master only	
 	this.inClusterMode = this.config.enable || false;
 	var maxClusterNum = this.config.max || 1;
 	var CPUNum = require('os').cpus().length;
@@ -52,6 +52,13 @@ Process.prototype.startClusterMode = function () {
 	this.setupWorker();
 };
 
+// private (master only)
+Process.prototype.createWorker = function () {
+	var worker = cluster.fork();
+	this.log.info('worker spawned (pid: ' + worker.process.pid + ')');
+	return worker;
+};
+
 //private
 Process.prototype.setupMaster = function () {
 	this.gracenode._isMaster = true;
@@ -61,41 +68,27 @@ Process.prototype.setupMaster = function () {
 	this.log.info('running the process in cluster mode [master] (pid: ' + process.pid + ')');
 	this.log.info('number of child processes to be spawned:', this.clusterNum);
 	
-	var workerPidList = [];
 	var that = this;
 
-	var onGracefulExit = function () {
-		// gracefully terminate worker
-		workerPidList.splice(workerPidList.indexOf(this.process.pid, 1));
-		if (workerPidList.length === 0) {
+	// spawn workers
+	for (var i = 0; i < this.clusterNum; i++) {
+		this.createWorker();
+	}
+
+	// set up termination listener on workers
+	cluster.on('exit', function (worker, code, signal) {
+		if (!worker.suicide && signal) {
+			// the worker died from an error, spawn it
+			var newWorker = that.createWorker();
+			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
+		}
+		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
+		// if all child processes are gone and if master is in shutting down mode, we shutdown
+		if (noMoreWorkers() && that.isShutdown) {
 			that.log.info('all child processes have gracefully disconnected: exiting master process...');
 			that.emit('shutdown');
 			that.gracenode.exit();
 		}
-	};
-
-	// spawn workers
-	for (var i = 0; i < this.clusterNum; i++) {
-		var worker = cluster.fork();
-		worker.on('disconnect', onGracefulExit);
-		this.log.info('worker spawned (pid: ' + worker.process.pid + ')');
-		workerPidList.push(worker.process.pid);
-	}
-
-	this.log.verbose('child process pid list:', workerPidList);
-
-	// set up termination listener on workers
-	cluster.on('exit', function (worker, code, signal) {
-		// remove the dead pid from the list
-		workerPidList.splice(workerPidList.indexOf(worker.process.pid, 1));
-		if (!worker.suicide && signal) {
-			// the worker died from an error, spawn it
-			var newWorker = cluster.fork();
-			// add the new pid to the list
-			workerPidList.push(newWorker.process.pid);
-			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
-		}
-		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
 	});
 	
 	this.log.info('master has been set up');
@@ -121,17 +114,19 @@ Process.prototype.setupWorker = function () {
 
 // private 
 Process.prototype.exit = function (sig) {
+	this.log.info(sig, 'caught: gracefully exiting...');
+	// master process will wait for all child processes to gracefully exit
 	if (this.inClusterMode && cluster.isMaster) {
-		// master process will wait for all child processes to gracefully exit
-		this.log.info(sig, 'caught: gracefully terminating child processes');
-		for (var id in cluster.workers) {
-			this.log.info('gracefully terminating worker (pid:' + cluster.workers[id].process.pid + ')');
-			cluster.workers[id].kill('SIGTERM');
-		}
+		this.isShutdown = true;
 		return;
 	}
+	// worker process exit gracefully
+	if (this.inClusterMode && cluster.isWorker) {
+		cluster.worker.disconnect();
+		return;
+	}
+	// none-cluster mode exits gracefully
 	if (!this.inClusterMode) {
-		this.log.info(sig, 'caught: gracefully exiting...');
 		this.emit('shutdown');
 		this.gracenode.exit();
 	}
@@ -155,3 +150,8 @@ Process.prototype.listeners = function () {
 	});
 
 };
+
+// private utility for master process
+function noMoreWorkers() {
+	return !Object.keys(cluster.workers).length;
+}

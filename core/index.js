@@ -177,6 +177,7 @@ Gracenode.prototype._shutdown = function (error) {
 		if (error) {
 			log.fatal('exit gracenode with an error:', error);
 		}
+		log.info('Bye');
 		async.eachSeries(logCleaners, function (cleaner, next) {
 			cleaner(next);
 		},
