@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.0.23
+
+## Added
+
+None
+
+## Changed
+
+#### Makefile update for initial make command
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.22
 
 ## Added
