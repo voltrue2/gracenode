@@ -37,6 +37,9 @@ Process.prototype.setup = function () {
 		this.startClusterMode();
 		return;
 	}
+
+	// override the configuration
+	this.inClusterMode = false;
 	
 	this.log.info('running the process in none-cluster mode (pid: ' + process.pid + ')');
 	
