@@ -86,7 +86,7 @@ Process.prototype.setupMaster = function () {
 
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
-		if (!worker.suicide && signal) {
+		if (!worker.suicide && signal && that.config.autoSpawn) {
 			// the worker died from an error, spawn it
 			var newWorker = that.createWorker();
 			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
