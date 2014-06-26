@@ -10,6 +10,22 @@ None
 
 #### Makefile update for initial make command
 
+#### Cluster mode now has autoSpawn option in configurations
+
+Auto-respawning of dead child processes is now optional.
+
+To enable auto-respawning add the following to your configurations:
+
+```
+{
+	"cluster": {
+		"enabled": true,
+		"max": 2,
+		"autoSpawn": true
+	}
+}
+```
+
 ## Deprecated
 
 None

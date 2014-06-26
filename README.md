@@ -297,6 +297,7 @@ Spawns forked process(es) if allowed
 "cluster": {
 	"enabled": <boolean>
 	"max": <integer> // number of maximum child processes allowed
+	"autoSpawn": <boolean> // if true, the application will auto-respawn dead child process
 }
 ```
 
