@@ -1,6 +1,8 @@
+var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
+var daemon;
 
 module.exports = Process;
 
@@ -32,6 +34,10 @@ Process.prototype.setup = function () {
 	this.log.verbose('setting up the process...');
 
 	this.listeners();
+
+	// set up daemon in case we need it
+	daemon = require('./daemon');
+	daemon.processObj = this;
 
 	if (this.inClusterMode && this.clusterNum > 1) {
 		this.startClusterMode();
@@ -85,7 +91,7 @@ Process.prototype.setupMaster = function () {
 			var newWorker = that.createWorker();
 			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
 		}
-		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code);	
+		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code, '(suicide:' + worker.suicide + ')');	
 		// if all child processes are gone and if master is in shutting down mode, we shutdown
 		if (noMoreWorkers() && that.isShutdown) {
 			that.log.info('all child processes have gracefully disconnected: exiting master process...');
@@ -115,7 +121,7 @@ Process.prototype.setupWorker = function () {
 	});
 };
 
-// private 
+// private/public in daemon mode, this function gets called from core/daemon worker 
 Process.prototype.exit = function (sig) {
 	this.log.info(sig, 'caught: gracefully exiting...');
 	// master process will wait for all child processes to gracefully exit
@@ -133,6 +139,27 @@ Process.prototype.exit = function (sig) {
 		this.emit('shutdown');
 		this.gracenode.exit();
 	}
+};
+
+// public, but called only from core/daemon of master
+Process.prototype.stop = function () {
+	this.log.info('gracefully terminating the application...');
+	this.exit('SIGTERM');
+	var that = this;
+	var keys = Object.keys(cluster.workers);
+	async.eachSeries(keys, function (id, next) {
+		daemon.sendMsg(cluster.workers[id].process.pid, 'exit', function () {
+			next();
+		});
+	},
+	function () {
+		that.log.info('all child processes have reeived "exit" command');
+	});
+	/*
+	for (var id in cluster.workers) {
+		cluster.workers[id].kill();
+	}
+	*/
 };
 
 // private
