@@ -1,4 +1,4 @@
-var async = require('async');
+//var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
@@ -145,6 +145,7 @@ Process.prototype.exit = function (sig) {
 Process.prototype.stop = function () {
 	this.log.info('gracefully terminating the application...');
 	this.exit('SIGTERM');
+	/*
 	var that = this;
 	var keys = Object.keys(cluster.workers);
 	async.eachSeries(keys, function (id, next) {
@@ -155,11 +156,10 @@ Process.prototype.stop = function () {
 	function () {
 		that.log.info('all child processes have reeived "exit" command');
 	});
-	/*
+	*/
 	for (var id in cluster.workers) {
 		cluster.workers[id].kill();
 	}
-	*/
 };
 
 // private
