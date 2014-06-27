@@ -10,6 +10,20 @@ None
 
 #### Optimized core/index.js and core/argv for v8's optimized compiler
 
+#### Improved graceful shutdown in core process in preparation for daemon tool
+
+Master process of the application now instructs all child processes to disconnect and shutdown.
+
+## Deperacated
+
+None
+
+## Removed
+
+#### make command no longer installs scripts/gracenode.js to ~/bin/gracenode
+
+***
+
 ## Version 1.0.23
 
 ## Added

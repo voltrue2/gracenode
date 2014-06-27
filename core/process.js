@@ -117,19 +117,16 @@ Process.prototype.setupWorker = function () {
 
 // private 
 Process.prototype.exit = function (sig) {
-	this.log.info(sig, 'caught: gracefully exiting...');
 	// master process will wait for all child processes to gracefully exit
 	if (this.inClusterMode && cluster.isMaster) {
 		this.isShutdown = true;
-		return;
-	}
-	// worker process exit gracefully
-	if (this.inClusterMode && cluster.isWorker) {
-		cluster.worker.disconnect();
+		this.log.info(sig, 'caught: disconnect all child processes');
+		cluster.disconnect();
 		return;
 	}
 	// none-cluster mode exits gracefully
 	if (!this.inClusterMode) {
+		this.log.info(sig, 'caught: disconnect all child processes');
 		this.emit('shutdown');
 		this.gracenode.exit();
 	}
