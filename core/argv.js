@@ -1,5 +1,7 @@
 // --help is automatically defined and reserved
 var HELP = '--help';
+var argKeys = [];
+var defKeys = [];
 
 module.exports = Argv;
 
@@ -21,6 +23,7 @@ Argv.prototype.parse = function () {
 			// format: --name=value
 			var sep = arg.split('=');
 			this._argv[sep[0]] = lib.typeCast(sep[1]);
+			argKeys.push(sep[0]);
 			continue;
 		}
 		if (prev && arg.indexOf('-') !== 0) {
@@ -33,6 +36,7 @@ Argv.prototype.parse = function () {
 		}
 		// format: -argument or -argument value
 		this._argv[arg] = true;
+		argKeys.push(arg);
 		prev = arg;
 	}
 	console.log('<info>[argv] arguments:', this._argv);
@@ -51,7 +55,8 @@ Argv.prototype.get = function (arg) {
 	if (arg.indexOf('-') === 0) {
 		// - format -> this format supports combining multiple options: -abc is a combination of -a, -b, and -c
 		arg = arg.replace('-', '');
-		for (var key in this._argv) {
+		for (var i = 0, len = argKeys.length; i < len; i++) {
+			var key = argKeys[i];
 			if (key.indexOf('--') !== 0 && key.indexOf('-') === 0 && key.indexOf(arg) !== -1) {
 				var values = this._argv[key];
 				if (values.length === 1) {
@@ -74,7 +79,8 @@ Argv.prototype.defineOption = function (arg, desc, cb) {
 
 Argv.prototype.execDefinedOptions = function () {
 	try {
-		for (var arg in this._def) {
+		for (var i = 0, len = defKeys.length; i < len; i++) {
+			var arg = defKeys[i];
 			var option = this.get(arg);
 			if (option && typeof this._def[arg].callback === 'function') {
 				this._def[arg].callback(option);
@@ -88,7 +94,8 @@ Argv.prototype.execDefinedOptions = function () {
 
 Argv.prototype._showHelp = function () {
 	console.log('\ngracenode command help:\n');
-	for (var arg in this._def) {
+	for (var i = 0, len = defKeys.length; i < len; i++) {
+		var arg = defKeys[i];
 		var spaces = this._createSpaces(this._maxLen - arg.length);
 		console.log('    ' + arg + spaces + ':', this._def[arg].desc);
 	}

@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 1.0.24
+
+## Added
+
+None
+
+## Changed
+
+#### Optimized core/index.js and core/argv for v8's optimized compiler
+
 ## Version 1.0.23
 
 ## Added
