@@ -63,39 +63,39 @@ function Logger(prefix, name, config) {
 }
 
 Logger.prototype.verbose = function () {
-	this._handleLog('verbose', arguments);
+	this._handleLog.apply(this, ['verbose', arguments]);
 };
 
 Logger.prototype.debug = function () {
-	this._handleLog('debug', arguments);
+	this._handleLog.apply(this, ['debug', arguments]);
 };
 
 Logger.prototype.trace = function () {
 	var traceError = new Error('<stack trace>');
 	var trace = traceError.stack.replace('Error: ', '');
-	this._handleLog('trace', arguments);
+	this._handleLog.apply(this, ['trace', arguments]);
 	this._handleLog('trace', [trace]);
 };
 
 Logger.prototype.info = function () {
-	this._handleLog('info', arguments);
+	this._handleLog.apply(this, ['info', arguments]);
 };
 
 Logger.prototype.warning = function () {
-	this._handleLog('warn', arguments);
+	this._handleLog.apply(this, ['warn', arguments]);
 };
 
 // alias of warning
 Logger.prototype.warn = function () {
-	this._handleLog('warn', arguments);
+	this._handleLog.apply(this, ['warn', arguments]);
 };
 
 Logger.prototype.error = function () {
-	this._handleLog('error', arguments);
+	this._handleLog.apply(this, ['error', arguments]);
 };
 
 Logger.prototype.fatal = function () {
-	this._handleLog('fatal', arguments);
+	this._handleLog.apply(this, ['fatal', arguments]);
 };
 
 Logger.prototype._handleLog = function (levelName, message) {

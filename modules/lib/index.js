@@ -75,7 +75,8 @@ module.exports.getArguments = function (func) {
 };
 
 // props [optional]: an array of properties to retrive and ignore the rest
-module.exports.cloneObj = function (obj, props) {
+// noClass: [boolean] if true, it will NOT clone prototypes and other class related properties
+module.exports.cloneObj = function (obj, props, noClass) {
 	if (obj === null || typeof obj !== 'object') {
 		return obj;
 	}
@@ -85,14 +86,29 @@ module.exports.cloneObj = function (obj, props) {
 	} else {
 		res = {};
 	}
-	for (var key in obj) {
-		if (isNaN(key) && props && props.indexOf(key) === -1) {
-			continue;
+	if (noClass) {
+		var keys = Object.keys(obj);
+		for (var i = 0, len = keys.length; i < len; i++) {
+			var key = keys[i];
+			if (isNaN(key) && props && props.indexOf(key) === -1) {
+				continue;
+			}
+			if (obj[key] !== null && typeof obj[key] === 'object') {
+				res[key] = module.exports.cloneObj(obj[key], props, noClass);
+			} else {
+				res[key] = obj[key];
+			}
 		}
-		if (obj[key] !== null && typeof obj[key] === 'object') {
-			res[key] = module.exports.cloneObj(obj[key], props);
-		} else {
-			res[key] = obj[key];
+	} else {
+		for (var prop in obj) {
+			if (isNaN(prop) && props && props.indexOf(prop) === -1) {
+				continue;
+			}
+			if (obj[prop] !== null && typeof obj[prop] === 'object') {
+				res[prop] = module.exports.cloneObj(obj[prop], props, noClass);
+			} else {
+				res[prop] = obj[prop];
+			}
 		}
 	}
 	return res;
