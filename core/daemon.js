@@ -17,6 +17,7 @@ module.exports.sendMsg = function (pid, msg, cb) {
 	});
 };
 
+// master only
 // internal use only for daemonizing the application
 // we are not useing defineOption() because we do not want this to show up in --help
 if (gn.argv('--daemon')) {

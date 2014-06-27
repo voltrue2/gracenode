@@ -35,10 +35,6 @@ Process.prototype.setup = function () {
 
 	this.listeners();
 
-	// set up daemon in case we need it
-	daemon = require('./daemon');
-	daemon.processObj = this;
-
 	if (this.inClusterMode && this.clusterNum > 1) {
 		this.startClusterMode();
 		return;
@@ -48,6 +44,10 @@ Process.prototype.setup = function () {
 	this.inClusterMode = false;
 	
 	this.log.info('running the process in none-cluster mode (pid: ' + process.pid + ')');
+
+	// set up daemon in case we need it
+	daemon = require('./daemon');
+	daemon.processObj = this;
 	
 	this.emit('nocluster.setup');
 };
@@ -55,6 +55,10 @@ Process.prototype.setup = function () {
 // private	
 Process.prototype.startClusterMode = function () {
 	if (cluster.isMaster) {
+		// set up daemon in case we need it
+		daemon = require('./daemon');
+		daemon.processObj = this;
+		// set up master process
 		return this.setupMaster();
 	}
 
@@ -145,21 +149,6 @@ Process.prototype.exit = function (sig) {
 Process.prototype.stop = function () {
 	this.log.info('gracefully terminating the application...');
 	this.exit('SIGTERM');
-	/*
-	var that = this;
-	var keys = Object.keys(cluster.workers);
-	async.eachSeries(keys, function (id, next) {
-		daemon.sendMsg(cluster.workers[id].process.pid, 'exit', function () {
-			next();
-		});
-	},
-	function () {
-		that.log.info('all child processes have reeived "exit" command');
-	});
-	for (var id in cluster.workers) {
-		cluster.workers[id].kill();
-	}
-	*/
 	cluster.disconnect();
 };
 

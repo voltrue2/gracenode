@@ -100,6 +100,7 @@ Gracenode.prototype.defineOption = function (argName, description, callback) {
 };
 
 Gracenode.prototype.setup = function (cb) {
+	var that = this;
 	if (!this._configPath) {
 		return this.exit(new Error('path to configuration files not set'));
 	}
@@ -109,7 +110,6 @@ Gracenode.prototype.setup = function (cb) {
 	// parse argv arguments
 	this._argv.parse();
 	// start gracenode
-	var that = this;
 	var starter = function (callback) {
 		log.verbose('gracenode is starting...');
 		callback(null, that, cb);
