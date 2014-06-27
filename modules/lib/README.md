@@ -62,7 +62,7 @@ Recursively walks the given path and passes an array of file paths to the callba
 
 ####cloneObj
 <pre>
-Mixed cloneObj(Object obj, Array propNames)
+Mixed cloneObj(Object obj, Array propNames, [Boolean noClassClone])
 </pre>
 Returns a clone of given object. In javascript, objects are passed around as references. Use this in order to avoid mutating the original objects.
 
