@@ -156,10 +156,11 @@ Process.prototype.stop = function () {
 	function () {
 		that.log.info('all child processes have reeived "exit" command');
 	});
-	*/
 	for (var id in cluster.workers) {
 		cluster.workers[id].kill();
 	}
+	*/
+	cluster.disconnect();
 };
 
 // private

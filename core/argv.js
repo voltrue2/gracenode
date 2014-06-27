@@ -72,6 +72,9 @@ Argv.prototype.get = function (arg) {
 
 Argv.prototype.defineOption = function (arg, desc, cb) {
 	this._def[arg] = { desc: desc, callback: cb };
+	if (defKeys.indexOf(arg) === -1) {
+		defKeys.push(arg);
+	}
 	if (arg.length > this._maxLen) {
 		this._maxLen = arg.length;
 	}
