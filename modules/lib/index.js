@@ -85,7 +85,9 @@ module.exports.cloneObj = function (obj, props) {
 	} else {
 		res = {};
 	}
-	for (var key in obj) {
+	var keys = Object.keys(obj);
+	for (var i = 0, len = keys.length; i < len; i++) {
+		var key = keys[i];
 		if (isNaN(key) && props && props.indexOf(key) === -1) {
 			continue;
 		}

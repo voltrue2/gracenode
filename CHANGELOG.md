@@ -14,6 +14,10 @@ None
 
 Master process of the application now instructs all child processes to disconnect and shutdown.
 
+#### Optimized log module for v8 optimized compiler
+
+#### Optimized lib module cloneObj for v8 optimaized compiler
+
 ## Deperacated
 
 None
