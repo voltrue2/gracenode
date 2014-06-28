@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.0.25
+
+## Added
+
+None
+
+## Changed
+
+#### Removed unnecessary optimization from cloneObj()
+
+## Deperacated
+
+None
+
+## Removed
+
+#### make command no longer installs scripts/gracenode.js to ~/bin/gracenode
+
+***
+
 ## Version 1.0.24
 
 ## Added
