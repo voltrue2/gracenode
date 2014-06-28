@@ -81,7 +81,7 @@ Process.prototype.setupMaster = function () {
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
 		if (!worker.suicide && signal && that.config.autoSpawn) {
-			// the worker died from an error, spawn it
+			// the worker died from an error, spawn it if allowed by configuration
 			var newWorker = that.createWorker();
 			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
 		}
@@ -106,7 +106,7 @@ Process.prototype.setupWorker = function () {
 	this.log = this.gracenode.log.create('child-process');
 	this.log.info('running the process in cluster mode [worker] (pid: ' + process.pid + ')');
 	this.emit('cluster.worker.setup', process.pid);
-	// on disconnect: triggered by master process's eixt() kill w/ SIGTERM
+	// on disconnect: triggered by master process's cluster.disconnect
 	var that = this;
 	cluster.worker.on('disconnect', function () {
 		that.log.info('worker (pid:' + process.pid + ') has disconnected');
