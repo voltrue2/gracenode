@@ -101,8 +101,7 @@ Gracenode.prototype.defineOption = function (argName, description, callback) {
 
 Gracenode.prototype.setup = function (cb) {
 	if (!this._configPath) {
-		console.error('<error>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
-		return this.exit(new Error('path to configuration files not set'));
+		console.warn('<warn>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
 	}
 	if (!this._configFiles.length) {
 		console.warn('<warn>[gracenode] no configuration files to load');
@@ -221,6 +220,10 @@ function setupConfig(that, lastCallback, cb) {
 function setupLog(that, lastCallback, cb) {
 	var conf = config.getOne('modules.log');
 	logger.gracenode = that;
+	if (!conf) {
+		console.warn('<warn>[gracenode] no configurations for log module');
+		return cb(null, that, lastCallback);
+	}
 	logger.readConfig(conf);
 	logger.setup(function (error) {
 		if (error) {
@@ -238,8 +241,12 @@ function setupLog(that, lastCallback, cb) {
 }
 
 function setupProfiler(that, lastCallback, cb) {
+	var conf = config.getOne('modules.log');
+	if (!conf) {
+		console.warn('<warn>[gracenode] profiler module disabled because of missing log module configurations');
+		return cb(null, that, lastCallback);
+	}
 	var profiler = require('../modules/profiler');
-
 	// gracenode profiler
 	that._profiler = profiler.create(that._root);
 	that._profiler.start();	

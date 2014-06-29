@@ -12,6 +12,8 @@ None
 
 #### Improved the error catch for missing configuration files
 
+#### gracenode now tolerates missing configurations
+
 ## Deperacated
 
 None
