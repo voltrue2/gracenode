@@ -101,10 +101,11 @@ Gracenode.prototype.defineOption = function (argName, description, callback) {
 
 Gracenode.prototype.setup = function (cb) {
 	if (!this._configPath) {
+		console.error('<error>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
 		return this.exit(new Error('path to configuration files not set'));
 	}
 	if (!this._configFiles.length) {
-		return this.exit(new Error('configuration files not set'));
+		console.warn('<warn>[gracenode] no configuration files to load');
 	}
 	// parse argv arguments
 	this._argv.parse();

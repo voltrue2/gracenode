@@ -10,6 +10,8 @@ None
 
 #### Removed unnecessary optimization from cloneObj()
 
+#### Improved the error catch for missing configuration files
+
 ## Deperacated
 
 None
