@@ -101,10 +101,12 @@ Gracenode.prototype.defineOption = function (argName, description, callback) {
 
 Gracenode.prototype.setup = function (cb) {
 	if (!this._configPath) {
-		console.warn('<warn>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
+		console.warn('<error>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
+		return cb(new Error('patj to configuration files is missing'));
 	}
 	if (!this._configFiles.length) {
 		console.warn('<warn>[gracenode] no configuration files to load');
+		return cb(new Error('no configuration files given'));
 	}
 	// parse argv arguments
 	this._argv.parse();
@@ -221,6 +223,7 @@ function setupLog(that, lastCallback, cb) {
 	var conf = config.getOne('modules.log');
 	logger.gracenode = that;
 	if (!conf) {
+		that.log = logger;
 		console.warn('<warn>[gracenode] no configurations for log module');
 		return cb(null, that, lastCallback);
 	}

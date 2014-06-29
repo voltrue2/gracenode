@@ -1,4 +1,3 @@
-
 var gracenode = require('../../');
 var log = gracenode.log.create('profiler');
 
