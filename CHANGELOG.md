@@ -28,7 +28,7 @@ None
 
 ## Removed
 
-#### make command no longer installs scripts/gracenode.js to ~/bin/gracenode
+None
 
 ***
 
