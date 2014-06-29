@@ -146,7 +146,6 @@ Process.prototype.exit = function (sig) {
 Process.prototype.stop = function () {
 	this.log.info('gracefully terminating the application...');
 	this.exit('SIGTERM');
-	cluster.disconnect();
 };
 
 // private
