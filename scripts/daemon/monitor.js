@@ -1,6 +1,6 @@
 var fs = require('fs');
 var net = require('net');
-var fork = require('child_process').fork;
+var spawn = require('child_process').spawn;
 var gn = require('../../');
 var socketName = require('./socket-name');
 var logger;
@@ -41,15 +41,17 @@ function handleCommunication(msg) {
 		case 'restart':
 			break;
 		default:
-			logger.error('unkown command:', command);
+			logger.error('unknown command:', command);
 			break;
 	}
 }
 
 function startApp() {
-	app = fork(path, ['--daemon']);
+	app = spawn(process.execPath, [path, '--daemon'], { detached: true, stdio: 'ignore' });
 	// if appllication dies unexpectedly, respawn it
 	app.on('exit', startApp);
+	// detach itself from the parent process
+	app.unref();
 }
 
 function stopApp(path) {

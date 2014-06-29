@@ -4,7 +4,17 @@
 
 ## Added
 
-None
+#### Added daemon tool
+
+To start your application as a daemon:
+
+`scripts/daemon start path/to/your/app`
+
+To stop your daemon application:
+
+`scripts/daemon stop path/to/your/app`
+
+Note: This is the first version of daemon tool. We are planning on improving this feature.
 
 ## Changed
 
