@@ -142,12 +142,6 @@ Process.prototype.exit = function (sig) {
 	}
 };
 
-// public, but called only from core/daemon of master
-Process.prototype.stop = function () {
-	this.log.info('gracefully terminating the application...');
-	this.exit('SIGTERM');
-};
-
 // private
 Process.prototype.listeners = function () {
 

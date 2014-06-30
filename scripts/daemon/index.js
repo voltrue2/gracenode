@@ -12,6 +12,10 @@ gn.defineOption('stop', 'Stops daemonized application.', function (path) {
 	require('./stop.js')(path);
 });
 
+gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
+	require('./restart.js')(path);
+});
+
 gn.setup(function () {
 	var logger = gn.log.create('daemon');
 	if (gn.argv('start')) {

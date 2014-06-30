@@ -49,10 +49,6 @@ function handleMessage(msg) {
 	switch (command) {
 		case 'stop':
 			// command sent from daemon tool to application master
-			module.exports.processObj.stop();
-			break;
-		case 'exit':
-			// command sent from application master to child processes
 			module.exports.processObj.exit('SIGTERM');
 			break;
 	}

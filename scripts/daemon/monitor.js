@@ -39,6 +39,7 @@ function handleCommunication(msg) {
 			stopApp();
 			break;
 		case 'restart':
+			stopApp(startApp);
 			break;
 		default:
 			logger.error('unknown command:', command);
@@ -50,17 +51,19 @@ function startApp() {
 	app = spawn(process.execPath, [path, '--daemon'], { detached: true, stdio: 'ignore' });
 	// if appllication dies unexpectedly, respawn it
 	app.on('exit', startApp);
-	// detach itself from the parent process
-	app.unref();
+
 }
 
-function stopApp(path) {
+function stopApp(cb) {
 	if (app) {
 		var appSock = require('../../core/daemon').getAppSocketName(app.pid);
 		var appService = new net.Socket();
 		appService.connect(appSock, function () {
 			appService.write('stop');
 			app = null;
+			if (cb) {
+				cb();
+			}
 		});
 	}
 }
