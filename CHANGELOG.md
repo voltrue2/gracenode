@@ -12,6 +12,14 @@ To list the currently running daemon processes:
 node daemon list
 ```
 
+#### daemon has added restart option
+
+To restart the currently running daemon processes:
+
+```
+node daemon restart
+```
+
 ## Deperacated
 
 None

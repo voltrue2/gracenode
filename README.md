@@ -123,6 +123,12 @@ To stop your daemon application:
 node daemon stop
 ```
 
+To restart your daemon application:
+
+```
+node daemon restart
+```
+
 To list the currently running daemon processes:
 
 ```
@@ -137,6 +143,10 @@ node daemon start /path/to/your/app/
 
 ```
 node daemon stop /path/to/your/app/
+```
+
+```
+node daemon restart /path/to/your/app/
 ```
 
 ***

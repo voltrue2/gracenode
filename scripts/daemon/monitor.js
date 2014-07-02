@@ -15,7 +15,6 @@ gn.defineOption('start', 'Starts a monitor process to spawn and monitor applicat
 	var monitorServer = net.createServer(function (sock) {
 		logger.info('monitor ready');
 		sock.on('error', handleExit);
-		sock.on('end', handleExit);
 		sock.on('data', handleCommunication);
 	});
 	monitorServer.listen(socketName(path));
@@ -36,10 +35,12 @@ function handleCommunication(msg) {
 	var command = msg.toString();
 	switch (command) {
 		case 'stop':
-			stopApp();
+			// we instruct the application process to exit and exit monitor process
+			stopApp(handleExit);
 			break;
 		case 'restart':
-			stopApp(startApp);
+			// we instruct the application process to exit and let monitor process to respawn it
+			stopApp();
 			break;
 		default:
 			logger.error('unknown command:', command);
@@ -62,7 +63,7 @@ function stopApp(cb) {
 			appService.write('stop');
 			app = null;
 			if (cb) {
-				//cb();
+				cb();
 			}
 		});
 	}

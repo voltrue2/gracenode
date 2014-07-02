@@ -16,6 +16,10 @@ gn.defineOption('list', 'Shows a list of currently running daemon processes.', f
 	require('./list.js')();
 });
 
+gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
+	require('./restart.js')(getPath(path));
+});
+
 gn.setup(function () {
 	var logger = gn.log.create('daemon');
 	if (gn.argv('start')) {
