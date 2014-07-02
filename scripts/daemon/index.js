@@ -5,15 +5,15 @@ gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['gracenode.json']);
 
 gn.defineOption('start', 'Starts application as a daemon.', function (path) {
-	require('./start.js')(path);
+	require('./start.js')(path || gn.getRootPath());
 });
 
 gn.defineOption('stop', 'Stops daemonized application.', function (path) {
-	require('./stop.js')(path);
+	require('./stop.js')(path || gn.getRootPath());
 });
 
 gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
-	require('./restart.js')(path);
+	require('./restart.js')(path || gn.getRootPath());
 });
 
 gn.setup(function () {

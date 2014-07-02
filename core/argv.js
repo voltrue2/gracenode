@@ -39,7 +39,6 @@ Argv.prototype.parse = function () {
 		argKeys.push(arg);
 		prev = arg;
 	}
-	console.log('<info>[argv] arguments:', this._argv);
 	// check if --help option is present or not
 	var help = this.get(HELP);
 	if (help) {
@@ -96,6 +95,10 @@ Argv.prototype.execDefinedOptions = function () {
 };
 
 Argv.prototype._showHelp = function () {
+	var package = require('../package.json');
+	console.log('\nNode.js application framework: gracenode');
+	console.log('Authored by', package.author);
+	console.log('Version:', package.version);
 	console.log('\ngracenode command help:\n');
 	for (var i = 0, len = defKeys.length; i < len; i++) {
 		var arg = defKeys[i];

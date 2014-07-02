@@ -1,6 +1,11 @@
 var fs = require('fs');
 var net = require('net');
-var gn = require('../');
+var gn;
+
+// called from core/index
+module.exports.setGracenode = function (gracenode) {
+	gn = gracenode;
+};
 
 // assigned in core/process
 module.exports.processObj = null;
@@ -20,16 +25,18 @@ module.exports.sendMsg = function (pid, msg, cb) {
 // master only
 // internal use only for daemonizing the application
 // we are not useing defineOption() because we do not want this to show up in --help
-if (gn.argv('--daemon')) {
-	// creates a server that listens to commands from daemon tool
-	var server = net.createServer(function (sock) {
-		sock.on('error', handleExit);
-		sock.on('end', handleExit);
-		sock.on('data', handleMessage);
-	});
-	server.listen(socketName(process.pid));
-	process.on('exit', handleExit);
-}
+module.exports.setupDaemonService = function () {
+	if (gn.argv('--daemon')) {
+		// creates a server that listens to commands from daemon tool
+		var server = net.createServer(function (sock) {
+			sock.on('error', handleExit);
+			sock.on('end', handleExit);
+			sock.on('data', handleMessage);
+		});
+		server.listen(socketName(process.pid));
+		process.on('exit', handleExit);
+	}
+};
 
 function socketName(pid) {
 	var sockName = '/tmp/gracende-app-' + pid + '-' + gn.getRootPath().replace(/\//g, '-') + '.sock';

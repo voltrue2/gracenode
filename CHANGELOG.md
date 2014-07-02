@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.0
+
+## Added
+
+#### Daemonize gracenode application (Work in progress)
+
+#### gracenode now installs an executable script daemon in your application root after install
+
+## Changed
+
+#### Core index loggin cleaned up
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.25
 
 ## Added

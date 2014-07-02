@@ -62,7 +62,7 @@ function stopApp(cb) {
 			appService.write('stop');
 			app = null;
 			if (cb) {
-				cb();
+				//cb();
 			}
 		});
 	}

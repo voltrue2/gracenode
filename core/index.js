@@ -9,6 +9,7 @@ var gracefulWaitList = []; // list of tasks to be executed before shutting down 
 var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
+var daemon = require('./daemon');
 
 // overwridden by calling _setLogCleaner from log module
 // shutdown task for log module. this will be executed at the very end
@@ -30,13 +31,13 @@ function Gracenode() {
 	this._root = roots.gracenode;
 	// change the root path of the application
 	process.chdir(this._appRoot);
-	console.log('<info>[gracenode] Working directory changed to', this._appRoot);
-	console.log('<info>[gracenode] gracenode root path:', this._root);
 	// set up to load default modules except for log module
 	this._module = new Module(this, this._root);
 	this._module.use('profiler');
 	this._module.use('lib');
 	this._argv = new Argv(this);
+	// pass gracenode to daemon
+	daemon.setGracenode(this);
 }
 
 util.inherits(Gracenode, EventEmitter);
@@ -95,18 +96,17 @@ Gracenode.prototype.argv = function (key) {
 };
 
 Gracenode.prototype.defineOption = function (argName, description, callback) {
-	console.log('<verbose>[gracenode] define argv option:', argName, description);
 	this._argv.defineOption(argName, description, callback);
 };
 
 Gracenode.prototype.setup = function (cb) {
 	var that = this;
 	if (!this._configPath) {
-		console.warn('<error>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
+		console.error('<error>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
 		return cb(new Error('patj to configuration files is missing'));
 	}
 	if (!this._configFiles.length) {
-		console.warn('<warn>[gracenode] no configuration files to load');
+		console.error('<error>[gracenode] no configuration files to load');
 		return cb(new Error('no configuration files given'));
 	}
 	// parse argv arguments
