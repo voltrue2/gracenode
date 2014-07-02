@@ -103,9 +103,11 @@ node yourBootstrapped.js
 
 gracenode framework comes with daemon tool to daemonize your application out-of-the-box.
 
-This tool is still experimental, but the aim of this tool is to allow the application to gracefully exit instead of being killed suddenly.
+gracenode creates a script called `daemon` in your application root when you install it via npm.
 
-The existing daemonizing tools so far do not allow graceful shutdown, so we are implementing our own that allows the application to exit gracefully.
+The aim of this tool is to allow the application to gracefully exit instead of being killed suddenly.
+
+In order to use daemon tool, your application must be built with gracenode framework.
 
 To start your application as a daemon process:
 
@@ -134,8 +136,6 @@ node daemon start /path/to/your/app/
 ```
 node daemon stop /path/to/your/app/
 ```
-
-gracenode creates a script called `daemon` in your application root when you install it via npm.
 
 ***
 
