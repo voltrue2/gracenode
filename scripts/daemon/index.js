@@ -12,10 +12,6 @@ gn.defineOption('stop', 'Stops daemonized application.', function (path) {
 	require('./stop.js')(getPath(path));
 });
 
-gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
-	require('./restart.js')(getPath(path));
-});
-
 gn.setup(function () {
 	var logger = gn.log.create('daemon');
 	if (gn.argv('start')) {
@@ -27,10 +23,10 @@ gn.setup(function () {
 });
 
 function getPath(path) {
-	if (typeof path !== 'string') {
+	if (!Array.isArray(path)) {
 		// default to the root of the application
 		return gn.getRootPath();
 	}
 	// or use the given path
-	return path;
+	return path[0];
 }
