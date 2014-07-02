@@ -4,8 +4,6 @@
 
 ## Added
 
-#### Daemonize gracenode application (Work in progress)
-
 #### gracenode now installs an executable script daemon in your application root after install
 
 When you install gracenode via npm, gracenode will create a node.js script called `daemon` in your application root.

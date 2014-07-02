@@ -109,17 +109,25 @@ The existing daemonizing tools so far do not allow graceful shutdown, so we are 
 
 To start your application as a daemon process:
 
-`node daemon start`
+```
+node daemon start
+```
 
 To stop your daemon application:
 
-`node daemon stop`
+```
+node daemon stop
+```
 
 You can optionally give a path to the application you want to target.
 
-`node daemon start /path/to/your/app/`
+```
+node daemon start /path/to/your/app/
+```
 
-`node daemon stop /path/to/your/app/`
+```
+node daemon stop /path/to/your/app/
+```
 
 gracenode creates a script called `daemon` in your application root when you install it via npm.
 
