@@ -115,7 +115,7 @@ To stop your daemon application:
 
 `node daemon stop`
 
-gracenode creates a script called `daemon.js` in your application root when you install it via npm.
+gracenode creates a script called `daemon` in your application root when you install it via npm.
 
 ***
 
