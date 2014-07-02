@@ -20,6 +20,10 @@ To restart the currently running daemon processes:
 node daemon restart
 ```
 
+## Changed
+
+None
+
 ## Deperacated
 
 None
