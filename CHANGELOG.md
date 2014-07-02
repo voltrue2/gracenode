@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.1
+
+## Added
+
+#### daemon has added list option
+
+To list the currently running daemon processes:
+
+```
+node daemon list
+```
+
+## Deperacated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.0
 
 ## Added
