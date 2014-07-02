@@ -12,6 +12,10 @@ gn.defineOption('stop', 'Stops daemonized application.', function (path) {
 	require('./stop.js')(getPath(path));
 });
 
+gn.defineOption('list', 'Shows a list of currently running daemon processes.', function () {
+	require('./list.js')();
+});
+
 gn.setup(function () {
 	var logger = gn.log.create('daemon');
 	if (gn.argv('start')) {

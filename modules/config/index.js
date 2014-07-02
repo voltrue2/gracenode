@@ -41,9 +41,6 @@ module.exports.load = function (configList, cb) {
 							configData[key][prop] = data[key][prop];
 						}
 					}
-				
-					console.log('<info>[config]', configPath + config + ' loaded');
-				
 				} catch (exception) {
 					error = exception;	
 				}

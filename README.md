@@ -119,6 +119,12 @@ To stop your daemon application:
 node daemon stop
 ```
 
+To list the currently running daemon processes:
+
+```
+node daemon list
+```
+
 You can optionally give a path to the application you want to target.
 
 ```
