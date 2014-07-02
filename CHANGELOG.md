@@ -8,6 +8,18 @@
 
 #### gracenode now installs an executable script daemon in your application root after install
 
+When you install gracenode via npm, gracenode will create a node.js script called `daemon.js` in your application root.
+
+You can execute this script to start your application as daemon or stop your daemon application.
+
+To start your application as a daemon:
+
+`node daemon start`
+
+To stop your daemon application:
+
+`node daemon stop`
+
 ## Changed
 
 #### Core index loggin cleaned up

@@ -5,15 +5,15 @@ gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['gracenode.json']);
 
 gn.defineOption('start', 'Starts application as a daemon.', function (path) {
-	require('./start.js')(path || gn.getRootPath());
+	require('./start.js')(getPath(path));
 });
 
 gn.defineOption('stop', 'Stops daemonized application.', function (path) {
-	require('./stop.js')(path || gn.getRootPath());
+	require('./stop.js')(getPath(path));
 });
 
 gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
-	require('./restart.js')(path || gn.getRootPath());
+	require('./restart.js')(getPath(path));
 });
 
 gn.setup(function () {
@@ -25,3 +25,12 @@ gn.setup(function () {
 		logger.info('stopping the application...', gn.argv('stop'));
 	}
 });
+
+function getPath(path) {
+	if (typeof path !== 'string') {
+		// default to the root of the application
+		return gn.getRootPath();
+	}
+	// or use the given path
+	return path;
+}
