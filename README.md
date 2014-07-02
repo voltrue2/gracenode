@@ -101,7 +101,7 @@ node yourBootstrapped.js
 
 ##Daemonizing your application process
 
-gracenode framework offers daemon tool under scriptes/daemon/
+gracenode framework comes with daemon tool to daemonize your application out-of-the-box.
 
 This tool is still experimental, but the aim of this tool is to allow the application to gracefully exit instead of being killed suddenly.
 
