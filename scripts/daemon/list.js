@@ -6,7 +6,7 @@ module.exports = function () {
 	
 	logger.debug('here?');	
 
-	exec('ps axu | grep node', function (error, stdout) {
+	exec('ps axu | grep "node "', function (error, stdout) {
 		if (error) {
 			return gn.exit(error);
 		}
