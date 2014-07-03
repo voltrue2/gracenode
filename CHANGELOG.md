@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.2
+
+## Added
+
+None
+
+## Changed
+
+#### Fix in daemon list option
+
+`ps aux | grep` command changed to `ps aux | grep "node "` to avoid false positive.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.1
 
 ## Added
