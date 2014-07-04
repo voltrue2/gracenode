@@ -131,6 +131,12 @@ Process.prototype.exit = function (sig) {
 	if (this.inClusterMode && cluster.isMaster) {
 		this.isShutdown = true;
 		this.log.info(sig, 'caught: disconnect all child processes');
+		// check to see if there is any worker still alive
+		if (noMoreWorkers()) {
+			// there are no more workers, exit now
+			this.log.info('no more workers. exit now...');
+			return this.gracenode.exit();
+		}
 		cluster.disconnect();
 		return;
 	}

@@ -12,6 +12,12 @@ None
 
 `ps aux | grep` command changed to `ps aux | grep "node "` to avoid false positive.
 
+#### Bug fix in core process
+
+If worker processes fail to se tup gracenode and die, master process was unable to exit the process and shutdown.
+
+Fix.
+
 ## Deprecated
 
 None

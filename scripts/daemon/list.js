@@ -3,9 +3,6 @@ var gn = require('gracenode');
 var logger = gn.log.create('daemon-list');
 
 module.exports = function () {
-	
-	logger.debug('here?');	
-
 	exec('ps axu | grep "node "', function (error, stdout) {
 		if (error) {
 			return gn.exit(error);
