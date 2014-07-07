@@ -10,7 +10,6 @@ module.exports = function (path) {
 	});
 	var sock = new net.Socket();
 	sock.connect(sockName(path), function () {
-		logger.info('stopping application', path);
 		sock.write('stop');
 		gn.exit();
 	});

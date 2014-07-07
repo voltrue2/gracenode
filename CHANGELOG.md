@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 1.1.3
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool configuration updated
+
+#### Daemon tool now blocks daemon process from duplicating by calling start with the same application path
+
+#### Optimized config module
+
+The initial loading of config files have been optimized.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.2
 
 ## Added

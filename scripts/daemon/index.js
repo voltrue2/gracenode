@@ -2,7 +2,7 @@
 
 var gn = require('../../');
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
-gn.setConfigFiles(['gracenode.json']);
+gn.setConfigFiles(['daemon.json']);
 
 gn.defineOption('start', 'Starts application as a daemon.', function (path) {
 	require('./start.js')(getPath(path));

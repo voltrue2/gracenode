@@ -111,6 +111,11 @@ Gracenode.prototype.setup = function (cb) {
 	}
 	// parse argv arguments
 	this._argv.parse();
+	// set up config
+	var error = setupConfig(this);
+	if (error) {
+		return cb(error);
+	}
 	// start gracenode
 	var starter = function (callback) {
 		log.verbose('gracenode is starting...');
@@ -118,7 +123,6 @@ Gracenode.prototype.setup = function (cb) {
 	};
 	var setupList = [
 		starter, 
-		setupConfig, 
 		setupLog, 
 		setupProfiler,
 		setupProcess, 
@@ -203,20 +207,13 @@ function findRoots() {
 	return { app: appRoot, gracenode: root };
 }
 
-function setupConfig(that, lastCallback, cb) {
+function setupConfig(that) {
 	config.setPath(that._configPath);
-	config.load(that._configFiles, function (error) {
-		if (error) {
-			return cb(error);
-		}
-		that.config = config;
-
-		log.verbose('config is ready');
-
-		that.emit('setup.config');
-
-		cb(null, that, lastCallback);
-	});
+	var error = config.load(that._configFiles);
+	that.config = config;
+	log.verbose('config is ready');
+	that.emit('setup.config');
+	return error;
 }
 
 function setupLog(that, lastCallback, cb) {

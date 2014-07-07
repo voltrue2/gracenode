@@ -1,6 +1,4 @@
 var jshint = require('jshint').JSHINT;
-var fs = require('fs');
-var async = require('async');
 var configPath;
 var configData = {};
 
@@ -18,43 +16,17 @@ module.exports.setPath = function (path) {
  * @param {array} a list of configuration file name(s) to load
  * @param {function} callback
  */
-module.exports.load = function (configList, cb) {
+module.exports.load = function (configList) {
 	if (configPath === undefined) {
-		return cb(new Error('configPath has not been set. you must call setConfigPath() method'));
+		return new Error('configPath has not been set. you must call setConfigPath() method');
 	}
-	async.eachSeries(configList, function (config, callback) {
-		fs.readFile(configPath + config, function (error, dataSource) {
-			if (!error) {
-				try {
-					dataSource = dataSource.toString();
-					if (!jshint(dataSource)) {
-						// there are lint errors
-						var errors = jshint.data().errors;
-						throw new Error('invalid configurations in a configuration file: ' + configPath + config + '\n' + formatLintErrors(errors));
-					}
-					var data = JSON.parse(dataSource);
-					for (var key in data) {
-						if (!configData[key]) {
-							configData[key] = {};
-						}
-						for (var prop in data[key]) {
-							configData[key][prop] = data[key][prop];
-						}
-					}
-				} catch (exception) {
-					error = exception;	
-				}
-			}
-			callback(error);
-		});
-	},
-	function (error) {
+	for (var i = 0, len = configList.length; i < len; i++) {
+		var error = parseConfigData(configList[i]);
 		if (error) {
-			console.error('<error>[config]', error);
-			console.trace();
+			return error;
 		}
-		cb(error);
-	});
+	}
+	return false;
 };
 
 /**
@@ -98,6 +70,32 @@ module.exports.getMany = function (propNameList) {
 	}
 	return res;
 };
+
+function parseConfigData(filePath) {
+	var path = configPath + filePath;
+	try {
+		var config = require(path);
+		if (!jshint(JSON.stringify(config))) {
+			var errors = jshint.data().errors;
+			throw new Error('invalid configurations in a configuration file: ' + path + '\n' + formatLintErrors(errors));
+		}
+		for (var key in config) {
+			if (typeof config[key] !== 'object') {
+				configData[key] = config[key];
+				continue;
+			}
+			if (configData[key] === undefined) {
+				configData[key] = {};
+			}
+			for (var prop in config[key]) {
+				configData[key][prop] = config[key][prop];
+			}
+		}
+		return false;
+	} catch (e) {
+		return e;
+	}
+}
 
 function formatLintErrors(errors) {
 	var str = '\n';

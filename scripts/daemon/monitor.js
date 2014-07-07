@@ -13,18 +13,15 @@ gn.setConfigFiles(['gracenode.json']);
 gn.defineOption('start', 'Starts a monitor process to spawn and monitor application process(s).', function (pathIn) {
 	path = pathIn[0] || null;
 	var monitorServer = net.createServer(function (sock) {
-		logger.info('monitor ready');
 		sock.on('error', handleExit);
 		sock.on('data', handleCommunication);
 	});
-	monitorServer.listen(socketName(path));
+	var sockFile = socketName(path);
+	monitorServer.listen(sockFile);
 	startApp();
 });
 
-gn.setup(function () {
-	logger = gn.log.create('daemon-monitor');
-	logger.info('monitor starting... (pid:' + process.pid + ')');
-});
+gn.setup(function () {});
 
 function handleExit(error) {
 	fs.unlinkSync(socketName(path));
