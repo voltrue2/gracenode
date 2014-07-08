@@ -54,14 +54,9 @@ function startApp() {
 
 function stopApp(cb) {
 	if (app) {
-		var appSock = require('../../core/daemon').getAppSocketName(app.pid);
-		var appService = new net.Socket();
-		appService.connect(appSock, function () {
-			appService.write('stop');
-			app = null;
-			if (cb) {
-				cb();
-			}
-		});
+		app.kill();
+		if (cb) {
+			cb();
+		}
 	}
 }

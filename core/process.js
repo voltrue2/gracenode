@@ -2,7 +2,6 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
-var daemon = require('./daemon');
 
 module.exports = Process;
 
@@ -45,19 +44,12 @@ Process.prototype.setup = function () {
 	
 	this.log.info('running the process in none-cluster mode (pid: ' + process.pid + ')');
 
-	// set up daemon in case we need it
-	daemon.processObj = this;
-	daemon.setupDaemonService();
-	
 	this.emit('nocluster.setup');
 };
 
 // private	
 Process.prototype.startClusterMode = function () {
 	if (cluster.isMaster) {
-		// set up daemon in case we need it
-		daemon.processObj = this;
-		daemon.setupDaemonService();
 		// set up master process
 		return this.setupMaster();
 	}
@@ -125,7 +117,7 @@ Process.prototype.setupWorker = function () {
 	});
 };
 
-// private/public in daemon mode, this function gets called from core/daemon worker 
+// private 
 Process.prototype.exit = function (sig) {
 	// master process will wait for all child processes to gracefully exit
 	if (this.inClusterMode && cluster.isMaster) {

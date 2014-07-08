@@ -9,7 +9,6 @@ var gracefulWaitList = []; // list of tasks to be executed before shutting down 
 var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
-var daemon = require('./daemon');
 
 // overwridden by calling _setLogCleaner from log module
 // shutdown task for log module. this will be executed at the very end
@@ -36,8 +35,6 @@ function Gracenode() {
 	this._module.use('profiler');
 	this._module.use('lib');
 	this._argv = new Argv(this);
-	// pass gracenode to daemon
-	daemon.setGracenode(this);
 }
 
 util.inherits(Gracenode, EventEmitter);

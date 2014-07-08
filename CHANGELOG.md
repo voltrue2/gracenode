@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.1.5
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool can now daemonize any node.js application
+
+#### Daemon tool improved
+
+Daemon tool no longer requires gracenode application to communication via a socket file to manage start/stop.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.4
 
 ## Added
