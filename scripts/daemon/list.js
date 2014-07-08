@@ -15,11 +15,11 @@ module.exports = function () {
 			var list = stdout.split('\n');
 			for (var i = 0, len = list.length; i < len; i++) {
 				if (list[i].indexOf('gracenode/scripts/daemon/monitor') !== -1) {
-					processList.push({ br: '\n', prefix: '	Daemon monitor process:', p: trim(list[i]) });
+					processList.push({ prefix: '	Daemon monitor process:', p: trim(list[i]) });
 					continue;
 				}
 				if (list[i].indexOf('--daemon') !== -1) {
-					processList.push({ br: '', prefix: '		Application daemon process:', p: trim(list[i]) });
+					processList.push({ prefix: '		Application daemon process:', p: trim(list[i]) });
 				}
 			}
 			next();
@@ -44,22 +44,26 @@ module.exports = function () {
 					if (seen.indexOf(pid) === -1 && execPath === process.execPath) {
 						var key;
 						var name = 'app';
+						var path;
 						// check for monitor process
 						if (processName.indexOf('/node_modules/gracenode/scripts/daemon/monitor') !== -1) {
 							// this is a monitor process
 							key = appPath.replace(/\//g, '');
 							name = 'monitor';
+							path = appPath;
 						} else {
 							// this is an application process
 							key = processName.replace(/\//g, '');
+							path = processName;
 						}
 						if (!processMap[key]) {
 							processMap[key] = {
 								monitor: [],
-								app: []
+								app: [],
+								path: path
 							};
 						}			
-						processMap[key][name].push(item.br + ' ' + color(item.prefix, '0;33') + ' ' + color(item.p, '0;32') + ' ' + color('(pid:' + pid + ')', '1;35'));
+						processMap[key][name].push(color(item.prefix, '0;33') + ' ' + color(item.p, '0;32') + ' ' + color('(pid:' + pid + ')', '1;35'));
 						seen.push(pid);
 					}
 				}
@@ -75,6 +79,8 @@ module.exports = function () {
 		// output
 		for (var path in processMap) {
 			var p = processMap[path];
+			console.log(color('\n	To stop this application:', '0;37'), color('node daemon stop ' + p.path, '1;36'));
+			console.log(color('	To restart this application:', '0;37'), color('node daemon restart ' + p.path, '1;36'));
 			console.log(p.monitor[0]);
 			for (var i = 0, len = p.app.length; i < len; i++) {
 				console.log(p.app[i]);	

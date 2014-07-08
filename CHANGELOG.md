@@ -20,6 +20,8 @@ Daemon tool no longer requires gracenode application to communication via a sock
 
 Output the list of daemonized application processes with correct grouping.
 
+#### Daemon tool list added stop/restart instruction in its output
+
 ## Deprecated
 
 None
