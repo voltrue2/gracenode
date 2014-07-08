@@ -5,6 +5,7 @@ var logger = gn.log.create('daemon-list');
 
 module.exports = function () {
 	var processList = [];
+	var processMap = {};
 	// get the list of daemon processes
 	var getProcessList = function (next) {
 		exec('ps aux | grep "node "', function (error, stdout) {
@@ -25,20 +26,40 @@ module.exports = function () {
 		});
 	};
 	// get the list of pid and display
-	// $11 = process name $2 = pid
+	// $11 = process, $12 = $1, $14 = $3, $2 = pid
 	var getPids = function (next) {
 		var seen = [];
 		async.eachSeries(processList, function (item, callback) {
-			exec('ps aux | grep "' + item.p + '" | awk \'{ print $11 } { print $2 }\'', function (error, stdout) {
+			exec('ps aux | grep "' + item.p + '" | awk \'{ print $11 } { print $2 } { print $12} { print $14 }\'', function (error, stdout) {
 				if (error) {
 					return next(error);
 				}
+				// parse and group processes
 				var list = stdout.split('\n');
 				while (list.length) {
-					var elm = list.shift();
+					var execPath = list.shift();
 					var pid = list.shift();
-					if (seen.indexOf(pid) === -1 && elm === process.execPath) {
-						console.log(item.br, color(item.prefix, '0;33'), color(item.p, '0;32'), color('(pid:' + pid + ')', '1;35'));
+					var processName = list.shift(); // tells us if this process is monitor or not
+					var appPath = list.shift() // if monitor process, this tells us which process it is watching
+					if (seen.indexOf(pid) === -1 && execPath === process.execPath) {
+						var key;
+						var name = 'app';
+						// check for monitor process
+						if (processName.indexOf('/node_modules/gracenode/scripts/daemon/monitor') !== -1) {
+							// this is a monitor process
+							key = appPath.replace(/\//g, '');
+							name = 'monitor';
+						} else {
+							// this is an application process
+							key = processName.replace(/\//g, '');
+						}
+						if (!processMap[key]) {
+							processMap[key] = {
+								monitor: [],
+								app: []
+							};
+						}			
+						processMap[key][name].push(item.br + ' ' + color(item.prefix, '0;33') + ' ' + color(item.p, '0;32') + ' ' + color('(pid:' + pid + ')', '1;35'));
 						seen.push(pid);
 					}
 				}
@@ -50,6 +71,14 @@ module.exports = function () {
 	var display = function (error) {
 		if (error) {
 			return gn.exit(error);
+		}
+		// output
+		for (var path in processMap) {
+			var p = processMap[path];
+			console.log(p.monitor[0]);
+			for (var i = 0, len = p.app.length; i < len; i++) {
+				console.log(p.app[i]);	
+			}
 		}
 		console.log('\n');
 		gn.exit();

@@ -10,9 +10,15 @@ None
 
 #### Daemon tool can now daemonize any node.js application
 
+Previously the daemon tool required your application to be build with gracenode to daemonize the process, but it is no longer a requirement.
+
 #### Daemon tool improved
 
 Daemon tool no longer requires gracenode application to communication via a socket file to manage start/stop.
+
+#### Daemon tool list now groups each daemonized application process with its monitor
+
+Output the list of daemonized application processes with correct grouping.
 
 ## Deprecated
 
