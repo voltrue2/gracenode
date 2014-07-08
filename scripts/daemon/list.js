@@ -38,7 +38,7 @@ module.exports = function () {
 					var elm = list.shift();
 					var pid = list.shift();
 					if (seen.indexOf(pid) === -1 && elm === process.execPath) {
-						console.log(item.br, item.prefix, item.p, '(pid:' + pid + ')');
+						console.log(item.br, color(item.prefix, '0;33'), color(item.p, '0;32'), color('(pid:' + pid + ')', '1;35'));
 						seen.push(pid);
 					}
 				}
@@ -62,4 +62,8 @@ function trim(str) {
 	var pid = '';
 	var sep = str.split(' ');
 	return str.substring(str.indexOf(process.execPath));
+}
+
+function color(str, colorCode) {
+	return '\033[' + colorCode + 'm' + str + '\033[0m';
 }

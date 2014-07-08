@@ -8,6 +8,8 @@ None
 
 ## Changed
 
+#### daemon tool list with colors
+
 #### Bug fix daemon tool list
 
 Daemon tool `node daemon list` now displays correct pids.
