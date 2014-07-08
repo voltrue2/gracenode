@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.4
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix daemon tool list
+
+Daemon tool `node daemon list` now displays correct pids.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.3
 
 ## Added

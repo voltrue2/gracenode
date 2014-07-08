@@ -105,7 +105,7 @@ gracenode framework comes with daemon tool to daemonize your application out-of-
 
 gracenode creates a script called `daemon` in your application root when you install it via npm.
 
-Main focus of daemon tool is to allow your gracenode daemon application to exit gracefully instead of kill the processes.
+Main focus of daemon tool is to allow your gracenode daemon application to exit gracefully instead of killing the processes.
 
 In order to use daemon tool, your application must be built with gracenode framework.
 
@@ -344,21 +344,6 @@ Spawns forked process(es) if allowed
 	"autoSpawn": <boolean> // if true, the application will auto-respawn dead child process
 }
 ```
-
-***
-
-##Executable gracenode command
-
-Gracenode framework has an executable command `gracenode`.
-
-To install the command to user's home directory execute the following from the root of gracenode:
-
-`scripts/gracenode --install`
-
-####Avialable Options
-
-`-V` Shows the current installed version of gracenode.
-`-l [target path]` Lints file(s)
 
 ***
 

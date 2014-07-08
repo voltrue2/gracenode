@@ -96,9 +96,10 @@ Argv.prototype.execDefinedOptions = function () {
 
 Argv.prototype._showHelp = function () {
 	var package = require('../package.json');
-	console.log('\nNode.js application framework: gracenode');
+	console.log('\n' + package.name + ':', package.description);
 	console.log('Authored by', package.author);
 	console.log('Version:', package.version);
+	console.log('Repository:', package.repository.url);
 	console.log('\ngracenode command help:\n');
 	for (var i = 0, len = defKeys.length; i < len; i++) {
 		var arg = defKeys[i];
