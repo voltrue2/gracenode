@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.6
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool improved messge logs
+
+#### Daemon tool improved error checks
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.5
 
 ## Added

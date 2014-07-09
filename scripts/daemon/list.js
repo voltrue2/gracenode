@@ -1,6 +1,7 @@
 var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');
+var lib = require('./lib');
 var logger = gn.log.create('daemon-list');
 
 module.exports = function () {
@@ -63,7 +64,7 @@ module.exports = function () {
 								path: path
 							};
 						}			
-						processMap[key][name].push(color(item.prefix, '0;33') + ' ' + color(item.p, '0;32') + ' ' + color('(pid:' + pid + ')', '1;35'));
+						processMap[key][name].push(lib.color(item.prefix, lib.COLORS.BROWN) + ' ' + lib.color(item.p, lib.COLORS.GREEN) + ' ' + lib.color('(pid:' + pid + ')', lib.COLORS.PURPLE));
 						seen.push(pid);
 					}
 				}
@@ -79,8 +80,8 @@ module.exports = function () {
 		// output
 		for (var path in processMap) {
 			var p = processMap[path];
-			console.log(color('\n	To stop this application:', '0;37'), color('node daemon stop ' + p.path, '1;36'));
-			console.log(color('	To restart this application:', '0;37'), color('node daemon restart ' + p.path, '1;36'));
+			console.log(lib.color('\n	To stop this application:', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('node daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(p.monitor[0]);
 			for (var i = 0, len = p.app.length; i < len; i++) {
 				console.log(p.app[i]);	
