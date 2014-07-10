@@ -10,7 +10,7 @@
 
 ## Changed
 
-#### Daemon tool improved messge logs
+#### Daemon tool improved message logs
 
 #### Daemon tool improved error checks
 
