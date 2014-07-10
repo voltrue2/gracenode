@@ -1,4 +1,12 @@
 {
+	"testConfig": {
+		"blah": [
+			"One",
+			"Two",
+			"Three"
+		],
+		"bool": false
+	},
 	"modules": {
 		"log": {
 			"depth": 10,

@@ -276,6 +276,7 @@ function setupProcess(that, lastCallback, cb) {
 }
 
 function setupModules(that, cb) {
+	log.verbose('application configurations:', that.config.getAll());	
 	that._module.load(cb);
 }
 

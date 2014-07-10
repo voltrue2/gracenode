@@ -30,6 +30,31 @@ module.exports.load = function (configList) {
 };
 
 /**
+* Dynamically sets configuration value(s). Use this with caution...
+* @param {string} property name of configuration value(s). can be period separated
+* @param {mix} value(s) of a configuration property
+**/
+module.exports.set = function (key, values) {
+	var keys = key.split('.');
+	var config = configData;
+	var prop = keys.shift();
+	// we stop traversing before at the last item in keys array
+	while (keys.length >= 1) {
+		config = config[prop];
+		prop = keys.shift();
+	}
+	// now we use the last prop from keys array and set the config value
+	config[prop] = values;
+};
+
+/** 
+* Returns the whole configuration object 
+**/
+module.exports.getAll = function () {
+	return configData;
+};
+
+/**
  * Return the value of configuration property
  * @param {string} property name of a configuration value, can be period separated
  * */

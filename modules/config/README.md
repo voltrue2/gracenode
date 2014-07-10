@@ -3,13 +3,15 @@
 ###Configuration
 *N/A*
 
-###API: *getOne*
+###API .getOne
 
-<pre>
+```
 mixed getOne(String propName)
-</pre>
-> Returns the value of configuration property
->> Example
+```
+
+Returns the value of configuration property
+
+Example
 
 ```javascript
 // configuration JSON
@@ -27,11 +29,20 @@ var boo = gracenode.config.getOne("foo.boo");
 // boo = 1
 ```
 
-###API: *getMany*
+###API .getMany
 
-<pre>
+```
 Object getMany(Array propNameList)
-</pre>
-> Returns the values of configuration properties
+```
+
+Returns the values of configuration properties
+
+###API .getAll
+
+```
+Object getAll()
+```
+
+Returns the whole configuration object.
 
 ***

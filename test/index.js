@@ -124,4 +124,14 @@ describe('gracenode initialization ->', function () {
 		assert.equal(cloned.c, undefined);
 	});
 
+	it('Can dynamically set a configuration value', function () {
+		gn.config.set('testConfig.bool', true);
+		assert.equal(gn.config.getOne('testConfig.bool'), true);
+	});
+
+	it('Can dynamically set configuration values', function () {
+		gn.config.set('testConfig.blah.1', 10000);
+		assert.equal(gn.config.getOne('testConfig.blah.1'), 10000);
+	});
+
 });

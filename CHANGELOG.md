@@ -4,7 +4,9 @@
 
 ## Added
 
-None
+#### Config module added .getAll()
+
+`gracenode.configgetAll()` returns the whole configuration object.
 
 ## Changed
 
