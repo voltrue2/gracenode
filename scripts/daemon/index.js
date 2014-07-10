@@ -20,15 +20,7 @@ gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
 	require('./restart.js')(getPath(path));
 });
 
-gn.setup(function () {
-	var logger = gn.log.create('daemon');
-	if (gn.argv('start')) {
-		logger.info('starting the application as a daemon...', gn.argv('start'));
-	}
-	if (gn.argv('stop')) {
-		logger.info('stopping the application...', gn.argv('stop'));
-	}
-});
+gn.setup(function () {});
 
 function getPath(path) {
 	if (!Array.isArray(path)) {
