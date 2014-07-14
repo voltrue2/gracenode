@@ -6,6 +6,11 @@ var socketName = require('./socket-name');
 var logger;
 var path;
 var app;
+// if the application dies 10 times in 10 seconds, monitor will exit
+var maxNumOfDeath = 10;
+var deathInterval = 10000;
+var timeOfDeath = 0;
+var deathCount = 0;
 
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['gracenode.json']);
@@ -48,7 +53,24 @@ function handleCommunication(msg) {
 function startApp() {
 	app = spawn(process.execPath, [path, '--daemon'], { detached: true, stdio: 'ignore' });
 	// if appllication dies unexpectedly, respawn it
-	app.on('exit', startApp);
+	app.on('exit', function () {
+		deathCount += 1;
+		if (deathCount === 1) {
+			// application died for the first time
+			timeOfDeath = Date.now();
+		}
+		if (deathCount >= maxNumOfDeath) {
+			var now = Date.now();
+			if (now - timeOfDeath <= deathInterval) {
+				// the application is dying way too fast and way too often
+				var error = new Error('appliation is dying too fast and too aften');
+				return handleExit(error);
+			}
+			// application has died more than maxNumOfDeath but not too fast...
+			deathCount = 0;
+		}
+		startApp();
+	});
 
 }
 

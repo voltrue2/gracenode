@@ -14,7 +14,10 @@ module.exports = function (path) {
 		gn.on('uncaughtException', gn.exit);
 		var child = run(process.execPath, [gn._root + 'scripts/daemon/monitor', 'start', path], { detached: true, stdio: 'ignore' });
 		console.log(lib.color('Daemon process started', lib.COLORS.GRAY), lib.color(path, lib.COLORS.LIGHT_BLUE));
-		console.log(lib.color('Monitor process', lib.COLORS.GRAY), lib.color('(pid:' + child.pid + ')', lib.COLORS.PURPLE));
+		var dies = lib.color(' dies', lib.COLORS.BROWN);
+		var ten = lib.color(' 10 ', lib.COLORS.PURPLE);
+		var exit = lib.color(' exit', lib.COLORS.BROWN);
+		console.log(lib.color('If the application', lib.COLORS.GRAY) + dies + ten + lib.color('times in less than', lib.COLORS.GRAY) + ten + lib.color('seconds, the daemon process will', lib.COLORS.GRAY) + exit);
 		gn.exit();
 	});
 };

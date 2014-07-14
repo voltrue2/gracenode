@@ -1,12 +1,28 @@
 # Change Log
 
+## Version 1.1.7
+
+## Added
+
+## Changed
+
+#### Daemon tool now checks dying application
+
+If the application dies 10 times in less than 10 seconds, daemon process will exit and stop.
+
+## Deperacated
+
+## Removed
+
+***
+
 ## Version 1.1.6
 
 ## Added
 
 #### Config module added .getAll()
 
-`gracenode.configgetAll()` returns the whole configuration object.
+`gracenode.config.getAll()` returns the whole configuration object.
 
 ## Changed
 
