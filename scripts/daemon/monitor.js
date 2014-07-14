@@ -42,7 +42,9 @@ function handleCommunication(msg) {
 			break;
 		case 'restart':
 			// we instruct the application process to exit and let monitor process to respawn it
-			stopApp();
+			if (Date.now() - timeOfDeath > deathInterval) {
+				stopApp();
+			}
 			break;
 		default:
 			logger.error('unknown command:', command);
