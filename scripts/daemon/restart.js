@@ -22,6 +22,7 @@ module.exports = function (path) {
 		sock.connect(sockFile, function () {
 			sock.write('restart');
 			console.log(lib.color('Daemon process restarted', lib.COLORS.GRAY), lib.color(path, lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color('Restarting multiple times in quick succession (within 10 seconds) is', lib.COLORS.GRAY) + lib.color(' NOT ', lib.COLORS.BROWN) + lib.color('allowed', lib.COLORS.GRAY));
 			gn.exit();
 		});
 	});

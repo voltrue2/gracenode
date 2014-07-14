@@ -11,6 +11,7 @@ var maxNumOfDeath = 10;
 var deathInterval = 10000;
 var timeOfDeath = 0;
 var deathCount = 0;
+var restartTime = 0;
 
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['gracenode.json']);
@@ -42,7 +43,8 @@ function handleCommunication(msg) {
 			break;
 		case 'restart':
 			// we instruct the application process to exit and let monitor process to respawn it
-			if (Date.now() - timeOfDeath > deathInterval) {
+			if (Date.now() - restartTime > deathInterval) {
+				restartTime = Date.now();
 				stopApp();
 			}
 			break;
