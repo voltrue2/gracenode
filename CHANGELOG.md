@@ -10,6 +10,10 @@
 
 If the application dies 10 times in less than 10 seconds, daemon process will exit and stop.
 
+#### Daemon tool restart blocks restart spam
+
+Daemon restart now does not allow you to restart multiple times within 10 seconds.
+
 ## Deperacated
 
 ## Removed
