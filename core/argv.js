@@ -39,6 +39,9 @@ Argv.prototype.parse = function () {
 		argKeys.push(arg);
 		prev = arg;
 	}
+};
+
+Argv.prototype.setup = function () {
 	// check if --help option is present or not
 	var help = this.get(HELP);
 	if (help) {

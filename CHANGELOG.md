@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.9
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix: --help outputs nothing
+
+## Deperacated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.8
 
 ## Added

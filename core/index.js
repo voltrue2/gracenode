@@ -108,6 +108,8 @@ Gracenode.prototype.setup = function (cb) {
 		console.error('<error>[gracenode] no configuration files to load');
 		return cb(new Error('no configuration files given'));
 	}
+	// set up argv
+	this._argv.setup();
 	// set up config
 	var error = setupConfig(this);
 	if (error) {
