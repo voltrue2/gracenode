@@ -82,7 +82,7 @@ module.exports = function () {
 			var p = processMap[path];
 			console.log(lib.color('\n	To stop this application:', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('node daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
-			console.log(p.monitor[0]);
+			console.log(p.monitor[0] || lib.color('	Daemon monitor process not running', lib.COLORS.GRAY));
 			for (var i = 0, len = p.app.length; i < len; i++) {
 				console.log(p.app[i]);	
 			}
@@ -98,8 +98,4 @@ function trim(str) {
 	var pid = '';
 	var sep = str.split(' ');
 	return str.substring(str.indexOf(process.execPath));
-}
-
-function color(str, colorCode) {
-	return '\033[' + colorCode + 'm' + str + '\033[0m';
 }

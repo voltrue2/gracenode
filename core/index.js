@@ -35,6 +35,8 @@ function Gracenode() {
 	this._module.use('profiler');
 	this._module.use('lib');
 	this._argv = new Argv(this);
+	// parse argv arguments
+	this._argv.parse();
 }
 
 util.inherits(Gracenode, EventEmitter);
@@ -106,8 +108,6 @@ Gracenode.prototype.setup = function (cb) {
 		console.error('<error>[gracenode] no configuration files to load');
 		return cb(new Error('no configuration files given'));
 	}
-	// parse argv arguments
-	this._argv.parse();
 	// set up config
 	var error = setupConfig(this);
 	if (error) {

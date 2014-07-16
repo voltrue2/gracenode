@@ -1,5 +1,35 @@
 # Change Log
 
+## Version 1.1.8
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool now has optional logging
+
+Daemon tool can optionally keep log data in files.
+
+To leave log files, execute:
+
+```
+node daemon start yourApp.js --log=/path/to/your/log/files/
+```
+
+#### Minor improvements in daemon tool
+
+## Deperacated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.7
 
 ## Added

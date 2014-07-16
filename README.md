@@ -149,6 +149,16 @@ node daemon stop /path/to/your/app/
 node daemon restart /path/to/your/app/
 ```
 
+### Logging
+
+Daemon tool can leave log data in files as an option.
+
+To enable logging, execute:
+
+```
+node daemon start /path/to/your/app/ --log=/path/to/your/logs/
+```
+
 ***
 
 #gracenode
