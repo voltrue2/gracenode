@@ -159,6 +159,14 @@ To enable logging, execute:
 node daemon start /path/to/your/app/ --log=/path/to/your/logs/
 ```
 
+### Help
+
+To display help interface:
+
+```
+node daemon --help
+```
+
 ***
 
 #gracenode
