@@ -5,7 +5,7 @@ var logPath;
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['daemon.json']);
 
-gn.defineOption('--log', 'Enables to write log into files in the given path. Example: node daemon start app.js --log=./daemon-logs/', function (path) {
+gn.defineOption('--log', 'Enables logging into files in the given path. Example: node daemon start app.js --log=./daemon-logs/', function (path) {
 	logPath = path;
 });
 
