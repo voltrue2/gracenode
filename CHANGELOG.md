@@ -4,11 +4,11 @@
 
 ## Added
 
-None
+#### Client added object-data.js
 
 ## Changed
 
-None
+#### Minor improvements in daemon tool
 
 ## Deprecated
 
