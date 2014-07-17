@@ -71,6 +71,8 @@
 			}
 			// update the source JSON object
 			parentObj[key] = input.value;
+			// emit event
+			that.emit('change', key, parentObj[key]);
 		});
 	};
 
