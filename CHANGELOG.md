@@ -8,7 +8,11 @@
 
 ## Changed
 
-#### Minor improvements in daemon tool
+#### Daemon tool log file name format changed
+
+#### Daemon tool error logging improved
+
+#### Minor improvements in daemon tool log messages
 
 ## Deprecated
 

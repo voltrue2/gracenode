@@ -14,6 +14,9 @@ var restartTime = 0;
 var Log = require('./log'); 
 var logger = new Log(gn.argv('--log'));
 
+// start file logging stream if enabled
+logger.start(gn.argv('start')[0] || null);
+
 gn.on('uncaughtException', function (error) {
 	gn.exit(error);
 });
@@ -22,8 +25,6 @@ gn.registerShutdownTask('exit', function (done) {
 	handleExit();
 	done();
 });
-
-logger.start();
 
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['gracenode.json']);
@@ -48,6 +49,7 @@ function handleExit(error) {
 }
 
 function handleCommunication(msg) {
+	// handle the command
 	var command = msg.toString();
 	switch (command) {
 		case 'stop':

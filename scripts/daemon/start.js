@@ -8,8 +8,8 @@ var lib = require('./lib');
 module.exports = function (path, logPath) {
 	fs.exists(socketName(path), function (exists) {
 		if (exists) {
-			logger.error('daemon process', path, 'already running');
-			return gn.exit(1);
+			logger.error(lib.color('daemon process ' + path + ' is already running', lib.COLORS.RED));
+			return gn.exit(new Error('processAlreadyExists'));
 		}
 		var args = [
 			gn._root + 'scripts/daemon/monitor',

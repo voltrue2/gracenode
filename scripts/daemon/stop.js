@@ -9,11 +9,11 @@ module.exports = function (path) {
 	var sockFile = sockName(path);
 	fs.exists(sockFile, function (exists) {
 		if (!exists) {
-			logger.error('daemon process', path, 'not running');
-			return gn.exit(1);
+			logger.error(lib.color('daemon process ' + path + ' not running', lib.COLORS.RED));
+			return gn.exit(new Error('processNotFound'));
 		}
 		gn.on('uncaughtException', function (error) {
-			logger.error(path, sockName(path));
+			logger.error(lib.color(path + ' ' + sockName(path), lib.COLORS.RED));
 			gn.exit(error);
 		});
 		var sock = new net.Socket();
