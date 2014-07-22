@@ -37,6 +37,11 @@ Module.prototype.use = function (name, options) {
 		modName = options.name;
 	}
 
+	// check for module name conflict
+	if (findNameConflict(this._use, modName)) {
+		throw new Error('module name conflict found [' + name + ']: "' + modName + '" \n' + JSON.stringify(options, null, 4));
+	}	
+
 	this._use.push({ name: name, modName: modName });
 };
 
@@ -100,8 +105,6 @@ Module.prototype.load = function (cb) {
 
 Module.prototype._mapModules = function (cb) {
 	var that = this;
-	// remember the module names to detect module name conflict(s) in different module paths
-	var seen = {};
 	async.each(this._modPaths, function (path, next) {
 		fs.readdir(path, function (error, list) {
 			if (error) {
@@ -111,14 +114,7 @@ Module.prototype._mapModules = function (cb) {
 				var modName = list[i];
 				that._logger.verbose('module mapped [' + path + ']:', modName);
 				var modulePath = path + modName;
-				if (seen[modName]) {
-					// there is at least more than one module with the same name
-					seen[modName].push(modulePath);
-					that._logger.fatal('conflicted modules:', seen[modName]);
-					return cb(new Error('module name coflict detected: module name [' + modName + ']'));
-				}
 				// no name conflicts
-				seen[modName] = [modulePath];
 				moduleMap[modName] = modulePath;
 			}
 			next();
@@ -199,6 +195,20 @@ Module.prototype._setup = function (name, module, cb) {
 	// no setup function for this module
 	cb();
 };
+
+function findNameConflict(modList, name) {
+	var found = modList.filter(function (mod) {
+		var modName = mod.modName ? mod.modName : mod.name;
+		if (modName === name) {
+			return modName;
+		}
+	});
+	if (found.length) {
+		// name conflict found
+		return true;	
+	}
+	return false;
+}
 
 // -ed names will be camel-cased
 function createModuleName(name) {

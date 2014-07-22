@@ -25,6 +25,8 @@ describe('gracenode initialization ->', function () {
 		// test 3rd party node module use with alternate name
 		gn.use('async', { name: 'async2' });
 
+		gn.use('async');
+
 		gn.on('setup.config', function () {
 			var sd = gn.config.getOne('modules.gracenode-staticdata');
 			sd.path = prefix + sd.path;

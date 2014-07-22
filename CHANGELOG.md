@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.11
+
+## Added
+
+None
+
+## Changed
+
+#### core module improved module name conflict checks
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.10
 
 ## Added
