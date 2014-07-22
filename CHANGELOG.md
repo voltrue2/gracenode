@@ -12,7 +12,9 @@ None
 
 ## Deprecated
 
-None
+#### scripts/gracenode.js
+
+`gracenode.js` in `scripts/` directory has been deprecated as of version 1.1.11 as it was an experimental script.
 
 ## Removed
 
