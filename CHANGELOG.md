@@ -1,5 +1,19 @@
 # Change Log
 
+## Version 1.1.12
+
+## Added
+
+None
+
+## Changed
+
+#### Log module now has fall back with no configurations
+
+Log module now falls back to `console.error()`  when there is no configurations ready.
+
+#### Improved daemon error logging
+
 ## Version 1.1.11
 
 ## Added

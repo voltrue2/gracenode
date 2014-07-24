@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js application with extendable module management system, command-line tool, and daemon tool for fast and clean development.",
-	"version": "1.1.11",
+	"version": "1.1.12",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",

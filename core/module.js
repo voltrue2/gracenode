@@ -39,7 +39,7 @@ Module.prototype.use = function (name, options) {
 
 	// check for module name conflict
 	if (findNameConflict(this._use, modName)) {
-		throw new Error('module name conflict found [' + name + ']: "' + modName + '" \n' + JSON.stringify(options, null, 4));
+		throw new Error('module name conflict found [' + name + ']: "' + modName + '" \n<options>\n' + JSON.stringify(options || {}, null, 4));
 	}	
 
 	this._use.push({ name: name, modName: modName });

@@ -1,4 +1,3 @@
-//var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');

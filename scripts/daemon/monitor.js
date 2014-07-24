@@ -43,6 +43,9 @@ gn.defineOption('start', 'Starts a monitor process to spawn and monitor applicat
 gn.setup(function () {});
 
 function handleExit(error) {
+	if (error) {
+		logger.error('daemon monitor exiting with an error: ' + error);
+	}
 	logger.stop();
 	fs.unlinkSync(socketName(path));
 	process.exit(error || 0);
@@ -74,9 +77,9 @@ function startApp() {
 	app.path = path;
 	logger.info('started daemon process of ' + path);
 	// if appllication dies unexpectedly, respawn it
-	app.on('exit', function () {
-		logger.info('daemon process of ' + path + ' has exited');
+	app.once('exit', function () {
 		deathCount += 1;
+		logger.info('daemon process of ' + path + ' has exited: count of death [' + deathCount + '/' + maxNumOfDeath + ']');
 		if (deathCount === 1) {
 			// application died for the first time
 			timeOfDeath = Date.now();
@@ -85,13 +88,12 @@ function startApp() {
 			var now = Date.now();
 			if (now - timeOfDeath <= deathInterval) {
 				// the application is dying way too fast and way too often
-				var error = new Error('appliation is dying too fast and too aften');
-				logger.error('application dying too fast and too often ' + path);
-				return handleExit(error);
+				return handleExit(new Error('appliation [' + path + '] is dying too fast and too aften'));
 			}
 			// application has died more than maxNumOfDeath but not too fast...
 			deathCount = 0;
 		}
+		// respawn application process
 		startApp();
 	});
 

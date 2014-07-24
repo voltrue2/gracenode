@@ -99,8 +99,12 @@ Logger.prototype.fatal = function () {
 };
 
 Logger.prototype._handleLog = function (levelName, message) {
-	// if there is no config -> we output nothing
-	if (!this.config || !this.config.level) {
+	// if there is no config
+	if (!this.config || !Object.keys(this.config).length || !this.config.level) {
+		// no configurations for log module at all -> fall back to console
+		if (levelName === 'error' || levelName === 'fatal') {
+			console.error.apply(console, message);
+		}
 		return;
 	}
 	// check enabled or not
@@ -132,11 +136,9 @@ Logger.prototype._outputLog = function (levelName, bufferedMsg) {
 	if (this.config.file) {
 		file.log(levelName, bufferedMsg.messages.join('\n'));
 	}
-
 	if (this.config.remote) {
 		remote.log(levelName, bufferedMsg.messages.join('\n'));
 	}
-	
 	events.emit('output', address, this.name, levelName, bufferedMsg);
 };
 
