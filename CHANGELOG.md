@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.13
+
+## Added
+
+None
+
+## Change
+
+#### Symbolic link ofdaemon tool is no longer a directory
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.12
 
 ## Added

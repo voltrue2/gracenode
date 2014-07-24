@@ -1,14 +1,14 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js application with extendable module management system, command-line tool, and daemon tool for fast and clean development.",
-	"version": "1.1.12",
+	"version": "1.1.13",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/voltrue2/gracenode.git"
 	},
 	"scripts": {
-		"install": "ln -s node_modules/gracenode/scripts/daemon ../../daemon"
+		"install": "ln -s node_modules/gracenode/scripts/daemon ../../daemon/index.js"
 	},
 	"dependencies": {
 		"async": "0.9.0",
