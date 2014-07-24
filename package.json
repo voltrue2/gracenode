@@ -8,7 +8,7 @@
 		"url": "https://github.com/voltrue2/gracenode.git"
 	},
 	"scripts": {
-		"install": "ln -s node_modules/gracenode/scripts/daemon ../../daemon/index.js"
+		"install": "ln -s node_modules/gracenode/scripts/daemon/index.js ../../daemon"
 	},
 	"dependencies": {
 		"async": "0.9.0",
