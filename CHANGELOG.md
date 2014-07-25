@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.14
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix in initial install of gracenode
+
+## Depreacated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.13
 
 ## Added
