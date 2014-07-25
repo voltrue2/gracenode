@@ -135,6 +135,12 @@ To list the currently running daemon processes:
 node daemon list
 ```
 
+To display basic status of a daemon process:
+
+```
+node daemon status
+```
+
 You can optionally give a path to the application you want to target.
 
 ```
@@ -147,6 +153,10 @@ node daemon stop /path/to/your/app/
 
 ```
 node daemon restart /path/to/your/app/
+```
+
+```
+node daemon status /path/to/your/app/
 ```
 
 ### Logging

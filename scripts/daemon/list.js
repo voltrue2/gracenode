@@ -16,7 +16,7 @@ module.exports = function () {
 			var list = stdout.split('\n');
 			for (var i = 0, len = list.length; i < len; i++) {
 				if (list[i].indexOf('gracenode/scripts/daemon/monitor') !== -1) {
-					processList.push({ prefix: '	Daemon monitor process:', p: trim(list[i]) });
+					processList.push({ prefix: '	Daemon monitor process:     ', p: trim(list[i]) });
 					continue;
 				}
 				if (list[i].indexOf('--daemon') !== -1) {
@@ -80,7 +80,7 @@ module.exports = function () {
 		// output
 		for (var path in processMap) {
 			var p = processMap[path];
-			console.log(lib.color('\n	To stop this application:', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color('\n	To stop this application:   ', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('node daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(p.monitor[0] || lib.color('	Daemon monitor process not running', lib.COLORS.GRAY));
 			for (var i = 0, len = p.app.length; i < len; i++) {

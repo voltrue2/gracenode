@@ -21,6 +21,10 @@ gn.defineOption('list', 'Shows a list of currently running daemon processes.', f
 	require('./list.js')();
 });
 
+gn.defineOption('status', 'Shows status for a currently running daemon application.', function (path) {
+	require('./status.js')(getPath(path));
+});
+
 gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
 	require('./restart.js')(getPath(path));
 });

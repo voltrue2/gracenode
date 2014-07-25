@@ -13,11 +13,14 @@ var deathCount = 0;
 var restartTime = 0;
 var Log = require('./log'); 
 var logger = new Log(gn.argv('--log'));
+// message
+var Message = require('./message');
 
 // start file logging stream if enabled
 logger.start(gn.argv('start')[0] || null);
 
 gn.on('uncaughtException', function (error) {
+	logger.error('Exception in monitor process: ' + error);
 	gn.exit(error);
 });
 
@@ -67,6 +70,11 @@ function handleCommunication(msg) {
 			}
 			break;
 		default:
+			var parsed = parseCommand(command);
+			if (parsed) {
+				handleMessage(parsed);		
+				break;
+			}
 			logger.error('unknown command: ' + command);
 			break;
 	}
@@ -75,6 +83,7 @@ function handleCommunication(msg) {
 function startApp() {
 	app = spawn(process.execPath, [path, '--daemon'], { detached: true, stdio: 'ignore' });
 	app.path = path;
+	app.started = Date.now();
 	logger.info('started daemon process of ' + path);
 	// if appllication dies unexpectedly, respawn it
 	app.once('exit', function () {
@@ -88,7 +97,7 @@ function startApp() {
 			var now = Date.now();
 			if (now - timeOfDeath <= deathInterval) {
 				// the application is dying way too fast and way too often
-				return handleExit(new Error('appliation [' + path + '] is dying too fast and too aften'));
+				return handleExit(new Error('appliation [' + path + '] is dying too fast and too often'));
 			}
 			// application has died more than maxNumOfDeath but not too fast...
 			deathCount = 0;
@@ -106,5 +115,29 @@ function stopApp(cb) {
 		if (cb) {
 			cb();
 		}
+	}
+}
+
+function parseCommand(cmd) {
+	var sep = cmd.split('\t');
+	if (sep[0] === 'message' && sep[1] && sep[2]) {
+		return { command: sep[1], value: sep[2] };
+	}
+	return false;
+}
+
+function handleMessage(parsed) {
+	switch (parsed.command) {
+		case 'status':
+			var message = new Message(parsed.value);
+			message.startSend();
+			message.send({
+				pid: app.pid,
+				started: app.started,
+				numOfRestarted: deathCount
+			});
+			break;
+		default:
+			break;
 	}
 }

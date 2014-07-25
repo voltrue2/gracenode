@@ -4,11 +4,19 @@
 
 ## Added
 
-None
+#### Daemon tool added status
+
+A new option for daemon tool `status` added:
+
+```
+node daemon status /your/app/
+```
+
+Note: in order to use `status` option, you need to update your gracenode and `stop` and `start` your daemon process(s).
 
 ## Change
 
-#### Symbolic link ofdaemon tool is no longer a directory
+#### Symbolic link of daemon tool is no longer a directory
 
 ## Deprecated
 
