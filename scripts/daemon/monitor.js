@@ -81,31 +81,41 @@ function handleCommunication(msg) {
 }
 
 function startApp() {
-	app = spawn(process.execPath, [path, '--daemon'], { detached: true, stdio: 'ignore' });
-	app.path = path;
-	app.started = Date.now();
-	logger.info('started daemon process of ' + path);
-	// if appllication dies unexpectedly, respawn it
-	app.once('exit', function () {
-		deathCount += 1;
-		logger.info('daemon process of ' + path + ' has exited: count of death [' + deathCount + '/' + maxNumOfDeath + ']');
-		if (deathCount === 1) {
-			// application died for the first time
-			timeOfDeath = Date.now();
-		}
-		if (deathCount >= maxNumOfDeath) {
-			var now = Date.now();
-			if (now - timeOfDeath <= deathInterval) {
-				// the application is dying way too fast and way too often
-				return handleExit(new Error('appliation [' + path + '] is dying too fast and too often'));
+	var start = function (pathIn) {
+		app = spawn(process.execPath, [pathIn, '--daemon'], { detached: true, stdio: 'ignore' });
+		app.path = pathIn;
+		app.started = Date.now();
+		logger.info('started daemon process of ' + pathIn);
+		// if appllication dies unexpectedly, respawn it
+		app.once('exit', function (code, signal) {
+			deathCount += 1;
+			logger.info('daemon process of ' + pathIn + ' has exited (code:' + code + '): count of death [' + deathCount + '/' + maxNumOfDeath + ']');
+			if (signal) {
+				logger.error('application terminated by: ' + signal);
 			}
-			// application has died more than maxNumOfDeath but not too fast...
-			deathCount = 0;
+			if (deathCount === 1) {
+				// application died for the first time
+				timeOfDeath = Date.now();
+			}
+			if (deathCount >= maxNumOfDeath) {
+				var now = Date.now();
+				if (now - timeOfDeath <= deathInterval) {
+					// the application is dying way too fast and way too often
+					return handleExit(new Error('appliation [' + pathIn + '] is dying too fast and too often'));
+				}
+				// application has died more than maxNumOfDeath but not too fast...
+				deathCount = 0;
+			}
+			// respawn application process
+			startApp();
+		});
+	};
+	fs.exists(gn.getRootPath() + path, function (exists) {
+		if (exists) {
+			return start(gn.getRootPath() + path);
 		}
-		// respawn application process
-		startApp();
+		start(path);
 	});
-
 }
 
 function stopApp(cb) {
