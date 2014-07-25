@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.15
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool improved on optional application path handling
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.14
 
 ## Added
