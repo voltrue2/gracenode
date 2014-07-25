@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var gn = require('../../');
 var logPath;
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
@@ -37,5 +38,10 @@ function getPath(path) {
 		return gn.getRootPath();
 	}
 	// or use the given path
-	return path[0];
+	var app = path[0];
+	var exists = fs.existsSync(gn.getRootPath() + app);
+	if (exists) {
+		app = gn.getRootPath() + app;
+	}
+	return app;
 }

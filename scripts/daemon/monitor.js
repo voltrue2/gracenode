@@ -33,11 +33,7 @@ gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['gracenode.json']);
 
 gn.defineOption('start', 'Starts a monitor process to spawn and monitor application process(s).', function (pathIn) {
-	path = pathIn[0] || '';
-	var exists = fs.existsSync(gn.getRootPath() + path);
-	if (exists) {
-		path = gn.getRootPath() + path;
-	}
+	path = pathIn[0] || null;
 	var monitorServer = net.createServer(function (sock) {
 		sock.on('error', handleExit);
 		sock.on('data', handleCommunication);
