@@ -81,9 +81,12 @@ module.exports = function () {
 		// output
 		for (var path in processMap) {
 			var p = processMap[path];
+			if (!p.monitor[0]) {
+				continue;
+			}
 			console.log(lib.color('\n	To stop this application:   ', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('node daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
-			console.log(p.monitor[0] || lib.color('	Daemon monitor process not running', lib.COLORS.GRAY));
+			console.log(p.monitor[0]);
 			for (var i = 0, len = p.app.length; i < len; i++) {
 				console.log(p.app[i]);	
 			}
