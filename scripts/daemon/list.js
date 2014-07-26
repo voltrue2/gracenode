@@ -1,3 +1,4 @@
+var fs = require('fs');
 var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');
@@ -5,8 +6,24 @@ var lib = require('./lib');
 var logger = gn.log.create('daemon-list');
 
 module.exports = function () {
+	var pathList = [];
 	var processList = [];
 	var processMap = {};
+	// get all socket files to extract application paths
+	var findSockFiles = function (next) {
+		fs.readdir('/tmp/', function (error, list) {
+			if (error) {
+				return next(error);
+			}
+			for (var i = 0, len = list.length; i < len; i++) {
+				var path = list[i];
+				if (path.indexOf('gracenode-monitor') !== -1) {
+					pathList.push(path.replace('gracenode-monitor-', '').replace('.sock', ''));
+				}
+			}
+			next();
+		});		
+	};
 	// get the list of daemon processes
 	var getProcessList = function (next) {
 		exec('ps aux | grep "node "', function (error, stdout) {
@@ -16,61 +33,45 @@ module.exports = function () {
 			var list = stdout.split('\n');
 			for (var i = 0, len = list.length; i < len; i++) {
 				if (list[i].indexOf('gracenode/scripts/daemon/monitor') !== -1) {
-					processList.push({ prefix: '	Daemon monitor process:     ', p: trim(list[i]) });
+					// now find the process that the monitor is watching
+					var path = list[i].substring(list[i].indexOf('start ') + 6).split(' ')[0];
+					processList.push({ monitor: true, prefix: '	Daemon monitor process:     ', p: trim(list[i]), app: path });
 					continue;
 				}
 				if (list[i].indexOf(process.execPath) !== -1) {
-					processList.push({ prefix: '		Application daemon process:', p: trim(list[i]) });
+					var p = trim(list[i]);
+					var app = p.split(' ')[1];
+					processList.push({ monitor: false, prefix: '		Application daemon process:', p: p, app: app });
 				}
 			}
 			next();
 		});
 	};
 	// get the list of pid and display
-	// $11 = process, $12 = $1, $14 = $3, $2 = pid
 	var getPids = function (next) {
-		var seen = [];
-		async.eachSeries(processList, function (item, callback) {
-			exec('ps aux | grep "' + item.p + '" | awk \'{ print $11 } { print $2 } { print $12} { print $14 }\'', function (error, stdout) {
-				if (error) {
-					return next(error);
+		exec('ps aux | pgrep node', function (error, stdout) {
+			if (error) {
+				return next(error);
+			}
+			var list = stdout.split('\n');
+			for (var i = 0, len = processList.length; i < len; i++) {
+				var item = processList[i];
+				var key = item.app.replace(/\//g, '');
+				var name = item.monitor ? 'monitor' : 'app';
+				if (!processMap[key]) {
+					processMap[key] = {
+						monitor: [],
+						app: [],
+						path: item.app
+					};
 				}
-				// parse and group processes
-				var list = stdout.split('\n');
-				while (list.length) {
-					var execPath = list.shift();
-					var pid = list.shift();
-					var processName = list.shift(); // tells us if this process is monitor or not
-					var appPath = list.shift() // if monitor process, this tells us which process it is watching
-					if (seen.indexOf(pid) === -1 && execPath === process.execPath) {
-						var key;
-						var name = 'app';
-						var path;
-						// check for monitor process
-						if (processName.indexOf('/node_modules/gracenode/scripts/daemon/monitor') !== -1) {
-							// this is a monitor process
-							key = appPath.replace(/\//g, '');
-							name = 'monitor';
-							path = appPath;
-						} else {
-							// this is an application process
-							key = processName.replace(/\//g, '');
-							path = processName;
-						}
-						if (!processMap[key]) {
-							processMap[key] = {
-								monitor: [],
-								app: [],
-								path: path
-							};
-						}			
-						processMap[key][name].push(lib.color(item.prefix, lib.COLORS.BROWN) + ' ' + lib.color(item.p, lib.COLORS.GREEN) + ' ' + lib.color('(pid:' + pid + ')', lib.COLORS.PURPLE));
-						seen.push(pid);
-					}
-				}
-				callback();
-			});
-		}, next);
+				var prefix = lib.color(item.prefix, lib.COLORS.BROWN);
+				var path = lib.color(item.p, lib.COLORS.GREEN);
+				var pid = lib.color('(pid:' + list[i] + ')', lib.COLORS.PURPLE);
+				processMap[key][name].push(prefix + ' ' + path + pid);
+			}
+			next();
+		});
 	};
 	// display process list along with pids
 	var display = function (error) {
@@ -91,7 +92,7 @@ module.exports = function () {
 		gn.exit();
 	};
 	// execute the commands
-	async.series([getProcessList, getPids], display);
+	async.series([findSockFiles, getProcessList, getPids], display);
 };
 
 function trim(str) {

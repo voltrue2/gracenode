@@ -12,6 +12,8 @@ None
 
 #### Daemon tool no longer starts the application process with --daemon option
 
+#### Daemon list improved
+
 ## Deprecated
 
 None
