@@ -19,7 +19,7 @@ module.exports = function () {
 					processList.push({ prefix: '	Daemon monitor process:     ', p: trim(list[i]) });
 					continue;
 				}
-				if (list[i].indexOf('--daemon') !== -1) {
+				if (list[i].indexOf(process.execPath) !== -1) {
 					processList.push({ prefix: '		Application daemon process:', p: trim(list[i]) });
 				}
 			}

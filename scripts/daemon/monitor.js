@@ -81,7 +81,7 @@ function handleCommunication(msg) {
 }
 
 function startApp() {
-	app = spawn(process.execPath, [path, '--daemon'], { detached: true, stdio: 'ignore' });
+	app = spawn(process.execPath, [path], { detached: true, stdio: 'ignore' });
 	app.path = path;
 	app.started = Date.now();
 	logger.info('started daemon process of ' + path);

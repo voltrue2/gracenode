@@ -10,6 +10,8 @@ None
 
 #### Daemon tool improved on optional application path handling
 
+#### Daemon tool no longer starts the application process with --daemon option
+
 ## Deprecated
 
 None
