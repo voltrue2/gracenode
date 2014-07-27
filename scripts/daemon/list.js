@@ -6,24 +6,8 @@ var lib = require('./lib');
 var logger = gn.log.create('daemon-list');
 
 module.exports = function () {
-	var pathList = [];
 	var processList = [];
 	var processMap = {};
-	// get all socket files to extract application paths
-	var findSockFiles = function (next) {
-		fs.readdir('/tmp/', function (error, list) {
-			if (error) {
-				return next(error);
-			}
-			for (var i = 0, len = list.length; i < len; i++) {
-				var path = list[i];
-				if (path.indexOf('gracenode-monitor') !== -1) {
-					pathList.push(path.replace('gracenode-monitor-', '').replace('.sock', ''));
-				}
-			}
-			next();
-		});		
-	};
 	// get the list of daemon processes
 	var getProcessList = function (next) {
 		exec('ps aux | grep "node "', function (error, stdout) {
@@ -95,7 +79,7 @@ module.exports = function () {
 		gn.exit();
 	};
 	// execute the commands
-	async.series([findSockFiles, getProcessList, getPids], display);
+	async.series([getProcessList, getPids], display);
 };
 
 function trim(str) {
