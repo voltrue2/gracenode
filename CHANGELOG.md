@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.16
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon list performance improved
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.15
 
 ## Added
