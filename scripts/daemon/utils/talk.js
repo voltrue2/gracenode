@@ -23,7 +23,7 @@ module.exports.setup = function (path, cb) {
 module.exports.getStatus = function (cb) {
 	// set up messagte system
 	var message = new Message(appPath);
-	message.read(function (data) {
+	var onData = function (data) {
 		message.stop();
 		console.log('\n');
 		console.log(lib.color(' Daemon application status for:', lib.COLORS.GRAY), lib.color(data.app, lib.COLORS.LIGHT_BLUE), lib.color('(pid:' + data.msg.pid + ')', lib.COLORS.PURPLE));
@@ -31,12 +31,14 @@ module.exports.getStatus = function (cb) {
 		console.log(lib.color(' Application restarted:        ', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
 		console.log('\n');
 		cb(data);
-	});
+	};
 	// send command to monitor
-	var sock = new net.Socket();
-	sock.connect(sockFile, function () {
-		sock.write('message\tstatus\t' + appPath);
-	});	
+	message.read(onData, function () {
+		var sock = new net.Socket();
+		sock.connect(sockFile, function () {
+			sock.write('message\tstatus\t' + appPath);
+		});
+	});
 };
 
 module.exports.stopApp = function () {

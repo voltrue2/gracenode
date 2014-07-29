@@ -10,6 +10,8 @@ None
 
 #### Daemon tool refactored
 
+#### Daemon status fixed a race condition on message reply
+
 #### Daemon status added number of application restarts
 
 ## Deprecated

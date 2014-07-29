@@ -27,17 +27,17 @@ Message.prototype.startSend = function () {
 	this._stream = fs.createWriteStream(this._name, options);
 };
 
-Message.prototype.read = function (cb) {
+Message.prototype.read = function (onData, cb) {
 	if (this._stream) {
 		return;
 	}
 	var that = this;
 	// make sure the message file is created
-	var stream = fs.createWriteStream(this._name, options);
-	stream.end();
+	this._stream = fs.createWriteStream(this._name, options);
+	this._stream.end();
 	// now listen for file change
-	process.nextTick(function () {
-		that._stream = fs.watch(that._name, function (event) {
+	this._stream.on('open', function () {
+		var watch = fs.watch(that._name, function (event) {
 			if (event !== 'change') {
 				return;
 			}
@@ -46,10 +46,11 @@ Message.prototype.read = function (cb) {
 					// hmmm
 				}
 				var msg = JSON.parse(data.toString());
-				cb(msg);
-				that._stream.close();
+				onData(msg);
+				watch.close();
 			});
 		});
+		cb();
 	});
 };
 
