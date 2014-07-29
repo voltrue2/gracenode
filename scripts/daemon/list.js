@@ -47,14 +47,17 @@ module.exports = function () {
 					processMap[key] = {
 						monitor: [],
 						app: [],
-						path: item.app,
-						user: item.user
+						user: null,
+						path: item.app
 					};
 				}
 				var prefix = lib.color(item.prefix, lib.COLORS.BROWN);
 				var path = lib.color(item.p, lib.COLORS.GREEN);
 				var pid = lib.color('(pid:' + list[i] + ')', lib.COLORS.PURPLE);
 				processMap[key][name].push(prefix + ' ' + path + pid);
+				if (!processMap[key].user && item.user) {
+					processMap[key].user = item.user;
+				}
 			}
 			next();
 		});
