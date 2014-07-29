@@ -12,6 +12,8 @@ None
 
 #### Daemon status fixed a race condition on message reply
 
+#### Daemon list now displays SSH user that exected each daemon process
+
 #### Daemon status added number of application restarts
 
 ## Deprecated

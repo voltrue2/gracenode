@@ -19,7 +19,8 @@ module.exports = function () {
 				if (list[i].indexOf('gracenode/scripts/daemon/monitor') !== -1) {
 					// now find the process that the monitor is watching
 					var path = list[i].substring(list[i].indexOf('start ') + 6).split(' ')[0];
-					processList.push({ monitor: true, prefix: '	Daemon monitor process:     ', p: trim(list[i]), app: path });
+					var execUser = list[i].substring(0, list[i].indexOf(' '));
+					processList.push({ monitor: true, prefix: '	Daemon monitor process:     ', p: trim(list[i]), app: path, user: execUser });
 					continue;
 				}
 				if (list[i].indexOf(process.execPath) !== -1) {
@@ -46,7 +47,8 @@ module.exports = function () {
 					processMap[key] = {
 						monitor: [],
 						app: [],
-						path: item.app
+						path: item.app,
+						user: item.user
 					};
 				}
 				var prefix = lib.color(item.prefix, lib.COLORS.BROWN);
@@ -70,6 +72,7 @@ module.exports = function () {
 			}
 			console.log(lib.color('\n	To stop this application:   ', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('node daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color('	Excecuted User             :', lib.COLORS.GRAY), lib.color(p.user, lib.COLORS.DARK_BLUE));
 			console.log(p.monitor[0]);
 			for (var i = 0, len = p.app.length; i < len; i++) {
 				console.log(p.app[i]);	
