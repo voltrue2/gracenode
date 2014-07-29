@@ -2,7 +2,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');
-var lib = require('./lib');
+var lib = require('./utils/lib');
 var logger = gn.log.create('daemon-list');
 
 module.exports = function () {

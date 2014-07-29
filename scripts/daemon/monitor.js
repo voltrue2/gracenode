@@ -2,7 +2,7 @@ var fs = require('fs');
 var net = require('net');
 var spawn = require('child_process').spawn;
 var gn = require('../../');
-var socketName = require('./socket-name');
+var socketName = require('./utils/socket-name');
 var path;
 var app;
 // if the application dies 10 times in 10 seconds, monitor will exit
@@ -11,10 +11,10 @@ var deathInterval = 10000;
 var timeOfDeath = 0;
 var deathCount = 0;
 var restartTime = 0;
-var Log = require('./log'); 
+var Log = require('./utils/log'); 
 var logger = new Log(gn.argv('--log'));
 // message
-var Message = require('./message');
+var Message = require('./utils/message');
 
 // start file logging stream if enabled
 logger.start(gn.argv('start')[0] || null);

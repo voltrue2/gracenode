@@ -1,26 +1,20 @@
-var net = require('net');
-var fs = require('fs');
 var gn = require('gracenode');
 var logger = gn.log.create('daemon-stop');
-var sockName = require('./socket-name');
-var lib = require('./lib');
+var lib = require('./utils/lib');
+var talk = require('./utils/talk');
 
 module.exports = function (path) {
-	var sockFile = sockName(path);
-	fs.exists(sockFile, function (exists) {
-		if (!exists) {
+	// listener for exceptions
+	gn.on('uncaughtException', function (error) {
+		logger.error(lib.color(path + ' ' + sockName(path), lib.COLORS.RED));
+		gn.exit(error);
+	});
+	// stop daemon
+	talk.setup(path, function (isAppRunning) {
+		if (!isAppRunning) {
 			logger.error(lib.color('daemon process ' + path + ' not running', lib.COLORS.RED));
 			return gn.exit(new Error('processNotFound'));
 		}
-		gn.on('uncaughtException', function (error) {
-			logger.error(lib.color(path + ' ' + sockName(path), lib.COLORS.RED));
-			gn.exit(error);
-		});
-		var sock = new net.Socket();
-		sock.connect(sockFile, function () {
-			sock.write('stop');
-			console.log(lib.color('Daemon process stopped', lib.COLORS.GRAY), lib.color(path, lib.COLORS.LIGHT_BLUE));
-			gn.exit();
-		});
+		talk.stopApp();		
 	});
 };

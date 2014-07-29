@@ -13,6 +13,11 @@ function Message(appPath) {
 	this._appPath = appPath;
 	this._name = prefix + this._appPath.replace(/\//g, '-') + '.msg';
 	this._stream = null;
+	// set up cleaning on process exit
+	var that = this;
+	process.on('exit', function () {
+		that.stop();
+	});
 }
 
 Message.prototype.startSend = function () {
