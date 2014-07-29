@@ -8,7 +8,9 @@ None
 
 ## Changed
 
+#### Daemon tool refactored
 
+#### Daemon status added number of application restarts
 
 ## Deprecated
 
