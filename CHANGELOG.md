@@ -10,7 +10,7 @@
 
 #### None cluster mode and master process now emit "setup.complete"
 
-#### Daemon list change the output format
+#### Daemon list changed the output format
 
 ## Deprecated
 
