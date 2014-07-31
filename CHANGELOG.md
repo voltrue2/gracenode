@@ -4,7 +4,7 @@
 
 ## Added
 
-None
+#### Uncaught exception before gracenode is ready will cause the process to exit with an error
 
 ## Changed
 

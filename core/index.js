@@ -22,6 +22,7 @@ function Gracenode() {
 	setupListeners(this);
 	// variables
 	var roots = findRoots();
+	this._isReady = false;
 	this._pid = null;
 	this._isMaster = false;
 	this._configPath = '';
@@ -115,25 +116,16 @@ Gracenode.prototype.setup = function (cb) {
 	if (error) {
 		return cb(error);
 	}
-	// start gracenode
-	var starter = function (callback) {
-		log.verbose('gracenode is starting...');
-		callback(null, that, cb);
-	};
-	var setupList = [
-		starter, 
-		setupLog, 
-		setupProfiler,
-		setupProcess, 
-		setupModules
-	];
-	async.waterfall(setupList, function (error) {
+	// final callback to be called when gracenode is ready
+	var done = function (error) {
 		if (error) {
 			log.fatal('gracenode failed to set up');
 			return that.exit(error);
 		}
 
-		log.verbose('gracenode set up complete');
+		that._isReady = true;
+
+		log.verbose('gracenode set up complete [' + that._isReady + ']');
 
 		that.emit('setup.complete');
 
@@ -142,7 +134,20 @@ Gracenode.prototype.setup = function (cb) {
 		cb();
 
 		that._profiler.stop();
-	});
+	};
+	// start gracenode
+	var starter = function (callback) {
+		log.verbose('gracenode is starting...');
+		callback(null, that, done);
+	};
+	var setupList = [
+		starter, 
+		setupLog, 
+		setupProfiler,
+		setupProcess, 
+		setupModules
+	];
+	async.waterfall(setupList, done);
 };
 
 // finds a schema.sql under given module's directory
@@ -314,6 +319,11 @@ function setupListeners(that) {
 	process.on('uncaughtException', function (error) {
 		log.fatal('gracenode detected an uncaught exception:', error);
 		that.emit('uncaughtException', error);
+		if (!that._isReady) {
+			// something when wrong before gracenode is ready
+			log.error('gracenode failed to set up due to a fatal error');
+			that.exit(error);
+		}
 	});
 
 }
