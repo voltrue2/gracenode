@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.18
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon list change the output format
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.17
 
 ## Added
