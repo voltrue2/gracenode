@@ -8,6 +8,8 @@
 
 ## Changed
 
+#### None cluster mode and master process now emit "setup.complete"
+
 #### Daemon list change the output format
 
 ## Deprecated
