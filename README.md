@@ -4,6 +4,12 @@
 
 Framework for node.js application with extendable module management system for fast and clean development.
 
+#### It provides clean structor
+
+#### It comes with daemonization tool out-of-the-box
+
+#### It is modular and easy to extend
+
 ##Installation
 
 ###Installation via NPM
