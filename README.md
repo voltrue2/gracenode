@@ -4,16 +4,6 @@
 
 Framework for node.js application with extendable module management system for fast and clean development.
 
-## Version 1.0.0
-
-We have now released gracenode version 1.0.0.
-
-There is a backward compatibility break in module system.
-
-For more detail on gracenode modules, please read <a target="_blank" href="https://github.com/voltrue2/gracenode/blob/develop/CHANGELOG.md#version-100">here</a>.
-
-Please see the list of gracenode modules on NPM repository <a target="_blank" href="https://www.npmjs.org/~voltrue2">here</a>.
-
 ##Installation
 
 ###Installation via NPM
