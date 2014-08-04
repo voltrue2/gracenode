@@ -12,6 +12,8 @@ npm install now removes pre-existing `daemon` symbolic link and recreates the li
 
 #### verbose output of application configuration reformatted
 
+#### Minor improvements in core/
+
 ## Deprecated
 
 None
