@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.19
+
+## Added
+
+#### Added preinstall script to package.json
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.18
 
 ## Added
