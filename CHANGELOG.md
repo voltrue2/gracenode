@@ -6,9 +6,11 @@
 
 #### Added preinstall script to package.json
 
+npm install now removes pre-existing `daemon` symbolic link and recreates the link.
+
 ## Changed
 
-None
+#### verbose output of application configuration reformatted
 
 ## Deprecated
 

@@ -3,12 +3,7 @@
 		"log": {
 			"console": true,
 			"color": true,
-			"level": {
-				"verbose": true,
-				"info": true,
-				"error": true,
-				"fatal": true
-			}
+			"level": ">= verbose"
 		},
 		"mysql": {
 			"test": {
