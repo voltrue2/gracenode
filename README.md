@@ -235,6 +235,12 @@ gracenode.defineOption('--test', 'Test option description', function (value) {
 });
 ```
 
+### .exitOnBadOption()
+
+When this method is called before `gracenode.setup()`, gracenode will check the given command-line options when set up is complete.
+
+If there is no option given or unexpected option(s) is given, gracenode process will exit with an error.
+
 ### --help
 
 gracenode has --help option and displays defined command options set by `.defineOption()`.

@@ -99,6 +99,10 @@ Gracenode.prototype.defineOption = function (argName, description, callback) {
 	this._argv.defineOption(argName, description, callback);
 };
 
+Gracenode.prototype.exitOnBadOption = function () {
+	this._argv.exitOnBadOption();
+};
+
 Gracenode.prototype.setup = function (cb) {
 	var that = this;
 	if (!this._configPath) {

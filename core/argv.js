@@ -2,6 +2,7 @@
 var HELP = '--help';
 var argKeys = [];
 var defKeys = [];
+var exitOnBadOption = false;
 
 module.exports = Argv;
 
@@ -11,6 +12,11 @@ function Argv(gn) {
 	this._def = {};
 	this._maxLen = 0;
 }
+
+// if this is set, the application process will exit on either bad option or no option given
+Argv.prototype.exitOnBadOption = function () {
+	exitOnBadOption = true;
+};
 
 Argv.prototype.parse = function () {
 	var prev = null;
@@ -83,17 +89,30 @@ Argv.prototype.defineOption = function (arg, desc, cb) {
 };
 
 Argv.prototype.execDefinedOptions = function () {
+	var optionCalled = 0;
 	try {
 		for (var i = 0, len = defKeys.length; i < len; i++) {
 			var arg = defKeys[i];
 			var option = this.get(arg);
 			if (option && typeof this._def[arg].callback === 'function') {
+				optionCalled += 1;
 				this._def[arg].callback(option);
 			}
 		}
 	} catch (e) {
 		var logger = this._gn.log.create('argv');
 		logger.error(e);
+	}
+	// check for exitOnBadOption
+	if (exitOnBadOption && !optionCalled) {
+		var error = 0;
+		var args = Object.keys(this._argv);
+		if (!args.length) {
+			error = new Error('No option(s) given');
+		} else {
+			error = new Error('Unkown option(s): ' + args.join(', ') + ' given');
+		}
+		this._gn.exit(error);
 	}
 };
 

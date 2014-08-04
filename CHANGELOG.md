@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.20
+
+## Added
+
+#### gracenode.exitOnBadOption() added
+
+#### Daemon tool will now exit on bad options or no options
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.19
 
 ## Added
