@@ -112,11 +112,11 @@ Argv.prototype.execDefinedOptions = function () {
 		} else {
 			error = new Error('Unkown option(s): ' + args.join(', ') + ' given');
 		}
-		this._gn.exit(error);
+		this._showHelp(error);
 	}
 };
 
-Argv.prototype._showHelp = function () {
+Argv.prototype._showHelp = function (error) {
 	var package = require('../package.json');
 	console.log('\n' + package.name + ':', package.description);
 	console.log('Authored by', package.author);
@@ -130,7 +130,7 @@ Argv.prototype._showHelp = function () {
 	}
 	console.log('\n');
 	// we do not execute anything else in help mode
-	this._gn.exit();
+	this._gn.exit(error || 0);
 };
 
 Argv.prototype._createSpaces = function (n) {
