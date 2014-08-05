@@ -1,4 +1,4 @@
-var gn = require('../');
+var gn = require('gracenode');
 var prefix = require('./prefix');
 var assert = require('assert');
 
