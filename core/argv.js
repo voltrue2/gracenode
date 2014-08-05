@@ -90,18 +90,13 @@ Argv.prototype.defineOption = function (arg, desc, cb) {
 
 Argv.prototype.execDefinedOptions = function () {
 	var optionCalled = 0;
-	try {
-		for (var i = 0, len = defKeys.length; i < len; i++) {
-			var arg = defKeys[i];
-			var option = this.get(arg);
-			if (option && typeof this._def[arg].callback === 'function') {
-				optionCalled += 1;
-				this._def[arg].callback(option);
-			}
+	for (var i = 0, len = defKeys.length; i < len; i++) {
+		var arg = defKeys[i];
+		var option = this.get(arg);
+		if (option && typeof this._def[arg].callback === 'function') {
+			optionCalled += 1;
+			this._def[arg].callback(option);
 		}
-	} catch (e) {
-		var logger = this._gn.log.create('argv');
-		logger.error(e);
 	}
 	// check for exitOnBadOption
 	if (exitOnBadOption && !optionCalled) {
