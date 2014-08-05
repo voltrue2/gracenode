@@ -241,6 +241,10 @@ When this method is called before `gracenode.setup()`, gracenode will check the 
 
 If there is no option given or unexpected option(s) is given, gracenode process will exit with an error.
 
+#### Note: 
+
+Options need to be defined by calling `gracenode.defineOption()` for this function to work properly
+
 ### --help
 
 gracenode has --help option and displays defined command options set by `.defineOption()`.
