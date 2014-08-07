@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var gn = require('../../');
+var gn = require('gracenode');
 var logPath;
 gn.setConfigPath('node_modules/gracenode/scripts/configs/');
 gn.setConfigFiles(['daemon.json']);
