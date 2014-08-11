@@ -1,5 +1,33 @@
 # Change Log
 
+## Version 1.1.21
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix in defineOption()
+
+The negative number as a value of an option was being ignored.
+
+Example: `node app.js -option -100`
+
+With the bug, above command's -100 was ignored.
+
+#### Minor improvements
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.20
 
 ## Added

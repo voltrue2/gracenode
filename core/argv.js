@@ -32,7 +32,7 @@ Argv.prototype.parse = function () {
 			argKeys.push(sep[0]);
 			continue;
 		}
-		if (prev && arg.indexOf('-') !== 0) {
+		if (prev && (arg.indexOf('-') !== 0 || !isNaN(arg))) {
 			// format: -name value
 			if (this._argv[prev] === true) {
 				this._argv[prev] = [];
@@ -40,7 +40,7 @@ Argv.prototype.parse = function () {
 			this._argv[prev].push(lib.typeCast(arg));
 			continue;
 		}
-		// format: -argument or -argument value
+		// format: -argument or -argument value that is NOT a number: for example -5 is a number, so not considered an option
 		this._argv[arg] = true;
 		argKeys.push(arg);
 		prev = arg;
