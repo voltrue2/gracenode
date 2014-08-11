@@ -1,4 +1,4 @@
-var gn = require('../../');
+var gn = require('gracenode');
 var logger = gn.log.create('daemon-status');
 var talk = require('./utils/talk');
 var lib = require('./utils/lib');
