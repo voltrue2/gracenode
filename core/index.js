@@ -208,18 +208,15 @@ function compareGracenodeVersion(that) {
 		// there seems to be no package.json present. we do nothing
 		return;
 	}
-	if (appPackage) {
-		// extract application's expected gracenode version
-		if (appPackage.dependencies && appPackage.dependencies.gracenode) {
-			var expectedVersion = appPackage.dependencies.gracenode.replace(/(>|<|=|\ )/g, '');
-			var gnPackage = require(that._root + '/package.json');
-			var currentVersion = gnPackage.version;
-			if (!isNaN(expectedVersion.replace(/\./g, '')) && expectedVersion > currentVersion) {
-				// application is expecting installed gracenode to be higher version than the currently installed version
-				return that.exit(new Error('application is expecting gracenode to be ' + expectedVersion + ' or higher, but installed gracenode is ' + currentVersion));
-			}
+	// extract application's expected gracenode version
+	if (appPackage.dependencies && appPackage.dependencies.gracenode) {
+		var expectedVersion = appPackage.dependencies.gracenode.replace(/(>|<|=|\ )/g, '');
+		var gnPackage = require(that._root + '/package.json');
+		var currentVersion = gnPackage.version;
+		if (!isNaN(expectedVersion.replace(/\./g, '')) && expectedVersion > currentVersion) {
+			// application is expecting installed gracenode to be higher version than the currently installed version
+			return that.exit(new Error('application is expecting gracenode to be ' + expectedVersion + ' or higher, but installed gracenode is ' + currentVersion));
 		}
-		
 	}
 }
 
