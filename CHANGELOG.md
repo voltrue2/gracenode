@@ -14,6 +14,12 @@ If the installed version is lower than the application's expected version of gra
 
 `gracenode.setup()` will fail with an error.
 
+## Changed
+
+#### Gracenode now allows an application to have more child process in cluster-mode than the number of CPU
+
+NOTE: Please note that each child process is a new instance of V8 instance and each process consumes 10MB of memory.
+
 ## Deprecated
 
 None
