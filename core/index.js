@@ -29,6 +29,8 @@ function Gracenode() {
 	this._configFiles = [];
 	this._appRoot = roots.app;
 	this._root = roots.gracenode;
+	// version check
+	compareGracenodeVersion(this);
 	// change the root path of the application
 	process.chdir(this._appRoot);
 	// set up to load default modules except for log module
@@ -190,6 +192,36 @@ Gracenode.prototype._shutdown = function (error) {
 		});
 	});
 };
+
+/* 
+extracts application's expected gracenode version
+and compare the it against the currently installed gracenode version
+
+* if the installed version is lower than excepted version, .setup() fails
+* if gracenode fails to extract expected version, it will log a warning and continues
+*/
+function compareGracenodeVersion(that) {
+	var appPackage;
+	try {
+		appPackage = require(that._appRoot + 'package.json');
+	} catch (e) {
+		// there seems to be no package.json present. we do nothing
+		return;
+	}
+	if (appPackage) {
+		// extract application's expected gracenode version
+		if (appPackage.dependencies && appPackage.dependencies.gracenode) {
+			var expectedVersion = appPackage.dependencies.gracenode.replace(/(>|<|=|\ )/g, '');
+			var gnPackage = require(that._root + '/package.json');
+			var currentVersion = gnPackage.version;
+			if (!isNaN(expectedVersion.replace(/\./g, '')) && expectedVersion > currentVersion) {
+				// application is expecting installed gracenode to be higher version than the currently installed version
+				return that.exit(new Error('application is expecting gracenode to be ' + expectedVersion + ' or higher, but installed gracenode is ' + currentVersion));
+			}
+		}
+		
+	}
+}
 
 function findRoots() {
 	var appRoot;

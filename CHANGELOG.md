@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.1.22
+
+## Added
+
+#### Gracenode version check on setup
+
+Gracenode now checks application's expected version of gracenode and
+
+compare it against currently installed gracenode's version.
+
+If the installed version is lower than the application's expected version of gracenode,
+
+`gracenode.setup()` will fail with an error.
+
+## Deprecated
+
+None
+
+## Removed
+
+#### Deprecated script scripts/gracenode.js has now been removed
+
+***
+
 ## Version 1.1.21
 
 ## Added
