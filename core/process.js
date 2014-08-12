@@ -22,6 +22,11 @@ function Process(gracenode) {
 	// we allow more processes than the number of CPU available...
 	this.clusterNum = Math.max(maxClusterNum, CPUNum);
 
+	if (CPUNum === 1) {
+		// we are running on a single-core machine. no cluster mode
+		this.clusterNum = CPUNum;
+	}
+
 	this.log.verbose('number of avialable CPU cores:', CPUNum);
 	this.log.verbose('cluster mode:', this.inClusterMode);
 	this.log.verbose('number of allowed child processes:', this.clusterNum);
