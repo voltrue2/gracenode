@@ -213,6 +213,7 @@ function compareGracenodeVersion(that) {
 		var expectedVersion = appPackage.dependencies.gracenode.replace(/(>|<|=|\ )/g, '');
 		var gnPackage = require(that._root + '/package.json');
 		var currentVersion = gnPackage.version;
+		// isNaN() returns true if the given argument is a string float
 		if (!isNaN(expectedVersion.replace(/\./g, '')) && expectedVersion > currentVersion) {
 			// application is expecting installed gracenode to be higher version than the currently installed version
 			return that.exit(new Error('application is expecting gracenode to be ' + expectedVersion + ' or higher, but installed gracenode is ' + currentVersion));
