@@ -8,17 +8,17 @@
 
 Gracenode now checks application's expected version of gracenode and
 
-compare it against currently installed gracenode's version.
+compares it against currently installed gracenode's version.
 
-If the installed version is lower than the application's expected version of gracenode,
+If the installed gracenode's version is lower than the application's expected version of gracenode,
 
 `gracenode.setup()` will fail with an error.
 
 ## Changed
 
-#### Gracenode now allows an application to have more child process in cluster-mode than the number of CPU
+#### Gracenode now allows an application to have more cluster processes in cluster-mode than the number of CPU available
 
-NOTE: Please note that each child process is a new instance of V8 instance and each process consumes 10MB of memory.
+NOTE: Please note that each child process is a new instance of V8 instance.
 
 ## Deprecated
 
