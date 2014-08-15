@@ -17,14 +17,12 @@ function Process(gracenode) {
 	
 	this.isShutdown = false; // master only	
 	this.inClusterMode = this.config.enable || false;
-	var maxClusterNum = this.config.max || 1;
 	var CPUNum = require('os').cpus().length;
-	// we allow more processes than the number of CPU available...
-	this.clusterNum = Math.max(maxClusterNum, CPUNum);
+	var maxClusterNum = this.config.max || CPUNum;
+	this.clusterNum = maxClusterNum;
 
-	if (CPUNum === 1) {
-		// we are running on a single-core machine. no cluster mode
-		this.clusterNum = CPUNum;
+	if (!this.inClusterMode) {
+		this.clusterNum = 1;
 	}
 
 	this.log.verbose('number of avialable CPU cores:', CPUNum);
