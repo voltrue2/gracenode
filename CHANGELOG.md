@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.23
+
+## Added
+
+None
+
+## Changed
+
+#### Log module now tolerates missing configurations
+
+Log module can now fall back to default configurations if configurations are missing.
+
+## Dprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.22
 
 ## Added

@@ -257,11 +257,13 @@ function setupConfig(that) {
 function setupLog(that, lastCallback, cb) {
 	var conf = config.getOne('modules.log');
 	logger.gracenode = that;
+	/*
 	if (!conf) {
 		that.log = logger;
 		console.warn('<warn>[gracenode] no configurations for log module');
 		return cb(null, that, lastCallback);
 	}
+	*/
 	logger.readConfig(conf);
 	logger.setup(function (error) {
 		if (error) {
@@ -279,11 +281,13 @@ function setupLog(that, lastCallback, cb) {
 }
 
 function setupProfiler(that, lastCallback, cb) {
+	/*
 	var conf = config.getOne('modules.log');
 	if (!conf) {
 		console.warn('<warn>[gracenode] profiler module disabled because of missing log module configurations');
 		return cb(null, that, lastCallback);
 	}
+	*/
 	var profiler = require('../modules/profiler');
 	// gracenode profiler
 	that._profiler = profiler.create(that._root);

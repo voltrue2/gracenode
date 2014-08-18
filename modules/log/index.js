@@ -12,11 +12,30 @@ loggerSource.events.on('output', function (address, name, level, data) {
 });
 
 module.exports.readConfig = function (configIn) {
-	if (!configIn) {
-		throw new Error('invalid configurations:\n' + JSON.stringify(configIn, null, 4));
-	}
 	
 	config = configIn;
+
+	// there is no configurations, we create a default one
+	if (!config) {
+		config = {
+			console: true,
+			color: true,
+			level: '>= verbose'
+		};
+		console.warn('<warn>[log] no configurations for log module found: created default configurations');
+		console.log('<verbose>[log] default configurations:\n', {
+			console: true,
+			color: true,
+			level: '>= verbose'
+		});
+	}
+
+	// if config level is missing, we create a default one
+	if (!config.level) {
+		config.level = '>= verbose';
+		console.warn('<warn>[log] no log level found: created default log level');
+		console.log('<verbose>[log] default configurations:\n', config);
+	}
 
 	if (config.level && typeof config.level === 'string') {
 		// for backward compatibility:
