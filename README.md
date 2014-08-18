@@ -4,7 +4,7 @@
 
 Framework for node.js application with extendable module management system for fast and clean development.
 
-#### It provides clean structure
+#### It provides clean structure for development
 
 #### It comes with daemonization tool out-of-the-box
 
