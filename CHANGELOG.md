@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.24
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix: daemon logger now properly rotates log file
+
+`restart` of daemon now triggers logger to rotate log file to proper date.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+*** 
+
 ## Version 1.1.23
 
 ## Added

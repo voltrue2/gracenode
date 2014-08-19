@@ -5,6 +5,7 @@ var gn = require('../../');
 var socketName = require('./utils/socket-name');
 var path;
 var app;
+var logPath = gn.argv('start')[0] || null;
 // if the application dies 10 times in 10 seconds, monitor will exit
 var maxNumOfDeath = 10;
 var deathInterval = 10000;
@@ -17,7 +18,7 @@ var logger = new Log(gn.argv('--log'));
 var Message = require('./utils/message');
 
 // start file logging stream if enabled
-logger.start(gn.argv('start')[0] || null);
+logger.start(logPath);
 
 gn.on('uncaughtException', function (error) {
 	logger.error('Exception in monitor process: ' + error);
@@ -66,7 +67,12 @@ function handleCommunication(msg) {
 			// we instruct the application process to exit and let monitor process to respawn it
 			if (Date.now() - restartTime > deathInterval) {
 				restartTime = Date.now();
-				stopApp();
+				stopApp(function () {
+					// restart logger
+					logger.stop();
+					logger.start(logPath);
+				});
+				
 			}
 			break;
 		default:
