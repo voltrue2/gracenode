@@ -8,9 +8,13 @@ None
 
 ## Changed
 
-#### Bug fix: daemon logger now properly rotates log file
+#### Bug fix: daemon logger now properly rotates log files on restart
 
-`restart` of daemon now triggers logger to rotate log file to proper date.
+`restart` of daemon now triggers logger to rotate log files to proper date.
+
+#### Bug fix: daemon logger now properly rotates log files on stop
+
+`stop` of daemon now triggers logger to rotate log files to proper date.
 
 ## Deprecated
 

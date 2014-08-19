@@ -5,7 +5,7 @@ var gn = require('../../');
 var socketName = require('./utils/socket-name');
 var path;
 var app;
-var logPath = gn.argv('start')[0] || null;
+var appNameForLog = gn.argv('start')[0] || null;
 // if the application dies 10 times in 10 seconds, monitor will exit
 var maxNumOfDeath = 10;
 var deathInterval = 10000;
@@ -18,7 +18,7 @@ var logger = new Log(gn.argv('--log'));
 var Message = require('./utils/message');
 
 // start file logging stream if enabled
-logger.start(logPath);
+logger.start(appNameForLog);
 
 gn.on('uncaughtException', function (error) {
 	logger.error('Exception in monitor process: ' + error);
@@ -67,11 +67,7 @@ function handleCommunication(msg) {
 			// we instruct the application process to exit and let monitor process to respawn it
 			if (Date.now() - restartTime > deathInterval) {
 				restartTime = Date.now();
-				stopApp(function () {
-					// restart logger
-					logger.stop();
-					logger.start(logPath);
-				});
+				stopApp();
 				
 			}
 			break;
@@ -112,17 +108,22 @@ function startApp() {
 			deathCount = 0;
 		}
 		// respawn application process
+		logger.info('restarting daemon process of ' + path);
 		startApp();
 	});
 }
 
 function stopApp(cb) {
 	if (app) {
-		app.kill();
-		logger.info('stopped daemon process of ' + app.path);
-		if (cb) {
-			cb();
-		}
+		// restart logger to make sure log file is rotated
+		logger.restart(function () {
+			// stop application
+			app.kill();
+			logger.info('stopped daemon process of ' + app.path);
+			if (cb) {
+				cb();
+			}
+		});
 	}
 }
 
