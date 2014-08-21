@@ -1,5 +1,32 @@
 # Change Log
 
+## Version 1.1.25
+
+## Added
+
+#### Log module added isEnabled()
+
+`gracenode.log.isEnabled(logLevelName)` checks the availability of specific log level such as `verbose`.
+
+## Changed
+
+## Profiler .mark() now accepts null
+
+`gracenode.profiler.mark()` now accepts `null` instead of message string.
+If `null` is given, the profile time is marked the same as when a string is given, but the null message will be skipped.
+
+## Profiler skipps its operation completly if used log level is disabled
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.24
 
 ## Added

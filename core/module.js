@@ -93,6 +93,10 @@ Module.prototype.load = function (cb) {
 		async.eachSeries(that._use, function (modObj, next) {
 			var name = modObj.name;
 			var modName = modObj.modName;
+			
+			// mark the start of loading the module
+			that._gn._profiler.mark(null);
+
 			// load one module at a time
 			var module = that._require(name);
 			if (!module) {

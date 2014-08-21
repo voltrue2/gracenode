@@ -102,6 +102,13 @@ module.exports.setup = function (cb) {
 	cb();
 };
 
+module.exports.isEnabled = function (levelName) {
+	if (config && config.level && config.level[levelName]) {
+		return true;
+	}
+	return false;
+};
+
 module.exports.setPrefix = function (p) {
 	appPrefix = p;
 };

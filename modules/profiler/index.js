@@ -1,4 +1,4 @@
-var gracenode = require('../../');
+var gracenode = require('gracenode');
 var log = gracenode.log.create('profiler');
 
 module.exports.create = function (name, logType) {
@@ -13,9 +13,16 @@ function Profiler(name, logType) {
 	this._marks = [];
 	this._running = false;
 	this._type = logType || 'verbose';
+	this._enabled = gracenode.log.isEnabled(this._type);
+	log.verbose('profiler with', this._type, 'enabled:', this._enabled);
 }
 
 Profiler.prototype.start = function () {
+
+	if (!this._enabled) {
+		return;
+	}
+
 	if (this._running) {
 		return log.warning('profiler is currently running. invoke "stop" before calling "start"');
 	}
@@ -29,6 +36,11 @@ Profiler.prototype.start = function () {
 };
 
 Profiler.prototype.mark = function (name) {
+
+	if (!this._enabled) {
+		return;
+	}
+
 	if (!this._running) {
 		return log.warning('mark called, but profiler "' + this._name + '" is not running');
 	}
@@ -44,6 +56,11 @@ Profiler.prototype.mark = function (name) {
 };
 
 Profiler.prototype.stop = function () {
+
+	if (!this._enabled) {
+		return;
+	}
+
 	if (!this._running) {
 		return log.warning('stop called, but profiler "' + this._name + '" is not running');
 	}
@@ -62,6 +79,10 @@ Profiler.prototype.stop = function () {
 	var longest = msgLen;
 	// degenrate profiling logs
 	for (var i = 0; i < len; i++) {
+		if (!this._marks[i].name) {
+			// if there is no message, skip
+			continue;
+		}
 		var item = this._marks[i];
 		var str = ' > ' + item.name + ' took [' + item.time + ' ms] ';
 		if (longest < str.length) {
@@ -76,6 +97,10 @@ Profiler.prototype.stop = function () {
 	line += '+';
 	log[this._type](line);
 	for (var j = 0; j < len; j++) {
+		if (!logList[j]) {
+			// this is a skipped log
+			continue;
+		}
 		gap = longest - logList[j].length;
 		space = '';
 		for (var n = 0; n < gap; n++) {

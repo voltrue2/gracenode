@@ -182,6 +182,10 @@ Forcefully flushes all buffered log data and write immediately.
 
 Returns an instance of logger object.
 
+###.isEnabled(levelName [string])
+
+Returns Boolean. If given log level name is enabled, it returns true. 
+
 ***
 
 ## Logger Object
