@@ -4,6 +4,10 @@
 
 ## Added
 
+#### Log module fix
+
+On exiting gracenode process, log module can now let the process to proceed to exit even when it is failing to log to files.
+
 #### Log module added isEnabled()
 
 `gracenode.log.isEnabled(logLevelName)` checks the availability of specific log level such as `verbose`.

@@ -38,7 +38,9 @@ module.exports.setup = function (gn, levelMap, path) {
 // cb is optional for auto buffer flushing
 module.exports.log = function (levelName, msg, cb) {
 	var stream = getWriteStream(levelName);
-	stream.write(msg + '\n', cb);
+	if (stream) {
+		stream.write(msg + '\n', cb);
+	}
 };
 
 function getWriteStream(levelName) {
@@ -66,19 +68,18 @@ function getWriteStream(levelName) {
 }
 
 function createWriteStream(levelName, filePath) {
-	// create a new write stream
-	var stream = fs.createWriteStream(filePath, writeOptions);
+	try {
+		// create a new write stream
+		var stream = fs.createWriteStream(filePath, writeOptions);
 
-	// error listener
-	stream.on('error', function (error) {
-		console.error('log.file: Error:', error);
-	});
-
-	// add the new stream to stream map
-	streams[levelName] = {
-		path: filePath,
-		stream: stream
-	};
+		// add the new stream to stream map
+		streams[levelName] = {
+			path: filePath,
+			stream: stream
+		};
+	} catch (e) {
+		console.error('[file.log] failed to create a write stream:', e);
+	}
 }
 
 function destroyWriteStream(levelName) {
