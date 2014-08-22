@@ -4,22 +4,22 @@
 
 ## Added
 
-#### Log module fix
-
-On exiting gracenode process, log module can now let the process to proceed to exit even when it is failing to log to files.
-
 #### Log module added isEnabled()
 
 `gracenode.log.isEnabled(logLevelName)` checks the availability of specific log level such as `verbose`.
 
 ## Changed
 
-## Profiler .mark() now accepts null
+#### Log module fix
+
+On exiting gracenode process, log module can now let the process to proceed to exit even when it is failing to log to files.
+
+#### Profiler .mark() now accepts null
 
 `gracenode.profiler.mark()` now accepts `null` instead of message string.
 If `null` is given, the profile time is marked the same as when a string is given, but the null message will be skipped.
 
-## Profiler skipps its operation completly if used log level is disabled
+#### Profiler skipps its operation completly if used log level is disabled
 
 ## Deprecated
 
