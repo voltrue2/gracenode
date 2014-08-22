@@ -44,6 +44,9 @@ Log.prototype.stop = function () {
 };
 
 Log.prototype.restart = function (cb) {
+	if (!this._stream) {
+		return cb();
+	}
 	this.stop();
 	this.start(this._name, cb);
 };

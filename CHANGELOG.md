@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.1.26
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix daemon tool
+
+Daemon tool was unable to stop the application process if the daemon was started without `--log=` option.
+
+Affected version: `1.1.24` and `1.1.25`
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.25
 
 ## Added
