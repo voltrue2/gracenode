@@ -138,7 +138,7 @@ Process.prototype.exit = function (sig) {
 	}
 	// none-cluster mode exits gracefully
 	if (!this.inClusterMode) {
-		this.log.info(sig, 'caught: disconnect all child processes');
+		this.log.info(sig, 'caught: exiting the application process gracefully');
 		this.emit('shutdown');
 		this.gracenode.exit();
 	}
