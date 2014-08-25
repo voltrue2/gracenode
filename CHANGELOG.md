@@ -12,6 +12,8 @@ None
 
 For more information on `gracelog` module please read <a href="https://github.com/voltrue2/gracelog#gracelog">here</a>.
 
+Note: There are NO breaking changes.
+
 ## Deprecated
 
 None
