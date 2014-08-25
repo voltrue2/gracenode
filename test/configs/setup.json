@@ -9,6 +9,7 @@
 	},
 	"modules": {
 		"log": {
+			"bufferSize": 0,
 			"depth": 10,
 			"console": true,
 			"color": true,

@@ -79,7 +79,7 @@ describe('gracenode initialization ->', function () {
 			assert(gn.encrypt.uuid);
 			assert(gn.cron.create);
 			assert(gn.memcache.create);
-
+			
 			var logger = gn.log.create('test');
 			logger.verbose('test');
 			logger.debug('test');
@@ -88,8 +88,9 @@ describe('gracenode initialization ->', function () {
 			logger.warn('test');
 			logger.error('test');
 			logger.fatal('test');
-
+		
 			done();
+
 		});
 			
 	});
@@ -136,4 +137,25 @@ describe('gracenode initialization ->', function () {
 		assert.equal(gn.config.getOne('testConfig.blah.1'), 10000);
 	});
 
+	it('Can listen for an event of log module "output"', function (done) {
+		gn.log.on('output', function (address, name, level, data) {
+			assert(address);
+			assert(name);
+			assert(level);
+			assert(data);
+			if (level === 'fatal') {
+				done();
+			}
+		});
+
+		var logger = gn.log.create('listener-test');
+		logger.verbose('verbose');	
+		logger.debug('debug');	
+		logger.trace('trace');	
+		logger.info('info');	
+		logger.warn('warn');	
+		logger.error('error');	
+		logger.fatal('fatal');	
+	});
+ 
 });

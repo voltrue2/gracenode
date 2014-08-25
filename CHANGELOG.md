@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.27
+
+## Added
+
+None
+
+## Changed
+
+#### Log module now uses gracelog npm module
+
+For more information on `gracelog` module please read <a href="https://github.com/voltrue2/gracelog#gracelog">here</a>.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.26
 
 ## Added
