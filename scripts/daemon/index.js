@@ -32,6 +32,10 @@ gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
 	require('./restart.js')(getPath(path));
 });
 
+gn.defineOption('clean', 'Cleans up possible detached socket files for daemon processes that are no longer present.', function () {
+	require('./clean.js')();
+});
+
 gn.setup(function () {});
 
 function getPath(path) {

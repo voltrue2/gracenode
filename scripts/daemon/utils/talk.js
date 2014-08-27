@@ -1,3 +1,4 @@
+var async = require('async');
 var fs = require('fs');
 var net = require('net');
 var Message = require('./message');
@@ -58,5 +59,56 @@ module.exports.restartApp = function () {
 		console.log(lib.color('Daemon process restarted', lib.COLORS.GRAY), lib.color(appPath, lib.COLORS.LIGHT_BLUE));
 		console.log(lib.color('Restarting multiple times in quick succession (within 10 seconds) is', lib.COLORS.GRAY) + lib.color(' NOT ', lib.COLORS.BROWN) + lib.color('allowed', lib.COLORS.GRAY));
 		gn.exit();
+	});
+};
+
+// cleans up all orphan socket files without monitor process
+module.exports.clean = function (cb) {
+	var socks = [];
+	var toBeRemoved = [];
+	var getAllSocks = function (next) {
+		fs.readdir('/tmp/', function (error, list) {
+			if (error) {
+				return next(error);
+			}
+			// pick gracenode daemon socket files only
+			socks = list.filter(function (item) {
+				return item.indexOf('gracenode') === 0;
+			});
+			next();
+		});
+	};
+	var findMonitors = function (next) {
+		async.eachSeries(socks, function (sockFile, callback) {
+			var path = '/tmp/' + sockFile;
+			var sock = new net.Socket();
+			sock.once('error', function () {
+				// this socket file's monitor process is no longer there
+				console.log(lib.color('socket file without application process found: ' + path, lib.COLORS.GRAY));	
+				toBeRemoved.push(path);
+				callback();
+			});
+			sock.connect(path, function () {
+				// this socket file's monitor is still running
+				callback();
+			});
+		}, next);
+	};
+	var removeOrphanSocketFiles = function (next) {
+		async.eachSeries(toBeRemoved, function (path, callback) {
+			fs.unlink(path, function (error) {
+				if (error) {
+					return next(error);
+				}
+				console.log(lib.color('socket file without application proccess has been deleted: ' + path, lib.COLORS.GREEN));
+				callback();
+			});
+		}, next);
+	};
+	async.series([getAllSocks, findMonitors, removeOrphanSocketFiles], function (error) {
+		if (error) {
+			return cb(error);
+		}
+		cb(null, toBeRemoved.length > 0);
 	});
 };
