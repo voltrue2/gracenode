@@ -22,6 +22,8 @@ Note: There are NO breaking changes.
 
 #### Daemon tool now detects orphan process(es) without associated socket file
 
+#### Daemon tool now detects orphan socket file without associdated application process(es)
+
 ## Deprecated
 
 None

@@ -7,8 +7,8 @@ var talk = require('./utils/talk');
 module.exports = function (path) {
 	// listener for exceptions
 	gn.on('uncaughtException', function (error) {
-		logger.error(lib.color(path + ' ' + sockName(path), lib.COLORS.RED));
-		gn.exit(error);
+		logger.error(lib.color(path, lib.COLORS.RED));
+		gn.exit();
 	});
 	// check for daemon process
 	talk.setup(path, function (isAppRunning) {

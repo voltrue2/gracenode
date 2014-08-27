@@ -6,7 +6,10 @@ var talk = require('./utils/talk');
 
 module.exports = function (path, logPath) {
 	// listener for exceptions
-	gn.on('uncaughtException', gn.exit);
+	gn.on('uncaughtException', function () {
+		logger.error(lib.color(path, lib.COLORS.RED));
+		gn.exit()
+	});
 	// check if the process is already running
 	talk.setup(path, function (isAppRunning) {
 		if (isAppRunning) {

@@ -14,17 +14,28 @@ module.exports.setup = function (path, cb) {
 	appPath = path;
 	fs.exists(sockFile, function (exists) {
 		if (exists) {
-			// application is running
-			return cb(true);
+			// is there process for this socket?
+			findProcesses(path, function (error, processList) {
+				if (error) {
+					throw error;
+				}
+				if (!processList || !processList.length) {
+					console.error(lib.color('application process(es) associated to the socket file not found', lib.COLORS.RED));
+					console.error(lib.color('use "node daemon clean" command to clean up the detached socket files to continue', lib.COLORS.RED));
+				}
+				// application is running
+				return cb(true);
+			});
+			return;
 		}
 		// is there detached process running without socket file?
-		findDetachedProcesses(path, function (error, detached) {
+		findProcesses(path, function (error, detached) {
 			if (error) {
 				throw error;
 			}
 			if (detached && detached.length) {
 				// there are processes w/o associated socket file
-				console.log(lib.color('application process(es) without associated socket file found: please "kill" these process(es) to continue', lib.COLORS.RED));
+				console.error(lib.color('application process(es) without associated socket file found: please "kill" these process(es) to continue', lib.COLORS.RED));
 				throw new Error('detachedProcessFound');
 			}
 			// application is not running
@@ -125,27 +136,28 @@ module.exports.clean = function (cb) {
 	});
 };
 
-function findDetachedProcesses(path, cb) {
+function findProcesses(path, cb) {
 	exec('ps aux | grep "' + path + '"', function (error, stdout) {
 		if (error) {
 			return cb(error);
 		}
-		var detached = [];
+		var processList = [];
 		var list = stdout.split('\n');			
 		// look for monitor process and application process(es)
 		for (var i = 0, len = list.length; i < len; i++) {
 			var p = list[i];
 			var execPath = p.indexOf(process.execPath);
-			var monitor = p.indexOf('monitor');
-			var app = p.indexOf(path);
-			if (execPath !== -1 && monitor !== -1 && app !== -1) {
-				console.log(lib.color('monitor process without associdated socket file found: ' + p, lib.COLORS.PURPLE));
-				detached.push(p);
+			var monitor = p.indexOf('monitor start ' + path);
+			var app = p.indexOf(execPath + ' ' + path);
+			if (execPath !== -1 && monitor !== -1) {
+				processList.push(p);
 			} else if (execPath !== -1 && app !== -1) {
-				console.log(lib.color('application process without associated socket file found: ' + p, lib.COLORS.PURPLE));
-				detached.push(p);
+
+				console.log(path, p);
+
+				processList.push(p);
 			}
 		}
-		cb(null, detached);
+		cb(null, processList);
 	});
 }
