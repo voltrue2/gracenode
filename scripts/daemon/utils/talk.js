@@ -107,7 +107,6 @@ module.exports.clean = function (cb) {
 			var sock = new net.Socket();
 			sock.once('error', function () {
 				// this socket file's monitor process is no longer there
-				console.log(lib.color('socket file without application process found: ' + path, lib.COLORS.GRAY));	
 				toBeRemoved.push(path);
 				callback();
 			});
@@ -121,7 +120,8 @@ module.exports.clean = function (cb) {
 		async.eachSeries(toBeRemoved, function (path, callback) {
 			fs.unlink(path, function (error) {
 				if (error) {
-					return next(error);
+					// failed to remove. move on
+					return next();
 				}
 				console.log(lib.color('socket file without application proccess has been deleted: ' + path, lib.COLORS.GREEN));
 				callback();
