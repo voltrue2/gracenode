@@ -121,7 +121,7 @@ module.exports.clean = function (cb) {
 			fs.unlink(path, function (error) {
 				if (error) {
 					// failed to remove. move on
-					return next();
+					return callback();
 				}
 				console.log(lib.color('socket file without application proccess has been deleted: ' + path, lib.COLORS.GREEN));
 				callback();
