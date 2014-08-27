@@ -6,7 +6,7 @@
 
 #### Daemon tool added clean
 
-There may be a situation where you end up with daemon socket files without process associated. (maybe kill -9 or something...)
+There may be a situation where you end up with daemon socket files without process associated.
 
 `node daemon clean` will find all detached socket files and clean them all.
 
