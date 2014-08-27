@@ -11,7 +11,7 @@ module.exports = function (path, logPath) {
 	talk.setup(path, function (isAppRunning) {
 		if (isAppRunning) {
 			logger.error(lib.color('daemon process ' + path + ' is already running', lib.COLORS.RED));
-			return gn.exit(new Error('processAlreadyExists'));
+			return gn.exit();
 		}
 		// set up the options
 		var args = [

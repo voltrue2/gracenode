@@ -7,13 +7,13 @@ module.exports = function (appPath) {
 	// listener for exceptions
 	gn.on('uncaughtException', function (error) {
 		logger.error(lib.color(appPath, lib.COLORS.RED));
-		gn.exit(error);
+		gn.exit();
 	});
 	// start talking to daemon monitor process
 	talk.setup(appPath, function (isAppRunning) {
 		if (!isAppRunning) {
 			logger.error(lib.color('daemon process ' + appPath + ' is not running', lib.COLORS.RED));
-			return gn.exit(new Error('processNotFound'));
+			return gn.exit();
 		}
 		talk.getStatus(function () {
 			gn.exit();

@@ -13,7 +13,7 @@ module.exports = function (path) {
 	talk.setup(path, function (isAppRunning) {
 		if (!isAppRunning) {
 			logger.error(lib.color('daemon process ' + path + ' not running', lib.COLORS.RED));
-			return gn.exit(new Error('processNotFound'));
+			return gn.exit();
 		}
 		talk.stopApp();		
 	});

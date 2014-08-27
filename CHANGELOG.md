@@ -18,6 +18,10 @@ For more information on `gracelog` module please read <a href="https://github.co
 
 Note: There are NO breaking changes.
 
+#### Daemon tool no longer outputs fatal error for an error
+
+#### Daemon tool now detects orphan process(es) without associated socket file
+
 ## Deprecated
 
 None

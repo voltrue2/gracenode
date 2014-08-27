@@ -1,4 +1,5 @@
 var async = require('async');
+var exec = require('child_process').exec;
 var fs = require('fs');
 var net = require('net');
 var Message = require('./message');
@@ -16,8 +17,19 @@ module.exports.setup = function (path, cb) {
 			// application is running
 			return cb(true);
 		}
-		// application is not running
-		cb(false);
+		// is there detached process running without socket file?
+		findDetachedProcesses(path, function (error, detached) {
+			if (error) {
+				throw error;
+			}
+			if (detached && detached.length) {
+				// there are processes w/o associated socket file
+				console.log(lib.color('application process(es) without associated socket file found: please "kill" these process(es) to continue', lib.COLORS.RED));
+				throw new Error('detachedProcessFound');
+			}
+			// application is not running
+			cb(false);
+		});
 	});
 };
 
@@ -112,3 +124,28 @@ module.exports.clean = function (cb) {
 		cb(null, toBeRemoved.length > 0);
 	});
 };
+
+function findDetachedProcesses(path, cb) {
+	exec('ps aux | grep "' + path + '"', function (error, stdout) {
+		if (error) {
+			return cb(error);
+		}
+		var detached = [];
+		var list = stdout.split('\n');			
+		// look for monitor process and application process(es)
+		for (var i = 0, len = list.length; i < len; i++) {
+			var p = list[i];
+			var execPath = p.indexOf(process.execPath);
+			var monitor = p.indexOf('monitor');
+			var app = p.indexOf(path);
+			if (execPath !== -1 && monitor !== -1 && app !== -1) {
+				console.log(lib.color('monitor process without associdated socket file found: ' + p, lib.COLORS.PURPLE));
+				detached.push(p);
+			} else if (execPath !== -1 && app !== -1) {
+				console.log(lib.color('application process without associated socket file found: ' + p, lib.COLORS.PURPLE));
+				detached.push(p);
+			}
+		}
+		cb(null, detached);
+	});
+}
