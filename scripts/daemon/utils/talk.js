@@ -71,7 +71,7 @@ module.exports.stopApp = function () {
 	var sock = new net.Socket();
 	sock.connect(sockFile, function () {
 		sock.write('stop');
-		module.exports.isRunning(function (error, running) {
+		module.exports.isNotRunning(function (error, running) {
 			if (error) {
 				return gn.exit(error);
 			}
@@ -171,6 +171,34 @@ module.exports.isRunning = function (cb, counter, running) {
 		// we found the process running > we need to keep checking until MAX_TRY
 		running += 1;
 		module.exports.isRunning(cb, counter, running);
+	});
+};
+
+module.exports.isNotRunning = function (cb, counter, notRunning) {
+	counter = counter || 0;
+	notRunning = notRunning || 0;
+	// application needs to be found not running more than half of the time
+	if (notRunning > MAX_TRY / 2) {
+		return cb(null, false);
+	}
+	if (counter > MAX_TRY) {
+		return cb(null, true);
+	}
+	counter += 1;
+	findProcesses(appPath, function (error, processList) {
+		if (error) {
+			return cb(error);
+		}
+		// process needs to have at least one monitor and one application
+		if (!processList || processList.length < 2) {
+			setTimeout(function () {
+				notRunning += 1;
+				module.exports.isNotRunning(cb, counter, notRunning);
+			}, 100 + (counter * 20));
+			return;
+		}
+		// we found the process running > we need to keep checking until MAX_TRY
+		module.exports.isNotRunning(cb, counter, notRunning);
 	});
 };
 

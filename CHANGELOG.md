@@ -10,6 +10,8 @@ None
 
 #### Daemon start without application path will now have index.js appended
 
+#### Daemon stop improved the speed
+
 ## Deprecated
 
 None
