@@ -41,7 +41,7 @@ gn.setup(function () {});
 function getPath(path) {
 	if (!Array.isArray(path)) {
 		// default to the root of the application
-		return gn.getRootPath();
+		return gn.getRootPath() + 'index.js';
 	}
 	// or use the given path
 	var app = path[0];

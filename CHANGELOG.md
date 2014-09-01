@@ -8,6 +8,8 @@ None
 
 #### Daemon start/stop now outputs accurate feedback of application process status
 
+#### Daemon start without application path will now have index.js appended
+
 ## Deprecated
 
 None
