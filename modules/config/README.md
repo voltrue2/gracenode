@@ -46,3 +46,21 @@ Object getAll()
 Returns the whole configuration object.
 
 ***
+
+###API .set(String configKey, Mixed value)
+
+Example:
+
+```
+// configuration JSON
+"test": {
+	"one": 1,
+	"two": [2,"two"]
+}
+// in your code
+gracenode.config.set('test.one', 'one');
+// outcome
+"test": {
+	"one": "one"...
+}
+```
