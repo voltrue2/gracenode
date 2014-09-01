@@ -8,6 +8,7 @@ var lib = require('./lib');
 var gn = require('../../../');
 var sockFile;
 var appPath;
+var MAX_TRY = 10;
 
 module.exports.setup = function (path, cb) {
 	sockFile = socketName(path);
@@ -70,8 +71,17 @@ module.exports.stopApp = function () {
 	var sock = new net.Socket();
 	sock.connect(sockFile, function () {
 		sock.write('stop');
-		console.log(lib.color('Daemon process stopped', lib.COLORS.GRAY), lib.color(appPath, lib.COLORS.LIGHT_BLUE));
-		gn.exit();
+		module.exports.isRunning(function (error, running) {
+			if (error) {
+				return gn.exit(error);
+			}
+			if (running) {
+				console.error(lib.color('Daemon process failed to stop', lib.COLORS.RED), lib.color(appPath, lib.COLORS.LIGHT_BLUE));
+				return gn.exit();
+			}
+			console.log(lib.color('Daemon process stopped', lib.COLORS.GRAY), lib.color(appPath, lib.COLORS.LIGHT_BLUE));
+			gn.exit();
+		});
 	});	
 };
 
@@ -136,6 +146,34 @@ module.exports.clean = function (cb) {
 	});
 };
 
+module.exports.isRunning = function (cb, counter, running) {
+	counter = counter || 0;
+	running = running || 0;
+	// application needs to be found running more than half of the time
+	if (running > MAX_TRY / 2) {
+		return cb(null, true);
+	}
+	if (counter > MAX_TRY) {
+		return cb(null, false);
+	}
+	counter += 1;
+	findProcesses(appPath, function (error, processList) {
+		if (error) {
+			return cb(error);
+		}
+		// process needs to have at least one monitor and one application
+		if (!processList || processList.length < 2) {
+			setTimeout(function () {
+				module.exports.isRunning(cb, counter, running);
+			}, 100 + (counter * 20));
+			return;
+		}
+		// we found the process running > we need to keep checking until MAX_TRY
+		running += 1;
+		module.exports.isRunning(cb, counter, running);
+	});
+};
+
 function findProcesses(path, cb) {
 	exec('ps aux | grep "' + path + '"', function (error, stdout) {
 		if (error) {
@@ -148,13 +186,10 @@ function findProcesses(path, cb) {
 			var p = list[i];
 			var execPath = p.indexOf(process.execPath);
 			var monitor = p.indexOf('monitor start ' + path);
-			var app = p.indexOf(execPath + ' ' + path);
+			var app = p.indexOf(process.execPath + ' ' + path);
 			if (execPath !== -1 && monitor !== -1) {
 				processList.push(p);
 			} else if (execPath !== -1 && app !== -1) {
-
-				console.log(path, p);
-
 				processList.push(p);
 			}
 		}

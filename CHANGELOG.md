@@ -1,5 +1,23 @@
 # Change Log
 
+## Version 1.1.28
+
+## Added
+
+None
+
+#### Daemon start/stop now outputs accurate feedback of application process status
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.27
 
 ## Added

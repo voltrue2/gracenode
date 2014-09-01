@@ -15,6 +15,6 @@ module.exports = function (path) {
 			logger.error(lib.color('daemon process ' + path + ' not running', lib.COLORS.RED));
 			return gn.exit();
 		}
-		talk.stopApp();		
+		talk.stopApp();	
 	});
 };
