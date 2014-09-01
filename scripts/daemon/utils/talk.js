@@ -21,7 +21,7 @@ module.exports.setup = function (path, cb) {
 					throw error;
 				}
 				if (!processList || !processList.length) {
-					console.error(lib.color('application process(es) associated to the socket file not found', lib.COLORS.RED));
+					console.error(lib.color('application process(es) associated to the socket file not found [' + appPath + ']', lib.COLORS.RED));
 					console.error(lib.color('use "node daemon clean" command to clean up the detached socket files to continue', lib.COLORS.RED));
 				}
 				// application is running
@@ -36,7 +36,7 @@ module.exports.setup = function (path, cb) {
 			}
 			if (detached && detached.length) {
 				// there are processes w/o associated socket file
-				console.error(lib.color('application process(es) without associated socket file found: please "kill" these process(es) to continue', lib.COLORS.RED));
+				console.error(lib.color('application process(es) without associated socket file found [' + appPath + ']: please "kill" these process(es) to continue', lib.COLORS.RED));
 				throw new Error('detachedProcessFound');
 			}
 			// application is not running
