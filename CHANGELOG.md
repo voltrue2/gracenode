@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.29
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency garcelog's version updated
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.28
 
 ## Added
