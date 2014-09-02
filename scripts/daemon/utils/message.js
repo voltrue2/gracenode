@@ -34,7 +34,6 @@ Message.prototype.read = function (onData, cb) {
 	var that = this;
 	// make sure the message file is created
 	this._stream = fs.createWriteStream(this._name, options);
-	this._stream.end();
 	// now listen for file change
 	this._stream.on('open', function () {
 		var watch = fs.watch(that._name, function (event) {
@@ -50,8 +49,11 @@ Message.prototype.read = function (onData, cb) {
 				watch.close();
 			});
 		});
-		cb();
+		if (cb) {
+			cb();
+		}
 	});
+	this._stream.end();
 };
 
 Message.prototype.send = function (msg) {

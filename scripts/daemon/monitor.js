@@ -110,6 +110,9 @@ function startApp() {
 		// respawn application process
 		logger.info('restarting daemon process of ' + path);
 		startApp();
+		var message = new Message(path);
+		message.startSend();
+		message.send({ success: true });
 	});
 }
 

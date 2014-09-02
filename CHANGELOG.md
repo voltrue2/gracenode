@@ -10,6 +10,10 @@ None
 
 #### Dependency garcelog's version updated
 
+#### Daemon restart improved feedback output
+
+#### Daemon status imrproved output
+
 ## Deprecated
 
 None

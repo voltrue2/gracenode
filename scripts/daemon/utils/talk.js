@@ -50,12 +50,27 @@ module.exports.getStatus = function (cb) {
 	var message = new Message(appPath);
 	var onData = function (data) {
 		message.stop();
-		console.log('\n');
-		console.log(lib.color(' Daemon application status for:', lib.COLORS.GRAY), lib.color(data.app, lib.COLORS.LIGHT_BLUE), lib.color('(pid:' + data.msg.pid + ')', lib.COLORS.PURPLE));
-		console.log(lib.color(' Application started:          ', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
-		console.log(lib.color(' Application restarted:        ', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
-		console.log('\n');
-		cb(data);
+		findProcesses(appPath, function (error, list) {
+			if (error) {
+				return gn.exit(error);
+			}
+			console.log('\n');
+			for (var i = 0, len = list.length; i < len; i++) {
+				var p = list[i].substring(list[i].indexOf(process.execPath) + process.execPath + 1);
+				var prefix;
+				if (p.indexOf('monitor') === -1) {
+					prefix = lib.color(' Daemon application process:', lib.COLORS.GRAY);
+				} else {
+					prefix = lib.color(' Daemon monitor process:    ', lib.COLORS.GREEN);
+				}
+				var app = lib.color(p, lib.COLORS.LIGHT_BLUE);
+				console.log(prefix, app);
+			}
+			console.log(lib.color(' Application started:       ', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
+			console.log(lib.color(' Application restarted:     ', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
+			console.log('\n');
+			cb(data);
+		});
 	};
 	// send command to monitor
 	message.read(onData, function () {
@@ -86,10 +101,52 @@ module.exports.stopApp = function () {
 };
 
 module.exports.restartApp = function () {
-	var sock = new net.Socket();
-	sock.connect(sockFile, function () {
+	var sock;
+	var connect = function (done) {
+		sock = new net.Socket();
+		sock.connect(sockFile, done);
+	};
+	var getCurrentStatus = function (done) {
+		console.log(lib.color('Currently running daemon status', lib.COLORS.GRAY));
+		module.exports.getStatus(function () {
+			done();
+		});	
+	};
+	var restart = function (done) {
+		var message = new Message(appPath);
+		message.read(function () {
+			message.stop();
+			module.exports.isRunning(function (error, running) {
+				if (error) {
+					return done(error);
+				}
+				if (running) {
+					return done();
+				}
+				done(new Error('failed to restart daemon process [' + appPath + ']:'));
+			});
+		}, null);
 		sock.write('restart');
-		console.log(lib.color('Daemon process restarted', lib.COLORS.GRAY), lib.color(appPath, lib.COLORS.LIGHT_BLUE));
+		console.log(lib.color('Restarting daemon ' + appPath, lib.COLORS.GRAY));
+	};
+	var getNewStatus = function (done) {
+		console.log(lib.color('Restarted daemon status', lib.COLORS.GRAY));
+		setTimeout(function () {
+			module.exports.getStatus(function () {
+				done();
+			});
+		}, 300);
+	};
+	async.series([
+		connect,
+		getCurrentStatus,
+		restart,
+		getNewStatus
+	],
+	function (error) {
+		if (error) {
+			console.error(lib.color(error.message, lib.COLORS.RED));
+		}
 		console.log(lib.color('Restarting multiple times in quick succession (within 10 seconds) is', lib.COLORS.GRAY) + lib.color(' NOT ', lib.COLORS.BROWN) + lib.color('allowed', lib.COLORS.GRAY));
 		gn.exit();
 	});
