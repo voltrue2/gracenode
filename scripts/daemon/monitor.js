@@ -69,6 +69,10 @@ function handleCommunication(msg) {
 				restartTime = Date.now();
 				stopApp();
 				
+			} else {
+				var message = new Message(app.path);
+				message.startSend();
+				message.send({ error: 'Cannot "restart" in such a short interval. Must wait at least ' + (deathInterval / 1000) + ' seconds' });	
 			}
 			break;
 		default:

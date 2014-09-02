@@ -114,8 +114,11 @@ module.exports.restartApp = function () {
 	};
 	var restart = function (done) {
 		var message = new Message(appPath);
-		message.read(function () {
+		message.read(function (data) {
 			message.stop();
+			if (data.error) {
+				return done(new Error(data.error));
+			}
 			module.exports.isRunning(function (error, running) {
 				if (error) {
 					return done(error);
