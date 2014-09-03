@@ -131,6 +131,10 @@ function stopApp(cb) {
 				cb();
 			}
 		});
+		return;
+	}
+	if (cb) {
+		cb();
 	}
 }
 
