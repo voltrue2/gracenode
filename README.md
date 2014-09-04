@@ -107,37 +107,51 @@ In order to use daemon tool, your application does NOT have to be built with gra
 
 Daemon tool of gracenode can daemonize ANY node.js application.
 
-To start your application as a daemon process:
+Note: `daemon` script is *executable*. To execute daemon tool:
+
+```
+./daemon ...
+```
+
+Or 
+
+```
+node daemon ...
+```
+
+The example below shows `node daemon ....` style of execution.
+
+####To start your application as a daemon process:
 
 ```
 node daemon start
 ```
 
-To stop your daemon application:
+####To stop your daemon application:
 
 ```
 node daemon stop
 ```
 
-To restart your daemon application:
+####To restart your daemon application:
 
 ```
 node daemon restart
 ```
 
-To list the currently running daemon processes:
+####To list the currently running daemon processes:
 
 ```
 node daemon list
 ```
 
-To display basic status of a daemon process:
+####To display basic status of a daemon process:
 
 ```
 node daemon status
 ```
 
-You can optionally give a path to the application you want to target.
+###You can optionally give a path to the application you want to target.
 
 ```
 node daemon start /path/to/your/app/
