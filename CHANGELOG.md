@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.30
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool output text color changed
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.29
 
 ## Added

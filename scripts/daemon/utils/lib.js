@@ -1,10 +1,10 @@
 module.exports.COLORS = {
 	RED: '0;31',
-	LIGHT_BLUE: '1;36',
+	LIGHT_BLUE: '0;34',
 	DARK_BLUE: '1;34',
 	GRAY: '0;37',
 	BROWN: '0;33',
-	PURPLE: '1;35',
+	PURPLE: '0;35',
 	GREEN: '0;32'	
 };
 
