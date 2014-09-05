@@ -10,6 +10,8 @@ None
 
 #### Daemon tool output text color changed
 
+#### Log module version updated
+
 ## Deprecated
 
 None

@@ -14,7 +14,7 @@
 	"dependencies": {
 		"async": "0.9.0",
 		"jshint": "2.5.1",
-		"gracelog": "0.1.6"
+		"gracelog": "0.1.7"
 	},
 	"devDependencies": {
 		"mocha": "1.20.1"
