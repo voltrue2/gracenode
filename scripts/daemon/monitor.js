@@ -12,6 +12,7 @@ var deathInterval = 10000;
 var timeOfDeath = 0;
 var deathCount = 0;
 var restartTime = 0;
+var minLifeSpan = 60000; // the application needs to be alive at least for 60 seconds
 var Log = require('./utils/log'); 
 var logger = new Log(gn.argv('--log'));
 // message
@@ -47,12 +48,10 @@ gn.defineOption('start', 'Starts a monitor process to spawn and monitor applicat
 gn.setup(function () {});
 
 function handleExit(error) {
-	if (error) {
-		logger.error('daemon monitor exiting with an error: ' + error);
-	}
-	logger.stop();
-	fs.unlinkSync(socketName(path));
-	process.exit(error || 0);
+	logger.stop(error, function () {
+		fs.unlinkSync(socketName(path));
+		process.exit(error || 0);
+	});
 }
 
 function handleCommunication(msg) {
@@ -87,6 +86,7 @@ function handleCommunication(msg) {
 }
 
 function startApp() {
+	// start the application process
 	app = spawn(process.execPath, [path], { detached: true, stdio: 'ignore' });
 	app.path = path;
 	app.started = Date.now();
@@ -101,6 +101,13 @@ function startApp() {
 		if (deathCount === 1) {
 			// application died for the first time
 			timeOfDeath = Date.now();
+			// check to see if the application was alive for at least minLifeSpan or not
+			if (timeOfDeath - app.started < minLifeSpan) {
+				// the application has died in less than minLifeSpan > we consider the application has some issues...
+				var lasted = ((timeOfDeath - app.started) / 1000) + ' seconds';
+				var msg = 'application died [' + path + '] in ' + lasted + '. the application must be available for at least ' + (minLifeSpan / 1000) + ' seconds';
+				return handleExit(new Error(msg));
+			}
 		}
 		if (deathCount >= maxNumOfDeath) {
 			var now = Date.now();

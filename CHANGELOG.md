@@ -8,6 +8,11 @@ None
 
 ## Changed
 
+#### Daemon start now checks the length of the application being avialable
+
+`daemon start` command now checks and see if the application stays available for at least 60 seconds before it exits.
+If the application exits in less than 60 seconds, the daemon tool will NOT respawn the application.
+
 #### Daemon tool output text color changed
 
 #### Log module version updated

@@ -35,9 +35,18 @@ Log.prototype.start = function (name, cb) {
 	}
 };
 
-Log.prototype.stop = function () {
+Log.prototype.stop = function (error, cb) {
 	if (!this._stream) {
+		if (cb) {
+			cb();
+		}
 		return;
+	}
+	if (cb) {
+		this._stream.once('finish', cb);
+	}
+	if (error) {
+		this.error(error);
 	}
 	this._stream.end();
 	this._stream = null;
