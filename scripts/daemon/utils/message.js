@@ -41,8 +41,9 @@ Message.prototype.read = function (onData, cb) {
 				return;
 			}
 			fs.readFile(that._name, function (error, data) {
-				if (error) {
-					// hmmm
+				if (error || !data) {
+					onData(null);
+					return watch.close();
 				}
 				var msg = JSON.parse(data.toString());
 				onData(msg);

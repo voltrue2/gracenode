@@ -116,8 +116,8 @@ module.exports.restartApp = function () {
 		var message = new Message(appPath);
 		message.read(function (data) {
 			message.stop();
-			if (data.error) {
-				return done(new Error(data.error));
+			if (data.msg && data.msg.error) {
+				return done(new Error(data.msg.error));
 			}
 			module.exports.isRunning(function (error, running) {
 				if (error) {
@@ -129,6 +129,7 @@ module.exports.restartApp = function () {
 				done(new Error('failed to restart daemon process [' + appPath + ']:'));
 			});
 		}, null);
+		sock.once('error', done);
 		sock.write('restart');
 		console.log(lib.color('Restarting daemon ' + appPath, lib.COLORS.GRAY));
 	};

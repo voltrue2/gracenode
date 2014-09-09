@@ -11,8 +11,6 @@ var maxNumOfDeath = 10;
 var deathInterval = 10000;
 var timeOfDeath = 0;
 var deathCount = 0;
-var restartTime = 0;
-var minLifeSpan = 60000; // the application needs to be alive at least for 60 seconds
 var Log = require('./utils/log'); 
 var logger = new Log(gn.argv('--log'));
 // message
@@ -64,8 +62,7 @@ function handleCommunication(msg) {
 			break;
 		case 'restart':
 			// we instruct the application process to exit and let monitor process to respawn it
-			if (Date.now() - restartTime > deathInterval) {
-				restartTime = Date.now();
+			if (Date.now() - app.started > deathInterval) {
 				stopApp();
 				
 			} else {
@@ -101,11 +98,16 @@ function startApp() {
 		if (deathCount === 1) {
 			// application died for the first time
 			timeOfDeath = Date.now();
-			// check to see if the application was alive for at least minLifeSpan or not
-			if (timeOfDeath - app.started < minLifeSpan) {
-				// the application has died in less than minLifeSpan > we consider the application has some issues...
+			// check to see if the application was alive for at least deathInterval or not
+			if (timeOfDeath - app.started < deathInterval) {
+				// the application has died in less than deathInterval > we consider the application has some issues...
 				var lasted = ((timeOfDeath - app.started) / 1000) + ' seconds';
-				var msg = 'application died [' + path + '] in ' + lasted + '. the application must be available for at least ' + (minLifeSpan / 1000) + ' seconds';
+				var msg = 'application died [' + path + '] in ' + lasted + '. the application must be available for at least ' + (deathInterval / 1000) + ' seconds';
+				// feedback for restart
+				var message = new Message(path);
+				message.startSend();
+				message.send({ success: false, error: msg });
+				// exit monitor
 				return handleExit(new Error(msg));
 			}
 		}
