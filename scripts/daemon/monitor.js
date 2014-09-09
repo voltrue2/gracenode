@@ -62,14 +62,8 @@ function handleCommunication(msg) {
 			break;
 		case 'restart':
 			// we instruct the application process to exit and let monitor process to respawn it
-			if (Date.now() - app.started > deathInterval) {
-				stopApp();
-				
-			} else {
-				var message = new Message(app.path);
-				message.startSend();
-				message.send({ error: 'Cannot "restart" in such a short interval. Must wait at least ' + (deathInterval / 1000) + ' seconds' });	
-			}
+			app.restart = true;
+			stopApp();
 			break;
 		default:
 			var parsed = parseCommand(command);
@@ -99,14 +93,10 @@ function startApp() {
 			// application died for the first time
 			timeOfDeath = Date.now();
 			// check to see if the application was alive for at least deathInterval or not
-			if (timeOfDeath - app.started < deathInterval) {
+			if (!app.restart && timeOfDeath - app.started < deathInterval) {
 				// the application has died in less than deathInterval > we consider the application has some issues...
 				var lasted = ((timeOfDeath - app.started) / 1000) + ' seconds';
 				var msg = 'application died [' + path + '] in ' + lasted + '. the application must be available for at least ' + (deathInterval / 1000) + ' seconds';
-				// feedback for restart
-				var message = new Message(path);
-				message.startSend();
-				message.send({ success: false, error: msg });
 				// exit monitor
 				return handleExit(new Error(msg));
 			}

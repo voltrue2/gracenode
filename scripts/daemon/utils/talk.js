@@ -151,7 +151,7 @@ module.exports.restartApp = function () {
 		if (error) {
 			console.error(lib.color(error.message, lib.COLORS.RED));
 		}
-		console.log(lib.color('Restarting multiple times in quick succession (within 10 seconds) is', lib.COLORS.GRAY) + lib.color(' NOT ', lib.COLORS.BROWN) + lib.color('allowed', lib.COLORS.GRAY));
+		console.log(lib.color('Restarted application as a daemon ' + appPath, lib.COLORS.LIGHT_BLUE));
 		gn.exit();
 	});
 };
