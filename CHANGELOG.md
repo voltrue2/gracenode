@@ -8,6 +8,8 @@ None
 
 ## Changed
 
+#### Daemon restart no longer requires "wait 10 seconds"
+
 #### Daemon start now checks the length of the application being avialable
 
 `daemon start` command now checks and see if the application stays available for at least 60 seconds before it exits.
