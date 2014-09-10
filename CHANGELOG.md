@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.31
+
+## Added
+
+None
+
+## Changed
+
+#### lib.walkDir performance improved
+
+#### Test added for lib.walkDir
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.30
 
 ## Added

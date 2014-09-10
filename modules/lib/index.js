@@ -133,6 +133,17 @@ module.exports.validateInput = function (input, minLen, maxLen, params) {
 
 module.exports.walkDir = function (path, cb) {
 	var res = [];
+	var pending = 0;
+	var eachWalk = function (error, results) {
+		if (error) {
+			return cb(error);
+		}
+		res = res.concat(results);
+		pending--;
+		if (!pending) {
+			return cb(null, res);
+		}
+	};
 	fs.lstat(path, function (error, stat) {
 		if (error) {
 			return cb(error);
@@ -145,36 +156,16 @@ module.exports.walkDir = function (path, cb) {
 			if (error) {
 				return cb(error);
 			}
-			var pending = list.length;
+			pending = list.length;
 			if (!pending) {
 				return cb(null, res);
 			}
-			list.forEach(function (file) {
+			for (var i = 0, len = list.length; i < len; i++) {
+				var file = list[i];
 				var slash = path.substring(path.length - 1) !== '/' ? '/' : '';
 				var filePath = path + slash + file;
-				fs.stat(filePath, function (error, stat) {
-					if (error) {
-						return cb(error);
-					}
-					if (stat.isDirectory()) {
-						return module.exports.walkDir(filePath, function (error, resultList) {
-							if (error) {
-								return cb(error);
-							}
-							res = res.concat(resultList);
-							pending--;
-							if (!pending) {
-								cb(null, res);
-							}
-						});
-					}
-					res.push({ file: filePath, stat: stat });
-					pending--;
-					if (!pending) {
-						cb(null, res);
-					}
-				});
-			});
+				module.exports.walkDir(filePath, eachWalk);
+			}
 		});
 	});
 };

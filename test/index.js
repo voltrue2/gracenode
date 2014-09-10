@@ -157,5 +157,30 @@ describe('gracenode initialization ->', function () {
 		logger.error('error');	
 		logger.fatal('fatal');	
 	});
+
+	it('Can walk the whole directry tree', function (done) {
+		gn.lib.walkDir(gn.getRootPath() + prefix + 'gracenode/test/dir/', function (error, list) {
+			assert.equal(error, undefined);
+			var logger = gn.log.create('lib module walkDir()');
+			var path = gn.getRootPath() + prefix + 'gracenode/test/dir/';
+			var fileNames = [
+				path + 'one/1.txt',
+				path + 'one/1.1.txt',
+				path + 'one/one-one/1-1.txt',
+				path + 'one/one-two/1-2.txt',
+				path + 'two/2.txt',
+				path + 'two/two-one/2-1.txt',
+				path + 'two/two-two/2-2.txt',
+				path + 'two/two-two/two-two-one/2-2-1.txt',
+				path + 'two/two-three/two-three-one/two-three-one-one/2-3-1-1.txt'
+			];
+			for (var i = 0, len = list.length; i < len; i++) {
+				logger.verbose(list[i].file);
+				assert.notEqual(fileNames.indexOf(list[i].file), -1);
+			}
+			assert.equal(i, fileNames.length);
+			done();
+		});
+	});
  
 });
