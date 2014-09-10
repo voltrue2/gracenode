@@ -156,7 +156,7 @@ module.exports.walkDir = function (path, cb) {
 			if (error) {
 				return cb(error);
 			}
-			pending = list.length;
+			pending += list.length;
 			if (!pending) {
 				return cb(null, res);
 			}
