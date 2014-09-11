@@ -11,38 +11,74 @@ var appPath;
 var MAX_TRY = 10;
 
 module.exports.setup = function (path, cb) {
-	sockFile = socketName(path);
+	//sockFile = socketName(path);
 	appPath = path;
-	fs.exists(sockFile, function (exists) {
-		if (exists) {
-			// is there process for this socket?
-			findProcesses(path, function (error, processList) {
-				if (error) {
-					throw error;
-				}
-				if (!processList || !processList.length) {
+	var processList = [];
+	var isRunning = true;
+	var sockName = appPath;
+	var findAppProcess = function (next) {
+		findProcesses(path, function (error, list) {
+			if (error) {
+				throw error;
+			}
+			processList = list;
+			next();
+		});
+	};
+	var checkProcess = function (next) {
+		if (!processList || !processList.length) {
+			// there is no process running
+			isRunning = false;
+			return next();
+		}
+		// find the real path used to run the application process
+		if (processList[0].indexOf(appPath + '/index.js') !== -1) {
+			sockName = appPath + '/index.js';
+		} else if (processList[0].indexOf(appPath + 'index.js') !== -1) {
+			sockName = appPath + 'index.js';
+		} else if (processList[0].indexOf(appPath + '/') !== -1) {
+			sockName = appPath + '/';
+		} else if (processList[0].indexOf(appPath) !== -1) {
+			sockName = appPath;
+		} else if (processList[0].indexOf(appPath.replace('/index.js', '/')) !== -1) {
+			sockName = appPath.replace('/index.js', '/');
+		} else if (processList[0].indexOf(appPath.replace('/index.js', '/')) !== -1) {
+			sockName = appPath.replace('/index.js', '');
+		}
+		next();
+	};
+	var findSockFile = function (next) {
+		sockFile = socketName(sockName);
+		fs.exists(sockFile, function (exists) {
+			if (exists) {
+				if (!isRunning) {
 					console.error(lib.color('application process(es) associated to the socket file not found [' + appPath + ']', lib.COLORS.RED));
 					console.error(lib.color('use "node daemon clean" command to clean up the detached socket files to continue', lib.COLORS.RED));
 				}
 				// application is running
-				return cb(true);
-			});
-			return;
-		}
-		// is there detached process running without socket file?
-		findProcesses(path, function (error, detached) {
-			if (error) {
-				throw error;
+				return next(null, true);
 			}
-			if (detached && detached.length) {
+			if (isRunning) {
 				// there are processes w/o associated socket file
+				console.error(lib.color('associated socket file [' + sockFile + '] not found', lib.COLORS.RED));
 				console.error(lib.color('application process(es) without associated socket file found [' + appPath + ']: please "kill" these process(es) to continue', lib.COLORS.RED));
 				throw new Error('detachedProcessFound');
 			}
 			// application is not running
-			cb(false);
+			next(null, false);
 		});
-	});
+	};
+	var done = function (error, appRunning) {
+		if (error) {
+			throw error;
+		}
+		cb(appRunning);
+	};
+	async.series([
+		findAppProcess,
+		checkProcess,
+		findSockFile
+	], done);
 };
 
 module.exports.getStatus = function (cb) {
@@ -58,12 +94,19 @@ module.exports.getStatus = function (cb) {
 			for (var i = 0, len = list.length; i < len; i++) {
 				var p = list[i].substring(list[i].indexOf(process.execPath) + process.execPath + 1);
 				var prefix;
+				var isMaster = (p.indexOf(data.msg.pid) !== -1);
+				var append = '';
 				if (p.indexOf('monitor') === -1) {
-					prefix = lib.color(' Daemon application process:', lib.COLORS.GRAY);
+					if (isMaster) {
+						prefix = lib.color(' Daemon application process (master):', lib.COLORS.GRAY);
+					} else {
+						prefix = lib.color(' Daemon application process (worker):', lib.COLORS.GRAY);
+					}
 				} else {
-					prefix = lib.color(' Daemon monitor process:    ', lib.COLORS.GREEN);
+					prefix = lib.color(' Daemon monitor process             :', lib.COLORS.GREEN);
 				}
-				var app = lib.color(p, lib.COLORS.LIGHT_BLUE);
+				var color = isMaster ? lib.COLORS.DARK_BLUE : lib.COLORS.LIGHT_BLUE;
+				var app = lib.color(p, color);
 				console.log(prefix, app);
 			}
 			console.log(lib.color(' Application started:       ', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
@@ -264,12 +307,17 @@ module.exports.isNotRunning = function (cb, counter, notRunning) {
 };
 
 function findProcesses(path, cb) {
-	exec('ps aux | grep "' + path + '"', function (error, stdout) {
+	// remove /index.js if there is
+	path = path.replace('/index.js', '');
+	var regex = new RegExp('/', 'g');
+	var patterns = '(' + path + '|' + (path + 'index.js').replace(regex, '\\/') + '|' + (path + '/index.js').replace(regex, '\\/') + ')';
+	var command = 'ps aux | grep -E "' + patterns + '"';
+	exec(command, function (error, stdout) {
 		if (error) {
 			return cb(error);
 		}
 		var processList = [];
-		var list = stdout.split('\n');			
+		var list = stdout.split('\n');
 		// look for monitor process and application process(es)
 		for (var i = 0, len = list.length; i < len; i++) {
 			var p = list[i];

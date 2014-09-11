@@ -131,6 +131,7 @@ module.exports.validateInput = function (input, minLen, maxLen, params) {
 	return true;
 };
 
+// returns a single-dimension array of all files with full paths in the given directory path
 module.exports.walkDir = function (path, cb) {
 	var res = [];
 	var pending = 0;
