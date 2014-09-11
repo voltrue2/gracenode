@@ -56,7 +56,7 @@ module.exports.setup = function (path, cb) {
 					console.error(lib.color('use "node daemon clean" command to clean up the detached socket files to continue', lib.COLORS.RED));
 				}
 				// application is running
-				return next(null, true);
+				return next();
 			}
 			if (isRunning) {
 				// there are processes w/o associated socket file
@@ -65,14 +65,11 @@ module.exports.setup = function (path, cb) {
 				throw new Error('detachedProcessFound');
 			}
 			// application is not running
-			next(null, false);
+			next();
 		});
 	};
-	var done = function (error, appRunning) {
-		if (error) {
-			throw error;
-		}
-		cb(appRunning);
+	var done = function () {
+		cb(isRunning);
 	};
 	async.series([
 		findAppProcess,
