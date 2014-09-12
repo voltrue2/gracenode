@@ -5,7 +5,7 @@ var net = require('net');
 var Message = require('./message');
 var socketName = require('./socket-name');
 var lib = require('./lib');
-var gn = require('../../../');
+var gn = require('gracenode');
 var sockFile;
 var appPath;
 var MAX_TRY = 10;
@@ -307,7 +307,7 @@ function findProcesses(path, cb) {
 	// remove /index.js if there is
 	path = path.replace('/index.js', '');
 	var regex = new RegExp('/', 'g');
-	var patterns = '(' + path + '|' + (path + 'index.js').replace(regex, '\\/') + '|' + (path + '/index.js').replace(regex, '\\/') + ')';
+	var patterns = '(' + path + '|' + (path.substring(0, path.length - 1)) + '|' + (path + 'index.js').replace(regex, '\\/') + '|' + (path + '/index.js').replace(regex, '\\/') + ')';
 	var command = 'ps aux | grep -E "' + patterns + '"';
 	exec(command, function (error, stdout) {
 		if (error) {
@@ -320,7 +320,11 @@ function findProcesses(path, cb) {
 			var p = list[i];
 			var execPath = p.indexOf(process.execPath);
 			var monitor = p.indexOf('monitor start ' + path);
+			// check the path with trailing slash and without trailing slash
 			var app = p.indexOf(process.execPath + ' ' + path);
+			if (app === -1) {
+				app = p.indexOf(process.execPath + ' ' + path.substring(0, path.length - 1));
+			}
 			if (execPath !== -1 && monitor !== -1) {
 				processList.push(p);
 			} else if (execPath !== -1 && app !== -1) {
