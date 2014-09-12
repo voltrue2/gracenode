@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 1.1.32
+## Version 1.1.3
 
 ## Added
 
@@ -9,24 +9,6 @@ None
 ## Changed
 
 #### Daemon process check improved
-
-## Deprecated
-
-None
-
-## Removed
-
-None
-
-***
-
-## Version 1.1.31
-
-## Added
-
-None
-
-## Changed
 
 #### lib.walkDir performance improved
 
