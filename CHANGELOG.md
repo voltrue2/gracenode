@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.32
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool added auto cleaning of detached socket files
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.31
 
 ## Added

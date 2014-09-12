@@ -63,8 +63,12 @@ module.exports.setup = function (path, cb) {
 			if (isRunning) {
 				// there are processes w/o associated socket file
 				console.error(lib.color('associated socket file [' + sockFile + '] not found', lib.COLORS.RED));
-				console.error(lib.color('application process(es) without associated socket file found [' + appPath + ']: please "kill" these process(es) to continue', lib.COLORS.RED));
-				gn.exit();
+				console.error(lib.color('application process(es) without associated socket file found [' + sockName + ']: please "kill" these process(es) to continue', lib.COLORS.RED));
+				// get pids
+				return module.exports.getPids(sockName, function () {
+					gn.exit();
+				});
+				//gn.exit();
 			}
 			// application is not running
 			next();
@@ -81,6 +85,17 @@ module.exports.setup = function (path, cb) {
 		checkProcess,
 		findSockFile
 	], done);
+};
+
+module.exports.getPids = function (path, cb) {
+	exec('ps aux | pgrep "' + path + '"', function (error, stdout) {
+		if (error) {
+			return cb(error);
+		}
+		var list = stdout.split('\n');
+		console.log(list);
+		//cb();
+	});
 };
 
 module.exports.getStatus = function (cb) {
