@@ -315,22 +315,26 @@ function findProcesses(path, cb) {
 		}
 		var processList = [];
 		var list = stdout.split('\n');
-		// look for monitor process and application process(es)
+		var monitorPath = 'monitor start ' + path;
+		var appPath = process.execPath + ' ' + path;
+		var monitorReg = new RegExp(createRegExpPattern(monitorPath));
+		var appReg = new RegExp(createRegExpPattern(appPath));
 		for (var i = 0, len = list.length; i < len; i++) {
-			var p = list[i];
-			var execPath = p.indexOf(process.execPath);
-			var monitor = p.indexOf('monitor start ' + path);
-			// check the path with trailing slash and without trailing slash
-			var app = p.indexOf(process.execPath + ' ' + path);
-			if (app === -1) {
-				app = p.indexOf(process.execPath + ' ' + path.substring(0, path.length - 1));
+			var p = list[i] + ' ';
+			// find monitor process
+			if (p.match(monitorReg)) {
+				processList.push(list[i]);
+				continue;
 			}
-			if (execPath !== -1 && monitor !== -1) {
-				processList.push(p);
-			} else if (execPath !== -1 && app !== -1) {
-				processList.push(p);
+			// find app process
+			if (p.match(appReg)) {
+				processList.push(list[i]);
 			}
 		}
 		cb(null, processList);
 	});
+}
+
+function createRegExpPattern(path) {
+	return '(' + path + ' |' + path + '/ |' + (path.substring(0, path.length - 1)) + ' |' + path + 'index.js |' + path + '/index.js )';
 }
