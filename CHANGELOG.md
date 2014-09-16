@@ -1,5 +1,27 @@
 # Change Log
 
+## Version 1.1.33
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon status outputs error log for orphaned processes and pids
+
+#### Improved feedback on daemon clean command error
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+*** 
+
 ## Version 1.1.32
 
 ## Added

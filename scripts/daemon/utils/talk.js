@@ -65,7 +65,7 @@ module.exports.setup = function (path, cb) {
 				console.error(lib.color('associated socket file [' + sockFile + '] not found', lib.COLORS.RED));
 				console.error(lib.color('application process(es) without associated socket file found [' + sockName + ']: please "kill" these process(es) to continue', lib.COLORS.RED));
 				// get pids
-				return module.exports.getPids(sockName, function () {
+				return module.exports.getPids(sockName, processList, function () {
 					gn.exit();
 				});
 				//gn.exit();
@@ -87,14 +87,24 @@ module.exports.setup = function (path, cb) {
 	], done);
 };
 
-module.exports.getPids = function (path, cb) {
-	exec('ps aux | pgrep "' + path + '"', function (error, stdout) {
+module.exports.getPids = function (path, processList, cb) {
+	exec('ps aux | pgrep node', function (error, stdout) {
 		if (error) {
 			return cb(error);
 		}
 		var list = stdout.split('\n');
-		console.log(list);
-		//cb();
+		while (list.length) {
+			var pid = list.shift();
+			if (!pid) {
+				continue;
+			}
+			for (var i = 0, len = processList.length; i < len; i++) {
+				if (processList[i].indexOf(pid) !== -1) {
+					console.error(lib.color('found process: ' + processList[i] + '(pid:'+ pid + ')', lib.COLORS.RED));
+				}
+			}
+		}
+		cb();
 	});
 };
 
@@ -252,6 +262,7 @@ module.exports.clean = function (cb) {
 			fs.unlink(path, function (error) {
 				if (error) {
 					// failed to remove. move on
+					console.error(lib.color('failed to remove socket file without application process: ' + path, lib.COLORS.RED));
 					return callback();
 				}
 				console.log(lib.color('socket file without application proccess has been deleted: ' + path, lib.COLORS.GREEN));
