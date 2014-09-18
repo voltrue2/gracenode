@@ -57,6 +57,10 @@ function handleCommunication(msg) {
 	var command = msg.toString();
 	switch (command) {
 		case 'stop':
+			// we remove all listeners to prevent the monitor from restarting the application
+			if (app) {
+				app.removeAllListeners();
+			}
 			// we instruct the application process to exit and exit monitor process
 			stopApp(handleExit);
 			break;
