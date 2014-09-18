@@ -45,8 +45,12 @@ Message.prototype.read = function (onData, cb) {
 					onData(null);
 					return watch.close();
 				}
-				var msg = JSON.parse(data.toString());
-				onData(msg);
+				try {
+					var msg = JSON.parse(data.toString());
+					onData(msg);
+				} catch (e) {
+					onData(null);
+				}
 				watch.close();
 			});
 		});

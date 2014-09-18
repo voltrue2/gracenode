@@ -65,7 +65,13 @@ module.exports.setup = function (path, cb) {
 				console.error(lib.color('associated socket file [' + sockFile + '] not found', lib.COLORS.RED));
 				console.error(lib.color('application process(es) without associated socket file found [' + sockName + ']: please "kill" these process(es) to continue', lib.COLORS.RED));
 				// get pids
-				return module.exports.getPids(sockName, processList, function () {
+				return module.exports.getPids(sockName, processList, function (error, list) {
+					if (error) {
+						console.error(lib.color(error.message, lib.COLORS.RED));
+					}
+					for (var i = 0, len = list.length; i < len; i++) {
+						console.error(lib.color(list[i].process + ' (pid: ' + list[i].pid + ')', lib.COLORS.RED));
+					}
 					gn.exit();
 				});
 				//gn.exit();
@@ -92,6 +98,7 @@ module.exports.getPids = function (path, processList, cb) {
 		if (error) {
 			return cb(error);
 		}
+		var res = [];
 		var list = stdout.split('\n');
 		while (list.length) {
 			var pid = list.shift();
@@ -100,11 +107,14 @@ module.exports.getPids = function (path, processList, cb) {
 			}
 			for (var i = 0, len = processList.length; i < len; i++) {
 				if (processList[i].indexOf(pid) !== -1) {
-					console.error(lib.color('found process: ' + processList[i] + '(pid:'+ pid + ')', lib.COLORS.RED));
+					res.push({
+						process: processList[i],
+						pid: pid
+					});
 				}
 			}
 		}
-		cb();
+		cb(null, res);
 	});
 };
 
@@ -117,29 +127,36 @@ module.exports.getStatus = function (cb) {
 			if (error) {
 				return gn.exit(error);
 			}
-			console.log('\n');
-			for (var i = 0, len = list.length; i < len; i++) {
-				var p = list[i].substring(list[i].indexOf(process.execPath) + process.execPath + 1);
-				var prefix;
-				var isMaster = (p.indexOf(data.msg.pid) !== -1);
-				var append = '';
-				if (p.indexOf('monitor') === -1) {
-					if (isMaster) {
-						prefix = lib.color(' Daemon application process (master):', lib.COLORS.GRAY);
-					} else {
-						prefix = lib.color(' Daemon application process (worker):', lib.COLORS.GRAY);
-					}
-				} else {
-					prefix = lib.color(' Daemon monitor process             :', lib.COLORS.GREEN);
+			module.exports.getPids(appPath, list, function (error, processes) {
+				if (error) {
+					return gn.exit(error);
 				}
-				var color = isMaster ? lib.COLORS.DARK_BLUE : lib.COLORS.LIGHT_BLUE;
-				var app = lib.color(p, color);
-				console.log(prefix, app);
-			}
-			console.log(lib.color(' Application started:       ', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
-			console.log(lib.color(' Application restarted:     ', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
-			console.log('\n');
-			cb(data);
+				console.log('\n');
+				for (var i = 0, len = processes.length; i < len; i++) {
+					var p = processes[i].process;
+					p = list[i].substring(list[i].indexOf(process.execPath) + process.execPath + 1);
+					p += '(pid: ' + processes[i].pid + ')';
+					var prefix;
+					var isMaster = (p.indexOf(data.msg.pid) !== -1);
+					var append = '';
+					if (p.indexOf('monitor') === -1) {
+						if (isMaster) {
+							prefix = lib.color(' Daemon application process (master):', lib.COLORS.GRAY);
+						} else {
+							prefix = lib.color(' Daemon application process (worker):', lib.COLORS.GRAY);
+						}
+					} else {
+						prefix = lib.color(' Daemon monitor process             :', lib.COLORS.GREEN);
+					}
+					var color = isMaster ? lib.COLORS.DARK_BLUE : lib.COLORS.LIGHT_BLUE;
+					var app = lib.color(p.substring(p.indexOf(process.execPath)), color);
+					console.log(prefix, app);
+				}
+				console.log(lib.color(' Application started:       ', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
+				console.log(lib.color(' Application restarted:     ', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
+				console.log('\n');
+				cb(data);
+			});
 		});
 	};
 	// send command to monitor

@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.34
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon status output has been cleaned up
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.33
 
 ## Added
