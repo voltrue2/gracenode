@@ -10,6 +10,12 @@ None
 
 #### Daemon status output has been cleaned up
 
+#### Daemon feedback output optimized
+
+#### Corrected daemon stop feedback
+
+#### Improved daemon start/stop feedback
+
 ## Deprecated
 
 None

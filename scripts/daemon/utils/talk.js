@@ -108,8 +108,8 @@ module.exports.getPids = function (path, processList, cb) {
 			for (var i = 0, len = processList.length; i < len; i++) {
 				if (processList[i].indexOf(pid) !== -1) {
 					res.push({
-						process: processList[i],
-						pid: pid
+						process: processList[i].substring(processList[i].indexOf(process.execPath)),
+						pid: parseInt(pid)
 					});
 				}
 			}
@@ -134,10 +134,9 @@ module.exports.getStatus = function (cb) {
 				console.log('\n');
 				for (var i = 0, len = processes.length; i < len; i++) {
 					var p = processes[i].process;
-					p = list[i].substring(list[i].indexOf(process.execPath) + process.execPath + 1);
 					p += '(pid: ' + processes[i].pid + ')';
 					var prefix;
-					var isMaster = (p.indexOf(data.msg.pid) !== -1);
+					var isMaster = data.msg.pid === processes[i].pid;
 					var append = '';
 					if (p.indexOf('monitor') === -1) {
 						if (isMaster) {
@@ -173,7 +172,7 @@ module.exports.stopApp = function () {
 	var sock = new net.Socket();
 	sock.connect(sockFile, function () {
 		sock.write('stop');
-		module.exports.isNotRunning(function (error, running) {
+		module.exports.isRunning(function (error, running) {
 			if (error) {
 				return gn.exit(error);
 			}
@@ -295,11 +294,18 @@ module.exports.clean = function (cb) {
 	});
 };
 
-module.exports.isRunning = function (cb, counter, running) {
+module.exports.isRunning = function (cb, counter, running, seen) {
 	counter = counter || 0;
 	running = running || 0;
+	seen = seen || {};
+	// recursive call function
+	var call = function () {
+		setTimeout(function () {
+			module.exports.isRunning(cb, counter, running, seen);
+		}, 100 + (counter * 20));
+	};
 	// application needs to be found running more than half of the time
-	if (running > MAX_TRY / 2) {
+	if (running >= MAX_TRY / 2) {
 		return cb(null, true);
 	}
 	if (counter > MAX_TRY) {
@@ -310,44 +316,28 @@ module.exports.isRunning = function (cb, counter, running) {
 		if (error) {
 			return cb(error);
 		}
-		// process needs to have at least one monitor and one application
-		if (!processList || processList.length < 2) {
-			setTimeout(function () {
-				module.exports.isRunning(cb, counter, running);
-			}, 100 + (counter * 20));
+		// we found some process(es) running
+		if (processList && processList.length) {
+			module.exports.getPids(appPath, processList, function (error, list) {
+				var len = list.length;
+				for (var i = 0; i < len; i++) {
+					// we need at least 2 processes running: one is monitor and another is the application
+					if (len > 1 && list[i].process.indexOf('monitor start ') !== -1) {
+						running += 1;
+					}
+					// feedback output of running process(es)
+					if (!seen[list[i].pid]) {
+						seen[list[i].pid] = true;
+						console.log(lib.color(list[i].process, lib.COLORS.GRAY), lib.color('(pid: ' + list[i].pid + ')', lib.COLORS.GRAY));
+					}
+				}
+				call();
+			});
 			return;
 		}
-		// we found the process running > we need to keep checking until MAX_TRY
-		running += 1;
-		module.exports.isRunning(cb, counter, running);
-	});
-};
-
-module.exports.isNotRunning = function (cb, counter, notRunning) {
-	counter = counter || 0;
-	notRunning = notRunning || 0;
-	// application needs to be found not running more than half of the time
-	if (notRunning > MAX_TRY / 2) {
-		return cb(null, false);
-	}
-	if (counter > MAX_TRY) {
-		return cb(null, true);
-	}
-	counter += 1;
-	findProcesses(appPath, function (error, processList) {
-		if (error) {
-			return cb(error);
-		}
-		// process needs to have at least one monitor and one application
-		if (!processList || processList.length < 2) {
-			setTimeout(function () {
-				notRunning += 1;
-				module.exports.isNotRunning(cb, counter, notRunning);
-			}, 100 + (counter * 20));
-			return;
-		}
-		// we found the process running > we need to keep checking until MAX_TRY
-		module.exports.isNotRunning(cb, counter, notRunning);
+		// we don't see any process running
+		running -= 1;
+		call();
 	});
 };
 
