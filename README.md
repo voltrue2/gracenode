@@ -406,7 +406,7 @@ Emitted when gracenode detects SIGINT. This is before exit is emitted.
 Emitted when gracenode master process receives a message from a worker
 ```
 gracenode.on('worker.message', function (senderWorker, message) {
-	// do somethinf
+	// do something
 });
 ```
 ###master.message
