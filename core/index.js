@@ -22,6 +22,7 @@ function Gracenode() {
 	setupListeners(this);
 	// variables
 	var roots = findRoots();
+	this._process = null;
 	this._isReady = false;
 	this._pid = null;
 	this._isMaster = false;
@@ -40,9 +41,24 @@ function Gracenode() {
 	this._argv = new Argv(this);
 	// parse argv arguments
 	this._argv.parse();
+	// shared data for workers: accessed by gracenode.get(), gracenode.set(), and gracenode.unset()
+	// this._shared is populated in cluster master process only
+	this._shared = {};
 }
 
 util.inherits(Gracenode, EventEmitter);
+
+Gracenode.prototype.get = function (key, cb) {
+	this.send({ type: 'get', key: key }, cb);
+};
+
+Gracenode.prototype.set = function (key, value, cb) {
+	this.send({ type: 'set', key: key, value: value }, cb);
+};
+
+Gracenode.prototype.unset = function (key, cb) {
+	this.send({ type: 'unset', key: key }, cb);
+};
 
 Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
@@ -91,6 +107,15 @@ Gracenode.prototype.exit = function (error) {
 
 Gracenode.prototype.use = function (modName, driver) {
 	this._module.use(modName, driver);
+};
+
+Gracenode.prototype.send = function (msg, cb) {
+	if (!this._process) {
+		cb(new Error('process has not been set up yet'));
+		return false;
+	}
+	this._process.send(msg, cb);
+	return true;
 };
 
 Gracenode.prototype.argv = function (key) {
@@ -292,6 +317,7 @@ function setupProcess(that, lastCallback, cb) {
 		that._pid = pid;
 		logger._setInternalPrefix('MASTER:' + pid);
 		log = logger.create('gracenode');
+		setupSharedHandler(that);
 		lastCallback();
 	});
 	ps.on('cluster.worker.setup', function (pid) {
@@ -303,7 +329,30 @@ function setupProcess(that, lastCallback, cb) {
 	ps.on('nocluster.setup', function () {
 		cb(null, that);
 	});
-	ps.setup();	
+	ps.setup();
+	that._process = ps;	
+}
+
+function setupSharedHandler(that) {
+	that.on('worker.message', function (worker, data) {
+		switch (data.type) {
+			case 'get':
+				var value = that._shared[data.key] || null;
+				log.verbose('shared get:', data.key, value);
+				worker.send(value);
+				break;
+			case 'set':
+				that._shared[data.key] = data.value;
+				log.verbose('shared set:', data.key, data.value);
+				worker.send(true);
+				break;
+			case 'unset':
+				delete that._shared[data.key];
+				log.verbose('shared unset:', data.key);
+				worker.send(true);
+				break;
+		}
+	});
 }
 
 function setupModules(that, cb) {

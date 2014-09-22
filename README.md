@@ -364,6 +364,15 @@ Executes nodejs native require with application root path as prefix. You do not 
 var mymod = gracenode.require('mydir/mymod');
 ```
 
+###.get(key [string], callback [function])
+Returns a value that is stored in master process memory so that all workers can share the same data in cluster mode.
+
+###.set(key [string] value [mixed], callback [function])
+Sets a value to associated key in master process memory so that all workers can call `gracenode.get()` to share the data.
+
+###.unset(key [string], callback [function])
+Unsets a value of the given key in master process memory.
+
 ###.getModuleSchema(moduleName [string], callback [function])
 Finds and returns an array of schema SQL queries (only for modules with schema.sql file in the directory)
 ```
@@ -393,6 +402,15 @@ Emitted when gracenode exits.
 Emitted when gracenode's module finished executing shutdown task.
 ###shutdown
 Emitted when gracenode detects SIGINT. This is before exit is emitted.
+###worker.message
+Emitted when gracenode master process receives a message from a worker
+```
+gracenode.on('worker.message', function (senderWorker, message) {
+	// do somethinf
+});
+```
+###master.message
+Emitted when a gracenode worker process receives a message from master.
 
 #Cluster Mode
 Spawns forked process(es) if allowed
