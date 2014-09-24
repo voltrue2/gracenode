@@ -4,18 +4,6 @@
 
 ## Added
 
-#### Added get function in gracenode core
-
-In cluster mode, workers can now share the same data from master process's memory by calling `gracenode.get()`.
-
-#### Added set function in gracenode core
-
-In cluster mode, workers can now share the same data from master process's memory by setting values calling `gracernode.set()`.
-
-#### Added unset function in gracenode core
-
-In cluster mode, workers can now remove shared data from master process's memory by calling `gracenode.unset()`
-
 #### New event worker.message added
 
 In cluster mode, your application can now capture messages sent from workers to master by listening on `worker.message`.

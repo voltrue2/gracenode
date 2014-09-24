@@ -51,37 +51,6 @@ Process.prototype.setup = function () {
 	this.emit('nocluster.setup');
 };
 
-// public this is available for worker processes in cluster mode only 
-Process.prototype.send = function (msg, cb) {
-	if (!this.inClusterMode) {
-		// we don't do anything in none-cluster mode
-		this.log.warn('gracenode.send() is not available in nonde-cluster mode');
-		return cb();
-	}
-	if (cluster.isMaster) {
-		return cb(new Error('gracenode.send() is available for worker processes only'));
-	}
-	var data = null;
-	try {
-		data = JSON.stringify(msg);
-	} catch (e) {
-		return cb(e);
-	}
-	// set up the listener for response
-	process.once('message', function (data) {
-		if (typeof cb === 'function') {
-			try {
-				data = JSON.parse(data);
-			} catch (e) {
-			
-			}
-			cb(null, data);
-		}
-	});
-	// send the message to master
-	process.send(data);
-};
-
 // private	
 Process.prototype.startClusterMode = function () {
 	if (cluster.isMaster) {

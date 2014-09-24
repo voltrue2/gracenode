@@ -41,24 +41,9 @@ function Gracenode() {
 	this._argv = new Argv(this);
 	// parse argv arguments
 	this._argv.parse();
-	// shared data for workers: accessed by gracenode.get(), gracenode.set(), and gracenode.unset()
-	// this._shared is populated in cluster master process only
-	this._shared = {};
 }
 
 util.inherits(Gracenode, EventEmitter);
-
-Gracenode.prototype.get = function (key, cb) {
-	this.send({ type: 'get', key: key }, cb);
-};
-
-Gracenode.prototype.set = function (key, value, cb) {
-	this.send({ type: 'set', key: key, value: value }, cb);
-};
-
-Gracenode.prototype.unset = function (key, cb) {
-	this.send({ type: 'unset', key: key }, cb);
-};
 
 Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
@@ -107,15 +92,6 @@ Gracenode.prototype.exit = function (error) {
 
 Gracenode.prototype.use = function (modName, driver) {
 	this._module.use(modName, driver);
-};
-
-Gracenode.prototype.send = function (msg, cb) {
-	if (!this._process) {
-		cb(new Error('process has not been set up yet'));
-		return false;
-	}
-	this._process.send(msg, cb);
-	return true;
 };
 
 Gracenode.prototype.argv = function (key) {
