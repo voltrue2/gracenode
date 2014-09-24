@@ -53,6 +53,10 @@ Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	gracefulWaitList.push({ name: name, task: taskFunc });
 };
 
+Gracenode.prototype.send = function (msg, worker) {
+	this._process.send(msg, worker);
+};
+
 Gracenode.prototype.require = function (path) {
 	return require(this.getRootPath() + path);
 };
@@ -289,11 +293,11 @@ function setupProfiler(that, lastCallback, cb) {
 
 function setupProcess(that, lastCallback, cb) {
 	var ps = new Process(that);
+	that._process = ps;	
 	ps.on('cluster.master.setup', function (pid) {
 		that._pid = pid;
 		logger._setInternalPrefix('MASTER:' + pid);
 		log = logger.create('gracenode');
-		setupSharedHandler(that);
 		lastCallback();
 	});
 	ps.on('cluster.worker.setup', function (pid) {
@@ -306,29 +310,6 @@ function setupProcess(that, lastCallback, cb) {
 		cb(null, that);
 	});
 	ps.setup();
-	that._process = ps;	
-}
-
-function setupSharedHandler(that) {
-	that.on('worker.message', function (worker, data) {
-		switch (data.type) {
-			case 'get':
-				var value = that._shared[data.key] || null;
-				log.verbose('shared get:', data.key, value);
-				worker.send(value);
-				break;
-			case 'set':
-				that._shared[data.key] = data.value;
-				log.verbose('shared set:', data.key, data.value);
-				worker.send(true);
-				break;
-			case 'unset':
-				delete that._shared[data.key];
-				log.verbose('shared unset:', data.key);
-				worker.send(true);
-				break;
-		}
-	});
 }
 
 function setupModules(that, cb) {

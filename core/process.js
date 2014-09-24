@@ -61,6 +61,35 @@ Process.prototype.startClusterMode = function () {
 	this.setupWorker();
 };
 
+// public
+Process.prototype.send = function (msg, worker) {
+	if (!this.inClusterMode) {
+		return this.log.warn('send() is available only in cluster mode');
+	}
+	try {
+		msg = JSON.stringify(msg);
+	} catch (e) {
+
+	}
+	if (worker) {
+		// id worker is given, the master sends message to the given worker only
+		worker.send(msg);
+		return this.log.info('message sent to worker (pid:' + worker.process.pid + ') (id:' + id + ')', msg);
+	}
+	if (cluster.isMaster) {
+		// send message to all workers
+		for (var id in cluster.workers) {
+			var workerProcess = cluster.workers[id];
+			workerProcess.send(msg);
+			this.log.info('message sent to worker (pid:' + workerProcess.process.pid + ') (id:' + id + '): ', msg);
+		}
+		return;
+	}
+	// send message to master
+	process.send(msg);
+	this.log.info('message sent to master:', msg);
+};
+
 // private (master only)
 Process.prototype.createWorker = function () {
 	// create worker process
@@ -138,7 +167,7 @@ Process.prototype.setupWorker = function () {
 		} catch (e) {
 		
 		}
-		that.gracenode.emit('master.message', cluster.worker, data);
+		that.gracenode.emit('master.message', data);
 	});
 };
 

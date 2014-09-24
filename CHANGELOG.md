@@ -4,6 +4,8 @@
 
 ## Added
 
+#### Added send() to send message from workers to master or from master to workers
+
 #### New event worker.message added
 
 In cluster mode, your application can now capture messages sent from workers to master by listening on `worker.message`.

@@ -364,6 +364,18 @@ Executes nodejs native require with application root path as prefix. You do not 
 var mymod = gracenode.require('mydir/mymod');
 ```
 
+###.send(message [object], worker [*object])
+
+Sends a JSON format message from master to workers or a worker to master
+
+The events can be caught by listening on `master.message` or `worker.message` events
+
+If the second argument is given (worker process object), the master process sends message to the given worker process only
+
+```
+gracenode.send({ message: 'Hello World!' });
+```
+
 ###.getModuleSchema(moduleName [string], callback [function])
 Finds and returns an array of schema SQL queries (only for modules with schema.sql file in the directory)
 ```
