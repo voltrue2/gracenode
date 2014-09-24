@@ -172,11 +172,11 @@ module.exports.stopApp = function () {
 	var sock = new net.Socket();
 	sock.connect(sockFile, function () {
 		sock.write('stop');
-		module.exports.isRunning(function (error, running) {
+		module.exports.isNotRunning(function (error, notRunning) {
 			if (error) {
 				return gn.exit(error);
 			}
-			if (running) {
+			if (!notRunning) {
 				console.error(lib.color('Daemon process failed to stop', lib.COLORS.RED), lib.color(appPath, lib.COLORS.LIGHT_BLUE));
 				return gn.exit();
 			}
@@ -291,6 +291,28 @@ module.exports.clean = function (cb) {
 			return cb(error);
 		}
 		cb(null, toBeRemoved.length > 0);
+	});
+};
+
+module.exports.isNotRunning = function (cb, counter) {
+	counter = counter || 0;
+	var next = function () {
+		setTimeout(function () {
+			counter += 1;
+			module.exports.isNotRunning(cb, counter);
+		}, 100);
+	};
+	findProcesses(appPath, function (error, list) {
+		if (error) {
+			return cb(error);
+		}
+		if (list.length) {
+			if (counter === 0 || 10 % counter === 0) {
+				console.log(lib.color('running process count: ' + list.length, lib.COLORS.GRAY));
+			}
+			return next();
+		}
+		cb(null, true);
 	});
 };
 

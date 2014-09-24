@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.36
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon stop now waits for the daemon process to stop completely without timeout
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.35
 
 ## Added
