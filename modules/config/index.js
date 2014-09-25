@@ -1,4 +1,3 @@
-var jshint = require('jshint').JSHINT;
 var configPath;
 var configData = {};
 
@@ -98,35 +97,23 @@ module.exports.getMany = function (propNameList) {
 
 function parseConfigData(filePath) {
 	var path = configPath + filePath;
+	var config;
 	try {
-		var config = require(path);
-		if (!jshint(JSON.stringify(config))) {
-			var errors = jshint.data().errors;
-			throw new Error('invalid configurations in a configuration file: ' + path + '\n' + formatLintErrors(errors));
-		}
-		for (var key in config) {
-			if (typeof config[key] !== 'object') {
-				configData[key] = config[key];
-				continue;
-			}
-			if (configData[key] === undefined) {
-				configData[key] = {};
-			}
-			for (var prop in config[key]) {
-				configData[key][prop] = config[key][prop];
-			}
-		}
-		return false;
+		config = require(path);
 	} catch (e) {
 		return e;
 	}
-}
-
-function formatLintErrors(errors) {
-	var str = '\n';
-	for (var i = 0, len = errors.length; i < len; i++) {
-		var error = errors[i];
-		str += 'Line:' + error.line + ' (code:' + error.code + ') ' + error.reason + ': ' + error.evidence + '\n';
+	for (var key in config) {
+		if (typeof config[key] !== 'object') {
+			configData[key] = config[key];
+			continue;
+		}
+		if (configData[key] === undefined) {
+			configData[key] = {};
+		}
+		for (var prop in config[key]) {
+			configData[key][prop] = config[key][prop];
+		}
 	}
-	return str;
+	return false;
 }
