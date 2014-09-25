@@ -10,6 +10,8 @@ None
 
 #### Daemon stop now waits for the daemon process to stop completely without timeout
 
+#### Improved fatal logging for configuration failure
+
 ## Deprecated
 
 None

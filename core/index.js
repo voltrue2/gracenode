@@ -253,6 +253,9 @@ function findRoots() {
 function setupConfig(that) {
 	config.setPath(that._configPath);
 	var error = config.load(that._configFiles);
+	if (error) {
+		log.fatal('gracenode failed to read configurations:', error, error.stack);
+	}
 	that.config = config;
 	log.verbose('config is ready');
 	that.emit('setup.config');
