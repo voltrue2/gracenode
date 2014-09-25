@@ -193,7 +193,7 @@ Gracenode.prototype._shutdown = function (error) {
 			cleaner(next);
 		},
 		function () {
-			process.exit(error ? 1: 0);
+			process.exit(error ? 1 : 0);
 		});
 	});
 };

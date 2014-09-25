@@ -103,6 +103,9 @@ Process.prototype.createWorker = function () {
 		} catch (e) {
 			
 		}
+		
+		that.log.info('message received worker: (pid:' + worker.process.pid + ') (id:' + worker.id + ')', data);
+
 		that.gracenode.emit('worker.message', worker, data);
 	});
 	this.log.verbose('worker message listener set up complete: (pid:' + worker.process.pid + ') (id:' + worker.id + ')');
@@ -132,12 +135,15 @@ Process.prototype.setupMaster = function () {
 			var newWorker = that.createWorker();
 			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
 		}
-		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code, '(suicide:' + worker.suicide + ')');	
+		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code, '(suicide:' + worker.suicide + ') (workers:' + Object.keys(cluster.workers).length + ')');	
 		// if all child processes are gone and if master is in shutting down mode, we shutdown
-		if (noMoreWorkers() && that.isShutdown) {
-			that.log.info('all child processes have gracefully disconnected: exiting master process...');
-			that.emit('shutdown');
-			that.gracenode.exit();
+		if (noMoreWorkers()) {
+			// no more workers and we are shutting down mode OR no more workers and we have workers dying with code greater than 1
+			if (that.isShutdown || code) {
+				that.log.info('all child processes have gracefully disconnected: exiting master process...');
+				that.emit('shutdown');
+				that.gracenode.exit();
+			}
 		}
 	});
 	

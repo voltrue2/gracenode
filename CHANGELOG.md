@@ -12,6 +12,8 @@ None
 
 #### Improved fatal logging for configuration failure
 
+#### Improved exiting process of master in cluster mode when worker processes are illigally exiting
+
 ## Deprecated
 
 None
