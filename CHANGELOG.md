@@ -14,8 +14,6 @@ None
 
 #### Improved exiting process of master in cluster mode when worker processes are illigally exiting
 
-#### Upgraded the version of dependency gracelog to 0.1.8
-
 ## Deprecated
 
 None
