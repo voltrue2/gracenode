@@ -17,7 +17,7 @@ module.exports.setPath = function (path) {
  */
 module.exports.load = function (configList) {
 	if (configPath === undefined) {
-		return new Error('configPath has not been set. you must call setConfigPath() method');
+		return new Error('configPath has not been set. you must call setConfigPath() method before calling gracenode.setup()');
 	}
 	for (var i = 0, len = configList.length; i < len; i++) {
 		var error = parseConfigData(configList[i]);
