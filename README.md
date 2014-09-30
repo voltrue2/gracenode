@@ -244,9 +244,29 @@ var p = gracenode.argv('-p');
 // ['aaa', 'bbb', 'ccc']
 ```
 
-###.defineOption(argumentName [string], description [srting], optionExecution [*function])
+###.defineOption(argumentName [string], description [srting], argumentsAsArray [*boolean], optionExecution [*function])
 
 Defines an option and add short description for `--help` and function to be executed if the option is given.
+
+**NOTE:**The third argument `argumentsAsArray` is optional. The default value is true.
+
+Example without argumentsAsArray:
+```
+// node myGracenodeApp/ -t one two three
+gracenode.defineOption('-t', 'Expects 3 arguments.', function (args) {
+	console.log(args);
+	// [ "one", "two", "three" ]
+});
+```
+
+Example with argumentsAsArray:
+```
+// node myGracenodeApp/ -t one two three
+gracenode.defineOption('-t', 'Expects 3 arguments.', false, function (arg1, arg2, arg3) {
+	console.log(arg1, arg2, arg3);
+	// one two three
+});
+```
 
 Example:
 

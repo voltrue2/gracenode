@@ -1,5 +1,37 @@
 # Change Log
 
+## Version 1.1.37
+
+## Added
+
+None
+
+## Changed
+
+#### gracenode.defineOption() now supports get arguments As none-array
+
+By setting `false` to the third argument as shown below, gracenode passes the arguments to defined variables in the callback function.
+
+Example:
+
+```
+// node myapp -t one two three
+gracenode.defineOption('-t', 'Expects 3 arguments.', false, function (arg1, arg2, arg3) {
+	console.log(arg1, arg2, arg3);
+	// one two three
+});
+```
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.36
 
 ## Added

@@ -102,8 +102,8 @@ Gracenode.prototype.argv = function (key) {
 	return this._argv.get(key);
 };
 
-Gracenode.prototype.defineOption = function (argName, description, callback) {
-	this._argv.defineOption(argName, description, callback);
+Gracenode.prototype.defineOption = function (argName, description, argAsArray, callback) {
+	this._argv.defineOption(argName, description, argAsArray, callback);
 };
 
 Gracenode.prototype.exitOnBadOption = function () {

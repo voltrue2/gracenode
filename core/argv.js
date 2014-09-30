@@ -78,8 +78,12 @@ Argv.prototype.get = function (arg) {
 	return this._argv[arg] || null;
 };
 
-Argv.prototype.defineOption = function (arg, desc, cb) {
-	this._def[arg] = { desc: desc, callback: cb };
+Argv.prototype.defineOption = function (arg, desc, argAsArray, cb) {
+	if (typeof argAsArray === 'function' && !cb) {
+		cb = argAsArray;
+		argAsArray = true;
+	}
+	this._def[arg] = { desc: desc, callback: cb, argAsArray: argAsArray };
 	if (defKeys.indexOf(arg) === -1) {
 		defKeys.push(arg);
 	}
@@ -95,7 +99,12 @@ Argv.prototype.execDefinedOptions = function () {
 		var option = this.get(arg);
 		if (option && typeof this._def[arg].callback === 'function') {
 			optionCalled += 1;
-			this._def[arg].callback(option);
+			var def = this._def[arg];
+			if (def.argAsArray) {
+				def.callback(option);
+			} else {
+				def.callback.apply(null, option);
+			}
 		}
 	}
 	// check for exitOnBadOption
