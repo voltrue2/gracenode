@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.1.38
+
+## Added
+
+None
+
+## Changed
+
+#### Minor changes in client/js object-data.js
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.37
 
 ## Added

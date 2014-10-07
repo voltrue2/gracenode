@@ -35,7 +35,7 @@
 			var child = document.createElement('div');
 			child.className = 'object-data-child ' + (typeof data);
 			child.className += ' ' + key;
-			if (typeof data === 'object') {
+			if (typeof data === 'object' && data !== null) {
 				child = this._parse(editMode, child, data, key);
 			} else {
 				this._setData(editMode, child, key, json);
