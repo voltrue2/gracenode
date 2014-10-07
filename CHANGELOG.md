@@ -8,7 +8,11 @@ None
 
 ## Changed
 
+#### Dependency gracelog version updated
+
 #### Minor changes in client/js object-data.js
+
+object-data.js is now data-object.js
 
 ## Deprecated
 
