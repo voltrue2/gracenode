@@ -47,15 +47,18 @@
 
 	ObjectData.prototype._setData = function (editMode, elm, key, parentObj) {
 		var name = document.createElement('div');
+		name.className = 'object-data-key';
 		name.textContent = key;
 		elm.appendChild(name);
 		var data = parentObj[key];
 		if (!editMode) {
 			var val = document.createElement('div');
 			val.textContent = data;
+			val.className = 'object-data-value';
 			return elm.appendChild(val);
 		}
 		var input = document.createElement('input');
+		input.className = 'object-data-value';
 		var type = typeof data;
 		switch (type) {
 			case 'number':
