@@ -46,9 +46,14 @@
 	};
 
 	ObjectData.prototype._setData = function (editMode, elm, key, parentObj) {
+		var name = document.createElement('div');
+		name.textContent = key;
+		elm.appendChild(name);
 		var data = parentObj[key];
 		if (!editMode) {
-			return elm.textContent = data;
+			var val = document.createElement('div');
+			val.textContent = data;
+			return elm.appendChild(val);
 		}
 		var input = document.createElement('input');
 		var type = typeof data;
