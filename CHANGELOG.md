@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.2.0
+
+## Added
+
+#### Improved error logging for invalid configurations on set up
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.38
 
 ## Added

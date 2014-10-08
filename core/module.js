@@ -180,7 +180,7 @@ Module.prototype._readConfig = function (name, mod) {
 		this._logger.verbose('module [' + name + '] reading configurations from modules.' + name);
 		var conf = this._gn.config.getOne('modules.' + name);
 		if (!conf) {
-			return new Error('failed to find configurations for module [' + name + ']');
+			return new Error('failed to find configurations for module [' + name + ']\n' + JSON.stringify(this._gn.config.getConfigFiles(), null, 4));
 		}
 		var status = mod.readConfig(this._gn.config.getOne('modules.' + name));
 		if (status instanceof Error) {

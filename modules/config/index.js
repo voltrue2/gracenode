@@ -1,4 +1,5 @@
 var configPath;
+var configFiles = [];
 var configData = {};
 
 /**
@@ -20,12 +21,18 @@ module.exports.load = function (configList) {
 		return new Error('configPath has not been set. you must call setConfigPath() method before calling gracenode.setup()');
 	}
 	for (var i = 0, len = configList.length; i < len; i++) {
+		configFiles.push(configPath + configList[i]);
 		var error = parseConfigData(configList[i]);
 		if (error) {
 			return error;
 		}
 	}
 	return false;
+};
+
+// returns an array of loaded config files for logging
+module.exports.getConfigFiles = function () {
+	return configFiles;
 };
 
 /**
