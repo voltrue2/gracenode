@@ -200,7 +200,7 @@ Gracenode.prototype._shutdown = function (error) {
 
 /* 
 extracts application's expected gracenode version
-and compare the it against the currently installed gracenode version
+and compare the version it against the currently installed gracenode version
 
 * if the installed version is lower than excepted version, .setup() fails
 * if gracenode fails to extract expected version, it will log a warning and continues

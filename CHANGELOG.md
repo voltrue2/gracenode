@@ -8,6 +8,8 @@
 
 ## Changed
 
+#### Logging level of sending/receiving messages from/to master and worker changed to verbose
+
 #### Improved error handling for defineOption()
 
 ## Deprecated

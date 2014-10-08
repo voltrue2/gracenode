@@ -11,7 +11,7 @@
 	}
 
 	DataObject.prototype.editMode = function (enable) {
-
+		this._edit = enable;
 	};
 
 	DataObject.prototype.toDOM = function () {

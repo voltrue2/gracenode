@@ -74,20 +74,20 @@ Process.prototype.send = function (msg, worker) {
 	if (worker) {
 		// id worker is given, the master sends message to the given worker only
 		worker.send(msg);
-		return this.log.info('message sent to worker (pid:' + worker.process.pid + ') (id:' + worker.id + ')', msg);
+		return this.log.verbose('message sent to worker (pid:' + worker.process.pid + ') (id:' + worker.id + ')', msg);
 	}
 	if (cluster.isMaster) {
 		// send message to all workers
 		for (var id in cluster.workers) {
 			var workerProcess = cluster.workers[id];
 			workerProcess.send(msg);
-			this.log.info('message sent to worker (pid:' + workerProcess.process.pid + ') (id:' + id + '): ', msg);
+			this.log.verbose('message sent to worker (pid:' + workerProcess.process.pid + ') (id:' + id + '): ', msg);
 		}
 		return;
 	}
 	// send message to master
 	process.send(msg);
-	this.log.info('message sent to master:', msg);
+	this.log.verbose('message sent to master:', msg);
 };
 
 // private (master only)
@@ -103,9 +103,7 @@ Process.prototype.createWorker = function () {
 		} catch (e) {
 			
 		}
-		
-		that.log.info('message received from worker (pid:' + worker.process.pid + ') (id:' + worker.id + '):', data);
-
+		that.log.verbose('message received from worker (pid:' + worker.process.pid + ') (id:' + worker.id + '):', data);
 		that.gracenode.emit('worker.message', worker, data);
 	});
 	this.log.verbose('worker message listener set up complete: (pid:' + worker.process.pid + ') (id:' + worker.id + ')');
