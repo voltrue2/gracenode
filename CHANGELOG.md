@@ -8,7 +8,7 @@
 
 ## Changed
 
-None
+#### Improved error handling for defineOption()
 
 ## Deprecated
 

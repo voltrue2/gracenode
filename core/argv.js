@@ -79,6 +79,9 @@ Argv.prototype.get = function (arg) {
 };
 
 Argv.prototype.defineOption = function (arg, desc, argAsArray, cb) {
+	if (this._def[arg]) {
+		throw new Error('Cannot define a handler function for the same arguement more than once: argument [' + arg + ']');
+	}
 	if (typeof argAsArray === 'function' && !cb) {
 		cb = argAsArray;
 		argAsArray = true;
