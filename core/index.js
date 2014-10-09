@@ -77,11 +77,23 @@ Gracenode.prototype.getProcessType = function () {
 };
 
 Gracenode.prototype.setConfigPath = function (configPath) {
+	if (this._configPath) {
+		throw new Error('cannot call .setConfigPath() more than once');
+	}
 	this._configPath = this._appRoot + configPath;
 	log.verbose('configuration path:', this._configPath);
 };
 
 Gracenode.prototype.setConfigFiles = function (fileList) {
+	if (this._configFiles.length) {
+		throw new Error('cannot call .setConfigFiles() more than once');
+	}
+	if (!Array.isArray(fileList)) {
+		throw new Error('.setConfigFiles() expects an array of configuration file names');
+	}
+	if (!fileList.length) {
+		throw new Error('.setConfigFiles() must have configuration files before calling .setup()');
+	}
 	this._configFiles = fileList;
 	log.verbose('configuration file list:', fileList);
 };
@@ -113,12 +125,12 @@ Gracenode.prototype.exitOnBadOption = function () {
 Gracenode.prototype.setup = function (cb) {
 	var that = this;
 	if (!this._configPath) {
-		console.error('<error>[gracenode] path to configuration files not set: call gracenode.setConfigPath();');
-		return cb(new Error('patj to configuration files is missing'));
+		console.error('<error>[gracenode] path to configuration files not set: call .setConfigPath() before calling .setup()');
+		return cb(new Error('path to configuration files is missing'));
 	}
 	if (!this._configFiles.length) {
 		console.error('<error>[gracenode] no configuration files to load');
-		return cb(new Error('no configuration files given'));
+		return cb(new Error('no configuration files given: call .setConfigFiles() before calling .setup()'));
 	}
 	// set up argv
 	this._argv.setup();
@@ -352,7 +364,7 @@ function handleShutdownTasks(that, cb) {
 function setupListeners(that) {
 	
 	process.on('uncaughtException', function (error) {
-		log.fatal('gracenode detected an uncaught exception:', error);
+		log.fatal('gracenode detected an uncaught exception:', error, error.stack);
 		that.emit('uncaughtException', error);
 		if (!that._isReady) {
 			// something when wrong before gracenode is ready

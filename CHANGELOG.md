@@ -8,6 +8,8 @@
 
 ## Changed
 
+#### Improved error checking before calling .setup()
+
 #### Logging level of sending/receiving messages from/to master and worker changed to verbose
 
 #### Improved error handling for defineOption()
