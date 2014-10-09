@@ -1,3 +1,5 @@
+var fs = require('fs');
+var jshint = require('jshint').JSHINT;
 var configPath;
 var configFiles = [];
 var configData = {};
@@ -108,6 +110,9 @@ function parseConfigData(filePath) {
 	try {
 		config = require(path);
 	} catch (e) {
+		// get more details of the problem
+		var data = fs.readFileSync(path, { encoding: 'utf8' });
+		lintConfig(data);
 		return e;
 	}
 	for (var key in config) {
@@ -123,4 +128,16 @@ function parseConfigData(filePath) {
 		}
 	}
 	return false;
+}
+
+function lintConfig(data) {
+	if (data) {
+		if (!jshint(data)) {
+			// there is an lint error
+			var errors = jshint.data().errors;
+			for (var i = 0, len = errors.length; i < len; i++) {
+				console.error('[error] Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
+			}
+		}	
+	}
 }

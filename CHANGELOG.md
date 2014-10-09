@@ -6,6 +6,8 @@
 
 #### Improved error logging for invalid configurations on set up
 
+#### Outputs jshint errors when gracenode detects invalid configurations
+
 ## Changed
 
 #### Improved error checking before calling .setup()
