@@ -73,7 +73,7 @@ function handleCommunication(msg) {
 			var parsed = parseCommand(command);
 			if (parsed) {
 				handleMessage(parsed);		
-				break;
+				return;
 			}
 			logger.error('unknown command: ' + command);
 			break;

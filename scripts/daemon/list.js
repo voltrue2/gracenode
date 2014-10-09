@@ -73,8 +73,8 @@ module.exports = function () {
 			if (!p.monitor[0]) {
 				continue;
 			}
-			console.log(lib.color('\n	To stop this application   :', lib.COLORS.GRAY), lib.color('node daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
-			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('node daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color('\n	To stop this application   :', lib.COLORS.GRAY), lib.color('./daemon stop ' + p.path, lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color('	To restart this application:', lib.COLORS.GRAY), lib.color('./daemon restart ' + p.path, lib.COLORS.LIGHT_BLUE));
 			console.log(lib.color('	Excecuted User             :', lib.COLORS.GRAY), lib.color(p.user, lib.COLORS.DARK_BLUE));
 			console.log(p.monitor[0]);
 			for (var i = 0, len = p.app.length; i < len; i++) {
