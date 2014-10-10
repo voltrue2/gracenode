@@ -65,6 +65,9 @@
 		var input = document.createElement('input');
 		input.setAttribute('data-type', typeof data);
 		input.setAttribute('type', 'text');
+		if (!this._edit) {
+			input.setAttribute('disabled', true);
+		}
 		input.value = data;
 		input.className = 'data-object-value';
 		holder.appendChild(input);
