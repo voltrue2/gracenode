@@ -136,7 +136,7 @@ function lintConfig(data) {
 			// there is an lint error
 			var errors = jshint.data().errors;
 			for (var i = 0, len = errors.length; i < len; i++) {
-				console.error('*** LINT ERROR [error] Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
+				console.error('    *** LINT [error] Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
 			}
 		}	
 	}
