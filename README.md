@@ -78,10 +78,7 @@ gracenode.use('gracenode-view');
 gracenode.use('gracenode-mysql');
 
 // now start the set up process
-gracenode.setup(function (error) {
-    if (error) {
-        throw new Error('gracenode failed to set up: ' + error);
-    }
+gracenode.setup(function () {
     // gracenode is ready to go
 
 });

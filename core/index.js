@@ -367,7 +367,7 @@ function setupListeners(that) {
 		log.fatal('gracenode detected an uncaught exception:', error, error.stack);
 		that.emit('uncaughtException', error);
 		if (!that._isReady) {
-			// something when wrong before gracenode is ready
+			// something went wrong before gracenode is ready
 			log.error('gracenode failed to set up due to a fatal error');
 			that.exit(error);
 		}
