@@ -24,8 +24,17 @@ Log.prototype.time = function () {
 };
 
 Log.prototype.start = function (name, cb) {
-	if (this._stream || !this._path) {
-		return;
+	if (this._stream) {
+		if (!cb) {
+			return;
+		}
+		return cb(new Error('daemon is already logging'));
+	}
+	if (!this._path) {
+		if (!cb) {
+			return;
+		}
+		return cb(new Error('no logging path given'));
 	}
 	this._name = name;
 	var path = this._path + 'gracenode-daemon.' + this.today() + '.log';

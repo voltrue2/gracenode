@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.2.1
+
+## Added
+
+None
+
+## Changed
+
+#### Minor bug fix in daemon log
+
+## Deprecated
+
+None
+
+ ## Removed
+
+None
+
+***
+
 ## Version 1.2.0
 
 ## Added
