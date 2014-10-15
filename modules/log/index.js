@@ -4,14 +4,18 @@ var glog = require('gracelog');
 var create = glog.create;
 
 glog.create = function (name) {
-	var logger = create(name);
 	if (!name) {
-		// there was no log name given
-		// we will be using default log name
-		// remove the root path
-		logger.name = logger.name.replace(module.exports.gracenode.getRootPath(), '');
+		var stack = new Error('').stack.split('\n');
+		// index 0 is always "Error"
+		for (var i = 1, len = stack.length; i < len; i++) {
+			if (stack[i].indexOf('gracelog/index.js') === -1 && stack[i].indexOf('gracenode/modules/log/index.js') === -1) {
+				name = stack[i].substring(stack[i].lastIndexOf('(') + 1, stack[i].lastIndexOf('.'));
+				break;
+			}
+		}
+		name = name.replace(module.exports.gracenode.getRootPath(), '');
 	}
-	return logger;
+	return create(name);
 };
 
 module.exports = glog;
