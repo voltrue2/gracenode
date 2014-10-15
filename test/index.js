@@ -54,7 +54,7 @@ describe('gracenode initialization ->', function () {
 		});
 
 		gn.defineOption('-s', 'Option given from mocha', function (val) {
-			var logger = gn.log.create('argv');
+			var logger = gn.log.create();
 			logger.debug('-s caught:', val);
 		});
 
@@ -76,7 +76,7 @@ describe('gracenode initialization ->', function () {
 			assert(gn.cron.create);
 			assert(gn.memcache.create);
 			
-			var logger = gn.log.create('test');
+			var logger = gn.log.create();
 			logger.verbose('test');
 			logger.debug('test');
 			logger.trace('test');
@@ -144,7 +144,7 @@ describe('gracenode initialization ->', function () {
 			}
 		});
 
-		var logger = gn.log.create('listener-test');
+		var logger = gn.log.create();
 		logger.verbose('verbose');	
 		logger.debug('debug');	
 		logger.trace('trace');	

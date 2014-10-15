@@ -8,6 +8,8 @@ None
 
 ## Changed
 
+#### Updated dependency gracelog version from 0.1.10 to 0.1.11
+
 #### Minor bug fix in daemon log
 
 ## Deprecated
