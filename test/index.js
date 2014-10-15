@@ -58,12 +58,11 @@ describe('gracenode initialization ->', function () {
 			logger.debug('-s caught:', val);
 		});
 
-		gn.setup(function (error) {
+		gn.setup(function () {
 			// test argv
 			assert.equal(gn.argv('-s'), 10);
 			assert.equal(gn.argv('-R'), 'spec');
 			// test the rest
-			assert.equal(error, undefined);
 			assert(gn.encrypt.uuid);
 			assert(gn.test.loaded());
 			assert(gn.testMe);
@@ -177,6 +176,12 @@ describe('gracenode initialization ->', function () {
 			assert.equal(i, fileNames.length);
 			done();
 		});
+	});
+
+	it('Can log with default log name', function (done) {
+		var logTest = require(gn.getRootPath() + prefix + 'gracenode/test/log-test/more/log-caller/');
+		logTest.log();
+		done();
 	});
  
 });
