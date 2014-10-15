@@ -1,5 +1,19 @@
 var glog = require('gracelog');
 
+// overwrite .create() to remove the full file path in default log name
+var create = glog.create;
+
+glog.create = function (name) {
+	var logger = create(name);
+	if (!name) {
+		// there was no log name given
+		// we will be using default log name
+		// remove the root path
+		logger.name = logger.name.replace(module.exports.gracenode.getRootPath(), '');
+	}
+	return logger;
+};
+
 module.exports = glog;
 
 // assigned by gracenode sliently...

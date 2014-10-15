@@ -8,6 +8,8 @@ None
 
 ## Changed
 
+#### log module's default log name does not have the full file path
+
 #### Updated dependency gracelog version from 0.1.10 to 0.1.11
 
 #### Minor bug fix in daemon log
