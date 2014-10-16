@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 1.2.1
+## Version 1.2.2
 
 ## Added
 
@@ -9,6 +9,24 @@ None
 ## Changed
 
 #### script lint.sh refactored
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
+## Version 1.2.1
+
+## Added
+
+None
+
+## Changed
 
 #### log module's default log name does not have the full file path
 
