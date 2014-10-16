@@ -1,157 +1,166 @@
 #!/bin/sh
 
 ###################
-# jshint location #
+# variables
 ###################
 
-# you can modify the jshint location using JSHINT variable
-# e.g. JSHINT=./node_modules/.bin/jshint scripts/linit/lint.sh
+# You can customize the jshint location using the JSHINT variable.
+# e.g. JSHINT=./node_modules/.bin/jshint scripts/lint/lint.sh
+# if you want to use a local version of jshint.
 if [ -z "$JSHINT" ]; then
-	# use the default jshint (globally installed)
-	JSHINT="jshint";
+	JSHINT="jshint"
 fi
-
-
-#############
-# constants #
-#############
-
-NAME="gracenode";
-CWD=`pwd`;
-DIRLIST="index.js core/ modules/";
-CHECK="\xE2\x9C\x93";
-ERROR="\xC7\x83";
-
-#############
-# variables #
-#############
+name="gracenode";
+cwd=`pwd`;
+# list directories/files to lint
+list=();
+defaultDirList="index.js core/ modules/";
 # optional space separated list of directories/files to lint
-# if this is given, we use this list instead of DIRLIST
-# e.g. ./lint.sh "mydir/ myFile.js"
-# the above example will lint all files under mydir/ and lint the file called myFile.js
+# Example: ./lint.sh "mydir/ myFile" > this will lint all files in mydir/ and lint myFile
 dirList=$1;
 
+##################
+# functions
+##################
 
-#############
-# functions #
-#############
-
-# returns an index position of a given string. if there is no match -1 is returned
 indexOf() {
-	pos=""${1%%$2*};
+	pos="${1%%$2*}";
 	[[ $pos = $1 ]] && echo -1 || echo ${#pos};
 }
 
-log() {
-	head="";
-	tail="\033[0m\n\r";
-	case "$1" in
-		blue)
-			head="\e[34m";
-			;;
-		green)
-			head="\e[32m";
-			;;
-		yellow)
-			head="\e[33m";
-			;;
-		red)
-			head="\e[31m";
-			;;
-		*)
-			head="\e[37m";
-			;;
-	esac
-	echo -en $head"\033[1m"$2$tail;
+echoGreen() {
+	echo -en '\E[32m'"\033[1m`checkMark` $1\033[0m\n\r";
 }
 
-lintToBeCommitted() {
-	if git rev-parse --verify HEAD > /dev/null 2>&1
+echoYellow() {
+	echo -en '\E[33m'"\033[1m$1\033[0m\n\r";
+}
+
+echoBlue() {
+	echo -en '\E[34m'"\033[1m`mark` $1\033[0m\n\r";
+}
+
+echoRed() {
+	echo -en '\E[31m'"\033[1m`errorMark` $1\033[0m\n\r";
+}
+
+arrowMark() {
+	echo -e "\xe2\x86\x92";
+}
+
+checkMark() {
+	echo -e "\xE2\x9C\x93";
+}
+
+errorMark() {
+	echo -e "\xC7\x83";
+}
+
+mark() {
+	echo -e "\xCB\x83 ";
+}
+
+# probably pointless...
+lintTreeObj() {
+	# lint the code to be commited
+	if git rev-parse --verify HEAD >/dev/null 2>&1
 	then
-		# current head
-		agains=HEAD;
+		against=HEAD;
 	else
-		# initial commit: diff against empty tree object
+		# Initial commit: diff against an empty tree object
 		against=4b825dc642cb6eb9a060e54bf8d69288fbee4904;
 	fi
 
-	# lint javascript files only
-	toBeCommitted=$(git diff --cached --name-only --diff-filter=ACM | grep ".js$");
+	toBeCommited=$(git diff --cached --name-only --diff-filter=ACM | grep ".js$");
 
-	log "" "liniting added files to be committed...";
+	echoBlue "linting added files...";
 
-	# lint the files
-	for file in ${toBeCommitted}; do
-		log "blue" "linting $path$file";
+	# lint JavaScript files only
+	for file in ${toBeCommited}; do	
+		echo "linting $path$file";
 		failed=`$JSHINT "$path$file"`;
 		if [ "$failed" ]; then
-			log "red" "$ERROR $path$file";
-			log "red" "$failed";
+			echoRed "[error] line error(s) in $1";
+			echoRed "$failed";
 			exit 1;
 		else
-			log "green" "$CHECK $path$file";
+			echoGreen "Passed [OK]";
 		fi
 	done
 }
 
-lintDir() {
-	target="$path$1";
-	if [ -d "$target" ] || [ -f "$target" ]; then
-		log "blue" "liniting $target";
-		failed=`$JSHINT "$target"`;
+lint() {
+	# lint the code in the specified directories (this may not include added files to git)
+	targetPath="$path$1";
+
+	if [ -d "$targetPath" ] || [ -f "$targetPath" ]; then
+
+		echo "linting $targetPath";
+
+		failed=`$JSHINT "$targetPath"`;
 		if [ "$failed" ]; then
-			log "red" "$ERROR $path$file";
-			log "red" "$failed";
+			echoRed "[error] lint error(s) in $1";
+			echoRed "$failed";
 			exit 1;
 		else
-			log "green" "$CHECK $path$file";
+			echoGreen "Passed [OK]";
 		fi
 		
 	else
-		log "red" "$ERROR $target";
-		log "red" "no such file or directory ($target)";
-		exit 1;
+		echoRed "[error] $targetPath";
+		echoRed "No such file or directory ($targetPath)";
+		exit 1;		
 	fi
 }
 
+##########################
+# procedural codes
+##########################
 
-#############
-# root path #
-#############
-
-index=`indexOf "$CWD" "$NAME"`;
-if [ "$index" -ne -1 ]; then
-	path=`expr substr $CWD 1 $index`"$NAME/";
-else
-	path="./";
+# test if jshtin command is avialable
+if ! type "$JSHINT" > /dev/null; then
+	echoRed "[error] jshint command is not available";
+	exit 1;
 fi
 
+# find root path
+index=`indexOf "$cwd" "$name"`;
+if [ "$index" -ne -1 ]; then
+	path=`expr substr $cwd 1 $index`"$name/";
+else 
+	path="./";
+fi 
 
-##############
-# operations #
-##############
+echoBlue "Current working directory: $cwd";
 
-log "" "current working directory: $CWD";
-
-log "" "root path: $path";
-
-lintToBeCommitted
+echoBlue "Root path: $path";
 
 # find directories/files to lint
 if [ "$dirList" ]; then
 	list=($dirList);
 else
-	list=($DIRLIST);
+	list=($defaultDirList);
 fi
 
-for item in "${list[@]}"; do
-	log "" "directory/file to lint: ${item}";
-done
+echoYellow "directories/files to lint:";
 
 for item in "${list[@]}"; do
-	lintDir "${item}";
+	echoBlue "${item}";
 done
 
-log "green" "\n\rall done";
+# start linting
+echoYellow "Executing jshint...";
+
+# lint the files in git tree
+#lintTreeObj "";
+
+echoBlue "lint files in specified directories...";
+
+# lint
+for item in "${list[@]}"; do
+	lint "${item}";
+done
+
+echoYellow "Done";
 
 exit 0;
