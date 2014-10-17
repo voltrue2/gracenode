@@ -21,6 +21,8 @@ CWD=`pwd`;
 DIRLIST="index.js core/ modules/";
 CHECK="\xE2\x9C\x93 [OK] ";
 ERROR="\xC7\x83 [ERROR] ";
+//ERROR="\xe2\x9c\x97";
+MARK="\xE2\x96\xBA";
 
 #############
 # variables #
@@ -78,7 +80,11 @@ lintToBeCommitted() {
 	# lint javascript files only
 	toBeCommitted=$(git diff --cached --name-only --diff-filter=ACM | grep ".js$");
 
-	log "" "liniting added files to be committed...";
+	if [ ${#toBeCommitted} -eq 0 ]; then
+		log "yellow" "$MARK no changes to be committed";
+	else
+		log "" "liniting added files to be committed...";
+	fi
 
 	# lint the files
 	for file in ${toBeCommitted}; do
@@ -100,11 +106,11 @@ lintDir() {
 		log "blue" "liniting $target";
 		failed=`$JSHINT "$target"`;
 		if [ "$failed" ]; then
-			log "red" "$ERROR $path$file";
+			log "red" "$ERROR $target";
 			log "red" "$failed";
 			exit 1;
 		else
-			log "green" "$CHECK $path$file";
+			log "green" "$CHECK $target";
 		fi
 		
 	else
@@ -152,13 +158,14 @@ else
 	list=($DIRLIST);
 fi
 
-for item in "${list[@]}"; do
-	log "" "directory/file to lint: ${item}";
-done
+log "yellow" "$MARK lint the given directories/files";
 
 for item in "${list[@]}"; do
+	log "" "directory/file to lint: $path${item}";
 	lintDir "${item}";
 done
+
+log "yellow" "$MARK lint changest to be committed to git";
 
 lintToBeCommitted
 
