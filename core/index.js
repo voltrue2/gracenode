@@ -251,6 +251,7 @@ function findRoots() {
 	// if there is node_modules directory, remove it from the path
 	var index = appRoot.indexOf('node_modules');
 	if (index !== -1) {
+		//appRoot = appRoot.substring(0, index);
 		appRoot = appRoot.replace('node_modules', '');
 	}
 	if (appRoot.substring(appRoot.length - 1) !== '/') {

@@ -9,8 +9,8 @@ module.exports = Log;
 
 function Log(path) {
 	this._path = path;
-	this._stream;
-	this._name;
+	this._stream = null;
+	this._name = null;
 }
 
 Log.prototype.today = function () {

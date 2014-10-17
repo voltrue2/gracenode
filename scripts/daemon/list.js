@@ -1,9 +1,7 @@
-var fs = require('fs');
 var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');
 var lib = require('./utils/lib');
-var logger = gn.log.create('daemon-list');
 
 module.exports = function () {
 	var processList = [];
@@ -89,7 +87,5 @@ module.exports = function () {
 };
 
 function trim(str) {
-	var pid = '';
-	var sep = str.split(' ');
 	return str.substring(str.indexOf(process.execPath));
 }

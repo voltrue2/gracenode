@@ -5,7 +5,7 @@ var lib = require('./utils/lib');
 
 module.exports = function (appPath) {
 	// listener for exceptions
-	gn.on('uncaughtException', function (error) {
+	gn.on('uncaughtException', function () {
 		logger.error(lib.color(appPath, lib.COLORS.RED));
 		gn.exit();
 	});

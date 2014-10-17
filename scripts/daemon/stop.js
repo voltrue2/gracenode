@@ -5,7 +5,7 @@ var talk = require('./utils/talk');
 
 module.exports = function (path) {
 	// listener for exceptions
-	gn.on('uncaughtException', function (error) {
+	gn.on('uncaughtException', function () {
 		logger.error(lib.color(path, lib.COLORS.RED));
 		gn.exit();
 	});

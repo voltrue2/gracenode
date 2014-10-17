@@ -1,6 +1,4 @@
-var run = require('child_process').spawn;
 var gn = require('gracenode');
-var logger = gn.log.create('daemon-start');
 var lib = require('./utils/lib');
 var talk = require('./utils/talk');
 

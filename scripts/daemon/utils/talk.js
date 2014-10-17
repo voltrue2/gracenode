@@ -109,7 +109,7 @@ module.exports.getPids = function (path, processList, cb) {
 				if (processList[i].indexOf(pid) !== -1) {
 					res.push({
 						process: processList[i].substring(processList[i].indexOf(process.execPath)),
-						pid: parseInt(pid)
+						pid: parseInt(pid, 10)
 					});
 				}
 			}
@@ -137,7 +137,6 @@ module.exports.getStatus = function (cb) {
 					p += '(pid: ' + processes[i].pid + ')';
 					var prefix;
 					var isMaster = data.msg.pid === processes[i].pid;
-					var append = '';
 					if (p.indexOf('monitor') === -1) {
 						if (isMaster) {
 							prefix = lib.color(' Daemon application process (master):', lib.COLORS.GRAY);

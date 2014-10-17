@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### lint error in script daemon fixed
+
 #### script preCommit.sh added for internal git pre-commit hook
 
 #### script lint.sh refactored

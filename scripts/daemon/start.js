@@ -8,7 +8,7 @@ module.exports = function (path, logPath) {
 	// listener for exceptions
 	gn.on('uncaughtException', function () {
 		logger.error(lib.color(path, lib.COLORS.RED));
-		gn.exit()
+		gn.exit();
 	});
 	// check if the process is already running
 	talk.setup(path, function (isAppRunning) {
@@ -27,7 +27,8 @@ module.exports = function (path, logPath) {
 			console.log(lib.color('Logging in', lib.COLORS.GRAY), lib.color(logPath, lib.COLORS.BROWN));
 		}
 		// start daemon
-		var child = run(process.execPath, args, { detached: true, stdio: 'ignore' });
+		run(process.execPath, args, { detached: true, stdio: 'ignore' });
+		// now check the process' health
 		talk.isRunning(function (error, running) {
 			if (error) {
 				return gn.exit(error);

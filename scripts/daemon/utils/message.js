@@ -1,4 +1,3 @@
-var gn = require('gracenode');
 var fs = require('fs');
 var prefix = '/tmp/gracenode-message-';
 var options = {
