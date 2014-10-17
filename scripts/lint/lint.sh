@@ -15,7 +15,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
 	echo "";
 	echo "Options:";
 	echo "	-h, --help:	Outputs a help interface.";
-	echo "	-a:	Executes jshint on the given directories and/or files. Example: ./lint -d lib/ modules/";
+	echo "	-a:		Executes jshint on the given directories and/or files. Example: ./lint -d lib/ modules/";
 	echo "";
 	echo "Exit Status:";
 	echo "	0	if OK.";
