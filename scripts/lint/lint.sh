@@ -194,7 +194,7 @@ for item in "${dirList[@]}"; do
 	lintDir "${item}";
 done
 
-log "yellow" "$MARK lint changest to be committed to git";
+log "yellow" "$MARK lint changes to be committed to git";
 
 lintToBeCommitted
 
