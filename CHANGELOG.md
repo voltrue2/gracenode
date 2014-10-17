@@ -10,11 +10,13 @@ None
 
 ## Changed
 
+#### Improved the way gracenode detects the application root path
+
 #### lint error in script daemon fixed
 
-#### script preCommit.sh added for internal git pre-commit hook
+#### Script preCommit.sh added for internal git pre-commit hook
 
-#### script lint.sh refactored
+#### Script lint.sh refactored
 
 ## Deprecated
 
