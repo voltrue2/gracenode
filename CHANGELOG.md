@@ -1,6 +1,6 @@
 # Change Log
 
-This is a list of manually mantained changes nad updates for each version.
+This is a list of manually mantained changes and updates for each version.
 
 ## Version 1.2.2
 
