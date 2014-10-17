@@ -21,7 +21,6 @@ CWD=`pwd`;
 DIRLIST="index.js core/ modules/";
 CHECK="\xE2\x9C\x93 [OK] ";
 ERROR="\xC7\x83 [ERROR] ";
-//ERROR="\xe2\x9c\x97";
 MARK="\xE2\x96\xBA";
 
 #############
