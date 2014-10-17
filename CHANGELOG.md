@@ -12,6 +12,8 @@ None
 
 #### Improved the way gracenode detects the application root path
 
+`.getRootPath()` now returns correct root path of application even if `gracenode` is installed as an indirect dependency (dependency of dependency etc...)
+
 #### lint error in script daemon fixed
 
 #### Script preCommit.sh added for internal git pre-commit hook
