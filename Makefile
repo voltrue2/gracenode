@@ -2,7 +2,7 @@ init:
 	@echo 'install dependencies'
 	npm install
 	@echo 'create git pre-commit hook'
-	ln -s ../../scripts/lint/lint.sh .git/hooks/pre-commit	
+	ln -s ../../scripts/lint/preCommit.sh .git/hooks/pre-commit	
 	@echo 'adjust pre-commit hook file permission'
 	chmod +x .git/hooks/pre-commit
 	@echo 'done'

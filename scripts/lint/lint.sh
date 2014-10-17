@@ -1,5 +1,31 @@
 #!/bin/sh
 
+########
+# help #
+########
+
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+	echo "";
+	echo "gracenode jshint";
+	echo "Description:";
+	echo "Executes jshint on file changes to be commited to git and files in the given directories(optional).";
+	echo "";
+	echo "Usage:";
+	echo "./lint <option>";
+	echo "";
+	echo "Options:";
+	echo "	-h, --help:	Outputs a help interface.";
+	echo "	-a:	Executes jshint on the given directories and/or files. Example: ./lint -d lib/ modules/";
+	echo "";
+	echo "Exit Status:";
+	echo "	0	if OK.";
+	echo "	1	if jshint fails with error(s).";
+	echo "	2	if the script cannot find file(s) to lint.";
+	echo "";
+	exit 0;
+fi
+
+
 ###################
 # jshint location #
 ###################
@@ -18,7 +44,6 @@ fi
 
 NAME="gracenode";
 CWD=`pwd`;
-DIRLIST="index.js core/ modules/";
 CHECK="\xE2\x9C\x93 [OK] ";
 ERROR="\xC7\x83 [ERROR] ";
 MARK="\xE2\x96\xBA";
@@ -26,12 +51,20 @@ MARK="\xE2\x96\xBA";
 #############
 # variables #
 #############
-# optional space separated list of directories/files to lint
+# optional space separated list of directories/files with -d/--dir to lint
 # if this is given, we use this list instead of DIRLIST
-# e.g. ./lint.sh "mydir/ myFile.js"
+# e.g. ./lint.sh -d mydir/ myFile.js
 # the above example will lint all files under mydir/ and lint the file called myFile.js
-dirList=$1;
-
+dirList=();
+i=0;
+if [ "$1" = "-a" ]; then
+	for arg in "$@"; do
+		if [ "$arg" != "-a" ]; then
+	    		dirList[$i]=$arg;
+			i=$(($i + 1));
+		fi
+	done
+fi;
 
 #############
 # functions #
@@ -115,7 +148,7 @@ lintDir() {
 	else
 		log "red" "$ERROR $target";
 		log "red" "no such file or directory ($target)";
-		exit 1;
+		exit 2;
 	fi
 }
 
@@ -150,16 +183,13 @@ log "" "current working directory: $CWD";
 
 log "" "root path: $path";
 
-# find directories/files to lint
-if [ "$dirList" ]; then
-	list=($dirList);
-else
-	list=($DIRLIST);
-fi
-
 log "yellow" "$MARK lint the given directories/files";
 
-for item in "${list[@]}"; do
+if [ ${#dirList} -eq 0 ]; then
+	log "yellow" "$MARK no directories/files to lint";
+fi
+
+for item in "${dirList[@]}"; do
 	log "" "directory/file to lint: $path${item}";
 	lintDir "${item}";
 done
