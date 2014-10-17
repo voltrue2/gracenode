@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### script preCommit.sh added for internal git pre-commit hook
+
 #### script lint.sh refactored
 
 ## Deprecated
