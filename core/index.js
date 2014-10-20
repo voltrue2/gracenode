@@ -77,11 +77,15 @@ Gracenode.prototype.getProcessType = function () {
 	return ret;
 };
 
-Gracenode.prototype.setConfigPath = function (configPath) {
+Gracenode.prototype.setConfigPath = function (configPath, useFullPath) {
 	if (this._configPath) {
 		throw new Error('cannot call .setConfigPath() more than once');
 	}
-	this._configPath = this._appRoot + configPath;
+	if (useFullPath) {
+		this._configPath = configPath;
+	} else {
+		this._configPath = this._appRoot + configPath;
+	}
 	log.verbose('configuration path:', this._configPath);
 };
 

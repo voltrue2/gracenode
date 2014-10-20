@@ -290,7 +290,7 @@ Options need to be defined by calling `gracenode.defineOption()` for this functi
 
 gracenode has --help option and displays defined command options set by `.defineOption()`.
 
-###.setConfigPath(configDirectoryPath [string])
+###.setConfigPath(configDirectoryPath [string], useFullPath [*boolean])
 Tells gracenode where to find the configuraitons files.
 ```
 gracenode.setConfigPath('configs/');

@@ -2,6 +2,35 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.2.3
+
+## Added
+
+None
+
+## Changed
+
+#### .setConfigPath() now supports full path as an option
+
+`.setConfigPath()` uses the given path string as a full path if the second argument is set `true`.
+
+Example:
+
+```
+var grancenode = require('gracenode');
+gracenode.setConfigPath('/full/path/to/my/config/directory/', true);
+```
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.2.2
 
 ## Added
