@@ -3,7 +3,7 @@
 var fs = require('fs');
 var gn = require('gracenode');
 var logPath;
-gn.setConfigPath('node_modules/gracenode/scripts/configs/');
+gn.setConfigPath(gn._root + 'scripts/configs/', true);
 gn.setConfigFiles(['daemon.json']);
 
 gn.exitOnBadOption();
