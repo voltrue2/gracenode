@@ -29,7 +29,7 @@ gn.registerShutdownTask('exit', function (done) {
 	done();
 });
 
-gn.setConfigPath('node_modules/gracenode/scripts/configs/');
+gn.setConfigPath(gn._root + 'scripts/configs/', true);
 gn.setConfigFiles(['gracenode.json']);
 
 gn.defineOption('start', 'Starts a monitor process to spawn and monitor application process(s).', function (pathIn) {
