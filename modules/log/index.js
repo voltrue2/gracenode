@@ -4,7 +4,7 @@ var glog = require('gracelog');
 var create = glog.create;
 
 glog.create = function (name) {
-	if (!name) {
+	if (!name && module.exports.gracenode) {
 		var stack = new Error('').stack.split('\n');
 		// index 0 is always "Error"
 		for (var i = 1, len = stack.length; i < len; i++) {
