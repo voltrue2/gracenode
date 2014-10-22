@@ -256,7 +256,6 @@ function findRoots() {
 	var index = appRoot.indexOf('node_modules');
 	if (index !== -1) {
 		appRoot = appRoot.substring(0, index);
-		//appRoot = appRoot.replace('node_modules', '');
 	}
 	if (appRoot.substring(appRoot.length - 1) !== '/') {
 		appRoot += '/';
