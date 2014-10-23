@@ -69,6 +69,9 @@ function handleCommunication(msg) {
 			app.restart = true;
 			stopApp();
 			break;
+		case 'reload':
+			reloadApp();
+			break;
 		default:
 			var parsed = parseCommand(command);
 			if (parsed) {
@@ -85,6 +88,8 @@ function startApp() {
 	app = spawn(process.execPath, [path], { detached: true, stdio: 'ignore' });
 	app.path = path;
 	app.started = Date.now();
+	app.reloaded = app.started;
+	app.reloadedCount = 0;
 	logger.info('started daemon process of ' + path);
 	// if appllication dies unexpectedly, respawn it
 	app.once('exit', function (code, signal) {
@@ -141,6 +146,26 @@ function stopApp(cb) {
 	}
 }
 
+function reloadApp(cb) {
+	if (app) {
+		// restart logger to make sure log file is rotated
+		logger.restart(function () {
+			// stop application
+			app.reloaded = Date.now();
+			app.reloadedCount += 1;
+			app.kill('SIGHUP');
+			logger.info('reloading daemon process of ' + app.path);
+			if (cb) {
+				cb();
+			}
+		});
+		return;
+	}
+	if (cb) {
+		cb();
+	}
+}
+
 function parseCommand(cmd) {
 	var sep = cmd.split('\t');
 	if (sep[0] === 'message' && sep[1] && sep[2]) {
@@ -157,7 +182,9 @@ function handleMessage(parsed) {
 			message.send({
 				pid: app.pid,
 				started: app.started,
-				numOfRestarted: deathCount
+				reloaded: app.reloaded,
+				numOfRestarted: deathCount,
+				reloadedCount: app.reloadedCount
 			});
 			break;
 		default:

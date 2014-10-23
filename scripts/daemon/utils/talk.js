@@ -150,8 +150,10 @@ module.exports.getStatus = function (cb) {
 					var app = lib.color(p.substring(p.indexOf(process.execPath)), color);
 					console.log(prefix, app);
 				}
-				console.log(lib.color(' Application started:       ', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
-				console.log(lib.color(' Application restarted:     ', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
+				console.log(lib.color(' Application started at		:', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
+				console.log(lib.color(' Application reloaded at	:', lib.COLORS.GRAY), lib.color(new Date(data.msg.reloaded), lib.COLORS.BROWN));
+				console.log(lib.color(' Application restarted		:', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
+				console.log(lib.color(' Application reloaded		:', lib.COLORS.GRAY), lib.color(data.msg.reloadedCount + ' times', lib.COLORS.GRAY));
 				console.log('\n');
 				cb(data);
 			});
@@ -237,6 +239,46 @@ module.exports.restartApp = function () {
 			console.error(lib.color(error.message, lib.COLORS.RED));
 		}
 		console.log(lib.color('Restarted application as a daemon ' + appPath, lib.COLORS.LIGHT_BLUE));
+		gn.exit();
+	});
+};
+
+module.exports.reloadApp = function () {
+	var sock;
+	var connect = function (done) {
+		sock = new net.Socket();
+		sock.connect(sockFile, done);
+	};
+	var getCurrentStatus = function (done) {
+		console.log(lib.color('Currently running daemon status', lib.COLORS.GRAY));
+		module.exports.getStatus(function () {
+			done();
+		});	
+	};
+	var reload = function (done) {
+		sock.write('reload');
+		console.log(lib.color('Reloading daemon ' + appPath, lib.COLORS.GRAY));
+		done();
+	};
+	var getNewStatus = function (done) {
+		console.log(lib.color('Reloading daemon status', lib.COLORS.GRAY));
+		setTimeout(function () {
+			module.exports.getStatus(function () {
+				done();
+			});
+		}, 300);
+	};
+	async.series([
+		connect,
+		getCurrentStatus,
+		reload,
+		getNewStatus
+	],
+	function (error) {
+		if (error) {
+			console.error(lib.color(error, lib.COLORS.RED));
+		}
+		console.log(lib.color('Reloaded application as a daemon ' + appPath, lib.COLORS.LIGHT_BLUE));
 		gn.exit();
 	});
 };

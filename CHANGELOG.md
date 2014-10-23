@@ -6,6 +6,14 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### daemon tool added reload
+
+Reload option allows daemon tool to reload the daemonized application process with out stopping.
+
+It is only available with applications that are build with `gracenode` framework or applications.
+
+**NOTE:** The master process of the application will NOT be reloaded.
+
 #### gracenode now listens to SIGHUP/kill -1 to reload wroker processes in cluster mode
 
 ## Changed

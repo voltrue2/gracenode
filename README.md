@@ -136,6 +136,16 @@ node daemon stop
 node daemon restart
 ```
 
+####TO reload our daemon application without stopping:
+
+```
+node daemon reload
+```
+
+**NOTE:** This option is only available with applications that are built with
+
+`gracenode` framework.
+
 ####To list the currently running daemon processes:
 
 ```
