@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.0
+
+## Added
+
+#### gracenode now listens to SIGHUP/kill -1 to reload wroker processes in cluster mode
+
+## Changed
+
+#### Bug in process message from master to workers
+
+The sent message should have been a JSON.parsed object instead of a string.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.2.4
 
 ## Added

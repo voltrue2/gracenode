@@ -13,8 +13,12 @@ function Process(gracenode) {
 	if (!this.config) {
 		// no configurations for cluster mode provided
 		this.config = {};
-	}	
-	
+	}
+	// master only: manage reloading operation and progress	
+	this.isReloading = {
+		running: false,
+		reloadedWorkers: 0
+	};
 	this.isShutdown = false; // master only	
 	this.inClusterMode = this.config.enable || false;
 	var CPUNum = require('os').cpus().length;
@@ -128,6 +132,18 @@ Process.prototype.setupMaster = function () {
 
 	// set up termination listener on workers
 	cluster.on('exit', function (worker, code, signal) {
+		if (that.isReloading.running) {
+			var reloadedWorker = that.createWorker();
+			that.log.info('reloading: worker (pid:' + worker.process.pid + ') terminated');
+			that.log.info('reloading: worker (pid:' + reloadedWorker.process.pid + ') created');
+			that.isReloading.reloadedWorkers += 1;
+			if (that.isReloading.reloadedWorkers === that.clusterNum) {
+				that.isReloading.running = false;
+				that.isReloading.reloadedWorkers = 0;
+				that.log.info('all workers have been reloaded [completed]');
+			}
+			return;
+		}
 		if (!worker.suicide && signal && that.config.autoSpawn) {
 			// the worker died from an error, spawn it if allowed by configuration
 			var newWorker = that.createWorker();
@@ -167,10 +183,17 @@ Process.prototype.setupWorker = function () {
 	// set up message lisetner
 	process.on('message', function (data) {
 		try {
-			data = JSON.prase(data);
+			data = JSON.parse(data);
 		} catch (e) {
 		
 		}
+		// reload handler
+		if (data.command === 'reload') {
+			that.log.info('reloading worker process (pid:' + process.pid + ')');
+			that.emit('shutdown');
+			that.gracenode.exit();
+		}
+		// emit event
 		that.gracenode.emit('master.message', data);
 	});
 };
@@ -199,9 +222,31 @@ Process.prototype.exit = function (sig) {
 };
 
 // private
+Process.prototype.reload = function (sig) {
+	// cluster mode
+	if (this.inClusterMode && cluster.isMaster) {
+		this.isReloading.running = true;
+		this.isReloading.reloadedWorkers = 0;
+		this.log.info(sig, 'caught: reloading worker processes');
+		// send reload command to all workers
+		this.send({ command: 'reload' });
+	}
+	// none-cluster mode
+	if (!this.inClusterMode) {
+		this.log.info(sig, 'caught: exiting the application process gracefully');
+		this.emit('shutdown');
+		this.gracenode.exit();
+	}
+};
+
+// private
 Process.prototype.listeners = function () {
 
 	var that = this;
+
+	process.on('SIGHUP', function () {
+		that.reload('SIGHUP');
+	});
 	
 	process.on('SIGINT', function () {
 		that.exit('SIGINT');
