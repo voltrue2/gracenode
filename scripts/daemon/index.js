@@ -32,7 +32,7 @@ gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
 	require('./restart.js')(getPath(path));
 });
 
-gn.defineOption('reload', 'Reloads daemonized application without downtime. (This option requires the application is built with gracenode)', function (path) {
+gn.defineOption('reload', 'Reloads daemonized application without downtime. (This option requires the application to be built with gracenode)', function (path) {
 	require('./reload.js')(getPath(path));
 });
 
