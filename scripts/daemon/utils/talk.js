@@ -122,6 +122,10 @@ module.exports.getStatus = function (cb) {
 	// set up messagte system
 	var message = new Message(appPath);
 	var onData = function (data) {
+		if (!data) {
+			// no data...
+			return cb();
+		}
 		message.stop();
 		findProcesses(appPath, function (error, list) {
 			if (error) {
