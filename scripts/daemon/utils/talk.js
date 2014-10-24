@@ -154,6 +154,7 @@ module.exports.getStatus = function (cb) {
 					var app = lib.color(p.substring(p.indexOf(process.execPath)), color);
 					console.log(prefix, app);
 				}
+				console.log(lib.color(' Monitor gracenode version:	:', lib.COLORS.GRAY), lib.color(data.msg.monitorVersion, lib.COLORS.PURPLE));
 				console.log(lib.color(' Application started at		:', lib.COLORS.GRAY), lib.color(new Date(data.msg.started), lib.COLORS.BROWN));
 				console.log(lib.color(' Application reloaded at	:', lib.COLORS.GRAY), lib.color(new Date(data.msg.reloaded), lib.COLORS.BROWN));
 				console.log(lib.color(' Application restarted		:', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));

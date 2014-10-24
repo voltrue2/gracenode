@@ -11,6 +11,7 @@ var maxNumOfDeath = 10;
 var deathInterval = 10000;
 var timeOfDeath = 0;
 var deathCount = 0;
+var package = require(gn._root + 'package.json');
 var Log = require('./utils/log'); 
 var logger = new Log(gn.argv('--log'));
 // message
@@ -153,6 +154,9 @@ function reloadApp(cb) {
 			// stop application
 			app.reloaded = Date.now();
 			app.reloadedCount += 1;
+			// try to get gracenode version of the application if present
+			var pkg = require(path.replace('index.js', '') + 'package.json');
+			app.version = pkg && pkg.version ? pkg.version : 'Unknown';
 			app.kill('SIGHUP');
 			logger.info('reloading daemon process of ' + app.path);
 			if (cb) {
@@ -180,6 +184,7 @@ function handleMessage(parsed) {
 			var message = new Message(parsed.value);
 			message.startSend();
 			message.send({
+				monitorVersion: package.version,
 				pid: app.pid,
 				started: app.started,
 				reloaded: app.reloaded,

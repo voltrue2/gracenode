@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.1
+
+## Added
+
+None
+
+## Changed
+
+#### daemon status added monitor version
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.0
 
 ## Added
