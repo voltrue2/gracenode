@@ -136,7 +136,7 @@ node daemon stop
 node daemon restart
 ```
 
-####TO reload our daemon application without stopping:
+####TO reload our daemon application worker processes without stopping:
 
 ```
 node daemon reload
@@ -145,6 +145,8 @@ node daemon reload
 **NOTE:** This option is only available with applications that are built with
 
 `gracenode` framework.
+
+In order to make use of this option, your application must be running in `cluster-mode`.
 
 ####To list the currently running daemon processes:
 
