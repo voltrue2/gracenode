@@ -124,11 +124,15 @@ The example below shows `node daemon ....` style of execution.
 node daemon start
 ```
 
+***
+
 ####To stop your daemon application:
 
 ```
 node daemon stop
 ```
+
+***
 
 ####To restart your daemon application:
 
@@ -136,7 +140,9 @@ node daemon stop
 node daemon restart
 ```
 
-####TO reload our daemon application worker processes without stopping:
+***
+
+####To reload our daemon application worker processes without stopping:
 
 ```
 node daemon reload
@@ -148,17 +154,23 @@ node daemon reload
 
 In order to make use of this option, your application must be running in `cluster-mode`.
 
+***
+
 ####To list the currently running daemon processes:
 
 ```
 node daemon list
 ```
 
+***
+
 ####To display basic status of a daemon process:
 
 ```
 node daemon status
 ```
+
+***
 
 ###You can optionally give a path to the application you want to target.
 
@@ -172,6 +184,10 @@ node daemon stop /path/to/your/app/
 
 ```
 node daemon restart /path/to/your/app/
+```
+
+```
+node daemon reload /path/to/your/app/
 ```
 
 ```
