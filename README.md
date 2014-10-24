@@ -154,6 +154,13 @@ node daemon reload
 
 In order to make use of this option, your application must be running in `cluster-mode`.
 
+**What does reload do exactly?**
+
+- `reload` option of daemon instructs the application master process to swap the `worker` processes with new proccesses one after another.
+- It ensures that there is always at least one `worker` process avaialable, so that your application never experiences down time.
+- It uses `SIGHUP` signal as the command to `reload` application `worker` processes.
+- `master` process of the application does **NOT** `reload`.
+
 ***
 
 ####To list the currently running daemon processes:
