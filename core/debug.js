@@ -46,11 +46,20 @@ module.exports.exec = function (cb) {
 				}
 				if (!jshint(data)) {
 					var errors = jshint.data().errors;
-					logger.error('lint error detected in:', file);
+					var hasError = false;
 					for (var i = 0, len = errors.length; i < len; i++) {
-						logger.error('lint error: Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
+						var err = errors[i];
+						var isWarning = err.code.subString(0, 1) === 'W' ? true : false;
+						if (isWarning) {
+							logger.warn('lint warning: Line', err.line, 'Character', err.character, err.reason);
+						} else {
+							hasError = true;
+							logger.error('lint error: Line', err.line, 'Character', err.character, err.reason);
+						}
 					}
-					return done(new Error('lintError'));
+					if (hasError) {
+						return done(new Error('lintError'));
+					}
 				}
 				// no lint error
 				done();
