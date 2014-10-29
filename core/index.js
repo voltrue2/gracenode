@@ -10,6 +10,8 @@ var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
 
+var debugMode = require('./debug');
+
 // overwridden by calling _setLogCleaner from log module
 // shutdown task for log module. this will be executed at the very end
 var logCleaners = [];
@@ -42,6 +44,8 @@ function Gracenode() {
 	this._argv = new Argv(this);
 	// parse argv arguments
 	this._argv.parse();
+	// set up debug mode
+	debugMode.setup(this);
 }
 
 util.inherits(Gracenode, EventEmitter);
@@ -162,17 +166,29 @@ Gracenode.prototype.setup = function (cb) {
 		cb();
 
 		that._profiler.stop();
+	
 	};
 	// start gracenode
 	var starter = function (callback) {
 		log.verbose('gracenode is starting...');
 		callback(null, that, done);
 	};
+	// executes only --debug is given
+	var debugRun = function (that, callback) {
+		debugMode.exec(function (error) {
+			if (error) {
+				log.fatal('gracenode debug mode detected error(s)');
+				return that.exit(error);
+			}
+			callback(null, that);
+		});
+	};
 	var setupList = [
 		starter, 
 		setupLog, 
 		setupProfiler,
-		setupProcess, 
+		setupProcess,
+		debugRun,
 		setupModules
 	];
 	async.waterfall(setupList, done);

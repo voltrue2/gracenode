@@ -882,6 +882,33 @@ For more detailed information on request hooks, please read server module's READ
 
 ***
 
+## Debug Mode
+
+`gracenode` can optionally run your application in `debug-mode`.
+
+In order to enable `debug-mode` in `gracenode`, you must provide the following configurations in your configuration file:
+
+```
+"debugMode": {
+	"directories": [
+		"directory/path/to/lint/"
+		[...]
+	]
+}
+```
+
+#### What Does Debug Mode Do?
+
+When you run your application in debug mode, gracenode will lint all of your jacascript files indecated in the configuration under `directories` before starting your application.
+
+If `gracenode` detects lint error(s), the application will be forced to stop.
+
+#### Logging Level in Debug Mode
+
+In `debug-mode`, the application will automatically use the most verbose logging level.
+
+***
+
 # Unit Test
 
 Gracenode offers unit tests for its built-in modules.

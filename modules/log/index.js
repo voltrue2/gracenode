@@ -24,6 +24,17 @@ module.exports = glog;
 module.exports.gracenode = null;
 
 module.exports.readConfig = function (configData) {
+	var debugConf = module.exports.gracenode.config.getOne('debugMode');
+	if (debugConf && debugConf.directories && debugConf.directories.length) {
+		// we are in debug mode and forcing verbose
+		if (!configData) {
+			configData.console = true;
+			configData.color = true;
+		}
+		configData.showHidden = true;
+		configData.depth = 20;
+		configData.level = '>= verbose';
+	}
 	glog.config(configData);
 };
 

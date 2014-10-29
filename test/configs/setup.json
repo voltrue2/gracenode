@@ -7,6 +7,9 @@
 		],
 		"bool": false
 	},
+	"debugMode": {
+		"directories": [ "node_modules/gracenode/test/" ]
+	},
 	"modules": {
 		"log": {
 			"bufferSize": 0,
