@@ -53,6 +53,7 @@ module.exports.exec = function (cb) {
 				}
 			}
 		};
+		logger.debug('start linting...');
 		jshintcli.run(options);
 		next(hasError ? new Error('lintError') : null);
 	};
