@@ -895,10 +895,29 @@ In order to enable `debug-mode` in `gracenode`, you must provide the following c
 		[...]
 	],
 	"lintOptions": {
-		/* jshint options */
+		"bitwise": false,
+		"eqeqeq":  true,
+		"latedef": true,
+		"noempty": true,
+		"undef":   true,
+		"node":     true,
+		"unused":   true,
+		"trailing": true,
+		"white":    true,
+		"globals"   : {
+			"mocha"      : false,
+			"describe"   : false,
+			"it"         : false,
+			"before"     : false,
+			"beforeEach" : false,
+			"after"      : false,
+			"afterEach"  : false
+		}
 	}
 }
 ```
+
+The above `lintOptions` is just an example.
 
 For jshint options, please read <a href="http://www.jshint.com/docs/options/" target="_blank">here</a>.
 
