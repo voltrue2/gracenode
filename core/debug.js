@@ -49,7 +49,7 @@ module.exports.exec = function (cb) {
 					var hasError = false;
 					for (var i = 0, len = errors.length; i < len; i++) {
 						var err = errors[i];
-						var isWarning = err.code.subString(0, 1) === 'W' ? true : false;
+						var isWarning = err.code.substring(0, 1) === 'W' ? true : false;
 						if (isWarning) {
 							logger.warn('lint warning: Line', err.line, 'Character', err.character, err.reason);
 						} else {
