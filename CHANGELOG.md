@@ -10,7 +10,7 @@ This is a list of manually mantained changes and updates for each version.
 
 `gracenode` can optionally run your application in debug mode.
 
-For more details please read <a href="https://https://github.com/voltrue2/gracenode#debug-mode">here</a>.
+For more details please read <a href="https://github.com/voltrue2/gracenode#debug-mode">here</a>.
 
 ## Changed
 
