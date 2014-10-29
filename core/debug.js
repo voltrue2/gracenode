@@ -49,7 +49,7 @@ module.exports.exec = function (cb) {
 				if (res.error) {
 					hasError = true;	
 					logger.error('lint error found in:', res.file);
-					logger.error('	lint error: Line', res.error.line, 'Character', res.error.character, res.error.reason);
+					logger.error('	Line', res.error.line, 'Character', res.error.character, res.error.reason);
 				}
 			}
 		};

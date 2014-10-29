@@ -891,7 +891,7 @@ In order to enable `debug-mode` in `gracenode`, you must provide the following c
 ```
 "debugMode": {
 	"directories": [
-		"directory/path/to/lint/"
+		"directory/or/file/path/to/lint/"
 		[...]
 	],
 	"lintOptions": {
