@@ -1,7 +1,5 @@
 var gn = require('gracenode');
 var prefix = require('./prefix');
-var assert = require('assert');
-var logger;
 
 gn.setConfigPath(prefix + 'gracenode/test/configs/');
 gn.setConfigFiles(['setup.json']);

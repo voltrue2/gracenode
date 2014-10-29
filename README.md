@@ -893,9 +893,14 @@ In order to enable `debug-mode` in `gracenode`, you must provide the following c
 	"directories": [
 		"directory/path/to/lint/"
 		[...]
-	]
+	],
+	"lintOptions": {
+		/* jshint options */
+	}
 }
 ```
+
+For jshint options, please read <a href="http://www.jshint.com/docs/options/" target="_blank">here</a>.
 
 #### What Does Debug Mode Do?
 

@@ -1,8 +1,8 @@
 var async = require('async');
-var fs = require('fs');
-var jshint = require('jshint').JSHINT;
+var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
 var gn;
+var lintOptions = null;
 
 module.exports.setup = function (gracenode) {
 	gn = gracenode;
@@ -13,6 +13,10 @@ module.exports.exec = function (cb) {
 	if (!config || !config.directories || !config.directories.length) {
 		// not in debug mode
 		return cb();
+	}
+	// apply jshint options if given
+	if (config.lintOptions) {
+		lintOptions = config.lintOptions;
 	}
 	var logger = gn.log.create('debug-mode');
 	var list = [];
@@ -31,40 +35,26 @@ module.exports.exec = function (cb) {
 		}, next);
 	};
 	var lint = function (next) {
-		logger.debug('start linting the application files...');
-		async.eachSeries(list, function (item, done) {
-			var file = item.file;
-			// exclude everything except for javascript files
-			if (file.substring(file.lastIndexOf('.') + 1) !== 'js') {
-				return done();
+		var options = {};
+		var hasError = false;
+		if (lintOptions) {
+			options.config = lintOptions;
+		}
+		options.args = list.map(function (item) {
+			return item.file;
+		});
+		options.reporter = function (results) {
+			for (var i = 0, len = results.length; i < len; i++) {
+				var res = results[i];
+				if (res.error) {
+					hasError = true;	
+					logger.error('lint error found in:', res.file);
+					logger.error('	lint error: Line', res.error.line, 'Character', res.error.character, res.error.reason);
+				}
 			}
-			// lint
-			logger.debug('liniting:', file);
-			fs.readFile(file, 'utf8', function (error, data) {
-				if (error) {
-					return done(error);
-				}
-				if (!jshint(data)) {
-					var errors = jshint.data().errors;
-					var hasError = false;
-					for (var i = 0, len = errors.length; i < len; i++) {
-						var err = errors[i];
-						var isWarning = err.code.substring(0, 1) === 'W' ? true : false;
-						if (isWarning) {
-							logger.warn('lint warning: Line', err.line, 'Character', err.character, err.reason);
-						} else {
-							hasError = true;
-							logger.error('lint error: Line', err.line, 'Character', err.character, err.reason);
-						}
-					}
-					if (hasError) {
-						return done(new Error('lintError'));
-					}
-				}
-				// no lint error
-				done();
-			});
-		}, next);
+		};
+		jshintcli.run(options);
+		next(hasError ? new Error('lintError') : null);
 	};
 	async.series([
 		getAllFiles,
