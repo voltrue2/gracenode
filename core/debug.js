@@ -29,7 +29,15 @@ module.exports.exec = function (cb) {
 				if (error) {
 					return done(error);
 				}
-				list = list.concat(files);
+				// exclude non-javascript files
+				var filesToLint = [];
+				for (var i = 0, len = files.length; i < len; i++) {
+					var file = files[i].file;
+					if (file.substring(file.lastIndexOf('.') + 1) === 'js') {
+						filesToLint.push(file);
+					}
+				}
+				list = list.concat(filesToLint);
 				done();
 			});
 		}, next);
@@ -40,9 +48,7 @@ module.exports.exec = function (cb) {
 		if (lintOptions) {
 			options.config = lintOptions;
 		}
-		options.args = list.map(function (item) {
-			return item.file;
-		});
+		options.args = list;
 		options.reporter = function (results) {
 			for (var i = 0, len = results.length; i < len; i++) {
 				var res = results[i];
