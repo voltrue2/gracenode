@@ -14,57 +14,70 @@ module.exports.exec = function (cb) {
 		// not in debug mode
 		return cb();
 	}
+	
+	var logger = gn.log.create('debug-mode');
+
+	logger.debug('running the application in DEBUG MODE');
+	
+	//var list = [];
+	var options = {};
+	var errors = [];
+
 	// apply jshint options if given
 	if (config.lintOptions) {
-		lintOptions = config.lintOptions;
+		options.config = config.lintOptions;
 	}
-	var logger = gn.log.create('debug-mode');
-	var list = [];
-	var getAllFiles = function (next) {
-		logger.debug('running the application in debug mode...');
-		async.eachSeries(config.directories, function (item, done) {
-			var path = gn.getRootPath() + item;
-			logger.debug('extract files to be linted:', path);
-			lib.walkDir(path, function (error, files) {
-				if (error) {
-					return done(error);
-				}
-				// exclude non-javascript files
-				var filesToLint = [];
-				for (var i = 0, len = files.length; i < len; i++) {
-					var file = files[i].file;
-					if (file.substring(file.lastIndexOf('.') + 1) === 'js') {
-						filesToLint.push(file);
-					}
-				}
-				list = list.concat(filesToLint);
-				done();
-			});
-		}, next);
-	};
-	var lint = function (next) {
-		var options = {};
-		var hasError = false;
-		if (lintOptions) {
-			options.config = lintOptions;
-		}
-		options.args = list;
-		options.reporter = function (results) {
-			for (var i = 0, len = results.length; i < len; i++) {
-				var res = results[i];
-				if (res.error) {
-					hasError = true;	
-					logger.error('lint error found in:', res.file);
-					logger.error('	Line', res.error.line, 'Character', res.error.character, res.error.reason);
-				}
+
+	// set up a lint result reporter function
+	options.reporter = function (results) {
+		for (var i = 0, len = results.length; i < len; i++) {
+			var res = results[i];
+			if (res.error) {
+				errors.push(res);
 			}
-		};
-		logger.debug('start linting...');
-		jshintcli.run(options);
-		next(hasError ? new Error('lintError') : null);
+		}
+	};	
+
+	// done function to be called at the end of all linting
+	var done = function (error) {
+		if (error) {
+			return cb(error);
+		}
+		if (errors.length) {
+			for (var i = 0, len = errors.length; i < len; i++) {
+				var msg = 'lint error in [' + errors[i].file + ']';
+				msg += ' Line ' + errors[i].error.line;
+				msg += ' Character ' + errors[i].error.character;
+				msg += ' ' + errors[i].error.reason;
+				logger.error(msg);
+			}
+			return cb(new Error('lintError'));
+		}
+		// we are lint error free
+		cb();
 	};
-	async.series([
-		getAllFiles,
-		lint
-	], cb);
+
+	// walk all given directories to lint
+	async.eachSeries(config.directories, function (item, next) {
+		var path = gn.getRootPath() + item;
+		lib.walkDir(path, function (error, files) {
+			if (error) {
+				return next(error);
+			}
+			// find javascript files only to lint
+			var list = [];
+			for (var i = 0, len = files.length; i < len; i++) {
+				var file = files[i].file;
+				if (file.substring(file.lastIndexOf('.') + 1) !== 'js') {
+					// not a javascript file
+					continue;
+				}
+				list.push(file);
+				logger.debug('lint:', file);
+			}
+			options.args = list;
+			jshintcli.run(options);
+			next();
+		});
+	}, done);
 };
