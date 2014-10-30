@@ -2,7 +2,6 @@ var async = require('async');
 var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
 var gn;
-var lintOptions = null;
 
 module.exports.setup = function (gracenode) {
 	gn = gracenode;
