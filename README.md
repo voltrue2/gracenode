@@ -923,9 +923,9 @@ For jshint options, please read <a href="http://www.jshint.com/docs/options/" ta
 
 #### What Does Debug Mode Do?
 
-When you run your application in debug mode, gracenode will lint all of your jacascript files indecated in the configuration under `directories` before starting your application.
+* When you run your application in debug mode, gracenode will lint all of your jacascript files indecated in the configuration under `directories` before starting your application. If `gracenode` detects lint error(s), the application will be forced to stop.
 
-If `gracenode` detects lint error(s), the application will be forced to stop.
+* Starts memory usage monitoring and outputs memory uagage logs.
 
 #### Logging Level in Debug Mode
 

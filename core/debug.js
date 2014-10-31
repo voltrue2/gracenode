@@ -2,6 +2,12 @@ var async = require('async');
 var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
 var gn;
+var memHistory = [];
+
+// keeps memory usage record for up to 1 hour
+var MEMHISTORY_LEN = 360;
+// checks memory usage every 10 seconds
+var MEMWATCH_INTERVAL = 10000;
 
 module.exports.setup = function (gracenode) {
 	gn = gracenode;
@@ -17,6 +23,10 @@ module.exports.exec = function (cb) {
 	var logger = gn.log.create('debug-mode');
 
 	logger.debug('running the application in DEBUG MODE');
+
+	logger.debug('memory monitoring started');
+
+	startMemWatch(config, logger);
 	
 	//var list = [];
 	var options = {};
@@ -81,3 +91,54 @@ module.exports.exec = function (cb) {
 		});
 	}, done);
 };
+
+function startMemWatch(config, logger) {
+	setTimeout(function () {
+		var usage = process.memoryUsage();
+		if (memHistory.length === MEMHISTORY_LEN) {
+			// discard the oldest memory record
+			memHistory.shift();
+		}
+		memHistory.push(usage);
+		var avgUsed = 0;
+		for (var i = 0, len = memHistory.length; i < len; i++) {
+			avgUsed += memHistory[i].heapUsed;
+		}
+		var avg = avgUsed / memHistory.length;
+		var usedPercentage = ((usage.heapUsed / usage.heapTotal) * 100).toFixed(2);
+		var diffPercentage = ((((usage.heapUsed / avg) * 100) - 100).toFixed(2));
+		// output the analysis
+		logger.debug('memory rss(resident set size):', bytesToSize(usage.rss));
+		logger.debug('memory heap used:', bytesToSize(usage.heapUsed),  usedPercentage + '%');
+		logger.debug('memory heap used average:', bytesToSize(avg), '(used difference:', diffPercentage + '%)');
+		logger.debug('memory heap total:', bytesToSize(usage.heapTotal));
+		if (usedPercentage >= 80) {
+			logger.warn('memory heap usage is too close to heap total');
+		}
+		if (diffPercentage >= 50) {
+			logger.warn('sudden jump in memory heap used detected');
+		}
+		// run this in MEMWATCH_INTERVAL seconds again
+		startMemWatch(config, logger);
+	}, MEMWATCH_INTERVAL);
+}
+
+function bytesToSize(bytes) {
+	if (bytes === 0) {
+		return '0 Byte';
+	}
+	var k = 1000;
+	var sizes = [
+		'Bytes',
+		'KB',
+		'MB',
+		'GB',
+		'TB',
+		'PB',
+		'EB',
+		'ZB',
+		'YB'
+	];
+	var size = Math.floor(Math.log(bytes) / Math.log(k));
+	return (bytes / Math.pow(k, size)).toPrecision(3) + ' ' + sizes[size];
+}

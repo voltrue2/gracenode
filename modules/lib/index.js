@@ -1,8 +1,8 @@
 var fs = require('fs');
 var validationPatterns = {
 	numeric: /^\d+$/,
-    alphaNumeric: /^[a-z0-9]+$/i,
-    password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
+	alphaNumeric: /^[a-z0-9]+$/i,
+	password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
 
 module.exports.typeCast = function (data) {

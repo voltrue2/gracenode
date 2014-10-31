@@ -14,6 +14,8 @@ None
 
 The log message when there is no lint error has been changed from `error` to `debug`.
 
+#### Debug mode added memory usage monitoring
+
 ## Deprecated
 
 None
