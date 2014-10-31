@@ -15,7 +15,7 @@ module.exports.setup = function (gracenode) {
 
 module.exports.exec = function (cb) {
 	var config = gn.config.getOne('debugMode');
-	if (!config || !config.directories || !config.directories.length) {
+	if (!config) {
 		// not in debug mode
 		return cb();
 	}
@@ -27,8 +27,11 @@ module.exports.exec = function (cb) {
 	logger.debug('memory monitoring started');
 
 	startMemWatch(config, logger);
+
+	if (!config.directories) {
+		config.directories = [];
+	}
 	
-	//var list = [];
 	var options = {};
 	var errors = [];
 
