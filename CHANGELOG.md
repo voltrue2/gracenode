@@ -10,11 +10,11 @@ None
 
 ## Changed
 
+#### .registerShutdownTask() of gracenode now throws an exception for passing a 2nd argument other than a function
+
 #### Logging level of debug mode changed
 
 The log message when there is no lint error has been changed from `error` to `debug`.
-
-#### Debug mode added memory usage monitoring
 
 ## Deprecated
 

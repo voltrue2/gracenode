@@ -52,7 +52,7 @@ util.inherits(Gracenode, EventEmitter);
 
 Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
-		return log.error('argument 2 must be a function');
+		throw new Error('argument 2 must be a function');
 	}
 	log.verbose('graceful shutdown task for ' + name + ' has been registered');
 	gracefulWaitList.push({ name: name, task: taskFunc });
