@@ -108,7 +108,7 @@ function startMemWatch(config, logger) {
 		var usedPercentage = ((usage.heapUsed / usage.heapTotal) * 100).toFixed(2);
 		var diffPercentage = ((((usage.heapUsed / avg) * 100) - 100).toFixed(2));
 		// output the analysis
-		logger.debug('memory rss(resident set size):', bytesToSize(usage.rss));
+		logger.debug('memory RSS(resident set size):', bytesToSize(usage.rss));
 		logger.debug('memory heap used:', bytesToSize(usage.heapUsed),  usedPercentage + '%');
 		logger.debug('memory heap used average:', bytesToSize(avg), '(used difference:', diffPercentage + '%)');
 		logger.debug('memory heap total:', bytesToSize(usage.heapTotal));
