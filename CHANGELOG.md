@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.2
+
+## Added
+
+None
+
+## Changed
+
+#### Logging level of debug mode changed
+
+The log message when there is no lint error has been changed from `error` to `debug`.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.1
 
 ## Added

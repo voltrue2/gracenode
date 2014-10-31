@@ -53,7 +53,7 @@ module.exports.exec = function (cb) {
 			return cb(new Error('lintError'));
 		}
 		// we are lint error free
-		logger.error('lint [DONE]: no lint error found');
+		logger.debug('lint [DONE]: no lint error found');
 		cb();
 	};
 
