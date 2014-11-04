@@ -89,6 +89,9 @@ log() {
 		yellow)
 			head="\E[33m";
 			;;
+		purple)
+			head="\E[35m";
+			;;
 		red)
 			head="\E[31m";
 			;;
