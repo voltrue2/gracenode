@@ -6,7 +6,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### Debug mode now runs memory usage monitor along with jshint on start of the application
 
 ## Changed
 
