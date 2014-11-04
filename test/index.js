@@ -34,6 +34,8 @@ describe('gracenode initialization ->', function () {
 			sv.controllerPath = prefix + sv.controllerPath;
 		});
 
+		// getModuleSchema
+
 		// test gracenode module use
 		gn.use('gracenode-mysql');
 		gn.use('gracenode-iap');
@@ -102,7 +104,7 @@ describe('gracenode initialization ->', function () {
 		var original = {
 			a: 100,
 			b: 'B',
-			c: [1,2,3]
+			c: [1, 2, 3]
 		};
 		var cloned = gn.lib.cloneObj(original);
 		assert.equal(original.a, cloned.a);
@@ -114,7 +116,7 @@ describe('gracenode initialization ->', function () {
 		var original = {
 			a: 100,
 			b: 'B',
-			c: [1,2,3]
+			c: [1, 2, 3]
 		};
 		var cloned = gn.lib.cloneObj(original, ['a', 'b']);
 		assert.equal(original.a, cloned.a);

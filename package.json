@@ -37,7 +37,16 @@
 		"nonew": true,
 		"white": true,
 		"maxdepth": 5,
-		"quotmark": "single"
+		"quotmark": "single",
+		"globals": {
+			"mocha": false,
+			"describe": false,
+			"it": false,
+			"before": false,
+			"beforeEach": false,
+			"after": false,
+			"afterEach": false
+		}
 	},
 	"contributors": [
 		{ "name": "Brian de Heus", "email": "me@brian.jp" },

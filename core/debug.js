@@ -1,10 +1,14 @@
 'use strict';
 
 var async = require('async');
+var fs = require('fs');
 var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
 var gn;
 var memHistory = [];
+var deprecated = [
+	{ func: 'getModuleSchema', version: '1.3.3' }
+];
 
 // keeps memory usage record for up to 1 hour
 var MEMHISTORY_LEN = 360;
@@ -78,7 +82,26 @@ module.exports.exec = function (cb) {
 		cb();
 	};
 
-	// walk all given directories to lint
+	var lookForDeprecated = function (list, moveOn) {
+		async.each(list, function (file, next) {
+			fs.readFile(file, 'utf8', function (error, data) {
+				if (error) {
+					return next(error);
+				}
+				logger.debug('scanning for deprecated gracenode functions in', file);
+				for (var i = 0, len = deprecated.length; i < len; i++) {
+					if (data.indexOf(deprecated[i].func) !== -1) {
+						var msg = '***WARNING: deprecated function (' + deprecated[i].func + ') used in ' + file;
+						msg += ' ' + 'deprecated version of gracenode is ' + deprecated[i].version;
+						logger.warn(msg);
+					}
+				}
+				next();
+			});
+		}, moveOn);
+	};
+
+	// walk all given directories to check/lint
 	async.eachSeries(config.directories, function (item, next) {
 		var path = gn.getRootPath() + item;
 		lib.walkDir(path, function (error, files) {
@@ -96,9 +119,11 @@ module.exports.exec = function (cb) {
 				list.push(file);
 				logger.debug('lint:', file);
 			}
+			// execute jshint
 			options.args = list;
 			jshintcli.run(options);
-			next();
+			// check for deprecated gracenode functions
+			lookForDeprecated(list, next);
 		});
 	}, done);
 };
@@ -124,10 +149,10 @@ function startMemWatch(config, logger) {
 		logger.debug('memory heap used average:', bytesToSize(avg), '(used difference:', diffPercentage + '%)');
 		logger.debug('memory heap total:', bytesToSize(usage.heapTotal));
 		if (usedPercentage >= 80) {
-			logger.debug('***WARNING: memory heap usage is too close to heap total');
+			logger.warn('***WARNING: memory heap usage is too close to heap total');
 		}
 		if (diffPercentage >= 50) {
-			logger.debug('***WARNING: sudden jump in memory heap used detected');
+			logger.warn('***WARNING: sudden jump in memory heap used detected');
 		}
 		// run this in MEMWATCH_INTERVAL seconds again
 		startMemWatch(config, logger);
