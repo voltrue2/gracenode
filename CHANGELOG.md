@@ -16,6 +16,8 @@ None
 
 #### .getModuleSchema has been deprecated
 
+Since `gracenode` no longer has built-in mysql modules, it makes sense to remove this function from it.
+
 ## Removed
 
 None
