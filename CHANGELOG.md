@@ -14,7 +14,7 @@ None
 
 ## Deprecated
 
-None
+#### .getModuleSchema has been deprecated
 
 ## Removed
 

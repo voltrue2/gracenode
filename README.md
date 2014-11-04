@@ -428,14 +428,6 @@ If the second argument is given (worker process object), the master process send
 gracenode.send({ message: 'Hello World!' });
 ```
 
-###.getModuleSchema(moduleName [string], callback [function])
-Finds and returns an array of schema SQL queries (only for modules with schema.sql file in the directory)
-```
-gracenode.getModuleSchema('gracenode-wallet', function (error, sqlList) {
-	// execute queries	
-});
-```
-
 ##Events
 Gracenode has the capabilities to emit events, you can catch these events using:
 ```

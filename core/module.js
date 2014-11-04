@@ -47,6 +47,7 @@ Module.prototype.use = function (name, options) {
 	this._use.push({ name: name, modName: modName });
 };
 
+// deprecated as of Nov/4/2014 version 1.3.3
 // TODO: need to add support for more than SQL
 Module.prototype.getModuleSchema = function (name, cb) {
 	var that = this;
