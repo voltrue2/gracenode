@@ -15,7 +15,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
 	echo "";
 	echo "Options:";
 	echo "	-h, --help:	Outputs a help interface.";
-	echo "	-a:		Executes jshint on the given directories and/or files. Example: ./lint -d lib/ modules/";
+	echo "	-a:		Executes jshint on the given directories and/or files. Example: ./lint -a lib/ modules/";
 	echo "";
 	echo "Exit Status:";
 	echo "	0	if OK.";
@@ -192,7 +192,7 @@ log "" "root path: $path";
 log "yellow" "$MARK lint the given directories/files";
 
 if [ ${#dirList} -eq 0 ]; then
-	log "yellow" "$MARK no directories/files to lint: use -a option to give directories/files to lint. see --help for more detail";
+	log "purple" "$MARK no directories/files to lint: use -a option to give directories/files to lint. see --help for more detail";
 fi
 
 for item in "${dirList[@]}"; do
