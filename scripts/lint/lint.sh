@@ -102,6 +102,26 @@ log() {
 	echo -en "$head\033[1m$2$tail";
 }
 
+lintDir() {
+	target="$path$1";
+	if [ -d "$target" ] || [ -f "$target" ]; then
+		log "blue" "liniting $target";
+		failed=`$JSHINT "$target"`;
+		if [ "$failed" ]; then
+			log "red" "$ERROR $target";
+			log "red" "$failed";
+			exit 1;
+		else
+			log "green" "$CHECK $target";
+		fi
+		
+	else
+		log "red" "$ERROR $target";
+		log "red" "no such file or directory ($target)";
+		exit 2;
+	fi
+}
+
 lintToBeCommitted() {
 	if git rev-parse --verify HEAD > /dev/null 2>&1
 	then
@@ -136,26 +156,6 @@ lintToBeCommitted() {
 			log "green" "$CHECK $path$file";
 		fi
 	done
-}
-
-lintDir() {
-	target="$path$1";
-	if [ -d "$target" ] || [ -f "$target" ]; then
-		log "blue" "liniting $target";
-		failed=`$JSHINT "$target"`;
-		if [ "$failed" ]; then
-			log "red" "$ERROR $target";
-			log "red" "$failed";
-			exit 1;
-		else
-			log "green" "$CHECK $target";
-		fi
-		
-	else
-		log "red" "$ERROR $target";
-		log "red" "no such file or directory ($target)";
-		exit 2;
-	fi
 }
 
 
