@@ -1,3 +1,5 @@
+'use strict';
+
 var gn;
 var logger;
 var drivers = {};

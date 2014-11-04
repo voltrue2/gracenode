@@ -10,18 +10,29 @@
 	"debugMode": {
 		"directories": [ 
 			"node_modules/gracenode/test/",
-			"node_modules/gracenode/index.js"
+			"node_modules/gracenode/index.js",
+			"node_modules/gracenode/core/",
+			"node_modules/gracenode/scripts/daemon/",
+			"node_modules/gracenode/modules/"
 		],
 		"lintOptions": {
+			"node": true,
 			"bitwise": false,
-			"eqeqeq":  true,
-			"latedef": true,
+			"camelcase": true,
+			"curly": true,
+			"eqeqeq": true,
+			"forin": false,
+			"immed": true,
+			"latedef": false,
+			"newcap": true,
+			"noarg": true,
 			"noempty": true,
-			"undef":   true,
-			"node":     true,
-			"unused":   true,
-			"trailing": true,
-			"white":    true,
+			"undef": true,
+			"unused": true,
+			"nonew": true,
+			"white": true,
+			"maxdepth": 5,
+			"quotmark": "single",
 			"globals"   : {
 				"mocha"      : false,
 				"describe"   : false,

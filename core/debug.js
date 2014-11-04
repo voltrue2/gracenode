@@ -1,3 +1,5 @@
+'use strict';
+
 var async = require('async');
 var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
@@ -38,6 +40,7 @@ module.exports.exec = function (cb) {
 	// apply jshint options if given
 	if (config.lintOptions) {
 		options.config = config.lintOptions;
+		logger.debug('jshint options used:', options.config);
 	}
 
 	// set up a lint result reporter function
@@ -56,13 +59,18 @@ module.exports.exec = function (cb) {
 			return cb(error);
 		}
 		if (errors.length) {
+			var erroredFiles = [];
 			for (var i = 0, len = errors.length; i < len; i++) {
+				if (erroredFiles.indexOf(errors[i].file) === -1) {
+					erroredFiles.push(errors[i].file);
+				}
 				var msg = 'lint error in [' + errors[i].file + ']';
 				msg += ' Line ' + errors[i].error.line;
 				msg += ' Character ' + errors[i].error.character;
 				msg += ' ' + errors[i].error.reason;
 				logger.error(msg);
 			}
+			logger.error(errors.length, 'lint error(s) found in', erroredFiles.length, 'files');
 			return cb(new Error('lintError'));
 		}
 		// we are lint error free

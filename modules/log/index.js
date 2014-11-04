@@ -1,3 +1,5 @@
+'use strict';
+
 var glog = require('gracelog');
 
 // overwrite .create() to remove the full file path in default log name

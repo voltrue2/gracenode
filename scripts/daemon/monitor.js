@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var net = require('net');
 var spawn = require('child_process').spawn;
@@ -11,7 +13,7 @@ var maxNumOfDeath = 10;
 var deathInterval = 10000;
 var timeOfDeath = 0;
 var deathCount = 0;
-var package = require(gn._root + 'package.json');
+var pkg = require(gn._root + 'package.json');
 var Log = require('./utils/log'); 
 var logger = new Log(gn.argv('--log'));
 // message
@@ -184,7 +186,7 @@ function handleMessage(parsed) {
 			var message = new Message(parsed.value);
 			message.startSend();
 			message.send({
-				monitorVersion: package.version,
+				monitorVersion: pkg.version,
 				pid: app.pid,
 				started: app.started,
 				reloaded: app.reloaded,

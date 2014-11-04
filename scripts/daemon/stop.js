@@ -1,3 +1,5 @@
+'use strict';
+
 var gn = require('gracenode');
 var logger = gn.log.create('daemon-stop');
 var lib = require('./utils/lib');

@@ -1,10 +1,10 @@
+'use strict';
+
 // --help is automatically defined and reserved
 var HELP = '--help';
 var argKeys = [];
 var defKeys = [];
 var exitOnBadOption = false;
-
-module.exports = Argv;
 
 function Argv(gn) {
 	this._gn = gn;
@@ -12,6 +12,8 @@ function Argv(gn) {
 	this._def = {};
 	this._maxLen = 0;
 }
+
+module.exports = Argv;
 
 // if this is set, the application process will exit on either bad option or no option given
 Argv.prototype.exitOnBadOption = function () {
@@ -124,11 +126,11 @@ Argv.prototype.execDefinedOptions = function () {
 };
 
 Argv.prototype._showHelp = function (error) {
-	var package = require('../package.json');
-	console.log('\n' + package.name + ':', package.description);
-	console.log('\nAuthored by', package.author);
-	console.log('\nVersion:', package.version);
-	console.log('\nRepository:', package.repository.url);
+	var pkg = require('../package.json');
+	console.log('\n' + pkg.name + ':', pkg.description);
+	console.log('\nAuthored by', pkg.author);
+	console.log('\nVersion:', pkg.version);
+	console.log('\nRepository:', pkg.repository.url);
 	console.log('\nOptions:');
 	for (var i = 0, len = defKeys.length; i < len; i++) {
 		var arg = defKeys[i];

@@ -1,3 +1,5 @@
+'use strict';
+
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');

@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var jshint = require('jshint').JSHINT;
 var configPath;

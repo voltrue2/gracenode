@@ -1,3 +1,5 @@
+'use strict';
+
 var Gracenode = require('./core').Gracenode;
 var gracenode = new Gracenode();
 

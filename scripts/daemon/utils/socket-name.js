@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (path) {
 	if (!path) {
 		throw new Error('invalid application path given: ' + path);

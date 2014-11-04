@@ -1,3 +1,5 @@
+'use strict';
+
 var gn = require('gracenode');
 var lib = require('./utils/lib');
 var talk = require('./utils/talk');

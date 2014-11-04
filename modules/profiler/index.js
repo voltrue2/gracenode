@@ -1,3 +1,5 @@
+'use strict';
+
 var gracenode = require('gracenode');
 var log = gracenode.log.create('profiler');
 

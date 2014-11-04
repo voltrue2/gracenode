@@ -10,6 +10,10 @@ None
 
 ## Changed
 
+#### All gracenode code now lints with strict mode
+
+#### Test timeout is now 5000ms instead of 2000ms
+
 #### .registerShutdownTask() of gracenode now throws an exception for passing a 2nd argument other than a function
 
 #### Logging level of debug mode changed

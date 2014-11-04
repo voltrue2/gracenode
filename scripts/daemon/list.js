@@ -1,3 +1,5 @@
+'use strict';
+
 var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');

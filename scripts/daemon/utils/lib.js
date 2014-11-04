@@ -1,3 +1,5 @@
+// we don't use strict here because strict mode does NOT allow Octal literal... usch as \033 etc 
+
 module.exports.COLORS = {
 	RED: '0;31',
 	LIGHT_BLUE: '0;34',

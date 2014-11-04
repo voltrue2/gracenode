@@ -1,3 +1,5 @@
+'use strict';
+
 var async = require('async');
 var exec = require('child_process').exec;
 var fs = require('fs');
