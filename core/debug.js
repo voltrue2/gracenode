@@ -116,10 +116,10 @@ function startMemWatch(config, logger) {
 		logger.debug('memory heap used average:', bytesToSize(avg), '(used difference:', diffPercentage + '%)');
 		logger.debug('memory heap total:', bytesToSize(usage.heapTotal));
 		if (usedPercentage >= 80) {
-			logger.warn('memory heap usage is too close to heap total');
+			logger.debug('***WARNING: memory heap usage is too close to heap total');
 		}
 		if (diffPercentage >= 50) {
-			logger.warn('sudden jump in memory heap used detected');
+			logger.debug('***WARNING: sudden jump in memory heap used detected');
 		}
 		// run this in MEMWATCH_INTERVAL seconds again
 		startMemWatch(config, logger);
