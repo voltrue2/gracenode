@@ -196,6 +196,7 @@ Gracenode.prototype.setup = function (cb) {
 	async.waterfall(setupList, done);
 };
 
+// deprecated as of Nov/4/2014 version 1.3.3
 // finds a schema.sql under given module's directory
 // never use this function in production, but setup script only
 Gracenode.prototype.getModuleSchema = function (modName, cb) {

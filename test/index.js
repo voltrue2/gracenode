@@ -34,8 +34,6 @@ describe('gracenode initialization ->', function () {
 			sv.controllerPath = prefix + sv.controllerPath;
 		});
 
-		// getModuleSchema
-
 		// test gracenode module use
 		gn.use('gracenode-mysql');
 		gn.use('gracenode-iap');

@@ -83,12 +83,12 @@ module.exports.exec = function (cb) {
 	};
 
 	var lookForDeprecated = function (list, moveOn) {
-		async.each(list, function (file, next) {
+		var openFileNumAtATime = 100;
+		async.eachLimit(list, openFileNumAtATime, function (file, next) {
 			fs.readFile(file, 'utf8', function (error, data) {
 				if (error) {
 					return next(error);
 				}
-				logger.debug('scanning for deprecated gracenode functions in', file);
 				for (var i = 0, len = deprecated.length; i < len; i++) {
 					if (data.indexOf(deprecated[i].func) !== -1) {
 						var msg = '***WARNING: deprecated function (' + deprecated[i].func + ') used in ' + file;
