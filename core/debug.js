@@ -1,5 +1,3 @@
-'use strict';
-
 var async = require('async');
 var fs = require('fs');
 var jshintcli = require('jshint/src/cli');
@@ -14,6 +12,44 @@ var deprecated = [
 var MEMHISTORY_LEN = 360;
 // checks memory usage every 10 seconds
 var MEMWATCH_INTERVAL = 10000;
+
+function Progressbar(len) {
+	this.len = len;
+	this.it = 0;
+	process.stdout.write('\033[0;32m\n');
+	process.stdout.write('[');
+	for (var j = 0; j < this.len; j++) {
+		process.stdout.write(' ');
+	}
+	process.stdout.write(']');
+}
+
+Progressbar.prototype.update = function () {
+	if (this.it === this.length) {
+		return;
+	}
+	// control cursor position
+	process.stdout.write('\033[133 111');
+	// remove previous text and output text 1 space at a time
+	for (var i = 0; i < this.it; i++) {
+		process.stdout.write('\010~');
+	}
+	this.it += 1;
+	if (this.it === this.length) {
+		// done and reset
+		process.stdout.write('\033[0m\n');
+	}
+};
+
+Progressbar.prototype.reset = function () {
+	process.stdout.write('\033[0;32m');
+	process.stdout.write('[');
+	for (var j = 0; j < this.len; j++) {
+		process.stdout.write(' ');
+	}
+	process.stdout.write(']');
+	this.it = 0;
+};
 
 module.exports.setup = function (gracenode) {
 	gn = gracenode;
@@ -40,6 +76,7 @@ module.exports.exec = function (cb) {
 	
 	var options = {};
 	var errors = [];
+	var warns = [];
 
 	// apply jshint options if given
 	if (config.lintOptions) {
@@ -59,8 +96,15 @@ module.exports.exec = function (cb) {
 
 	// done function to be called at the end of all linting
 	var done = function (error) {
+		// now linebreak
+		process.stdout.write('\n');
 		if (error) {
 			return cb(error);
+		}
+		if (warns.length) {
+			for (var w = 0, wen = warns.length; w < wen; w++) {
+				logger.warn(warns[w]);
+			}
 		}
 		if (errors.length) {
 			var erroredFiles = [];
@@ -93,7 +137,7 @@ module.exports.exec = function (cb) {
 					if (data.indexOf(deprecated[i].func) !== -1) {
 						var msg = '***WARNING: deprecated function (' + deprecated[i].func + ') used in ' + file;
 						msg += ' ' + 'deprecated version of gracenode is ' + deprecated[i].version;
-						logger.warn(msg);
+						warns.push(msg);
 					}
 				}
 				next();
@@ -101,7 +145,8 @@ module.exports.exec = function (cb) {
 		}, moveOn);
 	};
 
-	// walk all given directories to check/lint
+	var pb = new Progressbar(config.directories.length);
+	// walk all given directories to check/linit
 	async.eachSeries(config.directories, function (item, next) {
 		var path = gn.getRootPath() + item;
 		lib.walkDir(path, function (error, files) {
@@ -117,13 +162,14 @@ module.exports.exec = function (cb) {
 					continue;
 				}
 				list.push(file);
-				logger.debug('lint:', file);
 			}
 			// execute jshint
 			options.args = list;
 			jshintcli.run(options);
 			// check for deprecated gracenode functions
 			lookForDeprecated(list, next);
+			// progressbar
+			pb.update();
 		});
 	}, done);
 };
