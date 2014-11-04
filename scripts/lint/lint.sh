@@ -116,7 +116,7 @@ lintToBeCommitted() {
 	toBeCommitted=$(git diff --cached --name-only --diff-filter=ACM | grep ".js$");
 
 	if [ ${#toBeCommitted} -eq 0 ]; then
-		log "yellow" "$MARK no changes to be committed";
+		log "purple" "$MARK no changes to be committed";
 	else
 		log "" "liniting added files to be committed...";
 	fi
@@ -124,7 +124,9 @@ lintToBeCommitted() {
 	# lint the files
 	for file in ${toBeCommitted}; do
 		log "blue" "linting $path$file";
+		# git checkout the file before jshint to make sure we are linting git added file
 		`git checkout "$path$file"`;
+		# now lint
 		failed=`$JSHINT "$path$file"`;
 		if [ "$failed" ]; then
 			log "red" "$ERROR $path$file";
