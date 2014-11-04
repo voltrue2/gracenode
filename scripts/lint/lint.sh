@@ -121,6 +121,7 @@ lintToBeCommitted() {
 	# lint the files
 	for file in ${toBeCommitted}; do
 		log "blue" "linting $path$file";
+		`git checkout "$path$file"`;
 		failed=`$JSHINT "$path$file"`;
 		if [ "$failed" ]; then
 			log "red" "$ERROR $path$file";
