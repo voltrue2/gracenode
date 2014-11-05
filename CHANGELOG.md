@@ -10,7 +10,11 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
-None
+#### Configuration name for debug mode changed
+
+The configuration property name for `debug` mode has changed from `debugMode` to `gracenode-debug`.
+
+#### Progress bar added to debug mode
 
 ## Deprecated
 

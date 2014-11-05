@@ -7,7 +7,7 @@
 		],
 		"bool": false
 	},
-	"debugMode": {
+	"gracenode-debug": {
 		"directories": [ 
 			"node_modules/gracenode/test/",
 			"node_modules/gracenode/index.js",

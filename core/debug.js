@@ -8,47 +8,73 @@ var deprecated = [
 	{ func: 'getModuleSchema', version: '1.3.3' }
 ];
 
+// configuration name for debug mode
+var CONFIG_NAME = 'gracenode-debug';
+
 // keeps memory usage record for up to 1 hour
 var MEMHISTORY_LEN = 360;
 // checks memory usage every 10 seconds
 var MEMWATCH_INTERVAL = 10000;
 
 function Progressbar(len) {
+	// progress bar length is always 20 letter-long
+	this.barLen = 20;
 	this.len = len;
+	// + 2 for [ and ]
+	// + 5 for percentage display xxx%
+	// and the length of this.label
+	// so this.len + 7 + this.label.length
+	this.label = 'Scanning: ';
+	this.clearLen = this.barLen + 7 + this.label.length;
 	this.it = 0;
-	process.stdout.write('\033[0;32m\n');
-	process.stdout.write('[');
-	for (var j = 0; j < this.len; j++) {
-		process.stdout.write(' ');
-	}
-	process.stdout.write(']');
+	this.color = '\033[0;33m';
 }
 
-Progressbar.prototype.update = function () {
-	if (this.it === this.length) {
-		return;
+Progressbar.prototype.start = function () {
+	var spaces = '';
+	for (var j = 0; j < this.barLen; j++) {
+		spaces += ' ';
 	}
-	// control cursor position
-	process.stdout.write('\033[133 111');
-	// remove previous text and output text 1 space at a time
-	for (var i = 0; i < this.it; i++) {
-		process.stdout.write('\010~');
-	}
-	this.it += 1;
-	if (this.it === this.length) {
-		// done and reset
-		process.stdout.write('\033[0m\n');
-	}
+	process.stdout.write('\n' + this.color + this.label + '[' + spaces + '] 000%');
+	this.it = 0;
 };
 
-Progressbar.prototype.reset = function () {
-	process.stdout.write('\033[0;32m');
-	process.stdout.write('[');
-	for (var j = 0; j < this.len; j++) {
-		process.stdout.write(' ');
+Progressbar.prototype.update = function () {
+	this.it += 1;
+	var clear = '';
+	var progress = '';
+	var pad = '';
+	var rate = Math.floor((this.it / this.len) * 100);
+	var rateLen = rate.toString().length;
+	// clear all text
+	for (var i = 0; i < this.clearLen; i++) {
+		clear += '\010';
 	}
-	process.stdout.write(']');
-	this.it = 0;
+	process.stdout.write(clear);
+	// calculate progress
+	var barProgress = Math.floor(this.barLen * (rate / 100));
+	for (var p = 0; p < this.barLen; p++) {
+		if (p <= barProgress) {
+			// progressbar
+			progress += '=';
+		} else {
+			// fill the reset with spaces
+			progress += ' ';
+		}
+	}
+	// calculate percentage
+	if (rateLen < 3) {
+		pad += '0';
+	}
+	if (rateLen < 2) {
+		pad += '0';
+	}
+	// draw
+	process.stdout.write(this.label + '[' + progress + '] ' + pad + rate + '%');
+};
+
+Progressbar.prototype.end = function () {
+	process.stdout.write('\033[0m\n');
 };
 
 module.exports.setup = function (gracenode) {
@@ -56,7 +82,7 @@ module.exports.setup = function (gracenode) {
 };
 
 module.exports.exec = function (cb) {
-	var config = gn.config.getOne('debugMode');
+	var config = gn.config.getOne(CONFIG_NAME);
 	if (!config) {
 		// not in debug mode
 		return cb();
@@ -74,6 +100,7 @@ module.exports.exec = function (cb) {
 		config.directories = [];
 	}
 	
+	var pb = new Progressbar(config.directories.length);
 	var options = {};
 	var errors = [];
 	var warns = [];
@@ -96,8 +123,8 @@ module.exports.exec = function (cb) {
 
 	// done function to be called at the end of all linting
 	var done = function (error) {
-		// now linebreak
-		process.stdout.write('\n');
+		// stop progress bar
+		pb.end();
 		if (error) {
 			return cb(error);
 		}
@@ -145,7 +172,9 @@ module.exports.exec = function (cb) {
 		}, moveOn);
 	};
 
-	var pb = new Progressbar(config.directories.length);
+	// start progress bar
+	pb.start();
+
 	// walk all given directories to check/linit
 	async.eachSeries(config.directories, function (item, next) {
 		var path = gn.getRootPath() + item;

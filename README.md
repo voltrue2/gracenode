@@ -881,7 +881,7 @@ For more detailed information on request hooks, please read server module's READ
 In order to enable `debug-mode` in `gracenode`, you must provide the following configurations in your configuration file:
 
 ```
-"debugMode": {
+"gracenode-debug": {
 	"directories": [
 		"directory/or/file/path/to/lint/"
 		[...]
