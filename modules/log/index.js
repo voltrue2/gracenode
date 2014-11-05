@@ -26,7 +26,7 @@ module.exports = glog;
 module.exports.gracenode = null;
 
 module.exports.readConfig = function (configData) {
-	var debugConf = module.exports.gracenode.config.getOne('debugMode');
+	var debugConf = module.exports.gracenode.config.getOne('gracenode-debug');
 	if (debugConf) {
 		// we are in debug mode and forcing verbose
 		if (!configData) {
