@@ -74,7 +74,7 @@ Progressbar.prototype.update = function () {
 };
 
 Progressbar.prototype.end = function () {
-	process.stdout.write('\033[0m\n');
+	process.stdout.write('\033[0m\n\n');
 };
 
 module.exports.setup = function (gracenode) {
