@@ -10,7 +10,9 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
-None
+#### Updated a dependency version
+
+Updated gracelog version from `0.1.13` to `0.1.15`.
 
 ## Deprecated
 
