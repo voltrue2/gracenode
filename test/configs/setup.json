@@ -13,6 +13,7 @@
 			"node_modules/gracenode/index.js",
 			"node_modules/gracenode/core/",
 			"node_modules/gracenode/scripts/daemon/",
+			"node_modules/gracenode/lib/",
 			"node_modules/gracenode/modules/"
 		],
 		"lintOptions": {

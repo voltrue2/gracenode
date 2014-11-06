@@ -2,11 +2,10 @@ var async = require('async');
 var fs = require('fs');
 var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
+var progressbar = require('../lib/progressbar');
 var gn;
 var memHistory = [];
-var deprecated = [
-	{ func: 'getModuleSchema', version: '1.3.3' }
-];
+var deprecated = require('../package.json').deprecated;
 
 // configuration name for debug mode
 var CONFIG_NAME = 'gracenode-debug';
@@ -15,67 +14,6 @@ var CONFIG_NAME = 'gracenode-debug';
 var MEMHISTORY_LEN = 360;
 // checks memory usage every 10 seconds
 var MEMWATCH_INTERVAL = 10000;
-
-function Progressbar(len) {
-	// progress bar length is always 20 letter-long
-	this.barLen = 20;
-	this.len = len;
-	// + 2 for [ and ]
-	// + 5 for percentage display xxx%
-	// and the length of this.label
-	// so this.len + 7 + this.label.length
-	this.label = 'Scanning: ';
-	this.clearLen = this.barLen + 7 + this.label.length;
-	this.it = 0;
-	this.color = '\033[0;33m';
-}
-
-Progressbar.prototype.start = function () {
-	var spaces = '';
-	for (var j = 0; j < this.barLen; j++) {
-		spaces += ' ';
-	}
-	process.stdout.write('\n' + this.color + this.label + '[' + spaces + '] 000%');
-	this.it = 0;
-};
-
-Progressbar.prototype.update = function () {
-	this.it += 1;
-	var clear = '';
-	var progress = '';
-	var pad = '';
-	var rate = Math.floor((this.it / this.len) * 100);
-	var rateLen = rate.toString().length;
-	// clear all text
-	for (var i = 0; i < this.clearLen; i++) {
-		clear += '\010';
-	}
-	process.stdout.write(clear);
-	// calculate progress
-	var barProgress = Math.floor(this.barLen * (rate / 100));
-	for (var p = 0; p < this.barLen; p++) {
-		if (p <= barProgress) {
-			// progressbar
-			progress += '=';
-		} else {
-			// fill the reset with spaces
-			progress += ' ';
-		}
-	}
-	// calculate percentage
-	if (rateLen < 3) {
-		pad += '0';
-	}
-	if (rateLen < 2) {
-		pad += '0';
-	}
-	// draw
-	process.stdout.write(this.label + '[' + progress + '] ' + pad + rate + '%');
-};
-
-Progressbar.prototype.end = function () {
-	process.stdout.write('\033[0m\n\n');
-};
 
 module.exports.setup = function (gracenode) {
 	gn = gracenode;
@@ -100,7 +38,7 @@ module.exports.exec = function (cb) {
 		config.directories = [];
 	}
 	
-	var pb = new Progressbar(config.directories.length);
+	var pb = new progressbar.Progressbar(config.directories.length, { color: progressbar.COLORS.BLUE, label: 'Scanning source code: ' });
 	var options = {};
 	var errors = [];
 	var warns = [];
@@ -161,9 +99,10 @@ module.exports.exec = function (cb) {
 					return next(error);
 				}
 				for (var i = 0, len = deprecated.length; i < len; i++) {
-					if (data.indexOf(deprecated[i].func) !== -1) {
-						var msg = '***WARNING: deprecated function (' + deprecated[i].func + ') used in ' + file;
-						msg += ' ' + 'deprecated version of gracenode is ' + deprecated[i].version;
+					var dp = deprecated[i];
+					if (data.indexOf(dp.name) !== -1) {
+						var msg = '***WARNING: deprecated ' + dp.type + ' (' + dp.name + ') used in ' + file;
+						msg += ' ' + 'deprecated version of gracenode is ' + dp.version;
 						warns.push(msg);
 					}
 				}

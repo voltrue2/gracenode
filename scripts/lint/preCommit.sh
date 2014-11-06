@@ -17,4 +17,4 @@ else
 	path="./scripts/lint/";
 fi
 
-"$path"lint.sh -a index.js core/ modules/ scripts/daemon/
+"$path"lint.sh -a index.js core/ modules/ scripts/daemon/ lib/
