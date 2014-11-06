@@ -150,7 +150,14 @@ describe('gracenode initialization ->', function () {
 		logger.info('info');	
 		logger.warn('warn');	
 		logger.error('error');	
-		logger.fatal('fatal');	
+		logger.fatal('fatal');
+		var test = [
+			{ name: 'Car', value: 1000, ident: 'car' },
+			{ name: 'Spaceship', value: '日本語', ident: 'sp', fly: true },
+			{ name: '大きなくま', value: 'a big bear', fly: false, alive: true },
+			{ name: 'lalala lalalala foo', value: ['a', 'b', 'c']  }	
+		];
+		logger.table(test);
 	});
 
 	it('Can walk the whole directry tree', function (done) {
