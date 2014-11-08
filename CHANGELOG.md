@@ -6,7 +6,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-#### Added deprecated definitions in package.json
+#### Added deprecated.json added to manage deprecated information
 
 ## Changed
 

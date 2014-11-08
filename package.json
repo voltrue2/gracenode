@@ -67,12 +67,5 @@
 		"daemon",
 		"process"
 	],
-	"deprecated": [
-		{
-			"name": "getModuleSchema",
-			"type": "function",
-			"version": "1.3.3"
-		}
-	],
 	"license": "MIT"
 }

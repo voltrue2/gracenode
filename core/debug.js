@@ -5,7 +5,7 @@ var lib = require('../modules/lib');
 var progressbar = require('../lib/progressbar');
 var gn;
 var memHistory = [];
-var deprecated = require('../package.json').deprecated;
+var deprecated = require('../deprecated.json');
 
 // configuration name for debug mode
 var CONFIG_NAME = 'gracenode-debug';
