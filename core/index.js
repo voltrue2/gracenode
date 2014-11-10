@@ -359,7 +359,7 @@ function setupProcess(that, lastCallback, cb) {
 function setupModules(that, cb) {
 	log.verbose('application configuration path:', that._configPath);
 	log.verbose('application configuration files:', that._configFiles);
-	log.verbose('application configurations:', JSON.stringify(that.config.getAll(), null, 4));	
+	log.verbose('application configurations:', that.config.getAll());	
 	that._module.load(cb);
 }
 

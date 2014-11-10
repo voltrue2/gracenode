@@ -88,7 +88,6 @@ Profiler.prototype.stop = function () {
 		'execution time': totalTime + ' milliseconds'
 	});
 	log.table(table);
-	log.debug('>>>>>>>>', total);
 
 	// flush out and reset
 	this._startTime = 0;
