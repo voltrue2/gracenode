@@ -81,27 +81,23 @@ Module.prototype.getModuleSchema = function (name, cb) {
 };
 
 Module.prototype.load = function (cb) {
+	var that = this;
 	// set up module driver manager
 	modDriver.setup(this._gn);
+	that._gn._profiler.mark('module drivers set up');
 	// start loading
 	this._logger = this._gn.log.create('module');
 	this._logger.verbose('start loading modules');
-	var that = this;
-	// mark the start of loading the modules
-	that._gn._profiler.mark(null);
 	// map all modules first
 	this._mapModules(function (error) {
 		if (error) {
 			return cb(error);
 		}
+		that._gn._profiler.mark('modules mapped');
 		// now start loading modules
 		async.eachSeries(that._use, function (modObj, next) {
 			var name = modObj.name;
 			var modName = modObj.modName;
-			
-			// mark the start of loading the module
-			//that._gn._profiler.mark(null);
-
 			// load one module at a time
 			var module = that._require(name);
 			if (!module) {

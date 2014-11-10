@@ -177,12 +177,14 @@ Gracenode.prototype.setup = function (cb) {
 	};
 	// executes only --debug is given
 	var debugRun = function (that, callback) {
-		debugMode.exec(function (error) {
+		debugMode.exec(function (error, debugMode) {
 			if (error) {
 				log.fatal('gracenode debug mode detected error(s)');
 				return that.exit(error);
 			}
-			that._profiler.mark('debug mode');
+			if (debugMode) {
+				that._profiler.mark('debug mode');
+			}
 			callback(null, that);
 		});
 	};

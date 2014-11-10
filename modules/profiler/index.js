@@ -69,12 +69,14 @@ Profiler.prototype.stop = function () {
 	
 	var totalTime = Date.now() - this._startTime;
 	var table = [];
+	var total = 0;
 	for (var i = 0, len = this._marks.length; i < len; i++) {
 		var item = this._marks[i];
 		if (!item.name) {
 			// no name provided, skip it
 			continue;
 		}
+		total += item.time;
 		table.push({
 			name: item.name,
 			'execution time': item.time + ' milliseconds'
@@ -86,6 +88,7 @@ Profiler.prototype.stop = function () {
 		'execution time': totalTime + ' milliseconds'
 	});
 	log.table(table);
+	log.debug('>>>>>>>>', total);
 
 	// flush out and reset
 	this._startTime = 0;

@@ -23,7 +23,7 @@ module.exports.exec = function (cb) {
 	var config = gn.config.getOne(CONFIG_NAME);
 	if (!config) {
 		// not in debug mode
-		return cb();
+		return cb(null, false);
 	}
 	
 	var logger = gn.log.create('debug-mode');
@@ -88,7 +88,7 @@ module.exports.exec = function (cb) {
 		}
 		// we are lint error free
 		logger.debug('lint [DONE]: no lint error found');
-		cb();
+		cb(null, true);
 	};
 
 	var lookForDeprecated = function (list, moveOn) {
