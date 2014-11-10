@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.5
+
+## Added
+
+None
+
+## Changed
+
+#### Profiler module now uses log module's .table() to output the result
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.4
 
 ## Added
