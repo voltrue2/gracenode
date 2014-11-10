@@ -1,5 +1,7 @@
 ####gracenode.profiler
 
+In order to use `profiler` module, you **MUST** enable `debug` logging level of `log` module.
+
 ###Configuration
 *N/A*
 
