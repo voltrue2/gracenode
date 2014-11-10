@@ -182,6 +182,7 @@ Gracenode.prototype.setup = function (cb) {
 				log.fatal('gracenode debug mode detected error(s)');
 				return that.exit(error);
 			}
+			that._profiler.mark('debug mode');
 			callback(null, that);
 		});
 	};
@@ -333,18 +334,21 @@ function setupProcess(that, lastCallback, cb) {
 	var ps = new Process(that);
 	that._process = ps;	
 	ps.on('cluster.master.setup', function (pid) {
+		that._profiler.mark('starting process');
 		that._pid = pid;
 		logger._setInternalPrefix('MASTER:' + pid);
 		log = logger.create('gracenode');
 		lastCallback();
 	});
 	ps.on('cluster.worker.setup', function (pid) {
+		that._profiler.mark('starting process');
 		that._pid = pid;
 		logger._setInternalPrefix('WORKER:' + pid);
 		log = logger.create('gracenode');
 		cb(null, that);
 	});
 	ps.on('nocluster.setup', function () {
+		that._profiler.mark('starting process');
 		cb(null, that);
 	});
 	ps.setup();
