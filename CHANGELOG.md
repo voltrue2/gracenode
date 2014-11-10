@@ -10,6 +10,10 @@ None
 
 ## Changed
 
+#### Bug fix in ./daemon list command
+
+The command could lis wrong pids for wrong processes.
+
 #### Profiler module now uses log module's .table() to output the result
 
 ## Deprecated

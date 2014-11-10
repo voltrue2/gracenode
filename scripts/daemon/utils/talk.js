@@ -76,7 +76,6 @@ module.exports.setup = function (path, cb) {
 					}
 					gn.exit();
 				});
-				//gn.exit();
 			}
 			// application is not running
 			next();
@@ -410,6 +409,8 @@ module.exports.isRunning = function (cb, counter, running, seen) {
 		call();
 	});
 };
+
+module.exports.findApp = findProcesses;
 
 function findProcesses(path, cb) {
 	// remove /index.js if there is
