@@ -14,7 +14,7 @@ None
 
 #### Updated a dependency version (gracelog)
 
-Version updated from `0.1.18` to `0.1.19`.
+Version updated from `0.1.18` to `0.1.20`.
 
 #### Bug fix in ./daemon list command
 
