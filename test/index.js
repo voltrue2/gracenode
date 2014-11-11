@@ -139,7 +139,7 @@ describe('gracenode initialization ->', function () {
 			assert(level);
 			assert(data);
 			if (level === 'fatal') {
-				done();
+				return done();
 			}
 		});
 

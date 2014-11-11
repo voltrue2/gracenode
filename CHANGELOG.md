@@ -10,6 +10,12 @@ None
 
 ## Changed
 
+#### Minor improvements in Makefile
+
+#### Updated a dependency version (gracelog)
+
+Version updated from `0.1.18` to `0.1.19`.
+
 #### Bug fix in ./daemon list command
 
 The command could lis wrong pids for wrong processes.
