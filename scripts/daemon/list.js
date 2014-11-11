@@ -9,6 +9,10 @@ var talk = require('./utils/talk');
 var sockName = require('./utils/socket-name');
 
 module.exports = function () {
+	// exception
+	gn.on('uncaughtException', function () {
+		gn.exit();
+	});
 	var apps = [];
 	var appList = [];
 	// get list of applications
