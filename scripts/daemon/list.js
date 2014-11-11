@@ -71,16 +71,16 @@ module.exports = function () {
 					return moveOn(error);
 				}
 				console.log('');
-				console.log('	', lib.color('Application path	', lib.COLORS.BROWN), lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE));
-				console.log('	', lib.color('Executed user		', lib.COLORS.BROWN), lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE));
+				console.log(lib.color(' Application path	:', lib.COLORS.BROWN), lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE));
+				console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE));
 				for (var i = 0, len = list.length; i < len; i++) {
 					var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
 					var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);
-					var label = 'Application process	';
+					var label = ' Application process	: ';
 					if (app.indexOf('monitor start') !== -1) {
-						label = 'Monitor process	';
+						label = ' Monitor process	: ';
 					}
-					console.log('	', lib.color(label, lib.COLORS.BROWN) + app, pid);
+					console.log(lib.color(label, lib.COLORS.BROWN) + app, pid);
 				}
 				console.log('');
 				moveOn();
