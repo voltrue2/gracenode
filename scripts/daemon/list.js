@@ -74,9 +74,14 @@ module.exports = function () {
 				if (error) {
 					return moveOn(error);
 				}
+				var commandLabel = lib.color(' Command		:', lib.COLORS.BROWN);
+				var command = lib.color('./daemon status|start|stop|restart|reload', lib.COLORS.DARK_BLUE);
+				var appPath = lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE);
+				var user = lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE);
 				console.log('');
-				console.log(lib.color(' Application path	:', lib.COLORS.BROWN), lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE));
-				console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE));
+				console.log(lib.color(' Application path	:', lib.COLORS.BROWN), appPath);
+				console.log(commandLabel, command, appPath);
+				console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), user);
 				for (var i = 0, len = list.length; i < len; i++) {
 					var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
 					var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);

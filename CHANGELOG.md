@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### Improved daemon list command output
+
 #### Minor improvements in Makefile
 
 #### Updated a dependency version (gracelog)
