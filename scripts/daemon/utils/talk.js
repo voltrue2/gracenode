@@ -13,7 +13,6 @@ var appPath;
 var MAX_TRY = 10;
 
 module.exports.setup = function (path, cb) {
-	//sockFile = socketName(path);
 	appPath = path;
 	var processList = [];
 	var isRunning = true;

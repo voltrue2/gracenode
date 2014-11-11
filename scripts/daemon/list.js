@@ -6,36 +6,41 @@ var gn = require('gracenode');
 var async = require('async');
 var lib = require('./utils/lib');
 var talk = require('./utils/talk');
-
-var TMP_PATH = '/tmp/';
-var GN_MON = 'gracenode-monitor-';
+var sockName = require('./utils/socket-name');
 
 module.exports = function () {
 	var apps = [];
 	var appList = [];
 	// get list of applications
 	var getAppPaths = function (next) {
-		fs.readdir(TMP_PATH, function (error, list) {
+		var monPath = 'gracenode/scripts/daemon/monitor start ';
+		exec('ps aux | grep "' + monPath + '"', function (error, stdout) {
 			if (error) {
 				return next(error);
 			}
-			async.each(list, function (file, moveOn) {
-				if (file.indexOf(GN_MON) !== 0) {
-					// not gracenode daemon sock
-					return moveOn();
-				}
-				fs.stat(TMP_PATH + file, function (error, stats) {
-					if (error) {
-						return moveOn(error);
-					}
+			var list = stdout.split('\n');
+			for (var i = 0, len = list.length; i < len; i++) {
+				if (list[i].indexOf(process.execPath) !== -1) {
 					apps.push({
-						uid: stats.uid,
-						path: file.replace(GN_MON, '').replace(/-/g, '/').replace('.sock', '')
+						path: list[i].substring(list[i].lastIndexOf(' ') + 1)
 					});
-					moveOn();
-				});
-			}, next);
+				}
+			}
+			next();
 		});		
+	};
+	// find owner uid
+	var findUidForApps = function (next) {
+		async.each(apps, function (app, moveOn) {
+			var path = sockName(app.path);
+			fs.stat(path, function (error, stats) {
+				if (error) {
+					return moveOn(error);
+				}
+				app.uid = stats.uid;
+				moveOn();
+			});
+		}, next);
 	};
 	// find owner user
 	var findUserForApps = function (next) {
@@ -67,7 +72,7 @@ module.exports = function () {
 				}
 				console.log('');
 				console.log('	', lib.color('Application path	', lib.COLORS.BROWN), lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE));
-				console.log('	', lib.color('Executed user		', lib.COLORS.BROWN), lib.color(appInfo.user + '(uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE));
+				console.log('	', lib.color('Executed user		', lib.COLORS.BROWN), lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE));
 				for (var i = 0, len = list.length; i < len; i++) {
 					var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
 					var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);
@@ -88,6 +93,7 @@ module.exports = function () {
 	// execute the commands
 	async.series([
 		getAppPaths,
+		findUidForApps,
 		findUserForApps,
 		findApps,
 		findPids

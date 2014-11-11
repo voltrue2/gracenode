@@ -187,6 +187,7 @@ function handleMessage(parsed) {
 			message.startSend();
 			message.send({
 				monitorVersion: pkg.version,
+				path: app.path,
 				pid: app.pid,
 				started: app.started,
 				reloaded: app.reloaded,
