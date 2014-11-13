@@ -10,17 +10,17 @@ None
 
 ## Changed
 
-####Bug fix for daemon list output when --log=/path/to/log/dir/ given
+#### - Bug fix for daemon list output when --log=/path/to/log/dir/ given
 
-#### Deamon reload status output improvements
+#### - Deamon reload status output improvements
 
-#### Improved the stability of daemon reload command to ensure there is always at leaset one worker process running
+#### - Improved the stability of daemon reload command to ensure there is always at leaset one worker process running
 
-#### gracenode.send() properly fails on message object parse failure
+#### - gracenode.send() properly fails on message object parse failure
 
-#### Debug mode memory watch output now uses logger.table()
+#### - Debug mode memory watch output now uses logger.table()
 
-#### Updated dependency gracelog version
+#### - Updated dependency gracelog version
 
 ## Deprecated
 
