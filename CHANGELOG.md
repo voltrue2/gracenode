@@ -22,6 +22,8 @@ None
 
 #### - Updated dependency gracelog version
 
+Version updated from `0.1.20` to `0.1.21`.
+
 ## Deprecated
 
 None
