@@ -10,7 +10,7 @@ None
 
 ## Changed
 
-#### Daemon list output improved when --log=/path/to/log/dir/ given
+####Bug fix for daemon list output when --log=/path/to/log/dir/ given
 
 #### Deamon reload status output improvements
 

@@ -74,7 +74,7 @@ module.exports = function () {
 					return moveOn(error);
 				}
 				var commandLabel = lib.color(' Command		:', lib.COLORS.BROWN);
-				var command = lib.color('./daemon status|start|stop|restart|reload', lib.COLORS.DARK_BLUE);
+				var command = lib.color('./daemon (status|start|stop|restart|reload)', lib.COLORS.DARK_BLUE);
 				var appPath = lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE);
 				var user = lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE);
 				console.log('');
