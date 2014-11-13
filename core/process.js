@@ -1,5 +1,6 @@
 'use strict';
 
+var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var cluster = require('cluster');
@@ -75,7 +76,7 @@ Process.prototype.send = function (msg, worker) {
 	try {
 		msg = JSON.stringify(msg);
 	} catch (e) {
-
+		return this.log.error('send() failed to deliver message because the message object was malformed:', msg);
 	}
 	if (worker) {
 		// id worker is given, the master sends message to the given worker only
@@ -138,6 +139,7 @@ Process.prototype.setupMaster = function () {
 			var reloadedWorker = that.createWorker();
 			that.log.info('reloading: worker (pid:' + worker.process.pid + ') terminated');
 			that.log.info('reloading: worker (pid:' + reloadedWorker.process.pid + ') created');
+			that.emit('__processReloaded', worker.process.pid);
 			that.isReloading.reloadedWorkers += 1;
 			if (that.isReloading.reloadedWorkers === that.clusterNum) {
 				that.isReloading.running = false;
@@ -231,7 +233,21 @@ Process.prototype.reload = function (sig) {
 		this.isReloading.reloadedWorkers = 0;
 		this.log.info(sig, 'caught: reloading worker processes');
 		// send reload command to all workers
-		this.send({ command: 'reload' });
+		//this.send({ command: 'reload' });
+		var that = this;
+		var keys = Object.keys(cluster.workers);
+		async.eachSeries(keys, function (id, next) {
+
+			that.log.info('about to reload worker (id:' + id + ') [pid:' +  cluster.workers[id].process.pid + ']');
+
+			that.once('__processReloaded', function () {
+				next();
+			});
+			that.send({ command: 'reload' }, cluster.workers[id]);
+		},
+		function () {
+			that.log.info('application reload completed');
+		});
 	}
 	// none-cluster mode
 	if (!this.inClusterMode) {

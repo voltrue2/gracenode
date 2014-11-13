@@ -158,10 +158,12 @@ function startMemWatch(config, logger) {
 		var usedPercentage = ((usage.heapUsed / usage.heapTotal) * 100).toFixed(2);
 		var diffPercentage = ((((usage.heapUsed / avg) * 100) - 100).toFixed(2));
 		// output the analysis
-		logger.debug('memory RSS(resident set size):', bytesToSize(usage.rss));
-		logger.debug('memory heap used:', bytesToSize(usage.heapUsed),  usedPercentage + '%');
-		logger.debug('memory heap used average:', bytesToSize(avg), '(used difference:', diffPercentage + '%)');
-		logger.debug('memory heap total:', bytesToSize(usage.heapTotal));
+		var output = {};
+		output['memory RSS(resident set size)'] = { size: bytesToSize(usage.rss) };
+		output['memory heap used'] = { size: bytesToSize(usage.heapUsed), percentage: usedPercentage + '%' };
+		output['memory heap used average'] = { size: bytesToSize(avg), percentage: '(used difference: ' + diffPercentage + '%)' };
+		output['memory heap total'] = { size: bytesToSize(usage.heapTotal) };
+		logger.table(output);
 		if (usedPercentage >= 80) {
 			logger.warn('***WARNING: memory heap usage is too close to heap total');
 		}

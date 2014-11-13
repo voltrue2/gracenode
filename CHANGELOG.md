@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.6
+
+## Added
+
+None
+
+## Changed
+
+#### Improved the stability of daemon reload command to ensure there is always at leaset one worker process running
+
+#### gracenode.send() properly fails on message object parse failure
+
+#### Debug mode memory watch output now uses logger.table()
+
+#### Updated dependency gracelog version
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.5
 
 ## Added
