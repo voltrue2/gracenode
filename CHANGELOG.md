@@ -14,7 +14,7 @@ None
 
 #### - Deamon reload status output improvements
 
-#### - Improved the stability of daemon reload command to ensure there is always at leaset one worker process running
+#### - Improved the stability of daemon reload command to ensure there is always at least one worker process running
 
 #### - gracenode.send() properly fails on message object parse failure
 
