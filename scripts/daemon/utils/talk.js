@@ -160,7 +160,7 @@ module.exports.getStatus = function (cb) {
 				console.log(lib.color(' Application restarted		:', lib.COLORS.GRAY), lib.color(data.msg.numOfRestarted + ' times', lib.COLORS.GRAY));
 				console.log(lib.color(' Application reloaded		:', lib.COLORS.GRAY), lib.color(data.msg.reloadedCount + ' times', lib.COLORS.GRAY));
 				console.log('\n');
-				cb(data);
+				cb(data, processes);
 			});
 		});
 	};
@@ -249,6 +249,7 @@ module.exports.restartApp = function () {
 };
 
 module.exports.reloadApp = function () {
+	var seenPids = {};
 	var sock;
 	var connect = function (done) {
 		sock = new net.Socket();
@@ -256,7 +257,10 @@ module.exports.reloadApp = function () {
 	};
 	var getCurrentStatus = function (done) {
 		console.log(lib.color('Currently running daemon status', lib.COLORS.GRAY));
-		module.exports.getStatus(function () {
+		module.exports.getStatus(function (data, processes) {
+			for (var i = 0, len = processes.length; i < len; i++) {
+				seenPids[processes[i].pid] = true;
+			}
 			done();
 		});	
 	};
@@ -267,11 +271,11 @@ module.exports.reloadApp = function () {
 	};
 	var getNewStatus = function (done) {
 		console.log(lib.color('Reloading daemon status', lib.COLORS.GRAY));
-		setTimeout(function () {
+		module.exports.isRunning(function () {
 			module.exports.getStatus(function () {
 				done();
 			});
-		}, 300);
+		}, 0, 0, seenPids);
 	};
 	async.series([
 		connect,
