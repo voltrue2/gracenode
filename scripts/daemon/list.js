@@ -1,5 +1,3 @@
-'use strict';
-
 var fs = require('fs');
 var exec = require('child_process').exec;
 var gn = require('gracenode');
@@ -18,6 +16,7 @@ module.exports = function () {
 	// get list of applications
 	var getAppPaths = function (next) {
 		var monPath = 'gracenode/scripts/daemon/monitor start ';
+		var monPathLen = monPath.length;
 		exec('ps aux | grep "' + monPath + '"', function (error, stdout) {
 			if (error) {
 				return next(error);
@@ -26,7 +25,7 @@ module.exports = function () {
 			for (var i = 0, len = list.length; i < len; i++) {
 				if (list[i].indexOf(process.execPath) !== -1) {
 					apps.push({
-						path: list[i].substring(list[i].lastIndexOf(' ') + 1)
+						path: list[i].substring(list[i].lastIndexOf(monPath) + monPathLen).split(' ')[0]
 					});
 				}
 			}

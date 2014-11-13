@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### Daemon list output improved when --log=/path/to/log/dir/ given
+
 #### Deamon reload status output improvements
 
 #### Improved the stability of daemon reload command to ensure there is always at leaset one worker process running
