@@ -12,7 +12,7 @@ None
 
 #### - Dependency gracelog's version updated
 
-From `0.1.21` to `0.2.0`.
+From `0.1.21` to `0.2.1`.
 
 ## Deprecated
 
