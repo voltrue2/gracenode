@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### - Improved error out for alformed configurations
+
 #### - Dependency gracelog's version updated
 
 From `0.1.21` to `0.2.1`.

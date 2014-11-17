@@ -114,7 +114,7 @@ function parseConfigData(filePath) {
 	} catch (e) {
 		// get more details of the problem
 		var data = fs.readFileSync(path, { encoding: 'utf8' });
-		lintConfig(data);
+		lintConfig(path, data);
 		return e;
 	}
 	for (var key in config) {
@@ -132,13 +132,16 @@ function parseConfigData(filePath) {
 	return false;
 }
 
-function lintConfig(data) {
+function lintConfig(path, data) {
 	if (data) {
 		if (!jshint(data)) {
 			// there is an lint error
 			var errors = jshint.data().errors;
+			if (errors.length) {
+				console.error('[Error] malformed configuration(s) detected in', path);
+			}
 			for (var i = 0, len = errors.length; i < len; i++) {
-				console.error('    *** LINT [error] Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
+				console.error('    *** configuration [error] Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
 			}
 		}	
 	}
