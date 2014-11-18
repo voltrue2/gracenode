@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### - Help (--help) output reformatted
+
 #### - Improved error out for alformed configurations
 
 #### - Dependency gracelog's version updated

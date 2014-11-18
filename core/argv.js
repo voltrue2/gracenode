@@ -1,5 +1,3 @@
-'use strict';
-
 // --help is automatically defined and reserved
 var HELP = '--help';
 var argKeys = [];
@@ -127,19 +125,26 @@ Argv.prototype.execDefinedOptions = function () {
 
 Argv.prototype._showHelp = function (error) {
 	var pkg = require('../package.json');
-	console.log('\n' + pkg.name + ':', pkg.description);
-	console.log('\nAuthored by', pkg.author);
-	console.log('\nVersion:', pkg.version);
-	console.log('\nRepository:', pkg.repository.url);
-	console.log('\nOptions:');
+	var help = '';
+	help += '\n' + pkg.name + '	: ' + pkg.description;
+	help += '\nAuthor		: ' + pkg.author;
+	help += '\nVersion		: ' + pkg.version;
+	help += '\nRepository	: ' + pkg.repository.url;
+	help += '\n\nOptions	:\n';
 	for (var i = 0, len = defKeys.length; i < len; i++) {
 		var arg = defKeys[i];
 		var spaces = this._createSpaces(this._maxLen - arg.length);
-		console.log('    ' + arg + spaces + ':', this._def[arg].desc);
+		help += '    ' + arg + spaces + ' : ' + this._def[arg].desc + '\n';
 	}
-	console.log('\n');
+	if (error) {
+		help = '\n[error] *** ' + error.message + '\n' + help;
+		help = '\033[0;31m' +  help + '\033[0m';
+	} else {
+		help = '\033[0;32m' + help + '\033[0m';
+	}
+	console.log(help + '\n');
 	// we do not execute anything else in help mode
-	this._gn.exit(error || 0);
+	this._gn.exit();
 };
 
 Argv.prototype._createSpaces = function (n) {
