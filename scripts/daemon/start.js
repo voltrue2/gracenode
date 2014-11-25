@@ -31,7 +31,7 @@ module.exports = function (path, logPath) {
 		// start daemon
 		run(process.execPath, args, { detached: true, stdio: 'ignore' });
 		// now check the process' health
-		status.checkProcess(function (error, running) {
+		status.running(function (error, running) {
 			if (error) {
 				return status.end(error);
 			}

@@ -229,6 +229,18 @@ To display help interface:
 node daemon --help
 ```
 
+### Verbose Option
+
+To execute daemon tool in verbose mode, give the following option at the end of the command:
+
+`-v`.
+
+Example:
+
+```
+./daemon start app.js -v
+```
+
 ***
 
 #gracenode

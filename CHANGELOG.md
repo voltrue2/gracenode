@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### - Daemon stop refactrered
+
 #### - Daemon start refactered
 
 #### - Daemon status refactored

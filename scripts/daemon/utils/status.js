@@ -192,6 +192,28 @@ Status.prototype.outputStatus = function (data, processes) {
 	console.log('\n');
 };
 
+Status.prototype.stop = function () {
+	// send command to monitor
+	var that = this;
+	var sock = new net.Socket();
+	this.verbose('stopping application processes');
+	sock.connect(this.sockFile, function () {
+		sock.write('stop');
+		that.verbose('is application running?');
+		that.notRunning(function (error, notRunning) {
+			if (error) {
+				return that.end(error);
+			}
+			if (!notRunning) {
+				console.error(lib.color('Daemon process failed to stop', lib.COLORS.RED), lib.color(that.appPath, lib.COLORS.LIGHT_BLUE));
+				return that.end();
+			}
+			console.log(lib.color('Daemon process stopped', lib.COLORS.GRAY), lib.color(that.appPath, lib.COLORS.LIGHT_BLUE));
+			that.end();
+		});
+	});	
+};
+
 Status.prototype.findProcessList = function (cb) {
 	// remove /index.js if there is
 	var path = this.appPath.replace('/index.js', '');
@@ -249,7 +271,7 @@ Status.prototype.getPids = function (processList, cb) {
 	});
 };
 
-Status.prototype.checkProcess = function (cb, counter, running, seen) {
+Status.prototype.running = function (cb, counter, running, seen) {
 	counter = counter || 0;
 	running = running || 0;
 	seen = seen || {};
@@ -258,7 +280,7 @@ Status.prototype.checkProcess = function (cb, counter, running, seen) {
 	// recursive call function
 	var call = function () {
 		setTimeout(function () {
-			that.checkProcess(cb, counter, running, seen);
+			that.running(cb, counter, running, seen);
 		}, 100 + (counter * 20));
 	};
 	// application needs to be found running more than half of the time
@@ -295,6 +317,31 @@ Status.prototype.checkProcess = function (cb, counter, running, seen) {
 		// we don't see any process running
 		running -= 1;
 		call();
+	});
+};
+
+Status.prototype.notRunning = function (cb, counter) {
+	counter = counter || 0;
+	var that = this;
+	var next = function () {
+		setTimeout(function () {
+			counter += 1;
+			that.notRunning(cb, counter);
+		}, 100);
+	};
+	this.findProcessList(function (error, list) {
+		if (error) {
+			return cb(error);
+		}
+		that.verbose('number of running process remaining: ' + list.length);
+		if (list.length) {
+			if (counter === 0 || 10 % counter === 0) {
+				console.log(lib.color('running process count: ' + list.length, lib.COLORS.GRAY));
+			}
+			return next();
+		}
+		that.verbose('no more process running');
+		cb(null, true);
 	});
 };
 
