@@ -3,7 +3,6 @@ var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');
 var lib = require('./utils/lib');
-//var talk = require('./utils/talk');
 var sockName = require('./utils/socket-name');
 var Status = require('./utils/status').Status;
 
