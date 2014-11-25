@@ -8,8 +8,6 @@ var Message = require('./message');
 var socketName = require('./socket-name');
 var lib = require('./lib');
 var gn = require('gracenode');
-//var sockFile;
-//var appPath;
 var MAX_TRY = 10;
 
 function createRegExpPattern(path) {
