@@ -10,7 +10,7 @@ var lib = require('./lib');
 var gn = require('gracenode');
 //var sockFile;
 //var appPath;
-//var MAX_TRY = 10;
+var MAX_TRY = 10;
 
 function createRegExpPattern(path) {
 	return '(' + path + ' |' + path + '/ |' + (path.substring(0, path.length - 1)) + ' |' + path + 'index.js |' + path + '/index.js )';
@@ -22,8 +22,8 @@ function Status(appPath) {
 	this.socketName = '';
 	this.sockFile = '';
 	this.verboseEnabled = gn.argv('-v') || false;
-	this.verbose('in verbose mode');
-	this.verbose('status of ' + this.appPath);
+	this.verbose('status status validation for ' + this.appPath);
+	this.verbose('status validation is in verbose mode');
 }
 
 Status.prototype.verbose = function (msg) {
@@ -33,8 +33,11 @@ Status.prototype.verbose = function (msg) {
 	console.log(lib.color('[Application Status] ' + msg, lib.COLORS.GRAY));
 };
 
-Status.prototype.end = function () {
-	this.verbose('end of status');
+Status.prototype.end = function (error) {
+	this.verbose('end of status validation');
+	if (error) {
+		console.error(lib.color('*** ERROR:' + error.message, lib.COLORS.RED));
+	}
 	gn.exit();
 };
 
@@ -73,6 +76,11 @@ Status.prototype.setup = function (cb) {
 		});
 	};
 	var findSockFile = function (next) {
+		if (!that.socketName) {
+			that.isRunning = false;
+			that.verbose('no process running: validation of socket file skipped');
+			return next();
+		}
 		that.sockFile = socketName(that.socketName);
 		that.verbose('socket file path is ' + that.sockFile);
 		fs.exists(that.sockFile, function (exists) {
@@ -238,6 +246,55 @@ Status.prototype.getPids = function (processList, cb) {
 			}
 		}
 		cb(null, res);
+	});
+};
+
+Status.prototype.checkProcess = function (cb, counter, running, seen) {
+	counter = counter || 0;
+	running = running || 0;
+	seen = seen || {};
+	var that = this;
+	this.verbose('is application running? (counter:' + counter + ')');
+	// recursive call function
+	var call = function () {
+		setTimeout(function () {
+			that.checkProcess(cb, counter, running, seen);
+		}, 100 + (counter * 20));
+	};
+	// application needs to be found running more than half of the time
+	if (running >= MAX_TRY / 2) {
+		return cb(null, true);
+	}
+	if (counter > MAX_TRY) {
+		return cb(null, false);
+	}
+	counter += 1;
+	this.findProcessList(function (error, processList) {
+		if (error) {
+			return cb(error);
+		}
+		// we found some process(es) running
+		if (processList && processList.length) {
+			that.getPids(processList, function (error, list) {
+				var len = list.length;
+				for (var i = 0; i < len; i++) {
+					// we need at least 2 processes running: one is monitor and another is the application
+					if (len > 1 && list[i].process.indexOf('monitor start ') !== -1) {
+						running += 1;
+					}
+					// feedback output of running process(es)
+					if (!seen[list[i].pid]) {
+						seen[list[i].pid] = true;
+						console.log(lib.color(list[i].process, lib.COLORS.GRAY), lib.color('(pid: ' + list[i].pid + ')', lib.COLORS.GRAY));
+					}
+				}
+				call();
+			});
+			return;
+		}
+		// we don't see any process running
+		running -= 1;
+		call();
 	});
 };
 

@@ -4,7 +4,7 @@ var run = require('child_process').spawn;
 var gn = require('gracenode');
 var logger = gn.log.create('daemon-start');
 var lib = require('./utils/lib');
-var talk = require('./utils/talk');
+var Status = require('./utils/status').Status;
 
 module.exports = function (path, logPath) {
 	// listener for exceptions
@@ -12,11 +12,11 @@ module.exports = function (path, logPath) {
 		logger.error(lib.color(path, lib.COLORS.RED));
 		gn.exit();
 	});
-	// check if the process is already running
-	talk.setup(path, function (isAppRunning) {
-		if (isAppRunning) {
+	var status = new Status(path);
+	status.setup(function () {
+		if (status.isRunning) {
 			logger.error(lib.color('daemon process ' + path + ' is already running', lib.COLORS.RED));
-			return gn.exit();
+			return status.end();
 		}
 		// set up the options
 		var args = [
@@ -31,9 +31,9 @@ module.exports = function (path, logPath) {
 		// start daemon
 		run(process.execPath, args, { detached: true, stdio: 'ignore' });
 		// now check the process' health
-		talk.isRunning(function (error, running) {
+		status.checkProcess(function (error, running) {
 			if (error) {
-				return gn.exit(error);
+				return status.end(error);
 			}
 			if (running) {
 				console.log(lib.color('Daemon process started', lib.COLORS.GRAY), lib.color(path, lib.COLORS.LIGHT_BLUE));
@@ -44,7 +44,7 @@ module.exports = function (path, logPath) {
 			} else {
 				console.error(lib.color('Daemon process failed to start', lib.COLORS.RED), lib.color(path, lib.COLORS.RED));
 			}
-			gn.exit();
+			status.end();
 		});
 	});
 };

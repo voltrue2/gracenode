@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### - Daemon start refactered
+
 #### - Daemon status refactored
 
 ## Deprecated
