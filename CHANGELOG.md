@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.8
+
+## Added
+
+None
+
+## Changed
+
+#### - Daemon status refactored
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.7
 
 ## Added

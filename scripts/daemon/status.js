@@ -2,8 +2,8 @@
 
 var gn = require('gracenode');
 var logger = gn.log.create('daemon-status');
-var talk = require('./utils/talk');
 var lib = require('./utils/lib');
+var Status = require('./utils/status').Status;
 
 module.exports = function (appPath) {
 	// listener for exceptions
@@ -11,14 +11,15 @@ module.exports = function (appPath) {
 		logger.error(lib.color(appPath, lib.COLORS.RED));
 		gn.exit();
 	});
-	// start talking to daemon monitor process
-	talk.setup(appPath, function (isAppRunning) {
-		if (!isAppRunning) {
+	var status = new Status(appPath);
+	status.setup(function () {
+		if (!status.isRunning) {
 			logger.error(lib.color('daemon process ' + appPath + ' is not running', lib.COLORS.RED));
-			return gn.exit();
+			return status.end();
 		}
-		talk.getStatus(function () {
-			gn.exit();
+		status.getStatus(function (data, processList) {
+			status.outputStatus(data, processList);
+			status.end();
 		});
 	});
 };
