@@ -10,9 +10,15 @@ None
 
 ## Changed
 
-#### - Daemon stop refactrered
+#### - Daemon list refactored
 
-#### - Daemon start refactered
+#### - Daemon reload refactored
+
+#### - Daemon restart refactored
+
+#### - Daemon stop refactored
+
+#### - Daemon start refactored
 
 #### - Daemon status refactored
 

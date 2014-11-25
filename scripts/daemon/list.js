@@ -3,8 +3,9 @@ var exec = require('child_process').exec;
 var gn = require('gracenode');
 var async = require('async');
 var lib = require('./utils/lib');
-var talk = require('./utils/talk');
+//var talk = require('./utils/talk');
 var sockName = require('./utils/socket-name');
+var Status = require('./utils/status').Status;
 
 module.exports = function () {
 	// exception
@@ -12,7 +13,6 @@ module.exports = function () {
 		gn.exit();
 	});
 	var apps = [];
-	var appList = [];
 	// get list of applications
 	var getAppPaths = function (next) {
 		var monPath = 'gracenode/scripts/daemon/monitor start ';
@@ -54,44 +54,38 @@ module.exports = function () {
 			});
 		}, next);
 	};
-	// find applications
+	// find applications and their pids
 	var findApps = function (next) {
-		async.eachSeries(apps, function (app, moveOn) {
-			talk.findApp(app.path, function (error, appProcess) {
+		async.eachSeries(apps, function (appData, moveOn) {
+			var status = new Status(appData.path);
+			status.findProcessList(function (error, processList) {
 				if (error) {
 					return moveOn(error);
 				}
-				appList.push({ uid: app.uid, user: app.user, app: app.path, processes: appProcess });
-				moveOn();
-			});
-		}, next);
-	};
-	// find pids
-	var findPids = function (next) {
-		async.eachSeries(appList, function (appInfo, moveOn) {
-			talk.getPids(null, appInfo.processes, function (error, list) {
-				if (error) {
-					return moveOn(error);
-				}
-				var commandLabel = lib.color(' Command		:', lib.COLORS.BROWN);
-				var command = lib.color('./daemon (status|start|stop|restart|reload)', lib.COLORS.DARK_BLUE);
-				var appPath = lib.color(appInfo.app, lib.COLORS.LIGHT_BLUE);
-				var user = lib.color(appInfo.user + ' (uid:' + appInfo.uid + ')', lib.COLORS.LIGHT_BLUE);
-				console.log('');
-				console.log(lib.color(' Application path	:', lib.COLORS.BROWN), appPath);
-				console.log(commandLabel, command, appPath);
-				console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), user);
-				for (var i = 0, len = list.length; i < len; i++) {
-					var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
-					var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);
-					var label = ' Application process	: ';
-					if (app.indexOf('monitor start') !== -1) {
-						label = ' Monitor process	: ';
+				status.getPids(processList, function (error, list) {
+					if (error) {
+						return moveOn(error);
 					}
-					console.log(lib.color(label, lib.COLORS.BROWN) + app, pid);
-				}
-				console.log('');
-				moveOn();
+					var commandLabel = lib.color(' Command		:', lib.COLORS.BROWN);
+					var command = lib.color('./daemon (status|start|stop|restart|reload)', lib.COLORS.DARK_BLUE);
+					var appPath = lib.color(appData.path, lib.COLORS.LIGHT_BLUE);
+					var user = lib.color(appData.user + ' (uid:' + appData.uid + ')', lib.COLORS.LIGHT_BLUE);
+					console.log('');
+					console.log(lib.color(' Application path	:', lib.COLORS.BROWN), appPath);
+					console.log(commandLabel, command, appPath);
+					console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), user);
+					for (var i = 0, len = list.length; i < len; i++) {
+						var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
+						var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);
+						var label = ' Application process	: ';
+						if (app.indexOf('monitor start') !== -1) {
+							label = ' Monitor process	: ';
+						}
+						console.log(lib.color(label, lib.COLORS.BROWN) + app, pid);
+					}
+					console.log('');
+					moveOn();
+				});
 			});
 		}, next);
 	};
@@ -103,7 +97,6 @@ module.exports = function () {
 		getAppPaths,
 		findUidForApps,
 		findUserForApps,
-		findApps,
-		findPids
+		findApps
 	], done);
 };
