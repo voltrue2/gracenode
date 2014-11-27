@@ -75,7 +75,7 @@ module.exports = function () {
 					console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), user);
 					for (var i = 0, len = list.length; i < len; i++) {
 						var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
-						var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);
+						var pid = lib.color('(pid:' + list[i].pid + ')', lib.COLORS.PURPLE);
 						var label = ' Application process	: ';
 						if (app.indexOf('monitor start') !== -1) {
 							label = ' Monitor process	: ';

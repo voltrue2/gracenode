@@ -2,6 +2,30 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.9
+
+## Added
+
+None
+
+## Changed
+
+#### - Daemon list command output changed
+
+#### - Updated gracelog's version
+
+From `0.2.1` to `0..2.4`.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.8
 
 ## Added
