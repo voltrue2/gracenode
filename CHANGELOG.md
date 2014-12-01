@@ -6,15 +6,65 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### - lib module added .find()
+
+Finds and returns matched elements and their indexes from an object/array by user defined function.
+
+Example With Array:
+
+```javascript
+var list = [
+        { name: 'Bob', age: 40 },
+        { name: 'John', age: 37 },
+        { name: 'Chris', age: 44 },
+        { name: 'Dale', age: 51 }
+];
+var finder = function (elm) {
+        return elm.age >= 40 && elm.age <= 50;
+};
+var matched = gracenode.lib.find(list, finder);
+/*
+matched: [
+        { index: 0, element: { name: 'Bob', age: 40 } },
+        { index: 2, element: { name: 'Chris', age: 44 } }
+]
+*/
+```
+
+Example With Object:
+
+```javascript
+var map = {
+        a00: { name: 'Bob', age: 40 },
+        a01: { name: 'John', age: 37 },
+        a02: { name: 'Chris', age: 44 },
+        a03: { name: 'Dale', age: 51 }
+};
+var finder = function (elm) {
+        return elm.age >= 40 && elm.age <= 50;
+};
+var matched = gracenode.lib.find(map, finder);
+/*
+matched: [
+        { index: 'a00', element: { name: 'Bob', age: 40 } },
+        { index: 'a02', element: { name: 'Chris', age: 44 } }
+]
+*/
+```
 
 ## Changed
 
-#### - Daemon list command output changed
+#### - core module loader improved module name conflict detection on .setup()
 
-#### - Updated gracelog's version
+Gracenode can detect module name conflicts even for modules that are not called by `gracenode.use()`.
 
-From `0.2.1` to `0..2.4`.
+When conflict is detected, gracenode stops running immediately.
+
+Example:
+
+```
+exit gracenode with an error: module name conflict: [redis] /home/nt/game/node_modules/redis x /home/nt/game/modules/redis
+```
 
 ## Deprecated
 

@@ -3,6 +3,58 @@
 ###Configuration
 *N/A*
 
+####find
+
+<pre>
+Array find(Object/Array findFrom, Function findMethod)
+</pre>
+
+Returns an array of matched elements and their indexes/keys from either an object or an array.
+
+If there are no matched elements, an empty array is returned.
+
+Example With Array:
+
+```javascript
+var list = [
+	{ name: 'Bob', age: 40 },
+	{ name: 'John', age: 37 },
+	{ name: 'Chris', age: 44 },
+	{ name: 'Dale', age: 51 }
+];
+var finder = function (elm) {
+	return elm.age >= 40 && elm.age <= 50;
+};
+var matched = gracenode.lib.find(list, finder);
+/*
+matched: [
+	{ index: 0, element: { name: 'Bob', age: 40 } },
+	{ index: 2, element: { name: 'Chris', age: 44 } }
+]
+*/
+```
+
+Example With Object:
+
+```javascript
+var map = {
+	a00: { name: 'Bob', age: 40 },
+	a01: { name: 'John', age: 37 },
+	a02: { name: 'Chris', age: 44 },
+	a03: { name: 'Dale', age: 51 }
+};
+var finder = function (elm) {
+	return elm.age >= 40 && elm.age <= 50;
+};
+var matched = gracenode.lib.find(map, finder);
+/*
+matched: [
+	{ index: 'a00', element: { name: 'Bob', age: 40 } },
+	{ index: 'a02', element: { name: 'Chris', age: 44 } }
+]
+*/
+```
+
 ####typeCast
 
 <pre>

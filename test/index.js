@@ -190,5 +190,73 @@ describe('gracenode initialization ->', function () {
 		logTest.log();
 		done();
 	});
+
+	it('Can find a matched element and its index from an array', function () {
+		var list = ['a', 'b', 'c'];
+		var res = gn.lib.find(list, function (elm) {
+			return elm === 'b';
+		});
+		assert.equal(res[0].index, 1);
+		assert.equal(res[0].element, 'b');
+	});
+
+	it('Can find a matched element and its key from an object', function () {
+		var map = {
+			a: 100,
+			b: 200,
+			c: 300
+		};
+		var res = gn.lib.find(map, function (item) {
+			return item === 100;
+		});
+		assert.equal(res[0].index, 'a');
+		assert.equal(res[0].element, 100);
+	});
+
+	it('Can find matched elements and their indexes from an array', function () {
+		var list = ['a', 'b', 'c'];
+		var res = gn.lib.find(list, function (elm) {
+			return elm === 'a' || 'b';
+		});
+		assert.equal(res[0].index, 0);
+		assert.equal(res[0].element, 'a');
+		assert.equal(res[1].index, 1);
+		assert.equal(res[1].element, 'b');
+	});
+
+	it('Can find matched elements and their keys from an object', function () {
+		var map = {
+			a: 100,
+			b: 200,
+			c: 300
+		};
+		var res = gn.lib.find(map, function (item) {
+			return item === 100 || item === 300;
+		});
+		assert.equal(res[0].index, 'a');
+		assert.equal(res[0].element, 100);
+		assert.equal(res[1].index, 'c');
+		assert.equal(res[1].element, 300);
+	});
+
+	it('Can return an empty array if there is no matched element in the given array', function () {
+		var list = ['a', 'b', 'c'];
+		var res = gn.lib.find(list, function (elm) {
+			return elm === 'd';
+		});
+		assert.equal(res.length, 0);
+	});
+
+	it('Can return an empty array if there is no matched element in the given object', function () {
+		var map = {
+			a: 100,
+			b: 200,
+			c: 300
+		};
+		var res = gn.lib.find(map, function (item) {
+			return item === 400;
+		});
+		assert.equal(res.length, 0);
+	});
  
 });

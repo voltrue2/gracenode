@@ -7,6 +7,27 @@ var validationPatterns = {
 	password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
 
+module.exports.find = function (obj, findFunc) {
+	if (typeof obj !== 'object') {
+		throw new Error('the first argument must be an object/array');
+	}
+	var res = [];
+	if (Array.isArray(obj)) {
+		for (var i = 0, len = obj.length; i < len; i++) {
+			if (findFunc(obj[i])) {
+				res.push({ index: i, element: obj[i] });
+			}
+		}
+		return res;
+	}
+	for (var key in obj) {
+		if (findFunc(obj[key])) {
+			res.push({ index: key, element: obj[key] });
+		}
+	}
+	return res;
+};
+
 module.exports.typeCast = function (data) {
 	if (isNaN(data)) {
 		// none numeric data
