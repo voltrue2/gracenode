@@ -63,7 +63,7 @@ When conflict is detected, gracenode stops running immediately.
 Example:
 
 ```
-exit gracenode with an error: module name conflict: [redis] /home/nt/game/node_modules/redis x /home/nt/game/modules/redis
+exit gracenode with an error: module name conflict detected for [redis] in /home/nt/game/node_modules/redis and /home/nt/game/modules/redis
 ```
 
 ## Deprecated

@@ -11,6 +11,9 @@ module.exports.find = function (obj, findFunc) {
 	if (typeof obj !== 'object') {
 		throw new Error('the first argument must be an object/array');
 	}
+	if (typeof findFunc !== 'function') {
+		throw new Error('the second argument must be a function');
+	}
 	var res = [];
 	if (Array.isArray(obj)) {
 		for (var i = 0, len = obj.length; i < len; i++) {
