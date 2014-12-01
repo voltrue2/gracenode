@@ -54,7 +54,17 @@ matched: [
 
 ## Changed
 
-None
+#### - core module loader detects module name conflicts in not used modules as well
+
+Gracenode can not detect module name conflicts (even for modules that are not called by gracenode.use()).
+
+When conflict is detected, gracenode stops running immediately.
+
+Example:
+
+```
+exit gracenode with an error: module name conflict: [redis] /home/nt/game/node_modules/redis x /home/nt/game/modules/redis
+```
 
 ## Deprecated
 

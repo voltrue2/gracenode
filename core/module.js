@@ -119,6 +119,10 @@ Module.prototype._mapModules = function (cb) {
 				var modName = list[i];
 				that._logger.verbose('module mapped [' + path + ']:', modName);
 				var modulePath = path + modName;
+				if (moduleMap[modName]) {
+					var err = 'module name conflict detected for [' + modName + '] in ' + moduleMap[modName] + ' and ' + modulePath;
+					return cb(new Error(err));
+				}
 				// no name conflicts
 				moduleMap[modName] = modulePath;
 			}
