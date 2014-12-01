@@ -54,9 +54,9 @@ matched: [
 
 ## Changed
 
-#### - core module loader detects module name conflicts in not used modules as well
+#### - core module loader improved module name conflict detection on .setup()
 
-Gracenode can not detect module name conflicts (even for modules that are not called by gracenode.use()).
+Gracenode can detect module name conflicts even for modules that are not called by `gracenode.use()`.
 
 When conflict is detected, gracenode stops running immediately.
 
