@@ -1,0 +1,9 @@
+{
+	"modules": {
+		"log": {
+			"console": true,
+			"color": true,
+			"level": ">= verbose"
+		}
+	}
+}
