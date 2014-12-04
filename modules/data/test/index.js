@@ -236,4 +236,16 @@ describe('Data Model', function () {
 		});
 	});	
 
+	it('Can rollback module data', function () {
+		var success = testModel.set('age', 100);
+		assert.equal(success, true);
+		success = testModel.set('name', '1234567890');
+		assert.equal(success, true);
+		assert.equal(testModel.get('age'), 100);
+		assert.equal(testModel.get('name'), '1234567890');
+		testModel.rollback();
+		assert.equal(testModel.get('age'), 40);
+		assert.equal(testModel.get('name'), 'FooMan');
+	});
+
 });

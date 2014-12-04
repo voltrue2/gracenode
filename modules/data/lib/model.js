@@ -66,7 +66,7 @@ Model.prototype.set = function (name, value) {
 	// set backup value
 	if (!this.backup.hasOwnProperty(name)) {
 		logger.verbose(this.name, 'setting local memory backup to', name, value);
-		this.backup[name] = value;
+		this.backup[name] = gn.lib.cloneObj(value);
 	}
 	return true;
 };
@@ -90,6 +90,7 @@ Model.prototype.create = function (cb) {
 			return cb(error);
 		}
 		that.loaded = true;
+		that.backup = gn.lib.cloneObj(that.data);
 		logger.info('data created', that.name, that.data);
 		cb(null, result);
 	});
@@ -103,7 +104,7 @@ Model.prototype.load = function (data) {
 	}
 	if (data) {
 		this.data = data;
-		this.backup = data;
+		this.backup = gn.lib.cloneObj(data);
 	}
 	var err = this.formatData();
 
@@ -113,6 +114,7 @@ Model.prototype.load = function (data) {
 	}
 
 	this.loaded = true;
+	this.backup = {};
 	logger.verbose('data loaded', this.name, data);
 	return true;
 };
@@ -127,7 +129,7 @@ Model.prototype.read = function (id, cb) {
 		}
 		if (data) {
 			that.data = data;
-			that.backup = data;
+			that.backup = gn.lib.cloneObj(data);
 		}
 		var err = that.formatData();
 
@@ -136,6 +138,7 @@ Model.prototype.read = function (id, cb) {
 		}
 
 		that.loaded = true;
+		that.backup = {};
 		logger.verbose('data read', that.name, id, that.data);
 		cb();
 	});
@@ -160,6 +163,7 @@ Model.prototype.update = function (cb) {
 			that.rollback();
 			return cb(error);
 		}
+		that.backup = {};
 		logger.info('data updated', that.name, that.data);
 		cb(null, result);
 	});
@@ -185,6 +189,7 @@ Model.prototype.delete = function (cb) {
 
 Model.prototype.rollback = function () {
 	for (var name in this.backup) {
+		logger.verbose(this.name, 'rollback data', name, this.data[name], '->', this.backup[name]);
 		this.data[name] = this.backup[name];
 	}
 	this.backup = {};
