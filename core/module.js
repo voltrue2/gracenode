@@ -110,7 +110,7 @@ Module.prototype.load = function (cb) {
 
 Module.prototype._mapModules = function (cb) {
 	var that = this;
-	async.each(this._modPaths, function (path, next) {
+	var readdir = function readdir(path, next) {
 		fs.readdir(path, function (error, list) {
 			if (error) {
 				return cb(error);
@@ -119,7 +119,7 @@ Module.prototype._mapModules = function (cb) {
 				var modName = list[i];
 				var modulePath = path + modName;
 				if (moduleMap[modName]) {
-					var err = 'module name conflict detected for [' + modName + '] in ' + moduleMap[modName] + ' and ' + modulePath;
+					var err = 'module name conflict detected [' + modName + ']: ' + moduleMap[modName] + ' and ' + modulePath;
 					return cb(new Error(err));
 				}
 				// no name conflicts
@@ -128,7 +128,8 @@ Module.prototype._mapModules = function (cb) {
 			}
 			next();
 		});
-	}, cb);
+	};
+	async.each(this._modPaths, readdir, cb);
 };
 
 Module.prototype._require = function (name) {
