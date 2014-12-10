@@ -16,6 +16,8 @@ Daemon stop command now removes the socket file and exits the process.
 
 Added an error catch to that flow and monitor process will NOT exit on failed socket file removal.
 
+#### Minor improvements in daemon restart output
+
 ## Deprecated
 
 None
