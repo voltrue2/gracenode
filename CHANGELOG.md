@@ -2,6 +2,30 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.11
+
+## Added
+
+None
+
+## Changed
+
+#### Improved the stability of daemon stop command execution
+
+Daemon stop command now removes the socket file and exits the process.
+
+Added an error catch to that flow and monitor process will NOT exit on failed socket file removal.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.10
 
 ## Added

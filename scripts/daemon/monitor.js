@@ -49,9 +49,13 @@ gn.defineOption('start', 'Starts a monitor process to spawn and monitor applicat
 gn.setup(function () {});
 
 function handleExit(error) {
-	logger.stop(error, function () {
-		fs.unlinkSync(socketName(path));
-		process.exit(error || 0);
+	fs.unlink(socketName(path), function (err) {
+		if (err) {
+			return logger.error('failed to remove socket file:', err);
+		}
+		logger.stop(error, function () {
+			process.exit(error || 0);
+		});
 	});
 }
 
