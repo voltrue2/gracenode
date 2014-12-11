@@ -6,7 +6,9 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### Default minimum configuration mode added
+
+Gracenode now tries to run the application with internal minimum default configurations.
 
 ## Changed
 
