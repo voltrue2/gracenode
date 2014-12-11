@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.11
+
+## Added
+
+#### Default minimum configuration mode added
+
+Gracenode now tries to run the application with internal minimum default configurations.
+
+## Changed
+
+#### Improved the stability of daemon stop command execution
+
+Daemon stop command now removes the socket file and exits the process.
+
+Added an error catch to that flow and monitor process will NOT exit on failed socket file removal.
+
+#### Minor improvements in daemon restart output
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.10
 
 ## Added

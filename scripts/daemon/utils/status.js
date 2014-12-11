@@ -227,7 +227,8 @@ Status.prototype.restart = function () {
 		sock.connect(that.sockFile, done);
 	};
 	var getCurrentStatus = function (done) {
-		console.log(lib.color('Currently running daemon status', lib.COLORS.GRAY));
+		console.log('');
+		console.log(lib.color('Currently running daemon status', lib.COLORS.LIGHT_BLUE));
 		that.getStatus(function (data, processes) {
 			that.outputStatus(data, processes);
 			done();
@@ -276,6 +277,7 @@ Status.prototype.restart = function () {
 			return that.end(error);
 		}
 		console.log(lib.color('Restarted application as a daemon ' + that.appPath, lib.COLORS.LIGHT_BLUE));
+		console.log('');
 		that.end();
 	});
 };

@@ -1,5 +1,8 @@
 'use strict';
 
+var GN_DEFAULT_CONF_PATH = 'lib/defaults/';
+var GN_DEFAULT_CONF = 'config.json'; 
+
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
 var config = require('../modules/config');
@@ -135,6 +138,14 @@ Gracenode.prototype.exitOnBadOption = function () {
 
 Gracenode.prototype.setup = function (cb) {
 	var that = this;
+
+	// if we are missing configurations, gracenode will try to run with minimum default values
+	if (!this._configPath && this._configFiles) {
+		this._configPath = this._root + GN_DEFAULT_CONF_PATH;
+		this._configFiles = [GN_DEFAULT_CONF];
+		console.warn('<warn>[gracenode] the application is missing configurations: attempting to run the application with minimum default configurations');
+	}
+
 	if (!this._configPath) {
 		console.error('<error>[gracenode] path to configuration files not set: call .setConfigPath() before calling .setup()');
 		return cb(new Error('path to configuration files is missing'));
@@ -143,6 +154,7 @@ Gracenode.prototype.setup = function (cb) {
 		console.error('<error>[gracenode] no configuration files to load');
 		return cb(new Error('no configuration files given: call .setConfigFiles() before calling .setup()'));
 	}
+
 	// set up argv
 	this._argv.setup();
 	// set up config
