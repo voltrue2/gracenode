@@ -143,7 +143,7 @@ Gracenode.prototype.setup = function (cb) {
 	if (!this._configPath && this._configFiles) {
 		this._configPath = this._root + GN_DEFAULT_CONF_PATH;
 		this._configFiles = [GN_DEFAULT_CONF];
-		console.warn('<warn>[gracenode] the application is missing configurations: attempting to run the application with minumum default configurations');
+		console.warn('<warn>[gracenode] the application is missing configurations: attempting to run the application with minimum default configurations');
 	}
 
 	if (!this._configPath) {
