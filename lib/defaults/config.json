@@ -1,0 +1,23 @@
+{
+	"default-configurations": true,
+	"cluster": {
+		"enabled": false,
+		"max": 1
+	},
+	"modules": {
+		"log": {
+			"console": true,
+			"color": true,
+			"level": ">= verbose"
+		},
+		"gracenode-server": {
+			"protocol": "http",
+			"port": 8080,
+			"host": "localhost",
+			"controllerPath": "http/",
+			"reroute": [],
+			"error": {},
+			"ignored": []
+		}
+	}
+}
