@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.12
+
+## Added
+
+#### lib module added .createTimedData()
+
+For details please read here <a href="https://github.com/voltrue2/gracenode/blob/master/modules/lib/README.md#createtimeddataconfig-object">here</a>.
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.11
 
 ## Added

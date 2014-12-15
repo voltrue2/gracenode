@@ -119,3 +119,39 @@ Configs:
 }
 ```
 
+Usage Example:
+
+TimedData that recovers its value by 1 every 1 second.
+
+```javascript
+var config = {
+	max: 10,
+	min: 0,
+	interval: 1000,
+	step: 1,
+	type: 'inc',
+	init: 0
+};
+var td = gracenode.lib.createTimedData(config);
+setTimeout(function () {
+	var value = td.getValue();
+	// value should be 1
+}, 1000);
+```
+
+```javascript
+var config = {
+	max: 10,
+	min: 0,
+	interval: 1000,
+	step: 1,
+	type: 'inc',
+	init: 10
+};
+var td = gracenode.lib.createTimedData(config);
+td.dec(5);
+setTimeout(function () {
+	var value = td.getValue();
+	// value should be 6
+}, 1000);
+```
