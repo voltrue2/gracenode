@@ -258,5 +258,186 @@ describe('gracenode initialization ->', function () {
 		});
 		assert.equal(res.length, 0);
 	});
+
+	it('Can create an increment type timed data', function () {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		var timedData = gn.lib.createTimedData(conf);
+		var value = timedData.getValue();
+		
+		assert.equal(value, 10);
+	});
+
+	it('Can not create an increment type timed data w/ invalid init', function () {
+		var conf = {
+			init: '10',
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		try {
+			gn.lib.createTimedData(conf);
+		} catch (e) {
+			assert(e);
+		}
+	});
+
+	it('Can not create an increment type timed data w/ invalid max', function () {
+		var conf = {
+			init: 10,
+			max: 0,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		try {
+			gn.lib.createTimedData(conf);
+		} catch (e) {
+			assert(e);
+		}
+	});
+
+	it('Can not create an increment type timed data w/ invalid min', function () {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: -1,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		try {
+			gn.lib.createTimedData(conf);
+		} catch (e) {
+			assert(e);
+		}
+	});
+
+	it('Can not create an increment type timed data w/ invalid interval', function () {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: [1, 2, 3],
+			step: 1,
+			type: 'inc'
+		};
+		try {
+			gn.lib.createTimedData(conf);
+		} catch (e) {
+			assert(e);
+		}
+	});
+
+	it('Can not create an increment type timed data w/ invalid step', function () {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 100,
+			type: 'inc'
+		};
+		try {
+			gn.lib.createTimedData(conf);
+		} catch (e) {
+			assert(e);
+		}
+	});
+
+	it('Can not create an increment type timed data w/ invalid type', function () {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'foo'
+		};
+		try {
+			gn.lib.createTimedData(conf);
+		} catch (e) {
+			assert(e);
+		}
+	});
+
+	it('Can create an increment type timed data and decrement', function () {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		var timedData = gn.lib.createTimedData(conf);
+		var value = timedData.getValue();
+		
+		assert.equal(value, 10);
+
+		var success = timedData.dec(5);
+
+		assert.equal(success, true);
+		assert.equal(timedData.getValue(), 5);
+	});
+
+	it('Can create an increment type timed data and decrement and recover by 1 after 10 milliseconds', function (done) {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		var timedData = gn.lib.createTimedData(conf);
+		var value = timedData.getValue();
+		
+		assert.equal(value, 10);
+
+		var success = timedData.dec(5);
+
+		assert.equal(success, true);
+		assert.equal(timedData.getValue(), 5);
+
+		setTimeout(function () {
+			assert.equal(timedData.getValue(), 6);
+			done();
+		}, 10);
+	});
+
+	it('Can create an increment type timed data and decrement and recover by 5 after 50 milliseconds', function (done) {
+		var conf = {
+			init: 10,
+			max: 10,
+			min: 0,
+			interval: 10,
+			step: 1,
+			type: 'inc'
+		};
+		var timedData = gn.lib.createTimedData(conf);
+		var value = timedData.getValue();
+		
+		assert.equal(value, 10);
+
+		var success = timedData.dec(5);
+
+		assert.equal(success, true);
+		assert.equal(timedData.getValue(), 5);
+
+		setTimeout(function () {
+			assert.equal(timedData.getValue(), 10);
+			done();
+		}, 50);
+	});
  
 });

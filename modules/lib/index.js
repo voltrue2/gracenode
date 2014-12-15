@@ -1,10 +1,25 @@
 'use strict';
 
 var fs = require('fs');
+var TimedData = require('./lib/timeddata');
 var validationPatterns = {
 	numeric: /^\d+$/,
 	alphaNumeric: /^[a-z0-9]+$/i,
 	password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
+};
+
+/*
+conf: {
+	max: [number],
+	min: [number],
+	interval: [number], // update interval
+	step: [number], // update step e.g. is step = 2, it will inc/dec 2 every interval
+	type: [string], // inc: increment, dec: decrement
+	initValue: [number], // cannot be greater than max and smaller than min
+}
+*/
+module.exports.createTimedData = function (conf) {
+	return new TimedData(conf);
 };
 
 module.exports.find = function (obj, findFunc) {
