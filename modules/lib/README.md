@@ -155,3 +155,45 @@ setTimeout(function () {
 	// value should be 6
 }, 1000);
 ```
+
+### TimedData Class
+
+####.getValue()
+
+Returns the current value.
+
+####.inc(incrementValue [number])
+
+Increments the current value by incrementValue.
+
+Returns `true` if successful.
+
+####.dec(decrementValue [number])
+
+Decrements the current value by decrementValue.
+
+Returns `true` if successful.
+
+####.reset()
+
+Resets the state of `TimedData` object to its initial state.
+
+####.getMaxValue()
+
+Returns maximum value.
+
+####.getMinValue()
+
+Returns minimum value.
+
+####.getInterval()
+
+Returns the interval for every update in milliseconds.
+
+####.getStep()
+
+Returns the value of step for every update.
+
+####.toObject()
+
+Returns a JSON format of `TimedData` object.
