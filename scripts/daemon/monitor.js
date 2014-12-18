@@ -182,19 +182,29 @@ function reloadApp(cb) {
 	}
 }
 
+// dirListToWatch is either true or a string
 function setupAutoReloading(path, dirListToWatch) {
 	var appRoot = path.substring(0, path.lastIndexOf('/'));
-	/*
-	fs.watch(appRoot, function (event) {
+	var list = [];
+	if (dirListToWatch === true) {
+		// no optional directories to watch given: watch the applicaiton root for auto-reloading 
+		list.push(appRoot);
+	} else {
+		// watch the given directories for auto-reloading
+		list = dirListToWatch.split(' ');
+	}
+	var reloader = function (event) {
 		if (event === 'change') {
 			reloadApp(function () {
 				logger.info('source code change detected: auto-reloaded daemon process of ' + path);
 			});
 		}
-	});
-	*/
-	logger.info('appRoot >>>>> ' + appRoot);
-	logger.info('dirListToWatch >>> ' + JSON.stringify(dirListToWatch, null, 2));
+	};
+	// set up the watcher
+	for (var i = 0, len = list.length; i < len; i++) {
+		fs.watch(list[i], reloader);
+		logger.info('auto-reload set up for ' + path + ' on ' + list[i]);
+	}	
 }
 
 function parseCommand(cmd) {
