@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.13
+
+## Added
+
+#### Daemon Start added auto-reloading option
+
+For more details please read here <a href="">here</a>.
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.12
 
 ## Added
