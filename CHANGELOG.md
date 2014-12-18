@@ -8,7 +8,7 @@ This is a list of manually mantained changes and updates for each version.
 
 #### Daemon Start added auto-reloading option
 
-For more details please read here <a href="">here</a>.
+For more details please read here <a href="https://github.com/voltrue2/gracenode/#to-start-your-application-as-a-daemon-process">here</a>.
 
 ## Changed
 
