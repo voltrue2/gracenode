@@ -97,7 +97,13 @@ function startApp() {
 	app.started = Date.now();
 	app.reloaded = app.started;
 	app.reloadedCount = 0;
-	logger.info('started daemon process of ' + path);
+	var autoReloadMsg = '';
+	// auto-reloading
+	if (gn.argv('-a')) {
+		setupAutoReloading(path, gn.argv('-a'));
+		autoReloadMsg = ' with auto-reloading enabled';
+	}
+	logger.info('started daemon process of ' + path + autoReloadMsg);
 	// if appllication dies unexpectedly, respawn it
 	app.once('exit', function (code, signal) {
 		deathCount += 1;
@@ -174,6 +180,36 @@ function reloadApp(cb) {
 	if (cb) {
 		cb();
 	}
+}
+
+// dirListToWatch is either true or a string
+function setupAutoReloading(path, dirListToWatch) {
+	var appRoot = path.substring(0, path.lastIndexOf('/'));
+	var list = [];
+	if (dirListToWatch === true) {
+		// no optional directories to watch given: watch the applicaiton root for auto-reloading 
+		list.push(appRoot);
+	} else {
+		// watch the given directories for auto-reloading
+		list = dirListToWatch.split(' ');
+	}
+	var reloader = function (event) {
+		if (event === 'change') {
+			reloadApp(function () {
+				logger.info('source code change detected: auto-reloaded daemon process of ' + path);
+			});
+		}
+	};
+	// set up the watcher
+	try {
+		for (var i = 0, len = list.length; i < len; i++) {
+			var dirPath = list[i].indexOf(appRoot) === -1 ? appRoot + '/' + list[i] : list[i];
+			fs.watch(dirPath, reloader);
+			logger.info('auto-reload set up for ' + path + ' on ' + dirPath);
+		}
+	} catch (error) {
+		logger.error('failed to set up auto-reload watcher: ' + error.message);
+	}	
 }
 
 function parseCommand(cmd) {
