@@ -5,6 +5,7 @@
 var fs = require('fs');
 var gn = require('gracenode');
 var logPath;
+var autoReload;
 gn.setConfigPath(gn._root + 'scripts/configs/', true);
 gn.setConfigFiles(['daemon.json']);
 
@@ -14,8 +15,12 @@ gn.defineOption('--log', 'Enables logging into files in the given path. Example:
 	logPath = path;
 });
 
+gn.defineOption('-a', 'Enables auto-reloading of the daemon process on any file change to the application. Example: ./daemon start app.js -a', function (autoReloadIn) {
+	autoReload = autoReloadIn;
+});
+
 gn.defineOption('start', 'Starts application as a daemon.', function (path) {
-	require('./start.js')(getPath(path), logPath);
+	require('./start.js')(getPath(path), logPath, autoReload);
 });
 
 gn.defineOption('stop', 'Stops daemonized application.', function (path) {

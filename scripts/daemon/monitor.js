@@ -97,7 +97,13 @@ function startApp() {
 	app.started = Date.now();
 	app.reloaded = app.started;
 	app.reloadedCount = 0;
-	logger.info('started daemon process of ' + path);
+	var autoReloadMsg = '';
+	// auto-reloading
+	if (gn.argv('-a')) {
+		setupAutoReloading(path);
+		autoReloadMsg = ' with auto-reloading enabled';
+	}
+	logger.info('started daemon process of ' + path + autoReloadMsg);
 	// if appllication dies unexpectedly, respawn it
 	app.once('exit', function (code, signal) {
 		deathCount += 1;
@@ -174,6 +180,17 @@ function reloadApp(cb) {
 	if (cb) {
 		cb();
 	}
+}
+
+function setupAutoReloading(path) {
+	var appRoot = path.substring(0, path.lastIndexOf('/'));
+	fs.watch(appRoot, function (event) {
+		if (event === 'change') {
+			reloadApp(function () {
+				logger.info('auto-reloaded daemon process of ' + path);
+			});
+		}
+	});
 }
 
 function parseCommand(cmd) {
