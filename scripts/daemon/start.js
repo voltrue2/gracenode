@@ -29,7 +29,10 @@ module.exports = function (path, logPath, autoReload) {
 			console.log(lib.color('Logging in', lib.COLORS.GRAY), lib.color(logPath, lib.COLORS.BROWN));
 		}
 		if (autoReload) {
-			args.push('-a');
+			if (!Array.isArray(autoReload)) {
+				autoReload = [autoReload];
+			}
+			args.push('-a=' + autoReload.join(' '));
 			console.log(lib.color('Auto-reload enabled', lib.COLORS.GREEN));
 		}
 		// start daemon

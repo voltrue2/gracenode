@@ -15,7 +15,7 @@ gn.defineOption('--log', 'Enables logging into files in the given path. Example:
 	logPath = path;
 });
 
-gn.defineOption('-a', 'Enables auto-reloading of the daemon process on any file change to the application. Example: ./daemon start app.js -a', function (autoReloadIn) {
+gn.defineOption('-a', 'Enables auto-reloading of the daemon process on any file change to the application. Example: ./daemon start app.js -a dir/to/watch/ for/auto/reload/', function (autoReloadIn) {
 	autoReload = autoReloadIn;
 });
 

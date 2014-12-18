@@ -100,7 +100,7 @@ function startApp() {
 	var autoReloadMsg = '';
 	// auto-reloading
 	if (gn.argv('-a')) {
-		setupAutoReloading(path);
+		setupAutoReloading(path, gn.argv('-a'));
 		autoReloadMsg = ' with auto-reloading enabled';
 	}
 	logger.info('started daemon process of ' + path + autoReloadMsg);
@@ -182,15 +182,19 @@ function reloadApp(cb) {
 	}
 }
 
-function setupAutoReloading(path) {
+function setupAutoReloading(path, dirListToWatch) {
 	var appRoot = path.substring(0, path.lastIndexOf('/'));
+	/*
 	fs.watch(appRoot, function (event) {
 		if (event === 'change') {
 			reloadApp(function () {
-				logger.info('auto-reloaded daemon process of ' + path);
+				logger.info('source code change detected: auto-reloaded daemon process of ' + path);
 			});
 		}
 	});
+	*/
+	logger.info(appRoot);
+	logger.info(dirListToWatch);
 }
 
 function parseCommand(cmd) {
