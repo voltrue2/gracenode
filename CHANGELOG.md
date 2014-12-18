@@ -8,7 +8,25 @@ This is a list of manually mantained changes and updates for each version.
 
 #### Daemon Start added auto-reloading option
 
-For more details please read here <a href="https://github.com/voltrue2/gracenode/#to-start-your-application-as-a-daemon-process">here</a>.
+**Auto-Reloading** option
+
+`gracenode` `daemon` tool offers `auto-reloading` as an option when you start your application as a daemon process.
+
+What `auto-reloading` does is to watch the application files for any sign of change and when it detects a file change,
+it automatically reloads the daemon process using the same method as `daemon reload`.
+
+**How To Set Up Auto-Reloading**
+
+You need to instruct `daemon` command which directory(ies) to watch for `auto-reloading`.
+
+Example:
+
+```
+node daemon start -a controller/ modules/ configs/
+```
+
+The above example instructs the `daemon` command to watch `controller`, `modules`, and `configs` directories of the application
+for `auto-reload`. If anything changes in these directories, the daemon process will automatically reload.
 
 ## Changed
 
