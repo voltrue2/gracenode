@@ -6,7 +6,7 @@ var logger = gn.log.create('daemon-start');
 var lib = require('./utils/lib');
 var Status = require('./utils/status').Status;
 
-module.exports = function (path, logPath) {
+module.exports = function (path, logPath, autoReload) {
 	// listener for exceptions
 	gn.on('uncaughtException', function () {
 		logger.error(lib.color(path, lib.COLORS.RED));
@@ -27,6 +27,13 @@ module.exports = function (path, logPath) {
 		if (logPath) {
 			args.push('--log=' + logPath);
 			console.log(lib.color('Logging in', lib.COLORS.GRAY), lib.color(logPath, lib.COLORS.BROWN));
+		}
+		if (autoReload) {
+			if (!Array.isArray(autoReload)) {
+				autoReload = [autoReload];
+			}
+			args.push('-a=' + autoReload.join(' '));
+			console.log(lib.color('Auto-reload enabled', lib.COLORS.GREEN));
 		}
 		// start daemon
 		run(process.execPath, args, { detached: true, stdio: 'ignore' });
