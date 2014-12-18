@@ -193,8 +193,8 @@ function setupAutoReloading(path, dirListToWatch) {
 		}
 	});
 	*/
-	logger.info(appRoot);
-	logger.info(dirListToWatch);
+	logger.info('appRoot >>>>> ' + appRoot);
+	logger.info('dirListToWatch >>> ' + JSON.stringify(dirListToWatch, null, 2));
 }
 
 function parseCommand(cmd) {
