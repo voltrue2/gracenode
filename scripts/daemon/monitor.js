@@ -201,9 +201,14 @@ function setupAutoReloading(path, dirListToWatch) {
 		}
 	};
 	// set up the watcher
-	for (var i = 0, len = list.length; i < len; i++) {
-		fs.watch(list[i], reloader);
-		logger.info('auto-reload set up for ' + path + ' on ' + list[i]);
+	try {
+		for (var i = 0, len = list.length; i < len; i++) {
+			var dirPath = list[i].indexOf(appRoot) === -1 ? appRoot + '/' + list[i] : list[i];
+			fs.watch(dirPath, reloader);
+			logger.info('auto-reload set up for ' + path + ' on ' + dirPath);
+		}
+	} catch (error) {
+		logger.error('failed to set up auto-reload watcher: ' + error.message);
 	}	
 }
 
