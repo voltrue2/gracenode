@@ -11,7 +11,7 @@ gn.setConfigFiles(['daemon.json']);
 
 gn.exitOnBadOption();
 
-gn.defineOption('--log', 'Enables logging into files in the given path. Example: ./daemon start app.js --log=./daemon-logs/', function (path) {
+gn.defineOption(['-l', '--log'], 'Enables logging into files in the given path. Example: ./daemon start app.js --log=./daemon-logs/ or -l ./daemon-logs/', function (path) {
 	logPath = path;
 });
 

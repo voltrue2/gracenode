@@ -79,19 +79,24 @@ Argv.prototype.get = function (arg) {
 };
 
 Argv.prototype.defineOption = function (arg, desc, argAsArray, cb) {
-	if (this._def[arg]) {
-		throw new Error('Cannot define a handler function for the same arguement more than once: argument [' + arg + ']');
+	if (!Array.isArray(arg)) {
+		arg = [arg];
 	}
-	if (typeof argAsArray === 'function' && !cb) {
-		cb = argAsArray;
-		argAsArray = true;
-	}
-	this._def[arg] = { desc: desc, callback: cb, argAsArray: argAsArray };
-	if (defKeys.indexOf(arg) === -1) {
-		defKeys.push(arg);
-	}
-	if (arg.length > this._maxLen) {
-		this._maxLen = arg.length;
+	for (var i = 0, len = arg.length; i < len; i++) {
+		if (this._def[arg[i]]) {
+			throw new Error('Cannot define a handler function for the same arguement more than once: argument [' + arg[i] + ']');
+		}
+		if (typeof argAsArray === 'function' && !cb) {
+			cb = argAsArray;
+			argAsArray = true;
+		}
+		this._def[arg[i]] = { desc: desc, callback: cb, argAsArray: argAsArray };
+		if (defKeys.indexOf(arg[i]) === -1) {
+			defKeys.push(arg[i]);
+		}
+		if (arg[i].length > this._maxLen) {
+			this._maxLen = arg[i].length;
+		}
 	}
 };
 
