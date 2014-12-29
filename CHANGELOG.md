@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.14
+
+## Added
+
+None
+
+## Changed
+
+#### gracenode.defineOption() now supports an array of options
+
+`.defineOption()` can now allow you to define an option callback with multiple option names by giving an array instead of a string:
+
+```javascript
+gracenode.defineOption(['-t', '--test'], 'A test option.', testCallback);
+```
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.13
 
 ## Added
