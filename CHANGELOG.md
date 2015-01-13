@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### --help does not display [Object object] for application without "author" in its package.json
+
 #### Core module does not map files/directories that start with a dot
 
 #### Improved core module loading logs
