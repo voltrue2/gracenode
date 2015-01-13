@@ -131,8 +131,16 @@ Argv.prototype.execDefinedOptions = function () {
 Argv.prototype._showHelp = function (error) {
 	var pkg = require('../package.json');
 	var help = '';
+	var author = '';
+
+	if (!pkg.author) {
+		author = 'N/A';
+	} else if (typeof pkg.author === 'object') {
+		author = JSON.stringify(pkg.author, null, 2);
+	}
+
 	help += '\n' + pkg.name + '	: ' + pkg.description;
-	help += '\nAuthor		: ' + pkg.author || 'N/A';
+	help += '\nAuthor		: ' + author;
 	help += '\nVersion		: ' + pkg.version;
 	help += '\nRepository	: ' + pkg.repository.url;
 	help += '\n\nOptions	:\n';
