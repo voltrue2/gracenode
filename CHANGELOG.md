@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.15
+
+## Added
+
+None
+
+## Changed
+
+#### Core module does not map files/directories that start with a dot
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.14
 
 ## Added
