@@ -118,10 +118,17 @@ Module.prototype._mapModules = function (cb) {
 			for (var i = 0, len = list.length; i < len; i++) {
 				var modName = list[i];
 				var modulePath = path + modName;
+
+				if (modName.indexOf('.') === 0) {
+					// we ignore files/directories that start with "."
+					continue;
+				}		
+
 				if (moduleMap[modName]) {
 					var err = 'module name conflict detected [' + modName + ']: ' + moduleMap[modName] + ' and ' + modulePath;
 					return cb(new Error(err));
 				}
+
 				// no name conflicts
 				moduleMap[modName] = modulePath;
 				that._logger.verbose('module mapped [' + modulePath + ']:', modName);
@@ -137,6 +144,7 @@ Module.prototype._require = function (name) {
 	if (path) {
 		var mod = require(path);
 		this._logger.verbose('module [' + name + '] found in', path);
+		this._logger.info('module [' + name + '] is being loaded...');
 		return mod;
 	}
 	return null;
