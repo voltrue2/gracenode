@@ -144,6 +144,7 @@ Module.prototype._require = function (name) {
 	if (path) {
 		var mod = require(path);
 		this._logger.verbose('module [' + name + '] found in', path);
+		this._logger.info('module [' + name + '] is being loaded...');
 		return mod;
 	}
 	return null;

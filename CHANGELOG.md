@@ -12,6 +12,8 @@ None
 
 #### Core module does not map files/directories that start with a dot
 
+#### Improved core module loading logs
+
 ## Deprecated
 
 None
