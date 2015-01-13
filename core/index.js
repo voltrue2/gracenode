@@ -187,7 +187,7 @@ Gracenode.prototype.setup = function (cb) {
 		log.verbose('gracenode is starting...');
 		callback(null, that, done);
 	};
-	// executes only --debug is given
+	// executes only when --debug is given
 	var debugRun = function (that, callback) {
 		debugMode.exec(function (error, debugMode) {
 			if (error) {
