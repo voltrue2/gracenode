@@ -19,7 +19,7 @@ function Status(appPath) {
 	this.appPath = appPath;
 	this.socketName = '';
 	this.sockFile = '';
-	this.verboseEnabled = gn.argv('-v') || false;
+	this.verboseEnabled = (gn.argv('-v') || gn.argv('--verbose')) ? true : false;
 	this.verbose('status validation for ' + this.appPath);
 	this.verbose('status validation is in verbose mode');
 }
