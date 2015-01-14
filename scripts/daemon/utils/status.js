@@ -20,7 +20,7 @@ function Status(appPath) {
 	this.socketName = '';
 	this.sockFile = '';
 	this.verboseEnabled = gn.argv('-v') || false;
-	this.verbose('status status validation for ' + this.appPath);
+	this.verbose('status validation for ' + this.appPath);
 	this.verbose('status validation is in verbose mode');
 }
 
@@ -204,6 +204,7 @@ Status.prototype.stop = function () {
 	this.verbose('stopping application processes');
 	sock.connect(this.sockFile, function () {
 		sock.write('stop');
+		that.verbose('instruction to stop daemon process has been sent');
 		that.verbose('is application running?');
 		that.notRunning(function (error, notRunning) {
 			if (error) {
@@ -221,7 +222,21 @@ Status.prototype.stop = function () {
 
 Status.prototype.restart = function () {
 	var that = this;
+	var monitorResponded = false;
 	var sock;
+	var checkStatus = function () {
+		setTimeout(function () {
+			that.running(function (error, running) {
+				if (error) {
+					console.error(lib.color(error.message, lib.COLORS.RED));
+				}
+				console.log(lib.color('application is running [' + running + ']', lib.COLORS.GRAY));
+				if (!monitorResponded) {
+					checkStatus();
+				}
+			});
+		}, 100);
+	};
 	var connect = function (done) {
 		sock = new net.Socket();
 		sock.connect(that.sockFile, done);
@@ -241,6 +256,7 @@ Status.prototype.restart = function () {
 			if (data.msg && data.msg.error) {
 				return done(new Error(data.msg.error));
 			}
+			monitorResponded = true;
 			that.verbose('restart command response received');
 			that.running(function (error, running) {
 				if (error) {
@@ -256,6 +272,7 @@ Status.prototype.restart = function () {
 		sock.once('error', done);
 		sock.write('restart');
 		console.log(lib.color('Restarting daemon ' + that.appPath, lib.COLORS.GRAY));
+		checkStatus();
 	};
 	var getNewStatus = function (done) {
 		console.log(lib.color('Restarted daemon status', lib.COLORS.GRAY));
@@ -331,6 +348,7 @@ Status.prototype.reload = function () {
 
 Status.prototype.findProcessList = function (cb) {
 	// remove /index.js if there is
+	var that = this;
 	var path = this.appPath.replace('/index.js', '');
 	var regex = new RegExp('/', 'g');
 	var patterns = '(' + path + '|' + (path.substring(0, path.length - 1)) + '|' + (path + 'index.js').replace(regex, '\\/') + '|' + (path + '/index.js').replace(regex, '\\/') + ')';
@@ -350,11 +368,13 @@ Status.prototype.findProcessList = function (cb) {
 			// find monitor process
 			if (p.match(monitorReg)) {
 				processList.push(list[i]);
+				that.verbose('daemon monitor process found: ' + list[i]);
 				continue;
 			}
 			// find app process
 			if (p.match(appReg)) {
 				processList.push(list[i]);
+				that.verbose('daemon application process found: ' + list[i]);
 			}
 		}
 		cb(null, processList);
@@ -438,20 +458,23 @@ Status.prototype.running = function (cb, counter, running, seen) {
 Status.prototype.notRunning = function (cb, counter) {
 	counter = counter || 0;
 	var that = this;
+	// stopping application gracefully may take some time, so we try more than start
+	var max = MAX_TRY * 4;
 	var next = function () {
 		setTimeout(function () {
 			counter += 1;
 			that.notRunning(cb, counter);
-		}, 100);
+		}, 100 + (20 * counter));
 	};
 	this.findProcessList(function (error, list) {
 		if (error) {
 			return cb(error);
 		}
-		that.verbose('number of running process remaining: ' + list.length);
+		that.verbose('checking the number of running process remaining: ' + list.length);
 		if (list.length) {
-			if (counter === 0 || 10 % counter === 0) {
-				console.log(lib.color('running process count: ' + list.length, lib.COLORS.GRAY));
+			console.log(lib.color('running process count: ' + list.length + ' (counter:' + counter + ')', lib.COLORS.GRAY));
+			if (counter === max) {
+				return cb(new Error('[timeout] failed to stop daemon application processes gracefully'));
 			}
 			return next();
 		}
