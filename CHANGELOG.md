@@ -2,6 +2,20 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.16
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon restart added improved status output
+
+#### Daemon stop command added time out and improved message output
+
+#### Daemon tool added more verbose messages for -v option
+
 ## Version 1.3.15
 
 ## Added
