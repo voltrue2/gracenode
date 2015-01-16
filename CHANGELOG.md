@@ -2,6 +2,44 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.18
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon reload command improved and added improved status feedback output
+
+## Deprecated
+
+None
+
+## Removed
+
+***
+
+## Version 1.3.17
+
+## Added
+
+None
+
+## Changed
+
+#### Daemon tool added --verbose option as an alias of -v option
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.16
 
 ## Added
