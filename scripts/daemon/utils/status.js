@@ -322,6 +322,35 @@ Status.prototype.reload = function () {
 		console.log(lib.color('Reloading daemon ' + that.appPath, lib.COLORS.GRAY));
 		done();
 	};
+	var checkReloadStatus = function (done) {
+		var newProcessList = [];
+		var counter = 0;
+		function check() {
+			console.log(lib.color('Checking process status... [' + counter + ']', lib.COLORS.GRAY));
+			that.getStatus(function (data, processes) {
+				var oldProcessNum = 0;
+				for (var i = 0, len = processes.length; i < len; i++) {
+					if (seenPids[processes[i].pid]) {
+						oldProcessNum += 1;
+					} else if (newProcessList.indexOf(processes[i].pid) === -1) {
+						newProcessList.push(processes[i].pid);
+						var p = processes[i].process + '(pid: ' + processes[i].pid + ')';
+						console.log(lib.color('Reloaded process: ' + p, lib.COLORS.GRAY));
+					}
+				}
+				// one process is a master and it does NOT reload
+				// and another process is a monitor that does NOT reload
+				if (oldProcessNum > 2) {
+					// we still have old process(es)
+					counter += 1;
+					return setTimeout(check, 500 * counter);
+				}
+				// all processes have been reloaded
+				done();
+			});
+		}
+		setTimeout(check, 300);
+	};
 	var getNewStatus = function (done) {
 		console.log(lib.color('Reloading daemon status', lib.COLORS.GRAY));
 		that.running(function () {
@@ -335,6 +364,7 @@ Status.prototype.reload = function () {
 		connect,
 		getCurrentStatus,
 		reload,
+		checkReloadStatus,
 		getNewStatus
 	],
 	function (error) {
