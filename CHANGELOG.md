@@ -6,7 +6,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### .setHelpText() function added to gracenode core for command-line help interface
 
 ## Changed
 

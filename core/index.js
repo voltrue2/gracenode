@@ -68,7 +68,9 @@ Gracenode.prototype.send = function (msg, worker) {
 };
 
 Gracenode.prototype.require = function (path) {
-	return require(this.getRootPath() + path);
+	var reqPath = this.getRootPath() + path;
+	log.verbose('requiring a module:', reqPath);
+	return require(reqPath);
 };
 
 Gracenode.prototype.getRootPath = function () {
@@ -126,6 +128,10 @@ Gracenode.prototype.use = function (modName, driver) {
 
 Gracenode.prototype.argv = function (key) {
 	return this._argv.get(key);
+};
+
+Gracenode.prototype.setHelpText = function (text) {
+	this._argv.setHelpText(text);
 };
 
 Gracenode.prototype.defineOption = function (argName, description, argAsArray, callback) {

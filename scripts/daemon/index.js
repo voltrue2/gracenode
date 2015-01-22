@@ -6,10 +6,16 @@ var fs = require('fs');
 var gn = require('gracenode');
 var logPath;
 var autoReload;
+
+var helpText = 'Gracenode daemonization tool:\n';
+helpText += 'Usage: ./daemon [start|stop|restart|reload|status|list] [application path] [options]';
+
 gn.setConfigPath(gn._root + 'scripts/configs/', true);
 gn.setConfigFiles(['daemon.json']);
 
 gn.exitOnBadOption();
+
+gn.setHelpText(helpText);
 
 gn.defineOption(['-v', '--verbose'], 'Executes daemon command with verbose option on.');
 

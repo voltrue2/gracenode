@@ -308,6 +308,38 @@ var p = gracenode.argv('-p');
 // ['aaa', 'bbb', 'ccc']
 ```
 
+###.setHelpText(text [string])
+
+Sets text to be displayed when `--help` option is given.
+
+Example:
+
+```
+gracenode       : Framework for node.js application with extendable module management system, command-line tool, and daemon tool for fast and clean development.
+Author          :
+Version         : 1.3.17
+Repository      : https://github.com/voltrue2/gracenode.git
+
+/*** This part is set by .setHelpText() ***/
+Gracenode daemonization tool:
+Usage: ./daemon [start|stop|restart|reload|status|list] [application path] [options]
+/*** This part is set by .setHelpText() ***/
+
+Options :
+    -v        : Executes daemon command with verbose option on.
+    --verbose : Executes daemon command with verbose option on.
+    -l        : Enables logging into files in the given path. Example: ./daemon start app.js --log=./daemon-logs/ or -l ./daemon-logs/
+    --log     : Enables logging into files in the given path. Example: ./daemon start app.js --log=./daemon-logs/ or -l ./daemon-logs/
+    -a        : Enables auto-reloading of the daemon process on any file change to the application. Example: ./daemon start app.js -a dir/to/watch/ for/auto/reload/
+    start     : Starts application as a daemon.
+    stop      : Stops daemonized application.
+    list      : Shows a list of currently running daemon processes.
+    status    : Shows status for a currently running daemon application.
+    restart   : Restarts daemonized application.
+    reload    : Reloads daemonized application without downtime. (This option requires the application to be built with gracenode)
+    clean     : Cleans up possible detached socket files for daemon processes that are no longer present.
+```
+
 ###.defineOption(argumentName [string/array], description [srting], argumentsAsArray [*boolean], optionExecution [*function])
 
 Defines an option and add short description for `--help` and function to be executed if the option is given.

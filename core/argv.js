@@ -1,5 +1,6 @@
 // --help is automatically defined and reserved
 var HELP = '--help';
+var helpText;
 var argKeys = [];
 var defKeys = [];
 var exitOnBadOption = false;
@@ -78,6 +79,10 @@ Argv.prototype.get = function (arg) {
 	return this._argv[arg] || null;
 };
 
+Argv.prototype.setHelpText = function (text) {
+	helpText = text;	
+};
+
 Argv.prototype.defineOption = function (arg, desc, argAsArray, cb) {
 	if (!Array.isArray(arg)) {
 		arg = [arg];
@@ -143,6 +148,11 @@ Argv.prototype._showHelp = function (error) {
 	help += '\nAuthor		: ' + author;
 	help += '\nVersion		: ' + pkg.version;
 	help += '\nRepository	: ' + pkg.repository.url;
+	
+	if (helpText) {
+		help += '\n\n' + helpText + '\n';
+	}
+	
 	help += '\n\nOptions	:\n';
 	for (var i = 0, len = defKeys.length; i < len; i++) {
 		var arg = defKeys[i];
