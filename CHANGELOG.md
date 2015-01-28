@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.19
+
+## Added
+
+None
+
+## Changed
+
+#### Added more detailed feedback log to daemon status output for start command
+
+#### Debug progress bar output improved
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.18
 
 ## Added
