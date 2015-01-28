@@ -12,6 +12,8 @@ None
 
 #### Added more detailed feedback log to daemon status output for start command
 
+#### Debug progress bar output improved
+
 ## Deprecated
 
 None
