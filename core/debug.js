@@ -38,7 +38,7 @@ module.exports.exec = function (cb) {
 		config.directories = [];
 	}
 	
-	var pb = new progressbar.Progressbar(config.directories.length, { color: progressbar.COLORS.BLUE, label: 'Scanning source code: ' });
+	var pb = new progressbar.Progressbar(config.directories.length, { color: progressbar.COLORS.GRAY, label: 'Scanning source code: ' });
 	var options = {};
 	var errors = [];
 	var warns = [];
