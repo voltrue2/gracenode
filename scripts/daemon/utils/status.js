@@ -472,7 +472,7 @@ Status.prototype.running = function (cb, counter, running, seen) {
 					// feedback output of running process(es)
 					if (!seen[list[i].pid]) {
 						seen[list[i].pid] = true;
-						console.log(lib.color(list[i].process, lib.COLORS.GRAY), lib.color('(pid: ' + list[i].pid + ')', lib.COLORS.GRAY));
+						console.log(lib.color('checking running process: ' + list[i].process, lib.COLORS.GRAY), lib.color('(pid: ' + list[i].pid + ')', lib.COLORS.GRAY));
 					}
 				}
 				call();
