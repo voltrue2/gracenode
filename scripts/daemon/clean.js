@@ -14,9 +14,15 @@ module.exports = function () {
 			return status.end(error);
 		}
 		if (cleaned) {
-			console.log(lib.color('all detached daemon socket files have been removed', lib.COLORS.LIGHT_BLUE));
+			console.log(lib.color(
+				'all detached daemon socket files have been removed',
+				lib.COLORS.LIGHT_BLUE
+			));
 		} else {
-			console.log(lib.color('no detached daemon socket files to be removed', lib.COLORS.PURPLE));
+			console.log(lib.color(
+				'no detached daemon socket files to be removed',
+				lib.COLORS.PURPLE
+			));
 		}
 		status.end();
 	});
