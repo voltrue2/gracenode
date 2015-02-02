@@ -43,13 +43,24 @@ module.exports = function (path, logPath, autoReload) {
 				return status.end(error);
 			}
 			if (running) {
-				console.log(lib.color('Daemon process started', lib.COLORS.GRAY), lib.color(path, lib.COLORS.LIGHT_BLUE));
+				console.log(
+					lib.color('Daemon process started', lib.COLORS.GRAY),
+					lib.color(path, lib.COLORS.LIGHT_BLUE)
+				);
 				var dies = lib.color(' dies', lib.COLORS.BROWN);
 				var ten = lib.color(' 10 ', lib.COLORS.PURPLE);
 				var exit = lib.color(' exit', lib.COLORS.BROWN);
-				console.log(lib.color('If the application', lib.COLORS.GRAY) + dies + ten + lib.color('times in less than', lib.COLORS.GRAY) + ten + lib.color('seconds, the daemon process will', lib.COLORS.GRAY) + exit);
+				console.log(
+					lib.color('If the application', lib.COLORS.GRAY) +
+					dies + ten + lib.color('times in less than', lib.COLORS.GRAY) +
+					ten + lib.color('seconds, the daemon process will', lib.COLORS.GRAY) +
+					exit
+				);
 			} else {
-				console.error(lib.color('Daemon process failed to start', lib.COLORS.RED), lib.color(path, lib.COLORS.RED));
+				console.error(
+					lib.color('Daemon process failed to start', lib.COLORS.RED),
+					lib.color(path, lib.COLORS.RED)
+				);
 			}
 			status.end();
 		});
