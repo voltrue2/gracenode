@@ -76,19 +76,28 @@ Process.prototype.send = function (msg, worker) {
 	try {
 		msg = JSON.stringify(msg);
 	} catch (e) {
-		return this.log.error('send() failed to deliver message because the message object was malformed:', msg);
+		return this.log.error(
+			'send() failed to deliver message because the message object was malformed:',
+			msg
+		);
 	}
 	if (worker) {
 		// id worker is given, the master sends message to the given worker only
 		worker.send(msg);
-		return this.log.verbose('message sent to worker (pid:' + worker.process.pid + ') (id:' + worker.id + ')', msg);
+		return this.log.verbose(
+			'message sent to worker (pid:' + worker.process.pid + ') (id:' + worker.id + ')',
+			msg
+		);
 	}
 	if (cluster.isMaster) {
 		// send message to all workers
 		for (var id in cluster.workers) {
 			var workerProcess = cluster.workers[id];
 			workerProcess.send(msg);
-			this.log.verbose('message sent to worker (pid:' + workerProcess.process.pid + ') (id:' + id + '): ', msg);
+			this.log.verbose(
+				'message sent to worker (pid:' + workerProcess.process.pid + ') (id:' + id + '): ',
+				msg
+			);
 		}
 		return;
 	}
@@ -110,10 +119,15 @@ Process.prototype.createWorker = function () {
 		} catch (e) {
 			
 		}
-		that.log.verbose('message received from worker (pid:' + worker.process.pid + ') (id:' + worker.id + '):', data);
+		that.log.verbose(
+			'message received from worker (pid:' + worker.process.pid + ') (id:' + worker.id + '):',
+			data
+		);
 		that.gracenode.emit('worker.message', worker, data);
 	});
-	this.log.verbose('worker message listener set up complete: (pid:' + worker.process.pid + ') (id:' + worker.id + ')');
+	this.log.verbose(
+		'worker message listener set up complete: (pid:' + worker.process.pid + ') (id:' + worker.id + ')'
+	);
 	return worker;
 };
 
@@ -151,14 +165,25 @@ Process.prototype.setupMaster = function () {
 		if (!worker.suicide && signal && that.config.autoSpawn) {
 			// the worker died from an error, spawn it if allowed by configuration
 			var newWorker = that.createWorker();
-			return that.log.info('a new worker (pid:' + newWorker.process.pid + ') spawned because a worker has died (pid:' + worker.process.pid + ')');
+			return that.log.info(
+				'a new worker (pid:' +
+				newWorker.process.pid +
+				') spawned because a worker has died (pid:' + worker.process.pid + ')'
+			);
 		}
-		that.log.info('worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code, '(suicide:' + worker.suicide + ') (workers:' + Object.keys(cluster.workers).length + ')');	
+		that.log.info(
+			'worker has died (pid: ' + worker.process.pid + ') [signal: ' + signal + '] code: ' + code,
+			'(suicide:' + worker.suicide + ') (workers:' + Object.keys(cluster.workers).length + ')'
+
+		);	
 		// if all child processes are gone and if master is in shutting down mode, we shutdown
 		if (noMoreWorkers()) {
-			// no more workers and we are shutting down mode OR no more workers and we have workers dying with code greater than 1
+			// no more workers and we are shutting down mode OR no more workers
+			// and we have workers dying with code greater than 1
 			if (that.isShutdown || code) {
-				that.log.info('all child processes have gracefully disconnected: exiting master process...');
+				that.log.info(
+					'all child processes have gracefully disconnected: exiting master process...'
+				);
 				that.emit('shutdown');
 				that.gracenode.exit();
 			}
@@ -238,7 +263,10 @@ Process.prototype.reload = function (sig) {
 		var keys = Object.keys(cluster.workers);
 		async.eachSeries(keys, function (id, next) {
 
-			that.log.info('about to reload worker (id:' + id + ') [pid:' +  cluster.workers[id].process.pid + ']');
+			that.log.info(
+				'about to reload worker (id:' + id + ') [pid:' + 
+				cluster.workers[id].process.pid + ']'
+			);
 
 			that.once('__processReloaded', function () {
 				next();
