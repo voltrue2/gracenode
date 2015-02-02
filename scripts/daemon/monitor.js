@@ -35,16 +35,20 @@ gn.registerShutdownTask('exit', function (done) {
 gn.setConfigPath(gn._root + 'scripts/configs/', true);
 gn.setConfigFiles(['gracenode.json']);
 
-gn.defineOption('start', 'Starts a monitor process to spawn and monitor application process(s).', function (pathIn) {
-	path = pathIn[0] || null;
-	var monitorServer = net.createServer(function (sock) {
-		sock.on('error', handleExit);
-		sock.on('data', handleCommunication);
-	});
-	var sockFile = socketName(path);
-	monitorServer.listen(sockFile);
-	startApp();
-});
+gn.defineOption(
+	'start',
+	'Starts a monitor process to spawn and monitor application process(s).',
+	function (pathIn) {
+		path = pathIn[0] || null;
+		var monitorServer = net.createServer(function (sock) {
+			sock.on('error', handleExit);
+			sock.on('data', handleCommunication);
+		});
+		var sockFile = socketName(path);
+		monitorServer.listen(sockFile);
+		startApp();
+	}
+);
 
 gn.setup(function () {});
 
@@ -107,7 +111,10 @@ function startApp() {
 	// if appllication dies unexpectedly, respawn it
 	app.once('exit', function (code, signal) {
 		deathCount += 1;
-		logger.info('daemon process of ' + path + ' has exited (code:' + code + '): count of death [' + deathCount + '/' + maxNumOfDeath + ']');
+		logger.info(
+			'daemon process of ' + path + ' has exited (code:' + code + '): count of death [' +
+			deathCount + '/' + maxNumOfDeath + ']'
+		);
 		if (signal) {
 			logger.error('application terminated by: ' + signal);
 		}
@@ -116,9 +123,12 @@ function startApp() {
 			timeOfDeath = Date.now();
 			// check to see if the application was alive for at least deathInterval or not
 			if (!app.restart && timeOfDeath - app.started < deathInterval) {
-				// the application has died in less than deathInterval > we consider the application has some issues...
+				// the application has died in less than deathInterval >
+				// we consider the application has some issues...
 				var lasted = ((timeOfDeath - app.started) / 1000) + ' seconds';
-				var msg = 'application died [' + path + '] in ' + lasted + '. the application must be available for at least ' + (deathInterval / 1000) + ' seconds';
+				var msg = 'application died [' + path + '] in ' + lasted +
+					'. the application must be available for at least ' +
+					(deathInterval / 1000) + ' seconds';
 				// exit monitor
 				return handleExit(new Error(msg));
 			}
@@ -127,7 +137,9 @@ function startApp() {
 			var now = Date.now();
 			if (now - timeOfDeath <= deathInterval) {
 				// the application is dying way too fast and way too often
-				return handleExit(new Error('appliation [' + path + '] is dying too fast and too often'));
+				return handleExit(
+					new Error('appliation [' + path + '] is dying too fast and too often')
+				);
 			}
 			// application has died more than maxNumOfDeath but not too fast...
 			deathCount = 0;
