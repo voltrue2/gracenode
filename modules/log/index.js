@@ -1,6 +1,10 @@
 'use strict';
 
 var glog = require('gracelog');
+var LOG_PATHS = {
+	GLOG: 'gracelog/index.js',
+	LOG: 'gracenode/modules/log/index.js'
+};
 
 // overwrite .create() to remove the full file path in default log name
 var create = glog.create;
@@ -10,7 +14,7 @@ glog.create = function (name) {
 		var stack = new Error('').stack.split('\n');
 		// index 0 is always "Error"
 		for (var i = 1, len = stack.length; i < len; i++) {
-			if (stack[i].indexOf('gracelog/index.js') === -1 && stack[i].indexOf('gracenode/modules/log/index.js') === -1) {
+			if (stack[i].indexOf(LOG_PATHS.GLOG) === -1 && stack[i].indexOf(LOG_PATHS.LOG) === -1) {
 				name = stack[i].substring(stack[i].indexOf('/'), stack[i].lastIndexOf('.'));
 				break;
 			}
