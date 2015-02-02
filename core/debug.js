@@ -38,7 +38,13 @@ module.exports.exec = function (cb) {
 		config.directories = [];
 	}
 	
-	var pb = new progressbar.Progressbar(config.directories.length, { color: progressbar.COLORS.GRAY, label: 'Scanning source code: ' });
+	var pb = new progressbar.Progressbar(
+		config.directories.length,
+		{
+			color: progressbar.COLORS.GRAY,
+			label: 'Scanning source code: '
+		}
+	);
 	var options = {};
 	var errors = [];
 	var warns = [];
@@ -101,9 +107,11 @@ module.exports.exec = function (cb) {
 				for (var i = 0, len = deprecated.length; i < len; i++) {
 					var dp = deprecated[i];
 					if (data.indexOf(dp.name) !== -1) {
-						var msg = '***WARNING: deprecated ' + dp.type + ' (' + dp.name + ') used in ' + file;
-						msg += ' ' + 'deprecated version of gracenode is ' + dp.version;
-						warns.push(msg);
+						warns.push(
+							'***WARNING: deprecated ' +
+							dp.type + ' (' + dp.name + ') used in ' + file +
+							' deprecated version of gracenode is ' + dp.version
+						);
 					}
 				}
 				next();
@@ -159,10 +167,20 @@ function startMemWatch(config, logger) {
 		var diffPercentage = ((((usage.heapUsed / avg) * 100) - 100).toFixed(2));
 		// output the analysis
 		var output = {};
-		output['memory RSS(resident set size)'] = { size: bytesToSize(usage.rss) };
-		output['memory heap used'] = { size: bytesToSize(usage.heapUsed), percentage: usedPercentage + '%' };
-		output['memory heap used average'] = { size: bytesToSize(avg), percentage: '(used difference: ' + diffPercentage + '%)' };
-		output['memory heap total'] = { size: bytesToSize(usage.heapTotal) };
+		output['memory RSS(resident set size)'] = {
+			size: bytesToSize(usage.rss)
+		};
+		output['memory heap used'] = {
+			size: bytesToSize(usage.heapUsed),
+			percentage: usedPercentage + '%'
+		};
+		output['memory heap used average'] = {
+			size: bytesToSize(avg),
+			percentage: '(used difference: ' + diffPercentage + '%)'
+		};
+		output['memory heap total'] = {
+			size: bytesToSize(usage.heapTotal)
+		};
 		logger.table(output);
 		if (usedPercentage >= 80) {
 			logger.warn('***WARNING: memory heap usage is too close to heap total');
