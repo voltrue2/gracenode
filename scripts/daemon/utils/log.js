@@ -22,7 +22,9 @@ Log.prototype.today = function () {
 
 Log.prototype.time = function () {
 	var date = new Date();
-	return '[' + date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds()) + ']';
+	return '[' + date.getFullYear() + '-' + pad(date.getMonth() + 1) +
+		'-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' +
+		pad(date.getMinutes()) + ':' + pad(date.getSeconds()) + ']';
 };
 
 Log.prototype.start = function (name, cb) {
