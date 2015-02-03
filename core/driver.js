@@ -71,7 +71,11 @@ function validateDriverFuncArgs(name, driverFuncName, func, requiredArgNum) {
 	var args = gn.lib.getArguments(func);
 	var argsLen = args.length;
 	if (argsLen !== requiredArgNum) {
-		logger.error('module [' + name + '] driver.' + driverFuncName, ' expects', requiredArgNum, 'but', argsLen, 'given');
+		logger.error(
+			'module [' + name + '] driver.' +
+			driverFuncName, ' expects', 
+			requiredArgNum, 'but', argsLen, 'given'
+		);
 		return false;
 	}
 	return true;

@@ -24,7 +24,9 @@ module.exports = function () {
 			for (var i = 0, len = list.length; i < len; i++) {
 				if (list[i].indexOf(process.execPath) !== -1) {
 					apps.push({
-						path: list[i].substring(list[i].lastIndexOf(monPath) + monPathLen).split(' ')[0]
+						path: list[i].substring(
+							list[i].lastIndexOf(monPath) + monPathLen
+						).split(' ')[0]
 					});
 				}
 			}
@@ -47,10 +49,13 @@ module.exports = function () {
 	// find owner user
 	var findUserForApps = function (next) {
 		async.eachSeries(apps, function (app, moveOn) {
-			exec('awk -v val=' + app.uid + ' -F ":" \'$3==val{print $1}\' /etc/passwd', function (stderr, stdout) {
-				app.user = stdout.replace(/\n/g, '');
-				moveOn();
-			});
+			exec(
+				'awk -v val=' + app.uid + ' -F ":" \'$3==val{print $1}\' /etc/passwd',
+				function (stderr, stdout) {
+					app.user = stdout.replace(/\n/g, '');
+					moveOn();
+				}
+			);
 		}, next);
 	};
 	// find applications and their pids
@@ -66,16 +71,29 @@ module.exports = function () {
 						return moveOn(error);
 					}
 					var commandLabel = lib.color(' Command		:', lib.COLORS.BROWN);
-					var command = lib.color('./daemon (status|start|stop|restart|reload)', lib.COLORS.DARK_BLUE);
+					var command = lib.color(
+						'./daemon (status|start|stop|restart|reload)',
+						lib.COLORS.DARK_BLUE
+					);
 					var appPath = lib.color(appData.path, lib.COLORS.LIGHT_BLUE);
-					var user = lib.color(appData.user + ' (uid:' + appData.uid + ')', lib.COLORS.LIGHT_BLUE);
+					var user = lib.color(
+						appData.user + ' (uid:' + appData.uid + ')',
+						lib.COLORS.LIGHT_BLUE
+					);
 					console.log('');
-					console.log(lib.color(' Application path	:', lib.COLORS.BROWN), appPath);
+					console.log(lib.color(
+						' Application path	:',
+						lib.COLORS.BROWN),
+						appPath
+					);
 					console.log(commandLabel, command, appPath);
 					console.log(lib.color(' Executed user		:', lib.COLORS.BROWN), user);
 					for (var i = 0, len = list.length; i < len; i++) {
-						var app = lib.color(list[i].process.replace(process.execPath + ' ', ''), lib.COLORS.GREEN);
-						var pid = lib.color('(pid:' + list[i].pid + ')', lib.COLORS.PURPLE);
+						var app = lib.color(
+							list[i].process.replace(process.execPath + ' ', ''),
+							lib.COLORS.GREEN
+						);
+						var pid = lib.color('(' + list[i].pid + ')', lib.COLORS.PURPLE);
 						var label = ' Application process	: ';
 						if (app.indexOf('monitor start') !== -1) {
 							label = ' Monitor process	: ';

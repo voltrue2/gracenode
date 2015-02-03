@@ -22,7 +22,10 @@ module.exports.setPath = function (path) {
  */
 module.exports.load = function (configList) {
 	if (configPath === undefined) {
-		return new Error('configPath has not been set. you must call setConfigPath() method before calling gracenode.setup()');
+		return new Error(
+			'configPath has not been set. ' +
+			'you must call setConfigPath() method before calling gracenode.setup()'
+		);
 	}
 	for (var i = 0, len = configList.length; i < len; i++) {
 		configFiles.push(configPath + configList[i]);
@@ -141,7 +144,13 @@ function lintConfig(path, data) {
 				console.error('[Error] malformed configuration(s) detected in', path);
 			}
 			for (var i = 0, len = errors.length; i < len; i++) {
-				console.error('    *** configuration [error] Line', errors[i].line, 'Character', errors[i].character, errors[i].reason);
+				console.error(
+					'    *** configuration [error] Line', 
+					errors[i].line, 
+					'Character',
+					errors[i].character,
+					errors[i].reason
+				);
 			}
 		}	
 	}

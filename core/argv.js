@@ -41,7 +41,8 @@ Argv.prototype.parse = function () {
 			this._argv[prev].push(lib.typeCast(arg));
 			continue;
 		}
-		// format: -argument or -argument value that is NOT a number: for example -5 is a number, so not considered an option
+		// format: -argument or -argument value that is NOT a number:
+		// for example -5 is a number, so not considered an option
 		this._argv[arg] = true;
 		argKeys.push(arg);
 		prev = arg;
@@ -62,7 +63,8 @@ Argv.prototype.get = function (arg) {
 		return this._argv[arg] || null;
 	}
 	if (arg.indexOf('-') === 0) {
-		// - format -> this format supports combining multiple options: -abc is a combination of -a, -b, and -c
+		// - format -> this format supports combining multiple options:
+		// -abc is a combination of -a, -b, and -c
 		arg = arg.replace('-', '');
 		for (var i = 0, len = argKeys.length; i < len; i++) {
 			var key = argKeys[i];
@@ -89,7 +91,10 @@ Argv.prototype.defineOption = function (arg, desc, argAsArray, cb) {
 	}
 	for (var i = 0, len = arg.length; i < len; i++) {
 		if (this._def[arg[i]]) {
-			throw new Error('Cannot define a handler function for the same arguement more than once: argument [' + arg[i] + ']');
+			throw new Error(
+				'Cannot define a handler function for the same arguement more than once: argument [' +
+				arg[i] + ']'
+			);
 		}
 		if (typeof argAsArray === 'function' && !cb) {
 			cb = argAsArray;

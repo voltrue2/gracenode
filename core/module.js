@@ -41,7 +41,10 @@ Module.prototype.use = function (name, options) {
 
 	// check for module name conflict
 	if (findNameConflict(this._use, modName)) {
-		throw new Error('module name conflict found [' + name + ']: "' + modName + '" \n<options>\n' + JSON.stringify(options || {}, null, 4));
+		throw new Error(
+			'module name conflict found [' + name + ']: "' +
+			modName + '" \n<options>\n' + JSON.stringify(options || {}, null, 4)
+		);
 	}	
 
 	this._use.push({ name: name, modName: modName });
@@ -125,8 +128,12 @@ Module.prototype._mapModules = function (cb) {
 				}		
 
 				if (moduleMap[modName]) {
-					var err = 'module name conflict detected [' + modName + ']: ' + moduleMap[modName] + ' and ' + modulePath;
-					return cb(new Error(err));
+					return cb(
+						new Error(
+							'module name conflict detected [' +
+							modName + ']: ' + moduleMap[modName] + ' and ' + modulePath
+						)
+					);
 				}
 
 				// no name conflicts
@@ -177,7 +184,12 @@ Module.prototype._prepareModule = function (name, modName, module, next, cb) {
 		if (module.expose) {
 			var exposedMod = module.expose();
 			if (!exposedMod) {
-				return cb(new Error('module [' + modName + '] driver.expose must return exposed module object'));
+				return cb(
+					new Error(
+						'module [' +
+						modName + '] driver.expose must return exposed module object'
+					)
+				);
 			}
 			that._gn[modName] = exposedMod;
 		}
@@ -194,7 +206,11 @@ Module.prototype._readConfig = function (name, mod) {
 		this._logger.verbose('module [' + name + '] reading configurations from modules.' + name);
 		var conf = this._gn.config.getOne('modules.' + name);
 		if (!conf) {
-			return new Error('failed to find configurations for module [' + name + ']\n' + JSON.stringify(this._gn.config.getConfigFiles(), null, 4));
+			return new Error(
+					'failed to find configurations for module [' +
+					name + ']\n' + JSON.stringify(this._gn.config.getConfigFiles(), null, 4
+				)
+			);
 		}
 		var status = mod.readConfig(this._gn.config.getOne('modules.' + name));
 		if (status instanceof Error) {

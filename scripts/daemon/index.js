@@ -19,13 +19,23 @@ gn.setHelpText(helpText);
 
 gn.defineOption(['-v', '--verbose'], 'Executes daemon command with verbose option on.');
 
-gn.defineOption(['-l', '--log'], 'Enables logging into files in the given path. Example: ./daemon start app.js --log=./daemon-logs/ or -l ./daemon-logs/', function (path) {
-	logPath = path;
-});
+gn.defineOption(
+	['-l', '--log'],
+	'Enables logging into files in the given path. Example: ' +
+	'./daemon start app.js --log=./daemon-logs/ or -l ./daemon-logs/',
+	function (path) {
+		logPath = path;
+	}
+);
 
-gn.defineOption('-a', 'Enables auto-reloading of the daemon process on any file change to the application. Example: ./daemon start app.js -a dir/to/watch/ for/auto/reload/', function (autoReloadIn) {
-	autoReload = autoReloadIn;
-});
+gn.defineOption(
+	'-a',
+	'Enables auto-reloading of the daemon process on any file change to the application. Example: ' +
+	'./daemon start app.js -a dir/to/watch/ for/auto/reload/',
+	function (autoReloadIn) {
+		autoReload = autoReloadIn;
+	}
+);
 
 gn.defineOption('start', 'Starts application as a daemon.', function (path) {
 	require('./start.js')(getPath(path), logPath, autoReload);
@@ -47,13 +57,22 @@ gn.defineOption('restart', 'Restarts daemonized application.', function (path) {
 	require('./restart.js')(getPath(path));
 });
 
-gn.defineOption('reload', 'Reloads daemonized application without downtime. (This option requires the application to be built with gracenode)', function (path) {
-	require('./reload.js')(getPath(path));
-});
+gn.defineOption(
+	'reload',
+	'Reloads daemonized application without downtime. ' +
+	'(This option requires the application to be built with gracenode)',
+	function (path) {
+		require('./reload.js')(getPath(path));
+	}
+);
 
-gn.defineOption('clean', 'Cleans up possible detached socket files for daemon processes that are no longer present.', function () {
-	require('./clean.js')();
-});
+gn.defineOption(
+	'clean',
+	'Cleans up possible detached socket files for daemon processes that are no longer present.',
+	function () {
+		require('./clean.js')();
+	}
+);
 
 gn.setup(function () {});
 

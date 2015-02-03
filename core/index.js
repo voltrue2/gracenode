@@ -149,11 +149,17 @@ Gracenode.prototype.setup = function (cb) {
 	if (!this._configPath && this._configFiles) {
 		this._configPath = this._root + GN_DEFAULT_CONF_PATH;
 		this._configFiles = [GN_DEFAULT_CONF];
-		console.warn('<warn>[gracenode] the application is missing configurations: attempting to run the application with minimum default configurations');
+		console.warn(
+			'<warn>[gracenode] the application is missing configurations: ' +
+			'attempting to run the application with minimum default configurations'
+		);
 	}
 
 	if (!this._configPath) {
-		console.error('<error>[gracenode] path to configuration files not set: call .setConfigPath() before calling .setup()');
+		console.error(
+			'<error>[gracenode] path to configuration files not set:' +
+			'call .setConfigPath() before calling .setup()'
+		);
 		return cb(new Error('path to configuration files is missing'));
 	}
 	if (!this._configFiles.length) {
@@ -276,8 +282,15 @@ function compareGracenodeVersion(that) {
 		var currentVersion = gnPackage.version;
 		// isNaN() returns true if the given argument is a string float
 		if (!isNaN(expectedVersion.replace(/\./g, '')) && expectedVersion > currentVersion) {
-			// application is expecting installed gracenode to be higher version than the currently installed version
-			return that.exit(new Error('application is expecting gracenode to be ' + expectedVersion + ' or higher, but installed gracenode is ' + currentVersion));
+			// application is expecting installed gracenode to be higher version
+			// than the currently installed version
+			return that.exit(
+				new Error(
+					'application is expecting gracenode to be ' +
+					expectedVersion + ' or higher, but installed gracenode is ' +
+					currentVersion
+				)
+			);
 		}
 	}
 }
