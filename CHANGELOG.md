@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.20
+
+## Added
+
+None
+
+## Changed
+
+#### Minor code refactorying
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.19
 
 ## Added
