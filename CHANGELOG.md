@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.3.21
+
+## Added
+
+None
+
+## Changed
+
+#### debug mode progress bar improved
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.20
 
 ## Added
