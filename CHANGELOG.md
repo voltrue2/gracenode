@@ -2,6 +2,40 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.4.0
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency gracelog's version has been updated from 0.2.1 to 0.3.0
+
+`modules.log` configurations can now use `useTimestamp` to log in Unix timestamp instead of server time.
+
+**NOTE**: File rotation names are still in server time
+
+## Version 1.3.21
+
+## Added
+
+None
+
+## Changed
+
+#### debug mode progress bar improved
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.3.20
 
 ## Added

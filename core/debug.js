@@ -37,17 +37,12 @@ module.exports.exec = function (cb) {
 	if (!config.directories) {
 		config.directories = [];
 	}
-	
-	var pb = new progressbar.Progressbar(
-		config.directories.length,
-		{
-			color: progressbar.COLORS.GRAY,
-			label: 'Scanning source code: '
-		}
-	);
+
 	var options = {};
 	var errors = [];
 	var warns = [];
+	var files = [];
+	var pb;
 
 	// apply jshint options if given
 	if (config.lintOptions) {
@@ -118,36 +113,54 @@ module.exports.exec = function (cb) {
 			});
 		}, moveOn);
 	};
-
-	// start progress bar
-	pb.start();
-
-	// walk all given directories to check/linit
-	async.eachSeries(config.directories, function (item, next) {
-		var path = gn.getRootPath() + item;
-		lib.walkDir(path, function (error, files) {
-			if (error) {
-				return next(error);
-			}
-			// find javascript files only to lint
-			var list = [];
-			for (var i = 0, len = files.length; i < len; i++) {
-				var file = files[i].file;
-				if (file.substring(file.lastIndexOf('.') + 1) !== 'js') {
-					// not a javascript file
-					continue;
+	
+	var findFiles = function (next) {
+		async.forEach(config.directories, function (pathFrag, moveOn) {
+			var path = gn.getRootPath() + pathFrag;
+			lib.walkDir(path, function (error, list) {
+				if (error) {
+					return next(error);
 				}
-				list.push(file);
+				files = files.concat(list);
+				moveOn();
+			});
+		}, next);	
+	};
+
+	var setupProgressbar = function (next) {
+		files = files.filter(function (item) {
+			return item.file.substring(item.file.lastIndexOf('.') + 1) === 'js';
+		});
+		pb = new progressbar.Progressbar(
+			files.length,
+			{
+				color: progressbar.COLORS.GRAY,
+				label: 'Scanning source code: '
 			}
-			// execute jshint
-			options.args = list;
+		);
+		pb.start();
+		next();
+	};
+
+	var validateFiles = function (next) {
+		async.forEach(files, function (item, moveOn) {
+			// run jshint
+			options.args = [item.file];
 			jshintcli.run(options);
-			// check for deprecated gracenode functions
-			lookForDeprecated(list, next);
 			// progressbar
 			pb.update();
-		});
-	}, done);
+			// check for deprecated gracenode functions
+			lookForDeprecated(options.args, moveOn);
+		}, next);
+	};
+
+	var tasks = [
+		findFiles,
+		setupProgressbar,
+		validateFiles
+	];
+	
+	async.series(tasks, done);
 };
 
 function startMemWatch(config, logger) {

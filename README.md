@@ -1,4 +1,4 @@
-#gracenode
+# gracenode
 
 ©Nobuyori Takahashi < <voltrue2@yahoo.com> >
 
@@ -10,13 +10,13 @@ Framework for node.js application with extendable module management system for f
 
 #### It is modular and easy to extend
 
-##Installation
+## Installation
 
-###Installation via NPM
+### Installation via NPM
 
 `npm install gracenode`
 
-###Add gracenode as your application's dependency
+### Add gracenode as your application's dependency
 
 To install gracenode you can either add it to your package.json like so,
 
@@ -36,7 +36,7 @@ To install gracenode you can either add it to your package.json like so,
 ```
 or NPM install directly via `npm install git+https://github.com/voltrue2/gracenode.git#master`.
 
-###Creating configuration files
+### Creating configuration files
 
 In your root directory create a directory that is called 'configs'. Although you can name it whatever you want, for this instruction we have named our directory configs.
 
@@ -47,7 +47,7 @@ $ touch configs/conf.json
 
 Refer to each module's README.md for more detail on configurations.
 
-##Bootstrapping gracenode
+## Bootstrapping gracenode
 
 To use gracenode modules, add the following to your package.json:
 
@@ -84,7 +84,7 @@ gracenode.setup(function () {
 });
 ```
 
-##How to start your gracenode application
+## How to start your gracenode application
 
 To start your application, simply execte your bootstrapped file as shown below:
 
@@ -92,7 +92,7 @@ To start your application, simply execte your bootstrapped file as shown below:
 node yourBootstrapped.js
 ```
 
-##Daemonizing your application process
+## Daemonizing your application process
 
 gracenode framework comes with daemon tool to daemonize your application out-of-the-box.
 
@@ -118,7 +118,7 @@ node daemon ...
 
 The example below shows `node daemon ....` style of execution.
 
-####To start your application as a daemon process:
+#### To start your application as a daemon process:
 
 ```
 node daemon start
@@ -146,7 +146,7 @@ node daemon start -a controller/ modules/ configs/
 The above example instructs the `daemon` command to watch `controller`, `modules`, and `configs` directories of the application 
 for `auto-reload`. If anything changes in these directories, the daemon process will automatically reload.
 
-####To stop your daemon application:
+#### To stop your daemon application:
 
 ```
 node daemon stop
@@ -154,7 +154,7 @@ node daemon stop
 
 ***
 
-####To restart your daemon application:
+#### To restart your daemon application:
 
 ```
 node daemon restart
@@ -162,7 +162,7 @@ node daemon restart
 
 ***
 
-####To reload our daemon application worker processes without stopping:
+#### To reload our daemon application worker processes without stopping:
 
 ```
 node daemon reload
@@ -183,7 +183,7 @@ In order to make use of this option, your application must be running in `cluste
 
 ***
 
-####To list the currently running daemon processes:
+#### To list the currently running daemon processes:
 
 ```
 node daemon list
@@ -191,7 +191,7 @@ node daemon list
 
 ***
 
-####To display basic status of a daemon process:
+#### To display basic status of a daemon process:
 
 ```
 node daemon status
@@ -199,7 +199,7 @@ node daemon status
 
 ***
 
-###You can optionally give a path to the application you want to target.
+### You can optionally give a path to the application you want to target.
 
 ```
 node daemon start /path/to/your/app/
@@ -263,11 +263,11 @@ Example:
 
 ***
 
-#gracenode
+# gracenode
 
-##Methods
+## Methods
 
-###.argv(argumentName [string])
+### .argv(argumentName [string])
 
 Returns true or a value associated to the key given as an argument.
 
@@ -308,7 +308,7 @@ var p = gracenode.argv('-p');
 // ['aaa', 'bbb', 'ccc']
 ```
 
-###.setHelpText(text [string])
+### .setHelpText(text [string])
 
 Sets text to be displayed when `--help` option is given.
 
@@ -340,7 +340,7 @@ Options :
     clean     : Cleans up possible detached socket files for daemon processes that are no longer present.
 ```
 
-###.defineOption(argumentName [string/array], description [srting], argumentsAsArray [*boolean], optionExecution [*function])
+### .defineOption(argumentName [string/array], description [srting], argumentsAsArray [*boolean], optionExecution [*function])
 
 Defines an option and add short description for `--help` and function to be executed if the option is given.
 
@@ -397,19 +397,19 @@ Options need to be defined by calling `gracenode.defineOption()` for this functi
 
 gracenode has --help option and displays defined command options set by `.defineOption()`.
 
-###.setConfigPath(configDirectoryPath [string], useFullPath [*boolean])
+### .setConfigPath(configDirectoryPath [string], useFullPath [*boolean])
 Tells gracenode where to find the configuraitons files.
 ```
 gracenode.setConfigPath('configs/');
 ```
 
-###.setConfigFiles(configFileList [array])
+### .setConfigFiles(configFileList [array])
 Give gracenode the list of configuration files to be used. The files must be in the directory given to setConfigFiles.
 ```
 gracenode.setConfigFiles(['conf.json']);
 ```
 
-###.registerShutdownTask(taskName [string], task [function]);
+### .registerShutdownTask(taskName [string], task [function]);
 Registers a function to be executed when gracenode process is shutting down to ensure graceful exit of the application
 ```
 gracenode.registerShutdownTask('example', function (callback) {
@@ -419,14 +419,14 @@ gracenode.registerShutdownTask('example', function (callback) {
 });
 ```
 
-###.addModulePath(modulePath [string])
+### .addModulePath(modulePath [string])
 Adds a module path for gracenode to load modules from. Used to load external gracenode module
 ```
 gracenode.addModulePath('mymodules/');
 gracenode.use('mymodule');
 ```
 
-###.use(moduleName [string], options [*object])
+### .use(moduleName [string], options [*object])
 
 Tells gracenode what modules to load when calling the setup functions.
 
@@ -450,7 +450,7 @@ gracenode.use('async', { name: 'async2', driver: { config: <*function>, setup: <
 
 For more details on module drivers, please read <a href="#module-drivers">here</a>.
 
-###.setup(callback [function])
+### .setup(callback [function])
 Start the setting up of gracenode modules.
 ```
 gracenode.setup(function(error) {
@@ -458,7 +458,7 @@ gracenode.setup(function(error) {
 });
 ```
 
-###.isMaster()
+### .isMaster()
 Returns a boolean. true is given if the process is master (available ONLY in cluster mode)
 
 ###.getProcessType()
@@ -470,25 +470,25 @@ var processType = gracenode.getProcessType();
 */
 ```
 
-###.exit(errorMessage [string*])
+### .exit(errorMessage [string*])
 Exits gracenode and attempts to gracefully shutdown the process. You can give it an error message in case you want to stop the process due to an error.
 ```
 gracenode.exit('financialCrisis');
 ```
 
-###.getRootPath()
+### .getRootPath()
 Returns the root path of the application (not the root path of gracenode)
 ```
 var appRoot = gracenode.getRootPath();
 ```
 
-###.require()
+### .require()
 Executes nodejs native require with application root path as prefix. You do not have to go ../../mydir/me.js
 ```
 var mymod = gracenode.require('mydir/mymod');
 ```
 
-###.send(message [object], worker [*object])
+### .send(message [object], worker [*object])
 
 Sends a JSON format message from master to workers or a worker to master
 
@@ -500,40 +500,40 @@ If the second argument is given (worker process object), the master process send
 gracenode.send({ message: 'Hello World!' });
 ```
 
-##Events
+## Events
 Gracenode has the capabilities to emit events, you can catch these events using:
 ```
 gracenode.on('event.name', yourEventHandler);
 ```
-###setup.config
+### setup.config
 Emitted when the config module has been set up.
-###setup.log
+### setup.log
 Emitted when the log module has been setup.
-###setup.complete
+### setup.complete
 Emitted when the setup has been completed.
-###setup.moduleName
+### setup.moduleName
 Emitted when a specific module has been setup.
-###uncaughtException
+### uncaughtException
 Emitted when gracenode caught an uncaught exception.
-###exit
+### exit
 Emitted when gracenode exits.
-###shutdown.taskName
+### shutdown.taskName
 Emitted when gracenode's module finished executing shutdown task.
-###shutdown
+### shutdown
 Emitted when gracenode detects SIGINT. This is before exit is emitted.
-###worker.message
+### worker.message
 Emitted when gracenode master process receives a message from a worker
 ```
 gracenode.on('worker.message', function (senderWorker, message) {
 	// do something
 });
 ```
-###master.message
+### master.message
 Emitted when a gracenode worker process receives a message from master.
 
-#Cluster Mode
+# Cluster Mode
 Spawns forked process(es) if allowed
-###Configurations
+### Configurations
 ```javascript
 "cluster": {
 	"enabled": <boolean>
@@ -544,7 +544,7 @@ Spawns forked process(es) if allowed
 
 ***
 
-#Modules
+# Modules
 
 gracenode framework is modular. And it allows you to extend it by adding your custom modules and/or 3rd party node modules.
 
@@ -582,43 +582,43 @@ gracenode.use('gracenode-mongodb');
 
 ***
 
-#Default Modules
+# Default Modules
 By default gracenode automatically loads the following modules. Click on the link to read more about them.
-###[Config](modules/config)
+### [Config](modules/config)
 Handles everything config related.
-###[Log](modules/log)
+### [Log](modules/log)
 Takes care of logging.
-###[Profiler](modules/profiler)
+### [Profiler](modules/profiler)
 Used to profile your application so you can easily determine bottlenecks in your application.
-###[Lib](modules/lib)
+### [Lib](modules/lib)
 Contains a plethora of commonly used functions like random integer generation.
-#Additional Modules
+# Additional Modules
 These modules are specifically designed to function as gracenode modules.
-###[gracenode-cron](https://github.com/briandeheus/gracenode-cron)
+### [gracenode-cron](https://github.com/briandeheus/gracenode-cron)
 Module to run, start, stop, and setup cron tasks
-###[gracenode-staticdata](https://github.com/voltrue2/gracenode-staticdata)
+### [gracenode-staticdata](https://github.com/voltrue2/gracenode-staticdata)
 Allows for easy loading of static data such as JSON and CSV files.
-###[gracenode-request](https://github.com/voltrue2/gracenode-request)
+### [gracenode-request](https://github.com/voltrue2/gracenode-request)
 Handles requests to the server.
-###[gracenode-server](https://github.com/voltrue2/gracenode-server)
+### [gracenode-server](https://github.com/voltrue2/gracenode-server)
 Handles requests to the server.
-###[gracenode-udp](https://github.com/voltrue2/gracenode-udp)
+### [gracenode-udp](https://github.com/voltrue2/gracenode-udp)
 A module that makes it easier to handle UDP traffic from and to your server.
-###[gracenode-view](https://github.com/voltrue2/gracenode-view)
+### [gracenode-view](https://github.com/voltrue2/gracenode-view)
 Manages, loads and creates views you can server to clients.
-###[gracenode-session](https://github.com/voltrue2/gracenode-session)
+### [gracenode-session](https://github.com/voltrue2/gracenode-session)
 Handles sessions and automatically expires them if they are not accessed within a preset amount of time.
-###[gracenode-encrypt](https://github.com/voltrue2/gracenode-encrypt)
+### [gracenode-encrypt](https://github.com/voltrue2/gracenode-encrypt)
 Contains functions that make it easier to deal with crypography and password hashing.
-###[gracenode-mysql](https://github.com/voltrue2/gracenode-mysql)
+### [gracenode-mysql](https://github.com/voltrue2/gracenode-mysql)
 A wrapper to handle MySQL connections without the hassle of maintaining your connection pool.
-###[gracenode-mongodb](https://github.com/voltrue2/gracenode-mongodb)
+### [gracenode-mongodb](https://github.com/voltrue2/gracenode-mongodb)
 A wrapper to handle Mongodb functions and connections.
-###[gracenode-memcache](https://github.com/voltrue2/gracenode-memcache)
+### [gracenode-memcache](https://github.com/voltrue2/gracenode-memcache)
 Memcache management.
-###[gracenode-iap](https://github.com/voltrue2/gracenode-iap)
+### [gracenode-iap](https://github.com/voltrue2/gracenode-iap)
 Apple and GooglePlay in-app-purchase validation.
-###[gracenode-wallet](https://github.com/voltrue2/gracenode-wallet)
+### [gracenode-wallet](https://github.com/voltrue2/gracenode-wallet)
 Coin management.
 
 ***
