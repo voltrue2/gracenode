@@ -10,6 +10,7 @@ var log = gracenode.log.create('nameToBeDisplayed');
 {
 	"modules":
 		"log": {
+			"useTimestamp": <bool> // if given true, logging will be in Unix timestamp instead of the server time
 			"bufferSize": <int> // log data buffer size in memory (bytes),
 			"bufferFlushInterval": <int> // log data buffer auto flush interval in milliseconds,
 			"file": "<log directory path> or false"
