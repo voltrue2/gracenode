@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.4.1
+
+## Added
+
+None
+
+## Changed
+
+## Dependency gracelog's version has been updated from 0.3.0 to 0.4.0
+
+This version fixes the issue with rotated file log data being in a wrong date and time.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.4.0
 
 ## Added
