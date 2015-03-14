@@ -39,8 +39,6 @@ module.exports.setup = function (configIn) {
 		config[key] = configIn[key];
 	}
 
-	console.log(configIn);
-
 	logger.verbose('configurations:', config);
 };
 
@@ -66,7 +64,8 @@ NetworkNode.prototype.start = function (cb) {
 	var that = this;
 	try {
 		this.socket.bind(config.port, config.address, function () {
-			
+			that.socket.setBroadcast(true);
+				
 			logger.info('network node [id:' + that.id + '] started at:', config.address + ':' + config.port);
 			
 			cb();

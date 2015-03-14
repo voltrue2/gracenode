@@ -9,6 +9,8 @@ var logger;
 var enabled = false;
 var meshNet;
 
+module.exports.TYPE = discover.TYPE;
+
 module.exports.setup = function (gnIn, cb) {
 	gn = gnIn;
 	logger = gn.log.create(name);

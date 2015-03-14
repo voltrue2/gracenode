@@ -57,7 +57,7 @@ function Gracenode() {
 
 util.inherits(Gracenode, EventEmitter);
 
-Gracenode.prototype.joinMeshNet = function (channel) {
+Gracenode.prototype.meshNetJoin = function (channel) {
 	if (this._meshNet) {
 		return this._meshNet.join(channel);
 	}
@@ -68,7 +68,7 @@ Gracenode.prototype.joinMeshNet = function (channel) {
 	return true;
 };
 
-Gracenode.prototype.leaveMeshNet = function (channel) {
+Gracenode.prototype.meshNetLeave = function (channel) {
 	if (this._meshnet) {
 		return this._meshNet.leave(channel);
 	}
@@ -78,7 +78,7 @@ Gracenode.prototype.leaveMeshNet = function (channel) {
 	});
 };
 
-Gracenode.prototype.sendMeshNet = function (channel, data) {
+Gracenode.prototype.meshNetSend = function (channel, data) {
 	if (this._meshnet) {
 		return this._meshNet.send(channel, data);
 	}
@@ -86,6 +86,14 @@ Gracenode.prototype.sendMeshNet = function (channel, data) {
 		action: 'send',
 		channel: channel,
 		data: data
+	});
+};
+
+Gracenode.prototype.meshNetReceive = function (channel, cb) {
+	this.on('master.message', function (msg) {
+		if (msg.__type__ === meshNet.TYPE && msg.channel === channel) {
+			cb(msg);
+		}
 	});
 };
 

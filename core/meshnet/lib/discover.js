@@ -18,9 +18,13 @@ var RESERVED_EVENTS = [
 	'removed'
 ];
 
+var TYPE = 'meshnet';
+
 var gn;
 var logger;
 var config;
+
+module.exports.TYPE = TYPE;
 
 // called from mesh-net/index.js
 module.exports.setGracenode = function (gnIn) {
@@ -100,31 +104,32 @@ util.inherits(Discover, EventEmitter);
 Discover.prototype.handleHello = function (data, obj, info) {
 	
 	var isNew = false;
+	var nodeId = obj.id;
 
 	// check if this node has been seen before or not
-	if (!this.nodes[data.id]) {
+	if (!this.nodes[obj.id]) {
 		// never seen node
 		isNew = true;
 	}
 	
 	// reset node data to avoid old data remaining
-	this.nodes[data.id] = {
+	this.nodes[nodeId] = {
 		lastSeen: Date.now(),
 		address: info.address,
 		hostName: obj.hostName,
 		port: info.port,
-		id: obj.id
+		id: nodeId
 	};
 
 	// update node data
 	for (var key in data) {
-		this.nodes[data.id] = data[key];
+		this.nodes[nodeId][key] = data[key];
 	}
 
 	// announce if the new node has been discovered
 	if (isNew) {
-		logger.info('a new node has been added:', data.id, this.nodes[data.id], obj, info);
-		this.emit('added', this.nodes[data.id], obj, info);
+		logger.info('a new node has been added:', nodeId, this.nodes[nodeId], obj, info);
+		this.emit('added', this.nodes[nodeId], obj, info);
 	}
 	
 };
@@ -162,7 +167,7 @@ Discover.prototype.handleCheck = function () {
 	// check all known nodes and see if any has died or not...
 	for (var id in this.nodes) {
 		var node = this.nodes[id];
-		
+
 		if (now - node.lastSeen > config.nodeTimeout) {
 			logger.error('a network node [id:' + id + '] has timed out and now be removed from the known list of', this.broadcast.id);
 			delete this.nodes[id];
@@ -170,7 +175,7 @@ Discover.prototype.handleCheck = function () {
 			continue;
 		}
 
-		logger.verbose('a network node [id:' + id + '] is still available to', this.broadcast.id);
+		logger.verbose('a network node [id:' + id + '] is still available to', this.broadcast.id, '(time:' + (now - node.lastSeen) + '/' + config.nodeTimeout + ')');
 	}
 
 	setTimeout(function () {
@@ -237,6 +242,7 @@ Discover.prototype.join = function (channelName) {
 		if (gn.isMaster()) {
 			// send message to worker processes
 			var msg = {
+				__type__: TYPE,
 				channel: channelName,
 				data: data,
 				obj: obj,
