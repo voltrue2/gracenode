@@ -265,7 +265,7 @@ Discover.prototype.leave = function (channelName) {
 	var index = this.channels.indexOf(channelName);
 	
 	if (index === -1) {
-		logger.warn('not a member of a channel', channelName);
+		logger.warn('not a member of the channel', channelName);
 		return false;
 	}
 
@@ -282,6 +282,11 @@ Discover.prototype.send = function (channelName, obj) {
 	
 	if (RESERVED_EVENTS.indexOf(channelName) !== -1) {
 		logger.error('cannot send a message to channel name that is reserved', channelName, this.broadcast.id);
+		return false;
+	}
+
+	if (this.channels.indexOf(channelName) === -1) {
+		logger.warn('not a member of the channel', channelName);
 		return false;
 	}
 
