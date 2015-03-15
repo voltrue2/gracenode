@@ -2,6 +2,59 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.5.0
+
+## Added
+
+#### Built-in Mesh Network System Added
+
+gracenode now has a built-in decentralized mesh network system. 
+
+It supports broadcast to communicate between remote mesh nodes.
+
+Require Congigurations:
+
+```
+{
+	"enable": <boolean>
+	"helloInterval": <number> // [optional] in milliseconds. default is 1000
+	"checkInterval": <number> // [optional] in milliseconds. default is 2000
+	"broadcast": <string> // [optional] default is "255.255.255.255"
+	"port": <number> // [optional] default is 12345
+	"encryptionKey": <string> // [optional] default is null. read more about it: https://nodejs.org/api/crypto.html#crypto_crypto_createcipher_algorithm_password
+}
+```
+
+#### Mesh Network Methods Added
+
+`gracenode.meshNetJoin(channel [string])`
+
+Joins a mesh network channle.
+
+`gracenode.meshNetSend(channel [string], data [object])`
+
+Sends a message object to the other mesh network nodes on the same channel.
+
+`gracenode.meshNetReceive(channel [string], callback [function])`
+
+Listener for the mesh network channel.
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+#### .getModuleSchema has now been removed
+
+`.getModuleSchema` has been deprecated since version 1.3.3 and it is now removed.
+
+***
+
 ## Version 1.4.1
 
 ## Added

@@ -263,6 +263,49 @@ Example:
 
 ***
 
+# Mesh Network
+
+gracenode has built-in mesh netowrk system to enable the applications running on different servers to communicate to each other.
+
+The system utilizes completely decentralized mesh network where there are no master nodes and every mesh node is aware of each other with broadcasting.
+
+The feature is insipred by <a href="https://github.com/wankdanker">Dan VerWeire's</a> <a href="https://github.com/wankdanker/node-discover">node-discover</a>.
+
+In order to use built-in mesh network system, all of the applications must be within the same internal network.
+
+To enable, you must provide configurations as shown below:
+
+```
+{
+	"meshnet": {
+		"enable": <boolean>,
+		"helloInterval": <number> // in milliseconds [optional] default is 1000
+		"checkInterval": <number> // in milliseconds [optional] default is 2000
+		"broadcast": <string> // [optional] default is "255.255.255.255"
+		"port": <number> // [optional] default is 12345
+		"encryptionKey": <string> // [optional] default is null. read more about it: https://nodejs.org/api/crypto.html#crypto_crypto_createcipher_algorithm_password
+	}
+}
+```
+
+## gracenode Methods for Mesh Network
+
+### .meshNetJoin(channel [string]);
+
+Joins a mesh network channel.
+
+### .meshNetSend(channel [string], message [object])
+
+Sends a message object to other mesh network nodes on the same channel.
+
+### .meshNetReceive(channel [string], callback [function])
+
+Handles a received message object from other mesh network nodes on the same channel.
+
+`.meshNet.join()` must be called for this to work properly.
+
+***
+
 # gracenode
 
 ## Methods

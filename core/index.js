@@ -15,6 +15,7 @@ var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
 
+var meshNet = require('./meshnet');
 var debugMode = require('./debug');
 
 // overwridden by calling _setLogCleaner from log module
@@ -30,6 +31,7 @@ function Gracenode() {
 	setupListeners(this);
 	// variables
 	var roots = findRoots();
+	this._meshNet = null; // master or non-cluster only
 	this._process = null;
 	this._isReady = false;
 	this._pid = null;
@@ -54,6 +56,49 @@ function Gracenode() {
 }
 
 util.inherits(Gracenode, EventEmitter);
+
+Gracenode.prototype.meshNetJoin = function (channel) {
+	if (this._meshNet) {
+		return this._meshNet.join(channel);
+	}
+	this.send({
+		action: 'join',
+		channel: channel
+	});
+	return true;
+};
+
+Gracenode.prototype.meshNetLeave = function (channel) {
+	if (this._meshNet) {
+		return this._meshNet.leave(channel);
+	}
+	this.send({
+		action: 'leave',
+		channel: channel
+	});
+};
+
+Gracenode.prototype.meshNetSend = function (channel, data) {
+	if (this._meshNet) {
+		return this._meshNet.send(channel, data);
+	}
+	this.send({
+		action: 'send',
+		channel: channel,
+		data: data
+	});
+};
+
+Gracenode.prototype.meshNetReceive = function (channel, cb) {
+	if (this._meshNet) {
+		return this._meshNet.on(channel, cb);
+	}
+	this.on('master.message', function (msg) {
+		if (msg.__type__ === meshNet.TYPE && msg.channel === channel) {
+			cb(msg);
+		}
+	});
+};
 
 Gracenode.prototype.registerShutdownTask = function (name, taskFunc) {
 	if (typeof taskFunc !== 'function') {
@@ -371,7 +416,9 @@ function setupProcess(that, lastCallback, cb) {
 		that._pid = pid;
 		logger._setInternalPrefix('MASTER:' + pid);
 		log = logger.create('gracenode');
-		lastCallback();
+		setupMeshNet(that, function () {
+			lastCallback();
+		});
 	});
 	ps.on('cluster.worker.setup', function (pid) {
 		that._profiler.mark('starting process');
@@ -382,9 +429,24 @@ function setupProcess(that, lastCallback, cb) {
 	});
 	ps.on('nocluster.setup', function () {
 		that._profiler.mark('starting process');
-		cb(null, that);
+		setupMeshNet(that, function () {
+			cb(null, that);
+		});
 	});
 	ps.setup();
+}
+
+function setupMeshNet(that, cb) {
+	meshNet.setup(that, function (error) {
+		if (error) {
+			throw error;
+		}
+
+		// master process or non-cluster process only
+		that._meshNet = meshNet.get();
+
+		cb();
+	});
 }
 
 function setupModules(that, cb) {

@@ -90,14 +90,6 @@ describe('gracenode initialization ->', function () {
 			
 	});
 
-	it('Can get iap module schema SQL', function (done) {
-		gn.getModuleSchema('gracenode-iap', function (error, sqlList) {
-			assert.equal(error, undefined);
-			assert(sqlList.length);
-			done();
-		});
-	});
-
 	it('Can clone objects with all properties', function () {
 		var original = {
 			a: 100,

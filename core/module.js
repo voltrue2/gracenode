@@ -50,39 +50,6 @@ Module.prototype.use = function (name, options) {
 	this._use.push({ name: name, modName: modName });
 };
 
-// deprecated as of Nov/4/2014 version 1.3.3
-// TODO: need to add support for more than SQL
-Module.prototype.getModuleSchema = function (name, cb) {
-	var that = this;
-	var path = moduleMap[name];
-	if (path) {
-		var filePath = path + '/schema.sql';
-		that._logger.verbose('looking for', filePath);
-		fs.readFile(filePath, 'utf-8', function (error, sql) {
-			if (error) {
-				return cb(error);
-			}
-			that._logger.verbose('module schema:\n', sql);
-			// remove line breaks and tabs
-			sql = sql.replace(/(\n|\t)/g, '');
-			// separate sql statements
-			var sqlList = sql.split(';');
-			// remove an empty entry in the array of sqlList
-			var list = [];
-			for (var i = 0, len = sqlList.length; i < len; i++) {
-				if (sqlList[i] !== '') {
-					list.push(sqlList[i]);
-				}
-			}
-			cb(null, list);
-		});
-		return;
-	}
-	this._logger.error('sql schema for module [' + name + '] not found');
-	cb(null, []);
-	
-};
-
 Module.prototype.load = function (cb) {
 	var that = this;
 	// set up module driver manager
