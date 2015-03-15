@@ -82,7 +82,7 @@ function Discover() {
 		data: data
 	}
 	*/
-	gn.on('worker.message', function (serverWorker, msg) {
+	gn.on('worker.message', function (senderWorker, msg) {
 		if (msg.channel) {
 			switch (msg.action) {
 				case 'join':
@@ -93,6 +93,10 @@ function Discover() {
 					break;
 				case 'leave':
 					that.leave(msg.channel);
+					break;
+				case 'each':
+					that.eachNode(senderWorker);
+					break;
 			}
 		}
 	});
@@ -169,13 +173,24 @@ Discover.prototype.handleCheck = function () {
 		var node = this.nodes[id];
 
 		if (now - node.lastSeen > config.nodeTimeout) {
-			logger.error('a network node [id:' + id + '] has timed out and now be removed from the known list of', this.broadcast.id);
+			logger.error(
+				'a network node [id:' + 
+				id + 
+				'] has timed out and now be removed from the known list of', 
+				this.broadcast.id
+			);
 			delete this.nodes[id];
 			this.emit('removed', node);
 			continue;
 		}
 
-		logger.verbose('a network node [id:' + id + '] is still available to', this.broadcast.id, '(time:' + (now - node.lastSeen) + '/' + config.nodeTimeout + ')');
+		logger.verbose(
+			'a network node [id:' + 
+			id + 
+			'] is still available to', 
+			this.broadcast.id, 
+			'(time:' + (now - node.lastSeen) + '/' + config.nodeTimeout + ')'
+		);
 	}
 
 	setTimeout(function () {
@@ -226,7 +241,6 @@ Discover.prototype.stop = function (cb) {
 
 // public
 Discover.prototype.join = function (channelName) {
-	var that = this;
 
 	if (RESERVED_EVENTS.indexOf(channelName) !== -1) {
 		logger.error('channel name is a reserved name', channelName);
@@ -239,8 +253,6 @@ Discover.prototype.join = function (channelName) {
 	}
 
 	this.broadcast.on(channelName, function (data, obj, info) {
-		that.emit(channelName, data, obj, info);
-		
 		if (gn.isMaster()) {
 			// send message to worker processes
 			var msg = {
@@ -252,7 +264,6 @@ Discover.prototype.join = function (channelName) {
 			};
 			gn.send(msg);
 		}
-
 	});
 	
 	this.channels.push(channelName);
@@ -283,7 +294,11 @@ Discover.prototype.leave = function (channelName) {
 Discover.prototype.send = function (channelName, obj) {
 	
 	if (RESERVED_EVENTS.indexOf(channelName) !== -1) {
-		logger.error('cannot send a message to channel name that is reserved', channelName, this.broadcast.id);
+		logger.error(
+			'cannot send a message to channel name that is reserved', 
+			channelName, 
+			this.broadcast.id
+		);
 		return false;
 	}
 
@@ -297,4 +312,16 @@ Discover.prototype.send = function (channelName, obj) {
 	this.broadcast.send(channelName, obj);
 
 	return true;
+};
+
+// public 
+Discover.prototype.eachNode = function (worker) {
+	var nodes = {};
+	for (var id in this.nodes) {
+		nodes[id] = gn.lib.cloneObj(this.nodes[id]);
+	}
+	if (gn.isMaster()) {
+		// send message back to the sender worker
+		gn.send({ type: TYPE, __nodes__: nodes }, worker);
+	}	
 };
