@@ -291,11 +291,11 @@ To enable, you must provide configurations as shown below:
 
 ### .meshNetJoin(channel [string]);
 
-Joins a channel.
+Joins a mesh network channel.
 
-### .meshNetSend(channdle [string], message [object])
+### .meshNetSend(channel [string], message [object])
 
-Sends a message object to other mesh network nodes.
+Sends a message object to other mesh network nodes on the same channel.
 
 ### .meshNetReceive(channel [string], callback [function])
 
