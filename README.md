@@ -283,6 +283,7 @@ To enable, you must provide configurations as shown below:
 		"checkInterval": <number> // in milliseconds [optional] default is 2000
 		"broadcast": <string> // [optional] default is "255.255.255.255"
 		"port": <number> // [optional] default is 12345
+		"encryptionKey": <string> // [optional] default is null. read more about it: https://nodejs.org/api/crypto.html#crypto_crypto_createcipher_algorithm_password
 	}
 }
 ```

@@ -69,7 +69,7 @@ Gracenode.prototype.meshNetJoin = function (channel) {
 };
 
 Gracenode.prototype.meshNetLeave = function (channel) {
-	if (this._meshnet) {
+	if (this._meshNet) {
 		return this._meshNet.leave(channel);
 	}
 	this.send({
@@ -79,7 +79,7 @@ Gracenode.prototype.meshNetLeave = function (channel) {
 };
 
 Gracenode.prototype.meshNetSend = function (channel, data) {
-	if (this._meshnet) {
+	if (this._meshNet) {
 		return this._meshNet.send(channel, data);
 	}
 	this.send({
@@ -90,6 +90,9 @@ Gracenode.prototype.meshNetSend = function (channel, data) {
 };
 
 Gracenode.prototype.meshNetReceive = function (channel, cb) {
+	if (this._meshNet) {
+		return this._meshNet.on(channel, cb);
+	}
 	this.on('master.message', function (msg) {
 		if (msg.__type__ === meshNet.TYPE && msg.channel === channel) {
 			cb(msg);

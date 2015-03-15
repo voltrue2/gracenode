@@ -16,7 +16,7 @@ module.exports.setup = function (gnIn, cb) {
 	logger = gn.log.create(name);
 	var config = gn.config.getOne('meshnet');
 
-	if (!config || !config.enabled) {
+	if (!config || !config.enable) {
 		logger.verbose('mesh-network is not enabled');
 		return cb();
 	}

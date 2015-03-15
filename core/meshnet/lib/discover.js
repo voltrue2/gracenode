@@ -207,6 +207,8 @@ Discover.prototype.start = function (cb) {
 		that.sendHello();
 
 		logger.info('mesh network started');
+
+		cb();
 	});
 };
 
