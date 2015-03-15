@@ -267,6 +267,8 @@ Example:
 
 gracenode has built-in mesh netowrk system to enable the applications running on different servers to communicate to each other.
 
+The system utilizes completely decentralized mesh network where there are no master nodes and every mesh node is aware of each other with broadcasting.
+
 The feature is insipred by <a href="https://github.com/wankdanker">Dan VerWeire's</a> <a href="https://github.com/wankdanker/node-discover">node-discover</a>.
 
 In order to use built-in mesh network system, all of the applications must be within the same internal network.
