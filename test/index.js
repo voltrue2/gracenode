@@ -699,3 +699,5 @@ describe('gracenode initialization ->', function () {
 	});
  
 });
+
+require('../scripts/daemon/test/');

@@ -179,8 +179,14 @@ function reloadApp(cb) {
 			app.reloaded = Date.now();
 			app.reloadedCount += 1;
 			// try to get gracenode version of the application if present
-			var pkg = require(path.replace('index.js', '') + 'package.json');
-			app.version = pkg && pkg.version ? pkg.version : 'Unknown';
+			var fileName = path.substring(path.lastIndexOf('/') + 1);
+			try {
+				var pkg = require(path.replace(fileName, '') + 'package.json');
+				app.version = pkg && pkg.version ? pkg.version : 'Unknown';
+			} catch (error) {
+				logger.error(app.path + ' does not have a package.json [this error is not a fatal error]');
+				app.version = 'Unknown';
+			}
 			app.kill('SIGHUP');
 			logger.info('reloading daemon process of ' + app.path);
 			if (cb) {

@@ -8,9 +8,11 @@ This is a list of manually mantained changes and updates for each version.
 
 #### .meshNetEachNode() added
 
+#### Unit test added to daemon tool
+
 ## Changed
 
-None
+#### Daemon tool exists with error when failing to start, stop, restart, and reload
 
 ## Deprecated
 
