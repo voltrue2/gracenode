@@ -2,6 +2,7 @@ var gn = require('gracenode');
 var prefix = require('./prefix');
 var assert = require('assert');
 
+// gracenode main tests
 describe('gracenode initialization ->', function () {
 	
 	it('Can set up gracenode modules', function (done) {
@@ -700,4 +701,5 @@ describe('gracenode initialization ->', function () {
  
 });
 
+// gracenode daemon tool tests
 require('../scripts/daemon/test/');
