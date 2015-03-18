@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.5.1
+
+## Added
+
+#### .meshNetEachNode() added
+
+#### Unit test added to daemon tool
+
+## Changed
+
+#### Daemon tool exists with error when failing to start, stop, restart, and reload
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.5.0
 
 ## Added

@@ -34,7 +34,7 @@ Status.prototype.verbose = function (msg) {
 Status.prototype.end = function (error) {
 	this.verbose('end of status validation');
 	if (error) {
-		console.error(lib.color('*** ERROR:' + error.message, lib.COLORS.RED));
+		return gn.exit(error);
 	}
 	gn.exit();
 };
@@ -102,14 +102,14 @@ Status.prototype.setup = function (cb) {
 				var pids = [];
 				return that.getPids(processList, function (error, list) {
 					if (error) {
-						console.error(lib.color(error.message, lib.COLORS.RED));
+						console.error(lib.color('Failed to retrieve pid list', lib.COLORS.RED));
+						return that.end(error);
 					}
 					for (var i = 0, len = list.length; i < len; i++) {
 						console.error(lib.color(list[i].process + ' (pid: ' + list[i].pid + ')', lib.COLORS.RED));
 						pids.push(list[i].pid);
 					}
-					console.error(lib.color('Kill command: kill -9 ' + pids.join(' '), lib.COLORS.RED));
-					that.end();
+					that.end(new Error('You may need to force exit the process(es): kill -9 ' + pids.join(' ')));
 				});
 			}
 			// application is not running
@@ -158,10 +158,14 @@ Status.prototype.getStatus = function (cb) {
 	this.verbose('get application status of ' + this.appPath + ' from ' + this.sockFile);
 	message.read(onData, function () {
 		var sock = new net.Socket();
-		sock.connect(that.sockFile, function () {
-			that.verbose('status command sent to monitor');
-			sock.write('message\tstatus\t' + that.appPath);
-		});
+		try {
+			sock.connect(that.sockFile, function () {
+				that.verbose('status command sent to monitor');
+				sock.write('message\tstatus\t' + that.appPath);
+			});
+		} catch (error) {
+			cb(error);
+		}
 	});
 };
 
@@ -211,8 +215,7 @@ Status.prototype.stop = function () {
 				return that.end(error);
 			}
 			if (!notRunning) {
-				console.error(lib.color('Daemon process failed to stop', lib.COLORS.RED), lib.color(that.appPath, lib.COLORS.LIGHT_BLUE));
-				return that.end();
+				return that.end(new Error('Daemon process failed to stop ' + that.appPath));
 			}
 			console.log(lib.color('Daemon process stopped', lib.COLORS.GRAY), lib.color(that.appPath, lib.COLORS.LIGHT_BLUE));
 			that.end();
@@ -305,7 +308,11 @@ Status.prototype.reload = function () {
 	var sock;
 	var connect = function (done) {
 		sock = new net.Socket();
-		sock.connect(that.sockFile, done);
+		try {
+			sock.connect(that.sockFile, done);
+		} catch (error) {
+			done(error);
+		}
 	};
 	var getCurrentStatus = function (done) {
 		console.log(lib.color('Currently running daemon status', lib.COLORS.GRAY));
@@ -318,7 +325,11 @@ Status.prototype.reload = function () {
 		});	
 	};
 	var reload = function (done) {
-		sock.write('reload');
+		try {
+			sock.write('reload');
+		} catch (error) {
+			return done(error);
+		}
 		console.log(lib.color('Reloading daemon ' + that.appPath, lib.COLORS.GRAY));
 		done();
 	};
@@ -369,7 +380,7 @@ Status.prototype.reload = function () {
 	],
 	function (error) {
 		if (error) {
-			return that.end();
+			return that.end(error);
 		}
 		console.log(lib.color('Reloaded application as a daemon ' + that.appPath, lib.COLORS.LIGHT_BLUE));
 		that.end();

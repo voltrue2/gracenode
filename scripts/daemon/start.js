@@ -15,8 +15,7 @@ module.exports = function (path, logPath, autoReload) {
 	var status = new Status(path);
 	status.setup(function () {
 		if (status.isRunning) {
-			logger.error(lib.color('daemon process ' + path + ' is already running', lib.COLORS.RED));
-			return status.end();
+			return status.end(new Error('Daemon process' + path + ' is already running'));
 		}
 		// set up the options
 		var args = [
@@ -58,11 +57,12 @@ module.exports = function (path, logPath, autoReload) {
 				);
 			} else {
 				console.error(
-					lib.color('Daemon process failed to start', lib.COLORS.RED),
+					lib.color('Application is not running', lib.COLORS.RED),
 					lib.color(path, lib.COLORS.RED)
 				);
+				error = new Error('Daemon process failed to start');
 			}
-			status.end();
+			status.end(error);
 		});
 	});
 };

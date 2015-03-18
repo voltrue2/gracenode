@@ -304,6 +304,10 @@ Handles a received message object from other mesh network nodes on the same chan
 
 `.meshNet.join()` must be called for this to work properly.
 
+### .meshNetEachNode(eachFunction [function], callback [function])
+
+Executes `eachFunction` on each mesh network node object and calls `callback` at the end.
+
 ***
 
 # gracenode

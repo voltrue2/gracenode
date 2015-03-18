@@ -5,6 +5,7 @@ var GN_DEFAULT_CONF = 'config.json';
 
 var EventEmitter = require('events').EventEmitter;
 var async = require('async');
+var lib = require('../modules/lib');
 var config = require('../modules/config');
 var logger = require('../modules/log');
 var log = logger.create('gracenode');
@@ -93,10 +94,27 @@ Gracenode.prototype.meshNetReceive = function (channel, cb) {
 	if (this._meshNet) {
 		return this._meshNet.on(channel, cb);
 	}
-	this.on('master.message', function (msg) {
+	this.once('master.message', function (msg) {
 		if (msg.__type__ === meshNet.TYPE && msg.channel === channel) {
 			cb(msg);
 		}
+	});
+};
+
+Gracenode.prototype.meshNetEachNode = function (eachCallback, cb) {
+	if (this._meshNet) {
+		for (var id in this._meshNet.nodes) {
+			eachCallback(lib.cloneObj(this._meshNet.nodes[id]));
+		}
+		return cb();
+	}
+	this.once('master.message', function (msg) {
+		if (msg.__type__ === meshNet.TYPE && msg.__nodes__) {
+			for (var id in msg.__nodes__) {
+				eachCallback(msg.__nodes__[id]);
+			}
+		}
+		cb();
 	});
 };
 
@@ -266,13 +284,6 @@ Gracenode.prototype.setup = function (cb) {
 		setupModules
 	];
 	async.waterfall(setupList, done);
-};
-
-// deprecated as of Nov/4/2014 version 1.3.3
-// finds a schema.sql under given module's directory
-// never use this function in production, but setup script only
-Gracenode.prototype.getModuleSchema = function (modName, cb) {
-	this._module.getModuleSchema(modName, cb);
 };
 
 // internal use only for log module

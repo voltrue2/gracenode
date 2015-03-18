@@ -15,8 +15,8 @@ module.exports = function (path) {
 	var status = new Status(path);
 	status.setup(function () {
 		if (!status.isRunning) {
-			logger.error(lib.color('daemon process ' + path + ' not running', lib.COLORS.RED));
-			return status.end();	
+			logger.error(lib.color('Daemon process ' + path + ' not running', lib.COLORS.RED));
+			return status.end(new Error('Daemon process ' + path + ' not running'));	
 		}
 		status.restart();
 	});

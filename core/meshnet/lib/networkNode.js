@@ -66,7 +66,10 @@ NetworkNode.prototype.start = function (cb) {
 		this.socket.bind(config.port, config.address, function () {
 			that.socket.setBroadcast(true);
 				
-			logger.info('network node [id:' + that.id + '] started at:', config.address + ':' + config.port);
+			logger.info(
+				'network node [id:' + that.id + '] started at:', 
+				config.address + ':' + config.port
+			);
 			
 			cb();
 		});
@@ -78,7 +81,11 @@ NetworkNode.prototype.start = function (cb) {
 NetworkNode.prototype.stop = function (cb) {
 	this.socket.close();
 
-	logger.info('network node [id:' + this.id + '] stopped at:', config.address, config.port);
+	logger.info(
+		'network node [id:' + this.id + '] stopped at:', 
+		config.address, 
+		config.port
+	);
 
 	cb();
 };
