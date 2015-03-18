@@ -102,14 +102,14 @@ Status.prototype.setup = function (cb) {
 				var pids = [];
 				return that.getPids(processList, function (error, list) {
 					if (error) {
-						console.error(lib.color(error.message, lib.COLORS.RED));
+						console.error(lib.color('Failed to retrieve pid list', lib.COLORS.RED));
+						return that.end(error);
 					}
 					for (var i = 0, len = list.length; i < len; i++) {
 						console.error(lib.color(list[i].process + ' (pid: ' + list[i].pid + ')', lib.COLORS.RED));
 						pids.push(list[i].pid);
 					}
-					console.error(lib.color('Kill command: kill -9 ' + pids.join(' '), lib.COLORS.RED));
-					that.end();
+					that.end(new Error('You may need to force exit the process(es): kill -9 ' + pids.join(' ')));
 				});
 			}
 			// application is not running
