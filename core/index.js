@@ -94,7 +94,7 @@ Gracenode.prototype.meshNetReceive = function (channel, cb) {
 	if (this._meshNet) {
 		return this._meshNet.on(channel, cb);
 	}
-	this.once('master.message', function (msg) {
+	this.on('master.message', function (msg) {
 		if (msg.__type__ === meshNet.TYPE && msg.channel === channel) {
 			cb(msg);
 		}

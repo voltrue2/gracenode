@@ -2,7 +2,27 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 1.5.1
+## Version 1.5.3
+
+## Added
+
+None
+
+## Changed
+
+#### .meshNetReceive() now internally uses .on() instead of .once()
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
+## Version 1.5.2
 
 ## Added
 
