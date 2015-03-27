@@ -302,7 +302,7 @@ Sends a message object to other mesh network nodes on the same channel.
 
 Handles a received message object from other mesh network nodes on the same channel.
 
-`.meshNet.join()` must be called for this to work properly.
+`.meshNetJoin()` must be called for this to work properly.
 
 ### .meshNetEachNode(eachFunction [function], callback [function])
 
