@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.5.4
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency version updated
+
+gracelog version updated from 0.4.0 to 0.4.1
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.5.3
 
 ## Added
