@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js application with extendable module management system, command-line tool, and daemon tool for fast and clean development.",
-	"version": "1.5.3",
+	"version": "1.5.4",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -14,7 +14,7 @@
 	"dependencies": {
 		"async": "0.9.0",
 		"jshint": "2.5.1",
-		"gracelog": "0.4.0",
+		"gracelog": "0.4.1",
 		"node-uuid": "1.4.1"
 	},
 	"devDependencies": {

@@ -138,7 +138,7 @@ function parseConfigData(filePath) {
 function lintConfig(path, data) {
 	if (data) {
 		if (!jshint(data)) {
-			// there is an lint error
+			// there is a lint error
 			var errors = jshint.data().errors;
 			if (errors.length) {
 				console.error('[Error] malformed configuration(s) detected in', path);
