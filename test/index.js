@@ -698,6 +698,32 @@ describe('gracenode initialization ->', function () {
 			done();
 		}, 60);
 	});
+
+	it('Can pad number with leading 0', function () {
+		var paddedOne = gn.lib.padNumber(1);
+		var paddedNine = gn.lib.padNumber(9);
+		var justTen = gn.lib.padNumber(10);
+		assert.equal(paddedOne, '01');
+		assert.equal(paddedNine, '09');
+		assert.equal(justTen, '10');
+		assert.equal(gn.lib.padNumber(10, 3), '010');
+		assert.equal(gn.lib.padNumber(99, 3), '099');
+		assert.equal(gn.lib.padNumber(100, 3), '100');
+	});
+
+	it('Can get an array of date objects between 2015/04/12 and 2015/04/22', function () {
+		var start = new Date('2015-04-12');
+		var end = new Date('2015-05-12');
+		var list = gn.lib.getDates(start, end);
+		for (var i = 0, len = list.length; i < len; i++) {
+			var day = list[i];
+			var check = new Date('2015-04-12');
+			check.setDate(check.getDate() + i);
+			assert.equal(day.getFullYear(), check.getFullYear());
+			assert.equal(day.getMonth() + 1, check.getMonth() + 1);
+			assert.equal(day.getDate(), check.getDate());
+		}
+	});
  
 });
 

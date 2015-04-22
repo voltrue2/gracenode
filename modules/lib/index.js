@@ -8,6 +8,34 @@ var validationPatterns = {
 	password: /^[a-z0-9\@\!\_\-\+\=\$\%\#\?]/i
 };
 
+module.exports.padNumber = function (n, digit) {
+	if (!digit) {
+		digit = 2;
+	}
+	var nStr = n.toString();
+	while (nStr.length < digit) {
+		nStr = '0' + nStr;
+	}
+	return nStr;
+};
+
+// returns an array of date objects between start date object and end date object
+module.exports.getDates = function (startDateObj, endDateObj) {
+	var list = [];
+	var current = startDateObj;
+	while (current <= endDateObj) {
+		var dateStr = current.getFullYear();
+		dateStr += '-' + module.exports.padNumber(current.getMonth() + 1);
+		dateStr += '-' + module.exports.padNumber(current.getDate());
+		list.push(new Date(dateStr));
+		// next day
+		var next = new Date(current);
+		next.setDate(next.getDate() + 1);
+		current = next;
+	}
+	return list;
+};
+
 /*
 conf: {
 	max: [number],

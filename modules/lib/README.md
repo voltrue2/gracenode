@@ -3,6 +3,34 @@
 ###Configuration
 *N/A*
 
+####.padNumber(num [number], digit [*number])
+
+Returns a padded/none-padded with leading zero string.
+
+Example:
+
+```javascript
+var paddedNine = gracenode.lib.padNumber(9, 2);
+// paddedNine = '09';
+var nonePaddedTen = gracenode.lib.padNumber(10, 2);
+// nonePaddedTen = '10';
+var paddedTen = gracenode.lib.padNumber(10, 3);
+// paddedTen = '010';
+var nonePaddedHundred = gracenode.lib.padNumber(100, 3);
+// nonePaddedHundred = '100';
+```
+
+####.getDates(startDate [object], endDate [object])
+
+Returns an array of date objects between `startDate` amd `endDate`.
+
+Example:
+
+```javascript
+var dates = gracenode.lib.getDates(new Date('2015-04-22'), new Date('2015-05-22'));
+// dates will contain date objects between 2015/04/22 and 2015/05/22
+```
+
 ####.find(findFrom [object], findMethod [function])
 
 Returns an array of matched elements and their indexes/keys from either an object or an array.
