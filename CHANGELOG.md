@@ -2,6 +2,24 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.5.5
+
+## Added
+
+#### gracenode.lib.padNumber() added
+
+#### gracenode.lib.getDates() added
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.5.4
 
 ## Added
