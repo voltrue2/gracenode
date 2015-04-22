@@ -1,11 +1,11 @@
 #gracenode.log
 
-###Access
+### Access
 ```javascript
 var log = gracenode.log.create('nameToBeDisplayed');
 ```
 
-###Configurations
+### Configurations
 ```
 {
 	"modules":
@@ -158,7 +158,7 @@ Or
 
 ***
 
-##Events: *output*
+## Events: *output*
 
 ```
 gracenode.log.on('output', function (address, name, level, messageObj) {
@@ -171,19 +171,19 @@ gracenode.log.on('output', function (address, name, level, messageObj) {
 
 ***
 
-###.setPrefix(prefix [string])
+### .setPrefix(prefix [string])
 
 Sets a prefix for each logging.
 
-###.forceFlush(callback [function])
+### .forceFlush(callback [function])
 
 Forcefully flushes all buffered log data and write immediately.
 
-###.create(logName [string])
+### .create(logName [string])
 
 Returns an instance of logger object.
 
-###.isEnabled(levelName [string])
+### .isEnabled(levelName [string])
 
 Returns Boolean. If given log level name is enabled, it returns true. 
 
@@ -197,37 +197,39 @@ Returns Boolean. If given log level name is enabled, it returns true.
 void verbose(mixed data, [...])
 </pre>
 
-###API: *debug*
+#### debug
 
 <pre>
 void debug(mixed data, [...])
 </pre>
 
-###API: *info*
+#### info
 
 <pre>
 void info(mixed data, [...])
 </pre>
 
-###API: *warn*
+#### warn
 
 <pre>
 void warn(mixed data, [...])
 </pre>
 
-###API: *warning*
+#### warning
+
 Alias of warn
+
 <pre>
 void warning(mixed data, [...])
 </pre>
 
-###API: *error*
+#### error
 
 <pre>
 void error(mixed data, [...])
 </pre>
 
-###API: *fatal*
+#### fatal
 
 <pre>
 void fatal(mixed data, [...])

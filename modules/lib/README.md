@@ -1,9 +1,9 @@
 #gracenode.lib
 
-###Configuration
+### Configuration
 *N/A*
 
-####.padNumber(num [number], digit [*number])
+#### .padNumber(num [number], digit [*number])
 
 Returns a padded/none-padded with leading zero string.
 
@@ -20,7 +20,7 @@ var nonePaddedHundred = gracenode.lib.padNumber(100, 3);
 // nonePaddedHundred = '100';
 ```
 
-####.getDates(startDate [object], endDate [object])
+#### .getDates(startDate [object], endDate [object])
 
 Returns an array of date objects between `startDate` amd `endDate`.
 
@@ -31,7 +31,7 @@ var dates = gracenode.lib.getDates(new Date('2015-04-22'), new Date('2015-05-22'
 // dates will contain date objects between 2015/04/22 and 2015/05/22
 ```
 
-####.find(findFrom [object], findMethod [function])
+#### .find(findFrom [object], findMethod [function])
 
 Returns an array of matched elements and their indexes/keys from either an object or an array.
 
@@ -79,7 +79,7 @@ matched: [
 */
 ```
 
-####.typeCast(value [string])
+#### .typeCast(value [string])
 
 Converts a given string value to  appropriate data type.
 
@@ -96,17 +96,17 @@ var obj = gracenode.lib.typeCast('{"example":1,"blah":"test"}');
 // { example: 1, blah: 'test' }
 ```
 
-####.randomInt(min [number], max [number])
+#### .randomInt(min [number], max [number])
 
 Returns a pseudo-random integer between min and max.
 
-####.randomFloat(min [number], max [number])
+#### .randomFloat(min [number], max [number])
 
 Returns a pseudo-random floating point number between min and max.
 
 The thrid argument "precision" is optional and default is 2.
 
-####.getArguments(func [function])
+#### .getArguments(func [function])
 
 Returns an array of arguments that the given function expects.
 
@@ -120,17 +120,17 @@ var args = gracenode.lib.getArguments(foo);
 // args = ["num1", "num2"];
 ```
 
-####.walkDir(directoryPath [string], callback [function])
+#### .walkDir(directoryPath [string], callback [function])
 
 Recursively walks the given path and passes an array of file paths to the callback function.
 
-####.cloneObj(obj [object], propNames [array])
+#### .cloneObj(obj [object], propNames [array])
 
 Returns a clone of given object. In javascript, objects are passed around as references. Use this in order to avoid mutating the original objects.
 
 If propNames is given, the function will clone ONLY the properties given in propNames array.
 
-####.createTimedData(config [object])
+#### .createTimedData(config [object])
 
 Returns an instance of TimedData that changes its value over time.
 
@@ -186,42 +186,42 @@ setTimeout(function () {
 
 ### TimedData Class
 
-####.getValue()
+#### .getValue()
 
 Returns the current value.
 
-####.inc(incrementValue [number])
+#### .inc(incrementValue [number])
 
 Increments the current value by incrementValue.
 
 Returns `true` if successful.
 
-####.dec(decrementValue [number])
+#### .dec(decrementValue [number])
 
 Decrements the current value by decrementValue.
 
 Returns `true` if successful.
 
-####.reset()
+#### .reset()
 
 Resets the state of `TimedData` object to its initial state.
 
-####.getMaxValue()
+#### .getMaxValue()
 
 Returns maximum value.
 
-####.getMinValue()
+#### .getMinValue()
 
 Returns minimum value.
 
-####.getInterval()
+#### .getInterval()
 
 Returns the interval for every update in milliseconds.
 
-####.getStep()
+#### .getStep()
 
 Returns the value of step for every update.
 
-####.toObject()
+#### .toObject()
 
 Returns a JSON format of `TimedData` object.
