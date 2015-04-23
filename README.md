@@ -535,7 +535,7 @@ This is useful when you are using gracenode as a part of existing system.
 
 When you use `.load()`, consider using `.unload()` when your application process exists to ensure graceful exit of loaded modules.
 
-**NOTE:** You cannot use cluster mode of gracenode when you are using `.load()` since the application process is not of gracenode.
+**NOTE:** You cannot use cluster mode and meshnetwork of gracenode when you are using `.load()` since the application process is not of gracenode.
 
 ### .unload(callback [function])
 
