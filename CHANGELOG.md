@@ -22,6 +22,8 @@ Gracefully unloads all loaded modules. This should be used when you are using `g
 
 #### debug check for deprecated function usage changed
 
+#### gracenode version check's warning changed
+
 ## Deprecated
 
 #### gracenode.setup() has been deprecated
