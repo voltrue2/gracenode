@@ -3,5 +3,10 @@
 		"name": "xxx",
 		"type": "function",
 		"version": "x.y.z"
+	},
+	{
+		"name": "setup",
+		"type": "function",
+		"version": "1.5.6"
 	}
 ]

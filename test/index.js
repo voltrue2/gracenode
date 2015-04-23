@@ -59,7 +59,7 @@ describe('gracenode initialization ->', function () {
 			logger.debug('-s caught:', val);
 		});
 
-		gn.setup(function () {
+		gn.start(function () {
 			// test argv
 			assert.equal(gn.argv('-s'), 10);
 			assert.equal(gn.argv('-R'), 'spec');

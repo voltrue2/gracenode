@@ -205,7 +205,7 @@ Gracenode.prototype.exitOnBadOption = function () {
 	this._argv.exitOnBadOption();
 };
 
-Gracenode.prototype.setup = function (cb) {
+Gracenode.prototype.start = function (cb) {
 	var that = this;
 
 	// if we are missing configurations, gracenode will try to run with minimum default values
@@ -284,6 +284,14 @@ Gracenode.prototype.setup = function (cb) {
 		setupModules
 	];
 	async.waterfall(setupList, done);
+};
+
+Gracenode.prototype.load = function () {
+};
+
+// deprecated as of 2015/04/22
+Gracenode.prototype.setup = function (cb) {
+	this.start(cb);
 };
 
 // internal use only for log module

@@ -74,7 +74,7 @@ gn.defineOption(
 	}
 );
 
-gn.setup(function () {});
+gn.start(function () {});
 
 function getPath(path) {
 	if (!Array.isArray(path)) {
