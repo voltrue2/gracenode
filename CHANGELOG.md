@@ -12,6 +12,10 @@ Gracenode can now set up and load all modules without starting the application p
 
 Useful when you need to use `gracenode` as an add-on module to your exsisting project etc.
 
+#### gracenode.unload() added
+
+Gracefully unloads all loaded modules. This should be used when you are using `gracenode.load()`.
+
 ## Changed
 
 #### deprecate.json format changed

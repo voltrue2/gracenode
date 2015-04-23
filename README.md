@@ -508,9 +508,11 @@ gracenode.start(function(error) {
 ```
 
 ### .isMaster()
+
 Returns a boolean. true is given if the process is master (available ONLY in cluster mode)
 
 ### .getProcessType()
+
 Returns an object that contains the type of process as a string and pid. (available ONLY in cluster mode)
 ```
 var processType = gracenode.getProcessType();
@@ -524,6 +526,18 @@ Exits gracenode and attempts to gracefully shutdown the process. You can give it
 ```
 gracenode.exit('financialCrisis');
 ```
+
+### .load(callback [function])
+
+Loads all modules, log, and profiler **without** starting a process.
+
+This is useful when you are using gracenode as a part of existing system.
+
+When you use `.load()`, consider using `.unload()` when your application process exists to ensure graceful exit of loaded modules.
+
+### .unload(callback [function])
+
+Gracefully unloads all loaded modules. This should be used when using `.load()` to load modules without starting gracenode process.
 
 ### .getRootPath()
 Returns the root path of the application (not the root path of gracenode)

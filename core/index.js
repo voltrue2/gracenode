@@ -262,7 +262,61 @@ Gracenode.prototype.start = function (cb) {
 };
 
 // load gracenode modules and set up gracenode without starting a process
-Gracenode.prototype.load = function () {
+Gracenode.prototype.load = function (cb) {
+	var that = this;
+
+	var validated = this._validateConfigPath();
+
+	if (validated instanceof Error) {
+		return cb(validated);
+	}
+
+	// set up argv
+	this._argv.setup();
+	
+	// set up config
+	var error = setupConfig(this);
+	
+	if (error) {
+		return cb(error);
+	}
+
+	// load gracenode
+	var starter = function (callback) {
+		log.verbose('gracenode is loading...');
+		callback(null, that, function (error) {
+			that._setupDone(error, cb, true);
+		});
+	};
+	
+	var delegate = function (gn, lastCallback, next) {
+		next(null, gn);
+	};
+
+	var setupList = [
+		starter, 
+		setupLog, 
+		setupProfiler,
+		delegate,
+		setupModules
+	];
+	async.waterfall(setupList, function (error) {
+		that._setupDone(error, cb, true);
+	});
+};
+
+// gracefully exists loaded gracenode modules
+// .load() is used, you should be using .unload() on your application process exit
+Gracenode.prototype.unload = function (cb) {
+	log.info('start unloading modules gracefully');
+	var that = this;
+	handleShutdownTasks(this, function (error) {
+		if (error) {
+			return cb(error);
+		}
+		that._module.unload();
+		cb();
+	});
 };
 
 // deprecated as of 2015/04/22
@@ -303,10 +357,14 @@ Gracenode.prototype._validateConfigPath = function () {
 };
 
 // internal use only
-Gracenode.prototype._setupDone = function (error, cb) {
+Gracenode.prototype._setupDone = function (error, cb, noExit) {
 	
 	if (error) {
-		log.fatal('gracenode failed to set up');
+		
+		if (noExit) {
+			return cb(error);
+		}
+		
 		return this.exit(error);
 	}
 
