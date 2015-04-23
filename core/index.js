@@ -439,6 +439,7 @@ function compareGracenodeVersion(that) {
 		appPackage = require(that._appRoot + 'package.json');
 	} catch (e) {
 		// there seems to be no package.json present. we do nothing
+		console.warn('<warn>[gracenode] the application does not seem to have package.json file at', that._appRoot + 'package.json');
 		return;
 	}
 	// extract application's expected gracenode version
