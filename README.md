@@ -529,11 +529,13 @@ gracenode.exit('financialCrisis');
 
 ### .load(callback [function])
 
-Loads all modules, log, and profiler **without** starting a process.
+Loads all modules, log, and profiler **without** starting a gracenode process.
 
 This is useful when you are using gracenode as a part of existing system.
 
 When you use `.load()`, consider using `.unload()` when your application process exists to ensure graceful exit of loaded modules.
+
+**NOTE:** You cannot use cluster mode of gracenode when you are using `.load()` since the application process is not of gracenode.
 
 ### .unload(callback [function])
 
