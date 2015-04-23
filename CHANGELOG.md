@@ -2,7 +2,7 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 1.5.6
+## Version 1.6.0
 
 ## Added
 
