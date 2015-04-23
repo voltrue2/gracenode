@@ -208,6 +208,69 @@ Gracenode.prototype.exitOnBadOption = function () {
 Gracenode.prototype.start = function (cb) {
 	var that = this;
 
+	var validated = this._validateConfigPath();
+
+	if (validated instanceof Error) {
+		return cb(validated);
+	}
+
+	// set up argv
+	this._argv.setup();
+	
+	// set up config
+	var error = setupConfig(this);
+	
+	if (error) {
+		return cb(error);
+	}
+
+	// start gracenode
+	var starter = function (callback) {
+		log.verbose('gracenode is starting...');
+		callback(null, that, function (error) {
+			that._setupDone(error, cb);
+		});
+	};
+
+	// executes only when --debug is given
+	var debugRun = function (that, callback) {
+		debugMode.exec(function (error, debugMode) {
+			if (error) {
+				log.fatal('gracenode debug mode detected error(s)');
+				return that.exit(error);
+			}
+			if (debugMode) {
+				that._profiler.mark('debug mode');
+			}
+			callback(null, that);
+		});
+	};
+
+	var setupList = [
+		starter, 
+		setupLog, 
+		setupProfiler,
+		setupProcess,
+		debugRun,
+		setupModules
+	];
+	async.waterfall(setupList, function (error) {
+		that._setupDone(error, cb);
+	});
+};
+
+// load gracenode modules and set up gracenode without starting a process
+Gracenode.prototype.load = function () {
+};
+
+// deprecated as of 2015/04/22
+Gracenode.prototype.setup = function (cb) {
+	this.start(cb);
+};
+
+// internal use only for validating config path and such
+Gracenode.prototype._validateConfigPath = function () {
+
 	// if we are missing configurations, gracenode will try to run with minimum default values
 	if (!this._configPath && this._configFiles) {
 		this._configPath = this._root + GN_DEFAULT_CONF_PATH;
@@ -223,76 +286,36 @@ Gracenode.prototype.start = function (cb) {
 			'<error>[gracenode] path to configuration files not set:' +
 			'call .setConfigPath() before calling .setup()'
 		);
-		return cb(new Error('path to configuration files is missing'));
+		return new Error('path to configuration files is missing');
 	}
 	if (!this._configFiles.length) {
 		console.error('<error>[gracenode] no configuration files to load');
-		return cb(new Error('no configuration files given: call .setConfigFiles() before calling .setup()'));
+		return new Error('no configuration files given: call .setConfigFiles() before calling .setup()');
 	}
 
-	// set up argv
-	this._argv.setup();
-	// set up config
-	var error = setupConfig(this);
-	if (error) {
-		return cb(error);
-	}
-	// final callback to be called when gracenode is ready
-	var done = function (error) {
-		if (error) {
-			log.fatal('gracenode failed to set up');
-			return that.exit(error);
-		}
+	return true;
+};
 
-		that._isReady = true;
-
-		log.verbose('gracenode set up complete [' + that._isReady + ']');
-
-		that.emit('setup.complete');
-
-		that._argv.execDefinedOptions();
-		
-		cb();
-
-		that._profiler.stop();
+// internal use only
+Gracenode.prototype._setupDone = function (error, cb) {
 	
-	};
-	// start gracenode
-	var starter = function (callback) {
-		log.verbose('gracenode is starting...');
-		callback(null, that, done);
-	};
-	// executes only when --debug is given
-	var debugRun = function (that, callback) {
-		debugMode.exec(function (error, debugMode) {
-			if (error) {
-				log.fatal('gracenode debug mode detected error(s)');
-				return that.exit(error);
-			}
-			if (debugMode) {
-				that._profiler.mark('debug mode');
-			}
-			callback(null, that);
-		});
-	};
-	var setupList = [
-		starter, 
-		setupLog, 
-		setupProfiler,
-		setupProcess,
-		debugRun,
-		setupModules
-	];
-	async.waterfall(setupList, done);
-};
+	if (error) {
+		log.fatal('gracenode failed to set up');
+		return this.exit(error);
+	}
 
-Gracenode.prototype.load = function () {
-};
+	this._isReady = true;
 
-// deprecated as of 2015/04/22
-Gracenode.prototype.setup = function (cb) {
-	this.start(cb);
-};
+	log.verbose('gracenode set up complete [' + this._isReady + ']');
+
+	this.emit('setup.complete');
+
+	this._argv.execDefinedOptions();
+	
+	cb();
+
+	this._profiler.stop();
+}; 
 
 // internal use only for log module
 Gracenode.prototype._addLogCleaner = function (name, func) {
