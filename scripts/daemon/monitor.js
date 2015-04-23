@@ -50,7 +50,8 @@ gn.defineOption(
 	}
 );
 
-gn.setup(function () {});
+// we don't need to do anything after starting the monitor process
+gn.start();
 
 function handleExit(error) {
 	fs.unlink(socketName(path), function (err) {

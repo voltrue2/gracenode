@@ -14,7 +14,9 @@ Useful when you need to use `gracenode` as an add-on module to your exsisting pr
 
 ## Changed
 
-None
+#### deprecate.json format changed
+
+#### debug check for deprecated function usage changed
 
 ## Deprecated
 

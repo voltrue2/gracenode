@@ -12,6 +12,8 @@ var log = logger.create('gracenode');
 var util = require('util');
 var gracefulWaitList = []; // list of tasks to be executed before shutting down gracenode
 
+var deprecated = require('../deprecated.json');
+
 var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
@@ -265,7 +267,11 @@ Gracenode.prototype.load = function () {
 
 // deprecated as of 2015/04/22
 Gracenode.prototype.setup = function (cb) {
-	this.start(cb);
+	var that = this;
+	this.start(function () {
+		that._deprecatedMessage('setup');
+		cb();
+	});
 };
 
 // internal use only for validating config path and such
@@ -312,10 +318,25 @@ Gracenode.prototype._setupDone = function (error, cb) {
 
 	this._argv.execDefinedOptions();
 	
-	cb();
+	if (cb && typeof cb === 'function') {
+		cb();
+	}
 
 	this._profiler.stop();
 }; 
+
+Gracenode.prototype._deprecatedMessage = function (name) {
+	var dep = deprecated[name];
+
+	if (dep) {
+		log.warn(
+			'*** Deprecated function used:',
+			'[' + name + '] has been deprecated and should not be used.',
+			'deprecated version: ' + dep.version + '.',
+			name + ' will be removed in version:' + dep.remove
+		);
+	}
+};
 
 // internal use only for log module
 Gracenode.prototype._addLogCleaner = function (name, func) {

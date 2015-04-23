@@ -74,7 +74,9 @@ gn.defineOption(
 	}
 );
 
-gn.start(function () {});
+// we don't need to do anything after starting the process
+// (start|stop|restart|reload|status|list|clean) will exit the process when finished	
+gn.start();
 
 function getPath(path) {
 	if (!Array.isArray(path)) {
