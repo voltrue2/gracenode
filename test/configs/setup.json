@@ -7,7 +7,7 @@
 		],
 		"bool": false
 	},
-	"gracenode-debug": {
+	"#gracenode-debug": {
 		"directories": [ 
 			"node_modules/gracenode/test/",
 			"node_modules/gracenode/index.js",
@@ -50,7 +50,7 @@
 			"bufferSize": 0,
 			"depth": 10,
 			"color": true,
-			"console": true,
+			"console": false,
 			"level": ">= warn"
 		},
 		"test": {
