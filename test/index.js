@@ -68,7 +68,7 @@ describe('gracenode initialization ->', function () {
 
 	});
 
-	it('Can gracefully exit loaded modules', function (done) {
+	it('Can gracefully unload loaded modules', function (done) {
 		gn.unload(done);
 	});
 

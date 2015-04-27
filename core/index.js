@@ -301,6 +301,14 @@ Gracenode.prototype.load = function (cb) {
 		setupModules
 	];
 	async.waterfall(setupList, function (error) {
+
+		// check for warning
+		var clusterConfig = that.config.getOne('cluster');
+		
+		if (clusterConfig && clusterConfig.enable) {
+			log.warn('cannot use cluster mode while using .load()');
+		}
+
 		that._setupDone(error, cb, true);
 	});
 };
