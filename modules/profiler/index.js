@@ -14,7 +14,7 @@ function Profiler(name) {
 	this._marks = [];
 	this._running = false;
 	this._enabled = gracenode.log.isEnabled('debug');
-	log.verbose('profiler [' + name + '] with', this._type, 'enabled:', this._enabled);
+	log.verbose('profiler [' + name + '] enabled:', this._enabled);
 }
 
 Profiler.prototype.start = function () {

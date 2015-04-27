@@ -78,6 +78,16 @@ Module.prototype.load = function (cb) {
 	});
 };
 
+Module.prototype.unload = function () {
+	this._logger.verbose('unloading modules');
+	for (var name in moduleMap) {
+		this._logger.verbose('unloading module [' + name + ']');
+		delete moduleMap[name];
+		delete this._gn[name];
+	}
+	this._logger.verbose('all modules have been unloaded');
+};
+
 Module.prototype._mapModules = function (cb) {
 	var that = this;
 	var readdir = function readdir(path, next) {

@@ -78,7 +78,7 @@ gracenode.use('gracenode-view');
 gracenode.use('gracenode-mysql');
 
 // now start the set up process
-gracenode.setup(function () {
+gracenode.start(function () {
     // gracenode is ready to go
 
 });
@@ -432,7 +432,7 @@ gracenode.defineOption(['-t', '--test'], 'Test option description', function (va
 
 ### .exitOnBadOption()
 
-When this method is called before `gracenode.setup()`, gracenode will check the given command-line options when set up is complete.
+When this method is called before `gracenode.start()`, gracenode will check the given command-line options when set up is complete.
 
 If there is no option given or unexpected option(s) is given, gracenode process will exit with an error.
 
@@ -475,7 +475,7 @@ gracenode.use('mymodule');
 
 ### .use(moduleName [string], options [*object])
 
-Tells gracenode what modules to load when calling the setup functions.
+Tells gracenode what modules to load when calling the start/load functions.
 
 ```
 gracenode.use('mysql');
@@ -497,18 +497,22 @@ gracenode.use('async', { name: 'async2', driver: { config: <*function>, setup: <
 
 For more details on module drivers, please read <a href="#module-drivers">here</a>.
 
-### .setup(callback [function])
-Start the setting up of gracenode modules.
+### .start(callback [function])
+
+Start the setting up of gracenode modules and starts gracenode application process.
+
 ```
-gracenode.setup(function(error) {
+gracenode.start(function(error) {
     if (error) return console.error('Could not load gracenode:', error);
 });
 ```
 
 ### .isMaster()
+
 Returns a boolean. true is given if the process is master (available ONLY in cluster mode)
 
-###.getProcessType()
+### .getProcessType()
+
 Returns an object that contains the type of process as a string and pid. (available ONLY in cluster mode)
 ```
 var processType = gracenode.getProcessType();
@@ -522,6 +526,20 @@ Exits gracenode and attempts to gracefully shutdown the process. You can give it
 ```
 gracenode.exit('financialCrisis');
 ```
+
+### .load(callback [function])
+
+Loads all modules, log, and profiler **without** starting a gracenode process.
+
+This is useful when you are using gracenode as a part of existing system.
+
+When you use `.load()`, consider using `.unload()` when your application process exists to ensure graceful exit of loaded modules.
+
+**NOTE:** You cannot use cluster mode and meshnetwork of gracenode when you are using `.load()` since the application process is not of gracenode.
+
+### .unload(callback [function])
+
+Gracefully unloads all loaded modules. This should be used when using `.load()` to load modules without starting gracenode process.
 
 ### .getRootPath()
 Returns the root path of the application (not the root path of gracenode)
@@ -798,7 +816,7 @@ exports.expose = function () {
 
 gracenode allows you to add your custom modules to be loaded and used the same way as built-in modules.
 
-To use your custom modules, add `gracenode.addModulePath('yourModuleDir/')` before you call `gracenode.setup`.
+To use your custom modules, add `gracenode.addModulePath('yourModuleDir/')` before you call `gracenode.start` or `gracenode.load`.
 
 ```javascript
 // yourAwesomeModule is located at yourApp/yourModuleDir/yourAwesomeModule/
@@ -841,7 +859,7 @@ gn.setConfigFiles(['config.json']);
 // tell gracenode to load server module
 gn.use('gracenode-server');
 
-gn.setup(function (error) {
+gn.start(function (error) {
     if (error) {
         return console.error('Fatal error on setting up gracenode');
     }
@@ -973,7 +991,7 @@ This is usefuly for session validation on requests etc.
 Example:
 
 ```
-gracenode.setup(function () {
+gracenode.start(function () {
 
 	// assign session validation function to all requests under "example" controller
 	gracenode.server.setupRequestHooks({

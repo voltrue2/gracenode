@@ -12,6 +12,8 @@ var log = logger.create('gracenode');
 var util = require('util');
 var gracefulWaitList = []; // list of tasks to be executed before shutting down gracenode
 
+var deprecated = require('../deprecated.json');
+
 var Argv = require('./argv');
 var Process = require('./process');
 var Module = require('./module');
@@ -205,8 +207,137 @@ Gracenode.prototype.exitOnBadOption = function () {
 	this._argv.exitOnBadOption();
 };
 
+Gracenode.prototype.start = function (cb) {
+	var that = this;
+
+	var validated = this._validateConfigPath();
+
+	if (validated instanceof Error) {
+		return cb(validated);
+	}
+
+	// set up argv
+	this._argv.setup();
+	
+	// set up config
+	var error = setupConfig(this);
+	
+	if (error) {
+		return cb(error);
+	}
+
+	// start gracenode
+	var starter = function (callback) {
+		log.verbose('gracenode is starting...');
+		callback(null, that, function (error) {
+			that._setupDone(error, cb);
+		});
+	};
+
+	// executes only when --debug is given
+	var debugRun = function (that, callback) {
+		debugMode.exec(function (error, debugMode) {
+			if (error) {
+				log.fatal('gracenode debug mode detected error(s)');
+				return that.exit(error);
+			}
+			if (debugMode) {
+				that._profiler.mark('debug mode');
+			}
+			callback(null, that);
+		});
+	};
+
+	var setupList = [
+		starter, 
+		setupLog, 
+		setupProfiler,
+		setupProcess,
+		debugRun,
+		setupModules
+	];
+	async.waterfall(setupList, function (error) {
+		that._setupDone(error, cb);
+	});
+};
+
+// load gracenode modules and set up gracenode without starting a process
+Gracenode.prototype.load = function (cb) {
+	var that = this;
+
+	var validated = this._validateConfigPath();
+
+	if (validated instanceof Error) {
+		return cb(validated);
+	}
+
+	// set up argv
+	this._argv.setup();
+	
+	// set up config
+	var error = setupConfig(this);
+	
+	if (error) {
+		return cb(error);
+	}
+
+	// load gracenode
+	var starter = function (callback) {
+		log.verbose('gracenode is loading...');
+		callback(null, that, function (error) {
+			that._setupDone(error, cb, true);
+		});
+	};
+	
+	var delegate = function (gn, lastCallback, next) {
+		next(null, gn);
+	};
+
+	var setupList = [
+		starter, 
+		setupLog, 
+		setupProfiler,
+		delegate,
+		setupModules
+	];
+	async.waterfall(setupList, function (error) {
+
+		// check for warning
+		var clusterConfig = that.config.getOne('cluster');
+		
+		if (clusterConfig && clusterConfig.enable) {
+			log.warn('cannot use cluster mode while using .load()');
+		}
+
+		that._setupDone(error, cb, true);
+	});
+};
+
+// gracefully exists loaded gracenode modules
+// .load() is used, you should be using .unload() on your application process exit
+Gracenode.prototype.unload = function (cb) {
+	log.info('start unloading modules gracefully');
+	var that = this;
+	handleShutdownTasks(this, function (error) {
+		if (error) {
+			return cb(error);
+		}
+		that._module.unload();
+		cb();
+	});
+};
+
+// deprecated as of 2015/04/22
 Gracenode.prototype.setup = function (cb) {
 	var that = this;
+	this.start(function () {
+		that._deprecatedMessage('setup');
+		cb();
+	});
+};
+
+// internal use only for validating config path and such
+Gracenode.prototype._validateConfigPath = function () {
 
 	// if we are missing configurations, gracenode will try to run with minimum default values
 	if (!this._configPath && this._configFiles) {
@@ -223,67 +354,54 @@ Gracenode.prototype.setup = function (cb) {
 			'<error>[gracenode] path to configuration files not set:' +
 			'call .setConfigPath() before calling .setup()'
 		);
-		return cb(new Error('path to configuration files is missing'));
+		return new Error('path to configuration files is missing');
 	}
 	if (!this._configFiles.length) {
 		console.error('<error>[gracenode] no configuration files to load');
-		return cb(new Error('no configuration files given: call .setConfigFiles() before calling .setup()'));
+		return new Error('no configuration files given: call .setConfigFiles() before calling .setup()');
 	}
 
-	// set up argv
-	this._argv.setup();
-	// set up config
-	var error = setupConfig(this);
-	if (error) {
-		return cb(error);
-	}
-	// final callback to be called when gracenode is ready
-	var done = function (error) {
-		if (error) {
-			log.fatal('gracenode failed to set up');
-			return that.exit(error);
-		}
+	return true;
+};
 
-		that._isReady = true;
-
-		log.verbose('gracenode set up complete [' + that._isReady + ']');
-
-		that.emit('setup.complete');
-
-		that._argv.execDefinedOptions();
-		
-		cb();
-
-		that._profiler.stop();
+// internal use only
+Gracenode.prototype._setupDone = function (error, cb, noExit) {
 	
-	};
-	// start gracenode
-	var starter = function (callback) {
-		log.verbose('gracenode is starting...');
-		callback(null, that, done);
-	};
-	// executes only when --debug is given
-	var debugRun = function (that, callback) {
-		debugMode.exec(function (error, debugMode) {
-			if (error) {
-				log.fatal('gracenode debug mode detected error(s)');
-				return that.exit(error);
-			}
-			if (debugMode) {
-				that._profiler.mark('debug mode');
-			}
-			callback(null, that);
-		});
-	};
-	var setupList = [
-		starter, 
-		setupLog, 
-		setupProfiler,
-		setupProcess,
-		debugRun,
-		setupModules
-	];
-	async.waterfall(setupList, done);
+	if (error) {
+		
+		if (noExit) {
+			return cb(error);
+		}
+		
+		return this.exit(error);
+	}
+
+	this._isReady = true;
+
+	log.verbose('gracenode set up complete [' + this._isReady + ']');
+
+	this.emit('setup.complete');
+
+	this._argv.execDefinedOptions();
+	
+	if (cb && typeof cb === 'function') {
+		cb();
+	}
+
+	this._profiler.stop();
+}; 
+
+Gracenode.prototype._deprecatedMessage = function (name) {
+	var dep = deprecated[name];
+
+	if (dep) {
+		log.warn(
+			'*** Deprecated function used:',
+			'[' + name + '] has been deprecated and should not be used.',
+			'deprecated version: ' + dep.version + '.',
+			name + ' will be removed in version:' + dep.remove
+		);
+	}
 };
 
 // internal use only for log module
@@ -329,6 +447,7 @@ function compareGracenodeVersion(that) {
 		appPackage = require(that._appRoot + 'package.json');
 	} catch (e) {
 		// there seems to be no package.json present. we do nothing
+		console.warn('<warn>[gracenode] the application does not seem to have package.json file at', that._appRoot + 'package.json');
 		return;
 	}
 	// extract application's expected gracenode version

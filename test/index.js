@@ -5,7 +5,7 @@ var assert = require('assert');
 // gracenode main tests
 describe('gracenode initialization ->', function () {
 	
-	it('Can set up gracenode modules', function (done) {
+	it('Can load gracenode', function (done) {
 
 		console.log('**NOTICE: This test requires async module installed in ../gracenode/node_modules/ to work properly');
 	
@@ -28,7 +28,7 @@ describe('gracenode initialization ->', function () {
 
 		gn.use('async');
 
-		gn.on('setup.config', function () {
+		gn.once('setup.config', function () {
 			var sd = gn.config.getOne('modules.gracenode-staticdata');
 			sd.path = prefix + sd.path;
 			var sv = gn.config.getOne('modules.gracenode-server');
@@ -59,7 +59,21 @@ describe('gracenode initialization ->', function () {
 			logger.debug('-s caught:', val);
 		});
 
-		gn.setup(function () {
+		gn.load(function (error) {
+		
+			assert.equal(error, null);
+
+			done();
+		});
+
+	});
+
+	it('Can gracefully unload loaded modules', function (done) {
+		gn.unload(done);
+	});
+
+	it('Can start gracenode', function (done) {
+		gn.start(function () {
 			// test argv
 			assert.equal(gn.argv('-s'), 10);
 			assert.equal(gn.argv('-R'), 'spec');

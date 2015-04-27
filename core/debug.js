@@ -1,11 +1,9 @@
 var async = require('async');
-var fs = require('fs');
 var jshintcli = require('jshint/src/cli');
 var lib = require('../modules/lib');
 var progressbar = require('../lib/progressbar');
 var gn;
 var memHistory = [];
-var deprecated = require('../deprecated.json');
 
 // configuration name for debug mode
 var CONFIG_NAME = 'gracenode-debug';
@@ -91,28 +89,6 @@ module.exports.exec = function (cb) {
 		logger.debug('lint [DONE]: no lint error found');
 		cb(null, true);
 	};
-
-	var lookForDeprecated = function (list, moveOn) {
-		var openFileNumAtATime = 100;
-		async.eachLimit(list, openFileNumAtATime, function (file, next) {
-			fs.readFile(file, 'utf8', function (error, data) {
-				if (error) {
-					return next(error);
-				}
-				for (var i = 0, len = deprecated.length; i < len; i++) {
-					var dp = deprecated[i];
-					if (data.indexOf(dp.name) !== -1) {
-						warns.push(
-							'***WARNING: deprecated ' +
-							dp.type + ' (' + dp.name + ') used in ' + file +
-							' deprecated version of gracenode is ' + dp.version
-						);
-					}
-				}
-				next();
-			});
-		}, moveOn);
-	};
 	
 	var findFiles = function (next) {
 		async.forEach(config.directories, function (pathFrag, moveOn) {
@@ -149,8 +125,8 @@ module.exports.exec = function (cb) {
 			jshintcli.run(options);
 			// progressbar
 			pb.update();
-			// check for deprecated gracenode functions
-			lookForDeprecated(options.args, moveOn);
+			// next
+			moveOn();
 		}, next);
 	};
 

@@ -1,7 +1,10 @@
-[
-	{
-		"name": "xxx",
-		"type": "function",
-		"version": "x.y.z"
+{
+	"dummy sample": {
+		"version": "0.0.0",
+		"remove": "0.0.0"
+	},
+	"setup": {
+		"version": "1.6.0",
+		"remove": "2.0.0"
 	}
-]
+}

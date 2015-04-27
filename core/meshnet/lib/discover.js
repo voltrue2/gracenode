@@ -249,7 +249,7 @@ Discover.prototype.join = function (channelName) {
 
 	if (this.channels.indexOf(channelName) !== -1) {
 		logger.warn('already a member of the channel', channelName);
-		return;
+		return false;
 	}
 
 	this.broadcast.on(channelName, function (data, obj, info) {

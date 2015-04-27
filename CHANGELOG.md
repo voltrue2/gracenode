@@ -2,6 +2,40 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.6.0
+
+## Added
+
+#### gracenode.load() added
+
+Gracenode can now set up and load all modules without starting the application process.
+
+Useful when you need to use `gracenode` as an add-on module to your exsisting project etc.
+
+#### gracenode.unload() added
+
+Gracefully unloads all loaded modules. This should be used when you are using `gracenode.load()`.
+
+## Changed
+
+#### deprecate.json format changed
+
+#### debug check for deprecated function usage changed
+
+#### gracenode version check's warning changed
+
+## Deprecated
+
+#### gracenode.setup() has been deprecated
+
+Use `gracenode.start()` instead.
+
+## Removed
+
+None
+
+***
+
 ## Version 1.5.5
 
 ## Added
