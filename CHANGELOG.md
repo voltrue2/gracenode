@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.6.1
+
+## Added
+
+None
+
+## Changed
+
+#### Corrected error handling in .start() and .load()
+
+#### Daemon reload will now exits with an error if it cannot reload
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.6.0
 
 ## Added

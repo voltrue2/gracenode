@@ -208,12 +208,17 @@ Gracenode.prototype.exitOnBadOption = function () {
 };
 
 Gracenode.prototype.start = function (cb) {
+
+	if (this._isReady) {
+		return this._setupDone(new Error('cannot start gracenode more than once'), cb);
+	}
+
 	var that = this;
 
 	var validated = this._validateConfigPath();
 
 	if (validated instanceof Error) {
-		return cb(validated);
+		return this._setupDone(validated, cb);
 	}
 
 	// set up argv
@@ -223,7 +228,7 @@ Gracenode.prototype.start = function (cb) {
 	var error = setupConfig(this);
 	
 	if (error) {
-		return cb(error);
+		return this._setupDone(error, cb);
 	}
 
 	// start gracenode
@@ -263,12 +268,17 @@ Gracenode.prototype.start = function (cb) {
 
 // load gracenode modules and set up gracenode without starting a process
 Gracenode.prototype.load = function (cb) {
+
+	if (this._isReady) {
+		return this._setupDone(new Error('cannot load gracenode more than once'), cb);
+	}
+
 	var that = this;
 
 	var validated = this._validateConfigPath();
 
 	if (validated instanceof Error) {
-		return cb(validated);
+		return this._setupDone(validated, cb);
 	}
 
 	// set up argv
@@ -278,7 +288,7 @@ Gracenode.prototype.load = function (cb) {
 	var error = setupConfig(this);
 	
 	if (error) {
-		return cb(error);
+		return this._setupDone(error, cb);
 	}
 
 	// load gracenode
@@ -323,6 +333,7 @@ Gracenode.prototype.unload = function (cb) {
 			return cb(error);
 		}
 		that._module.unload();
+		that._isReady = false;
 		cb();
 	});
 };

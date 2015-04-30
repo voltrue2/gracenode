@@ -339,6 +339,12 @@ Status.prototype.reload = function () {
 		function check() {
 			console.log(lib.color('Checking process status... [' + counter + ']', lib.COLORS.GRAY));
 			that.getStatus(function (data, processes) {
+
+				if (!processes) {
+					// no processes can be reloaded...
+					return done(new Error('No process reloaded'));
+				}
+
 				var oldProcessNum = 0;
 				for (var i = 0, len = processes.length; i < len; i++) {
 					if (seenPids[processes[i].pid]) {
