@@ -12,6 +12,8 @@ None
 
 #### Corrected error handling in .start() and .load()
 
+#### Daemon reload will now exits with an error if it cannot reload
+
 ## Deprecated
 
 None
