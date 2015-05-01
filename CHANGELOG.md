@@ -10,7 +10,7 @@ None
 
 ## Changed
 
-#### Dependency node-dateitme version updated from 0.1.0 to 0.1.2
+#### Dependency node-dateitme version updated from 0.1.0 to 0.1.3
 
 ## Deprecated
 
