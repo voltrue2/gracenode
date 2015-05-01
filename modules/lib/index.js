@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var TimedData = require('./lib/timeddata');
+var datetime = require('node-datetime');
 var validationPatterns = {
 	numeric: /^\d+$/,
 	alphaNumeric: /^[a-z0-9]+$/i,
@@ -21,19 +21,14 @@ module.exports.padNumber = function (n, digit) {
 
 // returns an array of date objects between start date object and end date object
 module.exports.getDates = function (startDateObj, endDateObj) {
-	var list = [];
-	var current = startDateObj;
-	while (current <= endDateObj) {
-		var dateStr = current.getFullYear();
-		dateStr += '-' + module.exports.padNumber(current.getMonth() + 1);
-		dateStr += '-' + module.exports.padNumber(current.getDate());
-		list.push(new Date(dateStr));
-		// next day
-		var next = new Date(current);
-		next.setDate(next.getDate() + 1);
-		current = next;
-	}
-	return list;
+	var dt = datetime.create(startDateObj);
+	return dt.getDatesInRange(endDateObj).map(function (item) {
+		return item._now;
+	});
+};
+
+module.exports.createDateTime = function (time, defaultFormat) {
+	return datetime.create(time, defaultFormat);
 };
 
 /*
@@ -47,7 +42,7 @@ conf: {
 }
 */
 module.exports.createTimedData = function (conf) {
-	return new TimedData(conf);
+	return datetime.createTimedNumber(conf);
 };
 
 module.exports.find = function (obj, findFunc) {
