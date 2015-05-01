@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.6.2
+
+## Added node-datetime as a dependency
+
+## Changed
+
+#### Built-in lib module now has gracenode.lib.createDateTime()
+
+#### Built-in lib module's existing functions (.getDates() and .createTimedData()) are now using node-datetime internally.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.6.1
 
 ## Added

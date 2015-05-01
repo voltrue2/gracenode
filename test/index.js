@@ -1,6 +1,13 @@
 var gn = require('gracenode');
 var prefix = require('./prefix');
 var assert = require('assert');
+var time = '2015-01-01 00:00:00.000';
+var past = '2014-11-2 00:00:00.000';
+var future = '2015-03-01 00:00:00.000';
+var dayOffset = 60;
+var hourOffset = 25;
+var hourPast = '2014-12-30 23:00:00.000';
+var hourFuture = '2015-01-02 01:00:00.000';
 
 // gracenode main tests
 describe('gracenode initialization ->', function () {
@@ -737,6 +744,110 @@ describe('gracenode initialization ->', function () {
 			assert.equal(day.getMonth() + 1, check.getMonth() + 1);
 			assert.equal(day.getDate(), check.getDate());
 		}
+	});
+
+	it('Can create gn.lib.createDateTime object with no argument passed', function () {
+		var d = gn.lib.createDateTime();
+		assert(d);
+	});
+
+	it('Can return timestamp in milliseconds', function () {
+		var then = new Date(time).getTime();
+		var d = gn.lib.createDateTime(time);
+		assert.equal(then, d.now());
+	});
+
+	it('Can format Y-m-d H:M:S.N', function () {
+		var d = gn.lib.createDateTime(time);
+		var f = d.format('Y-m-d H:M:S.N');
+		assert.equal(f, time);
+	});
+
+	it('Can format Y-m-d I:M:S.N', function () {
+		var str = '2015-05-01 04:30:00.666';
+		var d = gn.lib.createDateTime(str);
+		var f = d.format('Y-m-d I:M:S.N');
+		assert.equal(str, f);
+	});
+
+	it('Can return y/m/d', function () {
+		var d = gn.lib.createDateTime(time);
+		var f = d.format('y/m/d');
+		assert.equal(f, '15/01/01');
+	});
+
+	it('Can return name of week', function () {
+		var d = gn.lib.createDateTime(time);
+		var f = d.format('w W');
+		assert.equal('Thu Thursday', f);
+	});
+
+	it('Can return a short name of a month', function () {
+		var d = gn.lib.createDateTime(time);
+		var m = d.format('n');
+		assert.equal('Jan', m);
+	});
+
+	it('Can return a full name of a month', function () {
+		var d = gn.lib.createDateTime(time);
+		var m = d.format('f');
+		assert.equal('January', m);
+	});
+
+	it('Can offset ' + dayOffset + ' days in the past', function () {
+		var d = gn.lib.createDateTime(time);
+		d.offsetInDays(-1 * dayOffset);
+		assert(past, d.format('Y-m-d H:M:S.N'));
+	});
+
+	it('Can offset ' + dayOffset + ' days in the future', function () {
+		var d = gn.lib.createDateTime(time);
+		d.offsetInDays(dayOffset);
+		assert(future, d.format('Y-m-d H:M:S.N'));
+	});
+
+	it('Can offset ' + hourOffset + ' hours in the past', function () {
+		var d = gn.lib.createDateTime(time);
+		d.offsetInHours(-1 * hourOffset);
+		assert.equal(d.format('Y-m-d H:M:S.N'), hourPast);
+	});
+
+	it('Can offset ' + hourOffset + ' hours in the future', function () {
+		var d = gn.lib.createDateTime(time);
+		d.offsetInHours(hourOffset);
+		assert.equal(d.format('Y-m-d H:M:S.N'), hourFuture);
+	});
+
+	it('Can get instances of DateTime object between 2015-04-12 and 2015-05-12', function () {
+		var start = gn.lib.createDateTime('2015-04-12');
+		var end = gn.lib.createDateTime('2015-05-12');
+		var format = 'Y-m-d H:M:S.N';
+		var list = start.getDatesInRange(end);
+		for (var i = 0, len = list.length; i < len; i++) {
+			var day = list[i];
+			var check = gn.lib.createDateTime(start.now());
+			check.offsetInDays(i);
+			assert.equal(day.format(format), check.format(format));
+		}
+	});
+
+	it('Can get instances of DateTime object between 2015-05-12 and 2015-04-12', function () {
+		var start = gn.lib.createDateTime('2015-04-12');
+		var end = gn.lib.createDateTime('2015-05-12');
+		var format = 'Y-m-d H:M:S.N';
+		var list = start.getDatesInRange(end);
+		for (var i = list.length - 1; i >= 0; i--) {
+			var day = list[i];
+			var check = gn.lib.createDateTime(start.now());
+			check.offsetInDays(i);
+			assert.equal(day.format(format), check.format(format));
+		}
+	});
+
+	it('Can use default format', function () {
+		var dateStr = '2015-04-30 11:59:59.999';
+		var dt = gn.lib.createDateTime(dateStr, 'Y-m-d H:M:S.N');
+		assert.equal(dateStr, dt.format());
 	});
  
 });
