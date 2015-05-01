@@ -2,6 +2,24 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.6.3
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency node-dateitme version updated from 0.1.0 to 0.1.2
+
+## Deprecated
+
+None
+
+## Removed
+
+***
+
 ## Version 1.6.2
 
 ## Added node-datetime as a dependency
