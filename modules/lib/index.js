@@ -45,6 +45,10 @@ module.exports.createTimedData = function (conf) {
 	return datetime.createTimedNumber(conf);
 };
 
+module.exports.createTimedState = function (conf) {
+	return datetime.createTimedState(conf);
+};
+
 module.exports.find = function (obj, findFunc) {
 	if (typeof obj !== 'object') {
 		throw new Error('the first argument must be an object/array');

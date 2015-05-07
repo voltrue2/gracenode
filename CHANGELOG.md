@@ -10,7 +10,9 @@ None
 
 ## Changed
 
-#### Dependency node-dateitme version updated from 0.1.0 to 0.1.3
+#### Dependency node-dateitme version updated from 0.1.0 to 0.1.5
+
+#### Lib module now has .createTimedState()
 
 ## Deprecated
 
