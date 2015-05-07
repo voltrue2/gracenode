@@ -849,6 +849,162 @@ describe('gracenode initialization ->', function () {
 		var dt = gn.lib.createDateTime(dateStr, 'Y-m-d H:M:S.N');
 		assert.equal(dateStr, dt.format());
 	});
+
+	it('Can create a new instance of TimedState object', function () {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 100,
+			loop: false
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+	});
+
+	it('Moves forward by 2 states after 200 milliseconds w/ itnerval 100 miliseconds configuration', function (done) {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 100,
+			loop: false
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+		setTimeout(function () {
+			var state = ts.getState();
+			assert.equal('c', state);
+			done();
+		}, 200);
+	});
+
+	it('Stays at the last state after 500 milliseconds w/ itnerval 100 miliseconds configuration', function (done) {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 100,
+			loop: false
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+		setTimeout(function () {
+			var state = ts.getState();
+			assert.equal('d', state);
+			done();
+		}, 500);
+	});
+
+	it('Loops back to 1st state after 400 milliseconds w/ itnerval 100 miliseconds configuration', function (done) {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 100,
+			loop: true
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+		setTimeout(function () {
+			var state = ts.getState();
+			assert.equal('a', state);
+			done();
+		}, 400);
+	});
+
+	it('Loops to 2nd state after 500 milliseconds w/ itnerval 100 miliseconds configuration', function (done) {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 100,
+			loop: true
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+		setTimeout(function () {
+			var state = ts.getState();
+			assert.equal('b', state);
+			done();
+		}, 500);
+	});
+
+	it('Can move the state forward with .forward()', function () {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 10000,
+			loop: false
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+		ts.forward();
+		assert.equal('b', ts.getState());
+	});
+
+	it('Can move the state backward with .backward()', function () {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 1,
+			interval: 10000,
+			loop: false
+		};
+		var ts = gn.lib.createTimedState(conf);
+		assert(ts);
+		ts.backward();
+		assert.equal('a', ts.getState());
+	});
+
+	it('Can reconstruct the same state w/ .toObject()', function () {
+		var conf = {
+			states: [
+				'a',
+				'b',
+				'c',
+				'd'
+			],
+			init: 0,
+			interval: 10000,
+			loop: false
+		};
+		var ts1 = gn.lib.createTimedState(conf);
+		ts1.forward();
+		var obj1 = ts1.toObject();
+		var ts2 = gn.lib.createTimedState(obj1);
+		var obj2 = ts2.toObject();
+		assert.equal(JSON.stringify(obj1), JSON.stringify(obj2));
+	});	
  
 });
 
