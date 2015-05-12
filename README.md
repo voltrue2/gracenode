@@ -267,9 +267,17 @@ Example:
 
 gracenode has built-in mesh netowrk system to enable the applications running on different servers to communicate to each other.
 
-The system utilizes completely decentralized mesh network where there are no master nodes and every mesh node is aware of each other with broadcasting.
+gracenode has 2 options for mesh network:
 
-The feature is insipred by <a href="https://github.com/wankdanker">Dan VerWeire's</a> <a href="https://github.com/wankdanker/node-discover">node-discover</a>.
+1. Broadcasting (default): `"method": "broadcast"`
+
+> The system utilizes completely decentralized mesh network where there are no master nodes and every mesh node is aware of each other with broadcasting.
+
+> The feature is insipred by <a href="https://github.com/wankdanker">Dan VerWeire's</a> <a href="https://github.com/wankdanker/node-discover">node-discover</a>.
+
+2. Redis pub/sub: `"method": "redis"`
+
+> The system uses redis as pub/sub center to handle mesh network. This is useful, if your application is deployed on cloud servers where you cannot use broadcast.
 
 In order to use built-in mesh network system, all of the applications must be within the same internal network.
 
