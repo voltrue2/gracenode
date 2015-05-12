@@ -1,8 +1,8 @@
 'use strict';
 
-var name = 'meshnet/discover';
+var name = 'meshnet/broadcast';
 var network = require('./networkNode');
-var NetworkNode = network.NetworkNode;
+var networkNode;
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 
@@ -26,14 +26,14 @@ var config;
 
 module.exports.TYPE = TYPE;
 
-// called from mesh-net/index.js
+// called from meshnet/index.js
 module.exports.setGracenode = function (gnIn) {
 	gn = gnIn;
 	logger = gn.log.create(name);
 	network.setGracenode(gn);
 };
 
-// called from mesh-net/index.js
+// called from meshnet/index.js
 module.exports.setup = function (configIn) {
 
 	config = DEFAULTS;	
@@ -49,16 +49,18 @@ module.exports.setup = function (configIn) {
 	logger.verbose('configurations:', config);
 
 	network.setup(configIn);
+
+	networkNode = network.create();
 };
 
-// called from mesh-net/index.js
-module.exports.Discover = Discover;
+// called from meshnet/index.js
+module.exports.MeshNet = MeshNet;
 
-function Discover() {
+function MeshNet() {
 	EventEmitter.call(this);
 	var that = this;
 	this.running = false;
-	this.broadcast = new NetworkNode();
+	this.broadcast = networkNode;
 	this.me = {
 		// local host
 		address: '127.0.0.1'
@@ -102,10 +104,10 @@ function Discover() {
 	});
 }
 
-util.inherits(Discover, EventEmitter);
+util.inherits(MeshNet, EventEmitter);
 
 // private
-Discover.prototype.handleHello = function (data, obj, info) {
+MeshNet.prototype.handleHello = function (data, obj, info) {
 	
 	var isNew = false;
 	var nodeId = obj.id;
@@ -139,7 +141,7 @@ Discover.prototype.handleHello = function (data, obj, info) {
 };
 
 // private
-Discover.prototype.sendHello = function () {
+MeshNet.prototype.sendHello = function () {
 	
 	if (!this.running) {
 		logger.info('stop sending "hello" to other network nodes');
@@ -158,7 +160,7 @@ Discover.prototype.sendHello = function () {
 };
 
 // private
-Discover.prototype.handleCheck = function () {
+MeshNet.prototype.handleCheck = function () {
 	
 	if (!this.running) {
 		logger.info('stop checking network nodes\' availability');
@@ -173,7 +175,7 @@ Discover.prototype.handleCheck = function () {
 		var node = this.nodes[id];
 
 		if (now - node.lastSeen > config.nodeTimeout) {
-			logger.error(
+			logger.info(
 				'a network node [id:' + 
 				id + 
 				'] has timed out and now be removed from the known list of', 
@@ -198,11 +200,11 @@ Discover.prototype.handleCheck = function () {
 	}, config.checkInterval);
 };
 
-// private
-Discover.prototype.start = function (cb) {
+// public
+MeshNet.prototype.start = function (cb) {
 	
 	if (this.running) {
-		return (new Error('discover has already been started'));
+		return cb(new Error('discover has already been started'));
 	}
 
 	var that = this;
@@ -227,8 +229,8 @@ Discover.prototype.start = function (cb) {
 	});
 };
 
-// private
-Discover.prototype.stop = function (cb) {
+// public
+MeshNet.prototype.stop = function (cb) {
 	this.running = false;
 	for (var i = 0, len = this.channels.length; i < len; i++) {
 		this.leave(this.channels[i]);
@@ -240,7 +242,7 @@ Discover.prototype.stop = function (cb) {
 };
 
 // public
-Discover.prototype.join = function (channelName) {
+MeshNet.prototype.join = function (channelName) {
 
 	if (RESERVED_EVENTS.indexOf(channelName) !== -1) {
 		logger.error('channel name is a reserved name', channelName);
@@ -274,7 +276,7 @@ Discover.prototype.join = function (channelName) {
 };
 
 // public
-Discover.prototype.leave = function (channelName) {
+MeshNet.prototype.leave = function (channelName) {
 	var index = this.channels.indexOf(channelName);
 	
 	if (index === -1) {
@@ -291,7 +293,7 @@ Discover.prototype.leave = function (channelName) {
 };
 
 // public
-Discover.prototype.send = function (channelName, obj) {
+MeshNet.prototype.send = function (channelName, obj) {
 	
 	if (RESERVED_EVENTS.indexOf(channelName) !== -1) {
 		logger.error(
@@ -315,7 +317,7 @@ Discover.prototype.send = function (channelName, obj) {
 };
 
 // public 
-Discover.prototype.eachNode = function (worker) {
+MeshNet.prototype.eachNode = function (worker) {
 	var nodes = {};
 	for (var id in this.nodes) {
 		nodes[id] = gn.lib.cloneObj(this.nodes[id]);
