@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.7.0
+
+## Added
+
+#### Mesh Network that uses redis added
+
+By giving `"method": "redis"` in `meshnet` configuration, gracenode can now handle mesh network using redis instead of broadcast.
+
+## Changed
+
+#### Mesh Network code refactored
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.6.3
 
 ## Added

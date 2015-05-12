@@ -279,6 +279,7 @@ To enable, you must provide configurations as shown below:
 {
 	"meshnet": {
 		"enable": <boolean>,
+		"method": <string> // "redis" or "broadcast" default is "broadcast". if "redis" is given, gracenode will need redis to operate mesh network
 		"helloInterval": <number> // in milliseconds [optional] default is 1000
 		"checkInterval": <number> // in milliseconds [optional] default is 2000
 		"broadcast": <string> // [optional] default is "255.255.255.255"

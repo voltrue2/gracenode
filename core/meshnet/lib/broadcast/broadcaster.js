@@ -1,6 +1,6 @@
 'use strict';
 
-var name = 'meshnet/network-node';
+var name = 'meshnet/broadcaster';
 var uuid = require('node-uuid');
 var dgram = require('dgram');
 var crypto = require('crypto');
@@ -8,7 +8,7 @@ var os = require('os');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
-var DEFAULTS = {
+var config = {
 	address: '0.0.0.0',
 	port: 12345,
 	broadcast: '255.255.255.255',
@@ -18,32 +18,28 @@ var DEFAULTS = {
 var CIPHER = 'aes256';
 
 var hostName = os.hostname();
-var config;
 var logger;
 var gn;
 
 // we do NOT support multicast
 
-// called from mesh-net/lib/discover
-module.exports.setGracenode = function (gnIn) {
-	gn = gnIn;
+// called from meshnet/lib/networknode
+module.exports.setGracenode = function (gracenode) {
+	gn = gracenode;
 	logger = gn.log.create(name);
 };
 
-// called from mesh-net/lib/discover
-module.exports.setup = function (configIn) {
-	
-	config = DEFAULTS;
-
-	for (var key in configIn) {
-		config[key] = configIn[key];
+// called from meshnet/lib/networknode
+module.exports.setConfig = function (configIn) {
+	for (var i in configIn) {
+		if (!config.hasOwnProperty(i)) {
+			config[i] = configIn[i];
+		}
 	}
-
-	logger.verbose('configurations:', config);
 };
 
-// called from mesh-net/lib/discover
-module.exports.NetworkNode = NetworkNode;
+// called from meshnet/lib/discover
+module.exports.constructor = NetworkNode;
 
 function NetworkNode() {
 	EventEmitter.call(this);

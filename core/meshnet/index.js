@@ -1,8 +1,10 @@
 'use strict';
 
 var name = 'meshnet';
-var discover = require('./lib/discover');
-var Discover = discover.Discover;
+// with broadcast
+var discover = require('./lib/broadcast/discover');
+// with redis
+var flood = require('./lib/redis/flood');
 
 var gn;
 var logger;
@@ -23,11 +25,19 @@ module.exports.setup = function (gnIn, cb) {
 
 	logger.info('mesh-network enabled');
 
-	enabled = true;
-	discover.setGracenode(gn);
-	discover.setup(config);
+	var mesh;
 
-	meshNet = new Discover();
+	if (config.method === 'redis') {
+		mesh = flood;
+	} else {
+		mesh = discover;
+	}
+
+	enabled = true;
+	mesh.setGracenode(gn);
+	mesh.setup(config);
+
+	meshNet = new mesh.MeshNet();
 
 	gn.registerShutdownTask(name, function (next) {
 		meshNet.stop(next);
