@@ -21,6 +21,7 @@ module.exports.setGracenode = function (gnIn) {
 // called from meshnet/index.js
 module.exports.setup = function (configIn) {
 	config = configIn;
+	setupListeners();
 };
 
 // called from meshnet/index.js
@@ -217,3 +218,15 @@ MeshNet.prototype.handleHelloOrBye = function (msg) {
 	logger.info('a node has left [id: ' + nodeId + ']');
 	this.emit('removed', nodeId);
 };
+
+function setupListeners() {
+	flood.on('connect', function (type) {
+		logger.info('connected to redis: [' + type + ']');
+	});
+	flood.on('end', function (type) {
+		logger.info('closed connection to redis: [' + type + ']');
+	});
+	flood.on('error', function (error, type) {
+		logger.error('connection to redis failed: [' + type + ']', error);
+	});
+}

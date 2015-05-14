@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.7.1
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency floodnet version updated from 0.0.3 to 0.0.5
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.7.0
 
 ## Added

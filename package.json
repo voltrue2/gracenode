@@ -17,7 +17,7 @@
 		"gracelog": "0.4.1",
 		"node-uuid": "1.4.1",
 		"node-datetime": "0.1.5",
-		"floodnet": "0.0.3"
+		"floodnet": "0.0.5"
 	},
 	"devDependencies": {
 		"request": "2.33.0",	
