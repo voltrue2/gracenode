@@ -106,6 +106,72 @@ Daemon tool of gracenode can daemonize ANY node.js application.
 
 Note: `daemon` script is *executable*. To execute daemon tool:
 
+### Daemoize Your Application Programatically
+
+gracenode automatically adds an option to become a daemon process.
+
+Example:
+
+```javascript
+var gracenode = require('gracenode');
+gracenode.start(function () {
+	// this is where your application log starts
+});
+```
+
+With above set up, your application now has `command-lin` options as follows:
+
+```
+./daemon {start|stop|restart|reload|status|list|clean}
+[PATH]...
+[OPTION]
+{reload} works ONLY if your application handles SIGHUP.
+Daemonaize a target application process and monitor it.
+
+Options:
+       -l, --log=[path]:  Write log data into a file
+       -w, -a:            Automatically restart the daemon process if watch file(s) change.
+       -v, --verbose:     Be more verbose.
+```
+
+#### To Start
+
+```
+node yourApp.js start
+```
+
+#### To Stop
+
+```
+node yourApp.js stop
+```
+
+#### To Restart
+
+```
+node yourApp.js restart
+```
+
+#### To Reload
+
+```
+node yourApp.js reload
+```
+
+#### To Check Status
+
+```
+node yourApp.js status
+```
+
+#### To List
+
+```
+node yourApp.js list
+```
+
+### Daemonize Your Application by `./daemon`
+
 ```
 ./daemon ...
 ```
@@ -116,12 +182,12 @@ Or
 node daemon ...
 ```
 
-The example below shows `node daemon ....` style of execution.
+The example below shows `./daemon ....` style of execution.
 
 #### To start your application as a daemon process:
 
 ```
-node daemon start
+./daemon start yourApp.js
 ```
 
 ***
@@ -140,7 +206,7 @@ You need to instruct `daemon` command which directory(ies) to watch for `auto-re
 Example:
 
 ```
-node daemon start -a controller/ modules/ configs/
+./daemon start yourApp.js -a controller/ modules/ configs/
 ```
 
 The above example instructs the `daemon` command to watch `controller`, `modules`, and `configs` directories of the application 
@@ -149,7 +215,7 @@ for `auto-reload`. If anything changes in these directories, the daemon process 
 #### To stop your daemon application:
 
 ```
-node daemon stop
+./daemon stop yourApp.js
 ```
 
 ***
@@ -157,7 +223,7 @@ node daemon stop
 #### To restart your daemon application:
 
 ```
-node daemon restart
+./daemon restart yourApp.js
 ```
 
 ***
@@ -165,7 +231,7 @@ node daemon restart
 #### To reload our daemon application worker processes without stopping:
 
 ```
-node daemon reload
+./daemon reload yourApp.js
 ```
 
 **NOTE:** This option is only available with applications that are built with
@@ -186,7 +252,7 @@ In order to make use of this option, your application must be running in `cluste
 #### To list the currently running daemon processes:
 
 ```
-node daemon list
+./daemon list
 ```
 
 ***
@@ -194,32 +260,10 @@ node daemon list
 #### To display basic status of a daemon process:
 
 ```
-node daemon status
+./daemon status yourApp.js
 ```
 
 ***
-
-### You can optionally give a path to the application you want to target.
-
-```
-node daemon start /path/to/your/app/
-```
-
-```
-node daemon stop /path/to/your/app/
-```
-
-```
-node daemon restart /path/to/your/app/
-```
-
-```
-node daemon reload /path/to/your/app/
-```
-
-```
-node daemon status /path/to/your/app/
-```
 
 ### Logging
 
@@ -228,17 +272,17 @@ Daemon tool can leave log data in files as an option.
 To enable logging, execute:
 
 ```
-node daemon start /path/to/your/app/ --log=/path/to/your/logs/
+./daemon start /path/to/your/app/ --log=/path/to/your/logs/
 ```
 
 ### Cleaning detached daemon socket files
 
 There may be a situation where you end up with daemon socket files without process associated.
 
-`node daemon clean` will find all detached socket files and clean them all.
+`./daemon clean` will find all detached socket files and clean them all.
 
 ```
-node daemon clean
+./daemon clean
 ```
 
 ### Help
@@ -246,7 +290,7 @@ node daemon clean
 To display help interface:
 
 ```
-node daemon --help
+./daemon --help
 ```
 
 ### Verbose Option

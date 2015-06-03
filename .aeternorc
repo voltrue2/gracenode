@@ -1,0 +1,24 @@
+{
+	"name": "gracenode",
+	"help": {
+			"usage": "Usage:\n./daemon {start|stop|restart|reload|status|list|clean}\n[PATH]...\n[OPTION]",
+			"reloadNote": "{reload} works ONLY if your application handles SIGHUP.",
+			"description": "Daemonaize a target application process and monitor it.\n",
+			"options": "Options:",
+			"log": "       -l, --log=[path]:",
+			"logDesc": "  Write log data into a file",
+			"watch": "       -w, -a:",
+			"watchDesc": "            Automatically restart the daemon process if watch file(s) change.",
+			"verbose": "       -v, --verbose:",
+			"verboseDesc": "     Be more verbose.",
+			"example": "Examples:",
+			"start": "     ./daemon start",
+			"startDesc": "                       Start a daemon process.",
+			"startWithPath": "     ./daemon start ./myServer.js",
+			"startWithPathDesc": "         Start a daemon process of \"./myServer.js\".",
+                        "startWithLog": "     ./daemon start -l ./daemonlog/",
+			"startWithLogDesc": "       Start a daemon process and write log data to \"./daemonlog/\" directory.",
+			"startAndWatch": "     ./daemon start -w ./modules ./lib",
+			"startAndWatchDesc": "    Start a daemon process and watch \"./modules\" and \"./lib\". Anything changes in the watched directory, daemon process will automatically restart"
+	}
+}

@@ -1009,4 +1009,5 @@ describe('gracenode initialization ->', function () {
 });
 
 // gracenode daemon tool tests
-require('../scripts/daemon/test/');
+//require('../scripts/daemon/test/');
+require('./daemon');

@@ -21,12 +21,13 @@ var Module = require('./module');
 var meshNet = require('./meshnet');
 var debugMode = require('./debug');
 
+var aeterno = require('aeterno');
+
 // overwridden by calling _setLogCleaner from log module
 // shutdown task for log module. this will be executed at the very end
 var logCleaners = [];
 
 module.exports.Gracenode = Gracenode;
-
 
 function Gracenode() {
 	EventEmitter.call(this);
@@ -254,6 +255,7 @@ Gracenode.prototype.start = function (cb) {
 	};
 
 	var setupList = [
+		aeterno.run,
 		starter, 
 		setupLog, 
 		setupProfiler,

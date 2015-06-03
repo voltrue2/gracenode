@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.0
+
+## Added
+
+#### New dependency aeterno added
+
+## Changed
+
+#### Daemon tool is now using aeterno
+
+#### gracenode can now allow the application to daemonize programatically
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.7.1
 
 ## Added

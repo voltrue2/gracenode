@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js application with extendable module management system, command-line tool, and daemon tool for fast and clean development.",
-	"version": "1.7.1",
+	"version": "1.8.0",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"preinstall": "rm -f ../../daemon",
-		"install": "ln -fs node_modules/gracenode/scripts/daemon/index.js ../../daemon"
+		"install": "ln -fs node_modules/gracenode/aeterno ../../daemon"
 	},
 	"dependencies": {
 		"async": "0.9.0",
@@ -17,7 +17,8 @@
 		"gracelog": "0.4.1",
 		"node-uuid": "1.4.1",
 		"node-datetime": "0.1.5",
-		"floodnet": "0.0.5"
+		"floodnet": "0.0.5",
+		"aeterno": "0.2.3"
 	},
 	"devDependencies": {
 		"request": "2.33.0",	
