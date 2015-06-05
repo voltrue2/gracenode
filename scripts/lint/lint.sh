@@ -6,7 +6,6 @@
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
 	echo "";
-	echo "gracenode jshint";
 	echo "Description:";
 	echo "Executes jshint on file changes to be commited to git and files in the given directories(optional).";
 	echo "";

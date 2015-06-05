@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"help": {
-			"usage": "Usage:\n./daemon {start|stop|restart|reload|status|list|clean}\n[PATH]...\n[OPTION]",
+			"usage": "Usage: ./daemon {start|stop|restart|reload|status|list|clean} [PATH]... [OPTION]",
 			"reloadNote": "{reload} works ONLY if your application handles SIGHUP.",
 			"description": "Daemonaize a target application process and monitor it.\n",
 			"options": "Options:",
