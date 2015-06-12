@@ -12,7 +12,9 @@ Framework for node.js application with extendable module management system for f
 
 ## Installation
 
-### Installation via NPM
+### Installation via npm
+
+**NOTE:** If you are running your application as a daemon with older version of gracenode, please make sure to stop the daemon before installing the newer version.
 
 `npm install gracenode`
 

@@ -12,6 +12,8 @@ None
 
 #### Dependency aeterno version updated
 
+Now gracenode usees `aeterno` version 0.3.1
+
 ## Deprecated
 
 None
