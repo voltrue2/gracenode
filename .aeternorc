@@ -1,5 +1,6 @@
 {
 	"name": "gracenode",
+	"color": true,
 	"help": {
 			"usage": "Usage: ./daemon {start|stop|restart|reload|status|list|clean} [PATH]... [OPTION]",
 			"reloadNote": "{reload} works ONLY if your application handles SIGHUP.",
