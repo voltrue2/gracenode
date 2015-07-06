@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.4
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency aeterno version updated
+
+0.4.1
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.8.3
 
 ## Added
