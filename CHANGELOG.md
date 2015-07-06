@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.5
+
+## Added
+
+None
+
+## Changed
+
+#### index.js of gracenode no longer needs to call aeterno.setApplicationPath()
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.8.4
 
 ## Added
