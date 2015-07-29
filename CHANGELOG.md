@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.7
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency aeterno module's versiuon updated
+
+With the update, the listing of running daemon process' order is now correct and there are minor improvements included.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.8.6
 
 ## Added

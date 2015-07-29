@@ -18,7 +18,7 @@
 		"node-uuid": "1.4.1",
 		"node-datetime": "0.1.5",
 		"floodnet": "0.0.5",
-		"aeterno": "0.4.2"
+		"aeterno": "0.4.3"
 	},
 	"devDependencies": {
 		"request": "2.33.0",	
