@@ -124,16 +124,19 @@ gracenode.start(function () {
 With above set up, your application now has `command-lin` options as follows:
 
 ```
-./daemon {start|stop|restart|reload|status|list|clean}
+./daemon {start|stop|stopall|restart|restartall|reload|status|list|clean}
 [PATH]...
 [OPTION]
 {reload} works ONLY if your application handles SIGHUP.
 Daemonaize a target application process and monitor it.
 
 Options:
-       -l, --log=[path]:  Write log data into a file
-       -w, -a:            Automatically restart the daemon process if watch file(s) change.
-       -v, --verbose:     Be more verbose.
+	-l, --log=[path]:  Write log data into a file
+	-e, --exec=[path]: Daemonize the target application with the given interpreter.
+	-w, -a:            Automatically restart the daemon process if watch file(s) change.
+	-v, --verbose:     Be more verbose.
+	-f:                Stops all running daemon processes without user inputs. This option is for {stopall} command only.
+
 ```
 
 #### To Start
@@ -222,10 +225,34 @@ for `auto-reload`. If anything changes in these directories, the daemon process 
 
 ***
 
+#### Stop all daemons
+
+Stop all daemons that runs with `gracenode`.
+
+**NOTE:** Each daemon process requires user input to stop the process. If you do not wish to enter user input to stop all daemons, then use `-f` option.
+
+```
+./daemon stopall
+```
+
+***
+
 #### To restart your daemon application:
 
 ```
 ./daemon restart yourApp.js
+```
+
+***
+
+#### Restart all daemons
+
+Restart all daemons that runs with `gracenode`.
+
+**NOTE:** Each daemon process requires user input to restart the process. If you do not wish to enter user input to restart all daemons, then use `-f` option.
+
+```
+./daemon restartall
 ```
 
 ***

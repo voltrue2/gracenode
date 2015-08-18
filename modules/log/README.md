@@ -10,23 +10,18 @@ var log = gracenode.log.create('nameToBeDisplayed');
 {
 	"modules":
 		"log": {
-			"useTimestamp": <bool> // if given true, logging will be in Unix timestamp instead of the server time
+			"rotationType": <string> // define log file rotation type [year|month|day|hour]. Default is day
+			"useTimestamp": <bool> // if given true, the logging time will be in Unix timestamp instead of the server time
 			"bufferSize": <int> // log data buffer size in memory (bytes),
 			"bufferFlushInterval": <int> // log data buffer auto flush interval in milliseconds,
+			"oneFile": <boolean> // if true, file logging will be combined to one file for all logging levels. default is false
 			"file": "<log directory path> or false"
 			"console": true or false,
+			"remote": <object> or null/false,
 			"color": true or false,
 			"showHidden": true or false, // show hidden properties of object
 			"depth": <integer> // recursive depth of object
-			"level": [
-				"verbose",
-				"debug",
-				"trace",
-				"info",
-				"warn",
-				"error",
-				"fatal",
-			]
+			"level": ">= verbose"
 		}
 }
 ```

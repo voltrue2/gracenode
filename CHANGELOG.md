@@ -12,7 +12,15 @@ None
 
 #### Dependency aeterno module's version updated to 0.4.7
 
+There are many changes and added features for daemonizing your application:
+
+https://github.com/voltrue2/gracenode#daemonizing-your-application-process
+
 #### Dependency gracelog module's version updated to 0.5.1
+
+There are many changes and added features for logging:
+
+https://github.com/voltrue2/gracenode/tree/develop/modules/log
 
 #### Dependency floodnet module's version updated to 0.1.0
 
