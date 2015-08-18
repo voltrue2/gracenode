@@ -2,6 +2,30 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.8
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency aeterno module's version updated to 0.4.7
+
+#### Dependency gracelog module's version updated to 0.5.1
+
+#### Dependency flootnet module's version updated to 0.1.0
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.8.7
 
 ## Added
