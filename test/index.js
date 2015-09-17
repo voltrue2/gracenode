@@ -147,12 +147,14 @@ describe('gracenode initialization ->', function () {
 	});
 
 	it('Can listen for an event of log module "output"', function (done) {
+		var fatalCalled = false;
 		gn.log.on('output', function (address, name, level, data) {
 			assert(address);
 			assert(name);
 			assert(level);
 			assert(data);
-			if (level === 'fatal') {
+			if (level === 'fatal' && !fatalCalled) {
+				fatalCalled = true;
 				return done();
 			}
 		});

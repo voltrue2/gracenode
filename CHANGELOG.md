@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.11
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency aeterno module's version updated to 0.4.8
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.8.10
 
 ## Added

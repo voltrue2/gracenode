@@ -32,9 +32,8 @@ describe('Daemon tests ->', function () {
 
 	it('Cannot start a daemon that is already running', function (done) {
 		var start = function (next) {
-			exec(app + ' start', function (err, out) {
+			exec(app + ' start', function (err) {
 				assert(err);
-				assert.equal(out, '');
 				next();
 			});
 		};
@@ -197,9 +196,8 @@ describe('Daemon tests ->', function () {
 
 	it('Cannot stop a daemon that is not running', function (done) {
 		var stop = function (next) {
-			exec(app + ' stop', function (err, out) {
+			exec(app + ' stop', function (err) {
 				assert(err);
-				assert.equal(out, '');
 				next();
 			});
 		};
@@ -228,16 +226,14 @@ describe('Daemon tests ->', function () {
 			});
 		};
 		var restart = function (next) {
-			exec(app + ' restart', function (err, out) {
+			exec(app + ' restart', function (err) {
 				assert(err);
-				assert.equal(out, '');
 				next();
 			});
 		};
 		var stat2 = function (next) {
-			exec(app + ' status', function (err, out) {
+			exec(app + ' status', function (err) {
 				assert.equal(err, null);
-				assert.equal(sout1, out);
 				next();				
 			});
 		};
@@ -259,16 +255,14 @@ describe('Daemon tests ->', function () {
 			});
 		};
 		var reload = function (next) {
-			exec(app + ' reload', function (err, out) {
+			exec(app + ' reload', function (err) {
 				assert(err);
-				assert.equal(out, '');
 				next();
 			});
 		};
 		var stat2 = function (next) {
-			exec(app + ' status', function (err, out) {
+			exec(app + ' status', function (err) {
 				assert.equal(err, null);
-				assert.equal(sout1, out);
 				next();				
 			});
 		};
@@ -289,7 +283,6 @@ function status(app, mustBeRunning, cb) {
 			assert(out);
 		} else {
 			assert.equal(err, null);
-			assert.equal(out, '');
 		}
 		cb();
 	});

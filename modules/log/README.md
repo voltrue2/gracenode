@@ -95,6 +95,17 @@ Log module uses console object of node.js. This is a blocking operation. It is b
 
 `"console": true or false`
 
+#### remote
+
+If given an object, it will send log data via UDP to a remote server.
+
+```json
+{
+	"host": "<host name or IP address>",
+	"port": <port number>	
+}
+```
+
 #### color
 
 If set to true, gracenode will color log text.
