@@ -574,7 +574,8 @@ gracenode.use('mysql', { name: 'mysql2' });
 Also if you are using 3rd party node module as gracenode module, you can apply a driver to that module by:
 
 ```
-gracenode.use('async', { name: 'async2', driver: { config: <*function>, setup: <*function>, shutdown: <*function>, expose: <*function> } });
+
+gracenode.use('async', { name: 'async2', driver: require('./mydriver') });
 ```
 
 For more details on module drivers, please read <a href="#module-drivers">here</a>.
