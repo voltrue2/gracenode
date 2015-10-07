@@ -120,7 +120,7 @@ function readModConfig(configMap, key, mod, cb) {
 	var func = null;
 	if (mod.configCustom) {
 		func = mod.configCustom;
-	} else if (mod.custom) {
+	} else if (mod.config) {
 		func = mod.config;
 	} else if (mod.readCondig) {
 		func = mod.readConfig;
