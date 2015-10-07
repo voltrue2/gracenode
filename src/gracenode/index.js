@@ -21,6 +21,9 @@ var ER = {
 // a map of bootstrapped modules
 exports.mod = {};
 
+// backward compatibility for gracenode 1.x
+exports.lib = require(__dirname + '/../../lib');
+
 exports.log = log;
 
 exports.getRootPath = function () {
@@ -47,7 +50,7 @@ exports.onExit = function (taskFunc, runOnMaster) {
 };
 
 // backward compatibility alias
-exports.addShutdownTask = exports.onExit;
+exports.registerShutdownTask = exports.onExit;
 
 // add module name and path to be bootstrapped by .start()
 exports.use = function (name, path, options) {
@@ -89,6 +92,7 @@ exports.stop = function (error) {
 };
 
 function setup(cb) {
+	process.chdir(rootPath);
 	process.on('uncaughtException', function (error) {
 		if (!ready) {
 			cluster.stop(error);

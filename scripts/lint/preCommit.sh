@@ -19,4 +19,18 @@ fi
 
 "$path"lint.sh -a src/
 
+if [ $? -eq 0 ]; then
+	echo "OK";
+else
+	exit 1;
+fi
+
 `echo make test`
+
+if [ $? -eq 0 ]; then
+	echo "OK";
+else
+	exit 1;
+fi
+
+

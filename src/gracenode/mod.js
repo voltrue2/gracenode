@@ -128,7 +128,7 @@ function readModConfig(configMap, key, mod, cb) {
 		func = mod.configCustom;
 	} else if (mod.config) {
 		func = mod.config;
-	} else if (mod.readCondig) {
+	} else if (mod.readConfig) {
 		func = mod.readConfig;
 	}
 	logger.verbose(
