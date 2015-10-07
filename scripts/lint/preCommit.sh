@@ -18,3 +18,5 @@ else
 fi
 
 "$path"lint.sh -a src/
+
+`echo make test`
