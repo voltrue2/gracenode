@@ -102,7 +102,7 @@ function startCluster(cb) {
 }
 
 function setupLog(cb) {
-	canWrite(modConfigs.log || null, function (error) {
+	canWrite(modConfigs.log || {}, function (error) {
 		if (error) {
 			return cb(
 				new Error(

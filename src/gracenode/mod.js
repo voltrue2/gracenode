@@ -21,10 +21,15 @@ var loaded = {};
 
 exports.use = function (name, path, options) {
 	if (pending[name]) {
-		return er.create(ER.DUP_NAME, name); 
+		throw er.create(
+			ER.DUP_NAME, name +
+			': ' +
+			'[' + path + '] & ' +
+			'[' + pending[name].path + ']'
+		);
 	}
 	if (pathList.indexOf(path) !== -1) {
-		return er.create(ER.DUP_PATH, name + ': ' + path);
+		throw er.create(ER.DUP_PATH, name + ': ' + path);
 	}
 	if (!options) {
 		options = {};
