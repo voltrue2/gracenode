@@ -1,6 +1,7 @@
 {
 	"log": {
-		"file": "!/var/www/npm-repo/node_modules/gracenode/test/logs/",
+		"file": "/var/www/npm-repo/node_modules/gracenode/test/logs/",
+		"#file": "/var/log/",
 		"oneFile": true,
 		"console": true,
 		"level": ">= verbose",
