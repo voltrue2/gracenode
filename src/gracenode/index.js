@@ -102,35 +102,6 @@ function startCluster(cb) {
 }
 
 function setupLog(cb) {
-	/*
-	if (modConfigs.log && modConfigs.log.file) {
-		// validate log path
-		fs.stat(modConfigs.log.file, function (error, stat) {
-			if (error) {
-				return cb(new Error(ER.INVALID_LOG_PATH + ' ' + error.message));	
-			}
-			// check if writable
-			var isOwner = process.uid === stat.uid;
-			var inGroup = process.gid === stat.gid;
-			var mode = stat.mode;
-			var canWrite = isOwner && (mode & MODE_00200) || // is the owner and in group
-				inGroup && (mode & MODE_00020) || // in group
-				(mode & MODE_00002); // anyone can write
-			if (!canWrite) {
-
-				console.log(isOwner, inGroup, mode, process.uid, stat.uid, process.gid, stat.gid);
-				
-				return cb(new Error(ER.NOT_WRITABLE + ' ' + modConfigs.log.file));
-			}
-			// good to go
-			logger = log.create('gracenode');
-			cb();
-		});
-		return;
-	}
-	logger = log.create('gracenode');
-	cb();
-	*/
 	canWrite(modConfigs.log || null, function (error) {
 		if (error) {
 			return cb(
