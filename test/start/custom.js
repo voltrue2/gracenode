@@ -17,6 +17,9 @@ gn.use('staticdata', '../../node_modules/staticdata', {
 	},
 	setup: function (cb) {
 		this.setup(this.config, cb);
+	},
+	exit: function (cb) {
+		cb();
 	}
 });
 

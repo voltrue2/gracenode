@@ -102,9 +102,15 @@ exports.start = function (configMap, onExit, cb) {
 
 function setupMod(configMap, onExit, key, mod, cb) {
 	// setup on exit function of the module
-	if (typeof mod.exit === 'function') {
+	var func = null;
+	if (mod.exitCustom) {
+		func = mod.exitCustom;
+	} else if (mod.exit) {
+		func = mod.exit;
+	}
+	if (typeof func === 'function') {
 		logger.verbose(key + '.exit(<callback>) has been assigned to process exit:', key);
-		onExit(mod.exit);
+		onExit(func);
 	}
 	readModConfig(configMap, key, mod, function (error) {
 		if (error) {
