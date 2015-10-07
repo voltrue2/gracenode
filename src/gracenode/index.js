@@ -57,6 +57,14 @@ exports.use = function (name, path, options) {
 	mod.use(name, rootPath + path, options);
 };
 
+exports.isMaster = function () {
+	return cluster.isMaster();
+};
+
+exports.isCluster = function () {
+	return cluster.isCluster();
+};
+
 // call this when everything is ready
 exports.start = function (cb) {
 	aeterno.run(function () {

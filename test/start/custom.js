@@ -21,8 +21,14 @@ gn.use('staticdata', '../../node_modules/staticdata', {
 });
 
 gn.start(function () {
-	//var sd = gn.mod.staticdata.create('one');
-	setTimeout(function () {
-		gn.stop();
-	}, 1000);
+	if (!gn.isMaster()) {
+		var sd = gn.mod.staticdata.create('one');
+		var row = sd.getOne(0);
+		if (row.one !== 1 || row.two !== 2) {
+			gn.stop(new Error('failed to read CSV data'));
+		} else {		
+			gn.stop();
+		
+		}
+	}
 });
