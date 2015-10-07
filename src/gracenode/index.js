@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var async = require('async');
 var log = require('gracelog');
 var aeterno = require('aeterno');
@@ -60,9 +61,6 @@ exports.start = function (cb) {
 		];
 		var done = function (error) {
 			if (error) {
-
-				console.log('stop now?', error);
-
 				return exports.stop(error);
 			}
 			ready = true;
@@ -96,6 +94,16 @@ function startCluster(cb) {
 }
 
 function setupLog(cb) {
+	if (modConfigs.log && modConfigs.log.file) {
+		fs.exists(modConfigs.log.file, function (exists) {
+			if (!exists) {
+				return cb(new Error('<INVALID_LOG_PATH> ' + modConfigs.log.file));	
+			}
+			logger = log.create('gracenode');
+			cb();
+		});
+		return;
+	}
 	logger = log.create('gracenode');
 	cb();
 }
