@@ -1,0 +1,15 @@
+{
+	"log": {
+		"file": "/var/www/gm.gracenode.org/node_modules/gracenode2/test/logs/",
+		"oneFile": true,
+		"console": true,
+		"level": ">= verbose",
+		"color": true
+	},
+	"cluster": {
+		"max": 2
+	},
+	"withExitTask": {
+
+	}
+}

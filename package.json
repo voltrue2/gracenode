@@ -1,76 +1,57 @@
 {
-	"name": "gracenode",
-	"description": "Framework for node.js application with extendable module management system, command-line tool, and daemon tool for fast and clean development.",
-	"version": "1.8.8",
+	"name": "gracenode2",
+	"description": "Framework for node.js to boostrap modules for easy use.",
+	"version": "2.0.0",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/voltrue2/gracenode.git"
 	},
 	"scripts": {
-		"preinstall": "rm -f ../../daemon",
-		"install": "ln -fs node_modules/gracenode/aeterno ../../daemon"
+		"preinstall": "rm -f ../../gracenode",
+		"install": "ln -fs node_modules/gracenode2/aeterno ../../gracenode"
 	},
 	"dependencies": {
-		"async": "0.9.0",
-		"jshint": "2.5.1",
-		"gracelog": "0.5.1",
-		"node-uuid": "1.4.1",
-		"node-datetime": "0.1.5",
-		"floodnet": "0.1.0",
-		"aeterno": "0.4.7"
+		"async": "1.4.2",
+		"jshint": "2.8.0",
+		"gracelog": "0.5.4",
+		"aeterno": "0.4.9",
+		"cluster-mode": "0.1.3",
+		"node-datetime": "0.1.5"
 	},
 	"devDependencies": {
-		"request": "2.33.0",	
-		"mocha": "1.20.1"
+		"mocha": "2.3.3"
 	},
-	"engine": "node >= 0.10.20",
+	"engine": {
+		"engine": "node >= 0.10.20"
+	},
 	"jshintConfig": {
-		"node": true,
-		"bitwise": false,
-		"camelcase": true,
-		"curly": true,
-		"eqeqeq": true,
-		"forin": false,
-		"immed": true,
-		"latedef": false,
-		"newcap": true,
-		"noarg": true,
-		"noempty": true,
-		"undef": true,
-		"unused": true,
-		"nonew": true,
-		"white": true,
-		"maxdepth": 5,
-		"quotmark": "single",
-		"globals": {
-			"mocha": false,
-			"describe": false,
-			"it": false,
-			"before": false,
-			"beforeEach": false,
-			"after": false,
-			"afterEach": false
-		}
-	},
-	"contributors": [
-		{ "name": "Brian de Heus", "email": "me@brian.jp" },
-		{ "name": "Henry Obein", "email": "N/A" }
-	],
-	"keywords": [
-		"gracenode",
-		"framework",
-		"cluster",
-		"web",
-		"application",
-		"modules",
-		"middleware",
-		"large-scale",
-		"scalable",
-		"management",
-		"command",
-		"daemon",
-		"process"
-	],
+                "node": true,
+                "bitwise": false,
+                "camelcase": true,
+                "curly": true,
+                "eqeqeq": true,
+                "forin": false,
+                "immed": true,
+                "latedef": false,
+                "newcap": true,
+                "noarg": true,
+                "noempty": true,
+                "undef": true,
+                "unused": true,
+                "nonew": true,
+                "white": true,
+                "maxdepth": 5,
+                "quotmark": "single",
+                "globals": {
+                        "mocha": false,
+                        "describe": false,
+                        "it": false,
+                        "before": false,
+                        "beforeEach": false,
+                        "after": false,
+                        "afterEach": false
+                }
+        },
 	"license": "MIT"
 }
