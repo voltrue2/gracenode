@@ -79,6 +79,7 @@ exports.start = function (cb) {
 };
 
 exports.stop = function (error) {
+	logger.info('.stop() has been invokded', (error ? error : ''));
 	cluster.stop(error);
 };
 
@@ -162,14 +163,16 @@ function setupLogCleaner(cb) {
 
 function startMod(cb) {
 	if (!cluster.isMaster()) {
-		return mod.start(modConfigs, exports.onExit, function (error, modules) {
+		mod.start(modConfigs, exports.onExit, function (error, modules) {
 			if (error) {
 				return cb(error);
 			}
 			exports.mod = modules;
 			cb();
 		});
+		return;
 	}
+	logger.verbose('Master process does not bootstrap modules');
 	cb();
 }
 

@@ -59,21 +59,21 @@ exports.start = function (configMap, onExit, cb) {
 			var mod = require(item.path);
 			// if custom .config() is present, override/add it
 			if (typeof item.config === 'function') {
-				mod.config = function (configIn) {
+				mod.configCustom = function (configIn) {
 					item.config.apply(mod, [configIn]);
 				};
 				logger.verbose('Custom', key + '.config() found');
 			}
 			// if custom .setup(<callback>) is present, override/add it
 			if (typeof item.setup === 'function') {
-				mod.setup = function (cb) {
+				mod.setupCustom = function (cb) {
 					item.setup.apply(mod, [cb]);
 				};
 				logger.verbose('Custom', key + '.setup(<callback>) found');
 			}
 			// if custom .exit(<callback>) is present, override/add it
 			if (typeof item.exit === 'function') {
-				mod.exit = function (cb) {
+				mod.exitCustom = function (cb) {
 					item.exit.apply(mod, [cb]);
 				};
 				logger.verbose('Custom', key + '.exit(<callback>) found');
@@ -117,7 +117,14 @@ function setupMod(configMap, onExit, key, mod, cb) {
 function readModConfig(configMap, key, mod, cb) {
 	var config = configMap[key] || null;
 	// reaConfig is gracenode 1.x
-	var func = mod.config || mod.readConfig;
+	var func = null;
+	if (mod.configCustom) {
+		func = mod.configCustom;
+	} else if (mod.custom) {
+		func = mod.config;
+	} else if (mod.readCondig) {
+		func = mod.readConfig;
+	}
 	logger.verbose(
 		'Reading ' + key + ' configuration:',
 		(config ? true : false),
@@ -137,7 +144,12 @@ function readModConfig(configMap, key, mod, cb) {
 }
 
 function callModSetup(key, mod, cb) {
-	var func = mod.setup || null;
+	var func = null;
+	if (mod.setupCustom) {
+		func = mod.setupCustom;
+	} else if (mod.setup) {
+		func = mod.setup;
+	}
 	if (!func) {
 		return cb();
 	}

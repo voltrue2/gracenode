@@ -10,16 +10,17 @@ var test = function (type, expected, given) {
 		throw e;
 	}
 };
-var run = function (execPath, cb) {
+var runApp = function (execPath, cb) {
 	exec(process.execPath + ' ' + execPath, cb);
 };
 
 describe('gracenode', function () {
 
-	var start = path + 'start/run.js';	
+	var run = path + 'start/run.js';	
+	var custom = path + 'start/custom.js';
 
 	it('can successfully start without bootstrapping modules', function (done) {
-		run(start, function (error, out, err) {
+		runApp(run, function (error, out, err) {
 			test('equal', error, null);
 			test('equal', err, '');
 			done();
@@ -27,7 +28,7 @@ describe('gracenode', function () {
 	});
 
 	it('can successfully start with a module', function (done) {
-		run(start + ' withConf ../modules/withConf', function (error, out, err) {
+		runApp(run + ' withConf ../modules/withConf', function (error, out, err) {
 			test('equal', error, null);
 			test('equal', err, '');
 			done();
@@ -35,15 +36,23 @@ describe('gracenode', function () {
 	});
 
 	it('can successfully start with 2 modules', function (done) {
-		run(start + ' withConf ../modules/withConf withSetup ../modules/withSetup', function (error, out, err) {
+		runApp(run + ' withConf ../modules/withConf withSetup ../modules/withSetup', function (error, out, err) {
 			test('equal', error, null);
 			test('equal', err, '');
 			done();
 		});
 	});
 
-	it('can failed to start for missing config', function (done) {
-		run(start + ' withConfig ../modules/withConf', function (error, out, err) {
+	it('can successfully start with staticdata module bootstrapped', function (done) {
+		runApp(custom, function (error, out, err) {
+			test('equal', error, null);
+			test('equal', err, '');
+			done();
+		});
+	});
+
+	it('can fail to start for missing config', function (done) {
+		runApp(run + ' withConfig ../modules/withConf', function (error, out, err) {
 			test('equal', error, null);
 			test('notEqual', err, '');
 			done();
@@ -51,7 +60,7 @@ describe('gracenode', function () {
 	});
 
 	it('can fail to start', function (done) {
-		run(start + ' foo /boo/', function (error, out, err) {
+		runApp(run + ' foo /boo/', function (error, out, err) {
 			test('equal', error, null);
 			test('notEqual', err, '');
 			done();
@@ -59,7 +68,7 @@ describe('gracenode', function () {
 	});
 
 	it('can fail to start with 2 modules with the same name', function (done) {
-		run(start + ' withConf ../modules/withConf withConf ../modules/withSetup', function (error, out, err) {
+		runApp(run + ' withConf ../modules/withConf withConf ../modules/withSetup', function (error, out, err) {
 			test('notEqual', error, null);
 			test('notEqual', err, '');
 			done();

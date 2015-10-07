@@ -20,7 +20,8 @@
 		"node-datetime": "0.1.5"
 	},
 	"devDependencies": {
-		"mocha": "2.3.3"
+		"mocha": "2.3.3",
+		"staticdata": "0.0.7"
 	},
 	"engine": {
 		"engine": "node >= 0.10.20"
