@@ -2,7 +2,7 @@
 	"name": "gracenode",
 	"color": true,
 	"help": {
-			"usage": "Usage: ./daemon {start|stop|stopall|restart|reload|status|list|clean} [PATH]... [OPTION]",
+			"usage": "Usage: ./daemon {start|stop|stopall|restart|restartall|reload|status|list|tail|clean} [PATH]... [OPTION]",
 			"reloadNote": "{reload} works ONLY if your application handles SIGHUP.",
 			"description": "Daemonaize a target application process and monitor it.\n",
 			"options": "Options:",
@@ -15,7 +15,7 @@
 			"verbose": "       -v, --verbose:",
 			"verboseDesc": "     Be more verbose.",
 			"forced": "       -f:",
-                        "forcedDesc": "                Stops all running daemon processes without user inputs. This option is for {stopall} command only.",
+                        "forcedDesc": "                Stops/Restarts all running daemon processes without user inputs. This option is for {stopall|restartall} command only.",
 			"example": "Examples:",
 			"start": "     ./daemon start",
 			"startDesc": "                       Start a daemon process.",
