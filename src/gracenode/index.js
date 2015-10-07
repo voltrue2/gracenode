@@ -17,9 +17,6 @@ var ER = {
 	NOT_WRITABLE: '<NOT_WRITABLE>',
 	INVALID_LOG_PATH: '<INVALID_LOG_PATH>',
 };
-var MODE_00200 = 128;
-var MODE_00020 = 16;
-var MODE_00002 = 2;
 
 // a map of bootstrapped modules
 exports.mod = {};
