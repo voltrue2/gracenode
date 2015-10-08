@@ -1,11 +1,11 @@
+var port = 8099;
 var assert = require('assert');
-var gn = require('../../src/gracenode');
-/*
 var request = require('./request');
+var gn = require('../../src/gracenode');
+var http = 'http://localhost:' + port; 
 var options = {
 	gzip: true
 };
-*/
 var hookTest1 = function (req, done) {
 	var result = req.data('result');
 	if (result === 'success') {
@@ -35,18 +35,24 @@ var failure = function (req, done) {
 };
 
 describe('gracenode server', function () {
-
+	
+	var allRequestHookCalled = false;
 	var root = gn.getRootPath() + '../../../';
 
 	it('can start HTTP server', function (done) {
 		gn.config({
+			log: {
+				console: false,
+				color: false,
+				level: '>= verbose'
+			},
 			cluster: {
 				max: 0
 			},
 			server: {
 				protocol: 'http',
 				host: 'localhost',
-				port: 8099,
+				port: port,
 				urlPrefix: '/dummy/',
 				controllerPath: root + 'test/server/controller/',
 				reroute: [
@@ -66,11 +72,8 @@ describe('gracenode server', function () {
 		});
 		gn.use('server', '../../gracenode-server');
 		gn.start(function () {
-			var logger = gn.log.create('all request hook');
-			var logger2 = gn.log.create('all response hook');
-			var logger3 = gn.log.create('msc');
 			gn.mod.server.addRequestHooks(function reqAllHook(req, cb) {
-				logger.debug('all request hook called');
+				allRequestHookCalled = true;
 				cb();
 			});
 			gn.mod.server.addRequestHooks({
@@ -110,7 +113,6 @@ describe('gracenode server', function () {
 				}
 			});
 			gn.mod.server.addResponseHooks(function (req, cb) {
-				logger2.debug('all response hook called:', req.url);
 				cb();
 			});
 			gn.mod.server.addResponseHooks({
@@ -125,21 +127,96 @@ describe('gracenode server', function () {
 				test: {
 					sub: {
 						index: function testSubIndexHook(req, cb) {
-							logger.debug('response hook on subdirectoried method test/sub/index', req.controller, req.method);
+							assert.equal('test', req.controller);
+							assert.equal('sub/index', req.method);
 							cb();
 						},
 						sub2: {
 							foo: function testSubSub2FooHook(req, cb) {
-								logger.debug('response hook for test/sub/sub2/foo');
+								assert.equal('test', req.controller);
+								assert.equal('sub/sub2', req.method);
 								cb();
 							}
 						}
 					}
 				}
 			});
-			var map = gn.mod.server.getControllerMap();
-			logger3.debug(map);
 			gn.mod.server.start();
+			done();
+		});
+	});
+
+	it('can get a map of all controllers', function () {
+		var map = gn.mod.server.getControllerMap();
+		var expectedMap = {
+			content: {
+				data: true,
+				download: true,
+				html: true,
+				json: true
+			},
+			error: {
+				internal: true,
+				notFound: true,
+				unauthorized: true
+			},
+			expected: { index: true },
+			file: { upload: true },
+			hook: { failed: true, success: true },
+			hook2: { failed: true },
+			hook3: { index: true },
+			land: { here: true },
+			patch: { index: true },
+			redirect: { dest: true, perm: true, tmp: true },
+			test: {
+				cache: true,
+				delete: true,
+				double: true,
+				errorOut: true,
+				get: true,
+				get2: true,
+				get3: true,
+				head: true,
+				index: true,
+				params: true,
+				post: true,
+				post2: true,
+				put: true,
+				sub: {
+					call: true,
+					index: true,
+					sub2: { foo: true, index: true }
+				}
+			}
+		};
+		for (var one in expectedMap) {
+			assert(map[one]);
+			for (var two in expectedMap[one]) {
+				assert(map[one][two]);
+				for (var three in expectedMap[one][two]) {
+					assert(map[one][two][three]);
+					for (var four in expectedMap[one][two][three]) {
+						assert(map[one][two][three][four]);
+					}
+				}
+			}
+		}
+	});
+
+	it('can handle a GET request /test/get2/one/two/three', function (done) {
+		var args = {
+			boo: 'BOO',
+			foo: 'FOO'
+		};
+		request.GET(http + '/test/get2/one/two/three', args, options, function (error, body, status) {
+			assert.equal(allRequestHookCalled, true);
+			assert.equal(error, undefined);
+			assert.equal(status, 200);
+			assert.equal(body.boo, args.boo);
+			assert.equal(body.foo, args.foo);
+			assert.equal(body.parameters[0], 'one');
+			assert.equal(body.parameters[1], 'two');
+			assert.equal(body.parameters[2], 'three');
 			done();
 		});
 	});

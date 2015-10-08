@@ -11,6 +11,7 @@ var mod = require('./mod');
 var logger;
 var clusterConfig;
 var modConfigs = {};
+var meshnetConfig = {};
 var ready = false;
 
 var ER = {
@@ -41,6 +42,9 @@ exports.config = function (obj) {
 			logger: log.create('cluster')
 		}; 
 		clusterConfig = setOption(clusterConfig, obj.cluster);
+	}
+	if (obj.meshnet) {
+		meshnetConfig = obj.meshnet;
 	}
 	modConfigs = obj;
 };
