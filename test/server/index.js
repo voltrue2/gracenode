@@ -1,3 +1,4 @@
+var logEnabled = process.argv[process.argv.length - 1].replace('--log=', '') === 'true' ? true : false;
 var port = 8099;
 var dummy = '/dummy';
 var assert = require('assert');
@@ -43,7 +44,7 @@ describe('gracenode with  gracenode-server/', function () {
 	it('can start HTTP server', function (done) {
 		gn.config({
 			log: {
-				console: false,
+				console: logEnabled,
 				color: true,
 				level: '>= verbose'
 			},
@@ -758,6 +759,92 @@ describe('gracenode with  gracenode-server/', function () {
 			assert.equal(headers.url, '/dummy/redirect/dest/?example=true&test=1');
 			done();
 		});
+	});
+
+	it('can get a list of all end points (mapped controllers and their methods)', function () {
+		var list = gn.mod.server.getEndPointList();
+		var expectedList = [
+			'/content/data/',
+			'/content/download/',
+			'/content/html/',
+			'/content/json/',
+			'/error/internal/',
+			'/error/notFound/',
+			'/error/unauthorized/',
+			'/file/upload/',
+			'/expected/index/',
+			'/hook2/failed/',
+			'/hook3/index/',
+			'/hook/failed/',
+			'/hook/success/',
+			'/land/here/',
+			'/redirect/perm/',
+			'/redirect/tmp/',
+			'/redirect/dest/',
+			'/test/cache/',
+			'/test/delete/',
+			'/test/errorOut/',
+			'/test/double/',
+			'/test/get/',
+			'/test/get2/',
+			'/test/get3/',
+			'/test/head/',
+			'/test/index/',
+			'/test/post/',
+			'/test/params/',
+			'/test/post2/',
+			'/test/put/',
+			'/test/sub/call/',
+			'/test/sub/index/',
+			'/test/sub/sub2/foo/',
+			'/test/sub/sub2/index/'
+		];
+		for (var i = 0, len = expectedList.length; i < len; i++) {
+			if (list.indexOf(expectedList[i]) === -1) {
+				throw new Error('endpoint list does not match the expected: ' + expectedList[i]);		
+			}
+		}
+	});
+
+	it('can apply URL prefix and route the request correctly', function (done) {
+		request.GET(http + '/test/params/one/two/', null, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(body.one, 'one');
+			assert.equal(body.two, 'two');
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('can get 400 response when sending a request with an incorrect method', function (done) {
+		request.PUT(http + '/test/params/one/two/', null, options, function (error, body, status) {
+			assert(error);
+			assert(body);
+			assert.equal(status, 405);
+			done();
+		});
+	});
+
+	it('can auto decode encoded URI paramteres', function (done) {
+		var one = '日本語　英語';
+		var two = '<html> test\test"test"';
+		request.GET(http + '/test/params/' + encodeURIComponent(one) + '/' + encodeURIComponent(two) + '/', null, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(body.one, one);
+			assert.equal(body.two, two);
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('can handle a PATCH request', function (done) {
+		var data = 'pathDATA';
+		request.PATCH(http + '/patch/index/', { data: data }, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(body.data, data);
+			assert.equal(status, 200);
+			done();
+		});	
 	});
 
 });

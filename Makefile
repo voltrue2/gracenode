@@ -10,4 +10,4 @@ init:
 
 .PHONY: test
 test:
-	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 10000
+	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 10000 --log=$(log)

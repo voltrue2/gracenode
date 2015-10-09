@@ -25,7 +25,7 @@ else
 	exit 1;
 fi
 
-`echo make test`
+`echo make test log=false`
 
 if [ $? -eq 0 ]; then
 	echo "OK";
