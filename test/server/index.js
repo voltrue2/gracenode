@@ -43,7 +43,7 @@ describe('gracenode with  gracenode-server/', function () {
 	it('can start HTTP server', function (done) {
 		gn.config({
 			log: {
-				console: true,
+				console: false,
 				color: true,
 				level: '>= verbose'
 			},
