@@ -75,4 +75,12 @@ describe('gracenode', function () {
 		});
 	});
 
+	it('can fail to start with 2 modules with the same path', function (done) {
+		runApp(run + ' withConf ../modules/withConf withSetup ../modules/withConf', function (error, out, err) {
+			test('notEqual', error, null);
+			test('notEqual', err, '');
+			done();
+		});
+	});
+
 });

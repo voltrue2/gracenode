@@ -40,6 +40,7 @@ exports.use = function (name, path, options) {
 		setup: options.setup || null,
 		exit: options.exit || null
 	};
+	pathList.push(path);
 };
 
 exports.start = function (configMap, onExit, cb) {
