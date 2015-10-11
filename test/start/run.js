@@ -18,5 +18,6 @@ if (process.argv[4] && process.argv[5]) {
 }
 
 gn.start(function () {
+	
 	gn.stop();
 });

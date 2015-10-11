@@ -51,6 +51,14 @@ describe('gracenode', function () {
 		});
 	});
 
+	it('can bootstrap a module with a hypen in its name and convert it to camel case', function (done) {
+		runApp(run + ' with-hyphen ../modules/with-hyphen', function (error, out, err) {
+			test('equal', error, null);
+			test('equal', err, '');
+			done();
+		});
+	});
+
 	it('can fail to start for missing config', function (done) {
 		runApp(run + ' withConfig ../modules/withConf', function (error, out, err) {
 			test('equal', error, null);

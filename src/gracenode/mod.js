@@ -83,8 +83,14 @@ exports.start = function (configMap, onExit, cb) {
 				if (error) {
 					return next(error);
 				}
-				loaded[key] = mod;
-				logger.info('Bootstrapped a module:', key, item.path);
+				var modName = createModName(key);
+				loaded[modName] = mod;
+				logger.info(
+					'Bootstrapped a module:',
+					'gracenode.mod.' + modName,
+					'[', key, ']',
+					item.path
+				);
 				next();
 			});
 		});
@@ -162,4 +168,14 @@ function callModSetup(key, mod, cb) {
 	}
 	logger.verbose('Calling ' + key + '.setup(<callback>)');
 	func(cb);
+}
+
+function createModName(name) {
+	var sep = name.split('-');
+	var camelCased = sep[0];
+	for (var i = 1, len = sep.length; i < len; i++) {
+		var firstChar = sep[i].substring(0, 1).toUpperCase();
+		camelCased += firstChar + sep[i].substring(1);
+	}
+	return camelCased;
 }
