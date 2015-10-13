@@ -83,8 +83,8 @@ exports.start = function (cb) {
 			if (error) {
 				return exports.stop(error);
 			}
-			ready = true;
 			cb();
+			ready = true;
 		};
 		async.series(tasks, done);
 	});
