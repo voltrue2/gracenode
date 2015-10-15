@@ -2,6 +2,12 @@ var gn = require('../../src/gracenode');
 
 gn.config({
 	cluster: {
+		max: 1 
+	}
+});
+
+gn.config({
+	cluster: {
 		max: 0
 	},
 	withConf: {
