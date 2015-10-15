@@ -15,7 +15,7 @@
 		"async": "1.4.2",
 		"jshint": "2.8.0",
 		"gracelog": "0.5.4",
-		"aeterno": "0.4.10",
+		"aeterno": "0.5.0",
 		"cluster-mode": "0.1.3",
 		"node-datetime": "0.1.5"
 	},
