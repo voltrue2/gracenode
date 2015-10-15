@@ -17,7 +17,7 @@ else
 	path="./scripts/lint/";
 fi
 
-"$path"lint.sh -a src/
+"$path"lint.sh -a src/ lib/
 
 if [ $? -eq 0 ]; then
 	echo "OK";

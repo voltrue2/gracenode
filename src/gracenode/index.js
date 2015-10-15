@@ -11,7 +11,6 @@ var mod = require('./mod');
 var logger;
 var clusterConfig;
 var modConfigs = {};
-var meshnetConfig = {};
 var ready = false;
 
 var ER = {
@@ -32,21 +31,14 @@ exports.getRootPath = function () {
 };
 
 exports.config = function (obj) {
-	if (obj.log) {
-		log.config(obj.log);
+	for (var key in obj) {
+		if (!modConfigs.hasOwnProperty(key)) {
+			// new config property
+			modConfigs[key] = obj[key];
+		} else {
+			setConfigProp(key, modConfigs, obj);
+		}
 	}
-	if (obj.cluster) {
-		// this seems redundant, but it is necesarry to do this AFTER log.config()
-		clusterConfig = {
-			max: 0,
-			logger: log.create('cluster')
-		}; 
-		clusterConfig = setOption(clusterConfig, obj.cluster);
-	}
-	if (obj.meshnet) {
-		meshnetConfig = obj.meshnet;
-	}
-	modConfigs = obj;
 };
 
 exports.onExit = function (taskFunc, runOnMaster) {
@@ -71,6 +63,7 @@ exports.isCluster = function () {
 
 // call this when everything is ready
 exports.start = function (cb) {
+	applyConfig();
 	aeterno.run(function () {
 		var tasks = [
 			setup,
@@ -94,6 +87,34 @@ exports.stop = function (error) {
 	logger.info('.stop() has been invokded', (error ? error : ''));
 	cluster.stop(error);
 };
+
+function setConfigProp(key, conf, confSrc) {
+	if (typeof confSrc[key] === 'object') {
+		for (var key2 in confSrc[key]) {
+			if (conf[key].hasOwnProperty(key2)) {
+				conf[key][key2] = confSrc[key][key2];
+				continue;	
+			}
+			setConfigProp(key2, conf[key], confSrc[key]);
+		}
+	} else {
+		conf[key] = confSrc[key];
+	}
+}
+
+function applyConfig() {
+	if (modConfigs.log) {
+		log.config(modConfigs.log);
+	}
+	if (modConfigs.cluster) {
+		// this seems redundant, but it is necesarry to do this AFTER log.config()
+		clusterConfig = {
+			max: 0,
+			logger: log.create('cluster')
+		}; 
+		clusterConfig = setOption(clusterConfig, modConfigs.cluster);
+	}
+}
 
 function setup(cb) {
 	process.chdir(rootPath);
