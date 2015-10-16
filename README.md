@@ -100,11 +100,15 @@ There are 2 different ways to start your application as a daemon.
 
 #### Example 1:
 
+Assuming `app.js` is your appliction file to execute.
+
 `node app.js start -l /path/to/my/daemon/logging/`
 
 #### Example 2:
 
 gracenode creates `./gracenode` executable when you install gracenode.
+
+Assuming `app.js` is your appliction file to execute.
 
 `./gracenode app.js start -l /path/to/my/daemon/logging/`
 
