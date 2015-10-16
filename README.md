@@ -147,8 +147,8 @@ gn.use('foo', 'node_modules/foo', {
 
 gn.start({
 	// Now gracenode is ready
-	// and foo is also ready
-	// to access foo module:
+	// And foo is also ready
+	// To access foo module:
 	gn.mod.foo.doSomething();
 });
 ```
@@ -158,4 +158,6 @@ gn.start({
 **NOTE 2:** The 3rd argument is an optional object that you can assign specific functions to perform setting and/or cleaning.
 
 **NOTE 3:** `this` inside of the functions you assign to the 3rd argument is the module you are "using". In this example, `this` is `foo` module.
+
+**NOTE 4:** More details on `.use()` and its options will be explained later in this `README`.
 
