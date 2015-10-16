@@ -114,4 +114,48 @@ Assuming `app.js` is your appliction file to execute.
 
 **NOTE:** More details on the daemonization command options will be explain later in this `REAME`.
 
+## Auto-Restarting Of Daemon Process
+
+It is very useful when you are developing your application to automatically restart the running daemon on changes that your make.
+
+To do so, you need to use a daemon command option `-w`.
+
+#### Example:
+
+`node app.js start -l /path/to/my/daemon/logging/ -w /path/to/my/app/code/ /path/to/my/another/ap/code`
+
+**NOTE:** `-w` option watches the directories/files that are given and when there changes such as adding a new file, removing some files, and changing the existing file are detected,
+daemon will automatically restart so that your changes are now in effect without having to manually restart your daemon.
+
+## Bootstrapping other modules
+
+Some modules require some setting up before they can be used in your code, some setup process maybe asynchronous and your application has to wait for it to complete its process.
+When you use such modules, simply calling `var mod = require('great-mod');` is not good enough especially when the module requires asynchronous setup.
+
+**gracenode** can bootstrap all of these modules and handle setting up of each module in an organized way.
+
+For example, assuming this `foo` module needs to read some files before it is ready, **gracenode** can handle it like so:
+
+```javascript
+var gn = require('gracenode');
+
+gn.use('foo', 'node_modules/foo', {
+	setup: function (cb) {
+		this.readFromFiles(cb);
+	}
+});
+
+gn.start({
+	// Now gracenode is ready
+	// and foo is also ready
+	// to access foo module:
+	gn.mod.foo.doSomething();
+});
+```
+
+**NOTE 1:** The 2nd argument of `.use()` is a relative path to load the module `foo`. The path is relative to the root path of your application.
+
+**NOTE 2:** The 3rd argument is an optional object that you can assign specific functions to perform setting and/or cleaning.
+
+**NOTE 3:** `this` inside of the functions you assign to the 3rd argument is the module you are "using". In this example, `this` is `foo` module.
 
