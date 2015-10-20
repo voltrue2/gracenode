@@ -176,3 +176,380 @@ gn.start(function () {
 	gn.mod.myModule.doSomething();
 });
 ```
+
+## Methods
+
+### .getRootPath()
+
+Returns a application root path as a string.
+
+### .config(configObj <object>)
+
+Set configurations as an object as an option.
+
+This function can be called multiple times and it will merge all configuration objects being passed.
+
+**NOTE**: The same configuration properties will be overwritten.
+
+### .onExit(taskFunction <function>)
+
+Assigns a function to be executed on process exit of **gracenode**. The assigned function will have a callback function passed.
+
+**Example**:
+
+```javascript
+gracenode.onExit(function (callback) {
+	// do something before terminating the process
+	callback();
+});
+```
+
+#### Default Configurations
+
+**gracenode** can be configured with the following properties by default:
+
+```
+{
+	log: {
+		rotationType: <string>,
+		useTimestamp: <boolean>,
+		bufferSize: <int>,
+		bufferFlushInterval: <int>,
+		oneFile: <boolean>,
+		file: <string>,
+		console: <boolean>,
+		remote: <object>,
+		color: <boolean>,
+		showHidden: <boolean>,
+		depth: <int>,
+		level: <string>
+	},
+	cluster: {
+		max: <int>,
+		autoSpawn: <boolean>,
+		sync: <boolean>
+	}
+}
+```
+
+**NOTE**: To use configurations for bootstrapped module, simply use the same name as used in `.use()`.
+
+##### log.rotationType
+
+Defines log file rotation type.
+
+The valid types are:
+
+- `year`
+
+- `month`
+
+- `day`
+
+- `hour`
+
+Default is `day`,
+
+##### log.useTimestamp
+
+If `true`, the logging time will be in Unix timestamp.
+
+Default is `false`.
+
+##### log.bufferSize
+
+Defines the buffer size for log data in bytes.
+
+Default is 8128 bytes (8KB).
+
+**NOTE**: File logging only.
+
+##### log.bufferFlushInterval
+
+Defines auto-buffer-flush interval in milliseconds.
+
+Default is 5000ms (5 seconds).
+
+**NOTE**: File logging only.
+
+##### log.oneFile
+
+If `true`, file logging will be combined in to one file for all log levels.
+
+Default is `false`.
+
+**NOTE**: File logging only.
+
+##### log.file
+
+Defines the path to the logging directory.
+
+If this is not set, **gracenode** will NOT log to file, but stdout/stderr stream only.
+
+Default is not set.
+
+##### log.console
+
+If `true`, all logging will be outputting to stdout/stderr stream.
+
+Default is `true`.
+
+##### log.remote
+
+Defines the configurations to send logging data to a remote server via UDP protocol.
+
+```
+{
+	host: <string>,
+	port: <int>
+}
+```
+
+Default is not set.
+
+##### log.color
+
+If `true`, logging data will be colored.
+
+Default is `false`.
+
+##### log.showHidden
+
+If `true`, logging objects will show hidden properties.
+
+Default is `false`.
+
+##### log.depth
+
+Defines how far logging module should recursively output objects.
+
+Default is not set.
+
+##### log.level
+
+Defines from which log level to output.
+
+The valid log levels are:
+
+- `verbose`
+
+- `debug`
+
+- `table`
+
+- `trace`
+
+- `info`
+
+- `warn`
+
+- `error`
+
+- `fatal`
+
+Use `>`, `>=` to control the definition of log level.
+
+**Example**
+
+```
+'>= info'
+```
+
+The above example will be logging from log level info to lower (info, warn, error, fatal).
+
+**NOTE**: From the top highest to lowest
+
+##### cluster.max
+
+Defines how many cluster worker processes.
+
+If `0` is given, **gracenode** will not be running in cluster.
+
+Default is `0`.
+
+##### cluster.autoSpawn
+
+If `true`, terminated worker processes will be automatically respawned and replaced.
+
+Default is `false`.
+
+##### cluster.sync
+
+If `true`, all workers will share a list of existing workers and their `pid`.
+
+This may lead to server stress.
+
+Default is `true`.
+
+### .registerShutdownTask(taskFunction <function>)
+
+Alias of `.onExit()`.
+
+### .use(moduleName <string>, modulePath <string>, options <object>)
+
+Tells **gracenode** to bootstrap and set up a given module.
+
+**gracenode** will be loading the module from `modulePath`.
+
+#### options <object>
+
+Assigns an optional functions to be executed for the bootstrapped module.
+
+**Structure**:
+
+```
+{
+	config: <function>,
+	setup: <function>,
+	exit: <function>
+}
+```
+
+##### options.config <function>
+
+A function to be executed when starting the **gracenode** process to read configuration data.
+
+The assigned function be will passed a configuration data.
+
+**Example**
+
+```javascript
+gracenode.use('myMod', '/path/to/my/mod/', {
+	config: function (configData) {
+		this.configData = configData;
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+##### .options.setup <function>
+
+A function to be executed when starting the **gracenode** process after `options.config()` if provided.
+
+If `options.config()` is not provided, it will be called at the start of bootstrapping the module.
+
+The function will be passed a callback function.
+
+**Example**
+
+```javascript
+gracenode.use('myMod', {
+	setup: function (callback) {
+		// do something here
+		callback();
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+##### .options.exit <function>
+
+A function to be executed on exitting of the **gracenode** process.
+
+It is useful to clean up before the exit.
+
+The function will be passed a callback function.
+
+**Example**
+```javascript
+gracenode.use('myMod', '/path/to/my/mod/', {
+	exit: function (callback) {
+		// do something here
+		callback();
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+### .start(callback <function>);
+
+Starts the **gracenode** process.
+
+**NOTE**: If there is an error while starting the process, it will crush with an exception.
+
+### .stop(error <*error object>)
+
+Stops the running **gracenode** process.
+
+If an error object is passed, it will stop the process with an error.
+
+### .isMaster()
+
+Returns `true` if the process is running in cluster and the process is a master process.
+
+### .isCluster()
+
+Returns `true` if the process is running in cluster.
+
+## Logging
+
+**gracenode** comes will built-in logging module.
+
+It is access as `gracenode.log`.
+
+### How To Log
+
+In order to log some data, you need to create a logger.
+
+```javascript
+var logger = gracenode.log.create();
+logger.verbose('I am logging something here');
+```
+
+#### .log.setPrefix(prefix <string>)
+
+Defines a prefix to each logging data.
+
+#### .log.create(loggerName <*string>)
+
+Returns an instance of logger object.
+
+#### Logger Class Methods
+
+##### .verbose()
+
+Log level `verbose`.
+
+##### .debug()
+
+Log level `debug`.
+
+##### .table()
+
+Log level `debug`.
+
+##### .trace()
+
+Log level `debug`.
+
+##### .info()
+
+Log level `info`.
+
+##### .warn()
+
+Log level `warn`.
+
+##### .error()
+
+Log level `error`.
+
+##### .fatal()
+
+Log level `fatal`.
+
+#### Log Event
+
+**gracenode** log module emits an even on each log output.
+
+##### output
+
+```javasctipt
+gracenode.log.on('output', function (ip, logName, level, messageObj) {
+	// do something
+});
+```
+
