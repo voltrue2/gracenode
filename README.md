@@ -183,8 +183,7 @@ gn.start(function () {
 
 Returns a application root path as a string.
 
-
-### .config(configObj <object>)
+### .config(configObj [object])
 
 Set configurations as an object as an option.
 
@@ -192,8 +191,7 @@ This function can be called multiple times and it will merge all configuration o
 
 **NOTE**: The same configuration properties will be overwritten.
 
-
-### .onExit(taskFunction <function>)
+### .onExit(taskFunction [function])
 
 Assigns a function to be executed on process exit of **gracenode**. The assigned function will have a callback function passed.
 
@@ -206,7 +204,6 @@ gracenode.onExit(function (callback) {
 });
 ```
 
-
 #### Default Configurations
 
 **gracenode** can be configured with the following properties by default:
@@ -214,23 +211,23 @@ gracenode.onExit(function (callback) {
 ```
 {
 	log: {
-		rotationType: <string>,
-		useTimestamp: <boolean>,
-		bufferSize: <int>,
-		bufferFlushInterval: <int>,
-		oneFile: <boolean>,
-		file: <string>,
-		console: <boolean>,
-		remote: <object>,
-		color: <boolean>,
-		showHidden: <boolean>,
-		depth: <int>,
-		level: <string>
+		rotationType: [string],
+		useTimestamp: [boolean],
+		bufferSize: [int],
+		bufferFlushInterval: [int],
+		oneFile: [boolean],
+		file: [string],
+		console: [boolean],
+		remote: [object],
+		color: [boolean],
+		showHidden: [boolean],
+		depth: [int],
+		level: [string]
 	},
 	cluster: {
-		max: <int>,
-		autoSpawn: <boolean>,
-		sync: <boolean>
+		max: [int],
+		autoSpawn: [boolean],
+		sync: [boolean]
 	}
 }
 ```
@@ -303,8 +300,8 @@ Defines the configurations to send logging data to a remote server via UDP proto
 
 ```
 {
-	host: <string>,
-	port: <int>
+	host: [string],
+	port: [int]
 }
 ```
 
@@ -384,17 +381,17 @@ This may lead to server stress.
 
 Default is `true`.
 
-### .registerShutdownTask(taskFunction <function>)
+### .registerShutdownTask(taskFunction [function])
 
 Alias of `.onExit()`.
 
-### .use(moduleName <string>, modulePath <string>, options <object>)
+### .use(moduleName [string], modulePath [string], options [object])
 
 Tells **gracenode** to bootstrap and set up a given module.
 
 **gracenode** will be loading the module from `modulePath`.
 
-#### options <object>
+#### options [object]
 
 Assigns an optional functions to be executed for the bootstrapped module.
 
@@ -402,13 +399,13 @@ Assigns an optional functions to be executed for the bootstrapped module.
 
 ```
 {
-	config: <function>,
-	setup: <function>,
-	exit: <function>
+	config: [function],
+	setup: [function],
+	exit: [function]
 }
 ```
 
-##### options.config <function>
+##### options.config [function]
 
 A function to be executed when starting the **gracenode** process to read configuration data.
 
@@ -426,7 +423,7 @@ gracenode.use('myMod', '/path/to/my/mod/', {
 
 **NOTE**: `this` in the function is the bootstrapped module.
 
-##### .options.setup <function>
+##### .options.setup [function]
 
 A function to be executed when starting the **gracenode** process after `options.config()` if provided.
 
@@ -447,7 +444,7 @@ gracenode.use('myMod', {
 
 **NOTE**: `this` in the function is the bootstrapped module.
 
-##### .options.exit <function>
+##### .options.exit [function]
 
 A function to be executed on exitting of the **gracenode** process.
 
@@ -467,13 +464,13 @@ gracenode.use('myMod', '/path/to/my/mod/', {
 
 **NOTE**: `this` in the function is the bootstrapped module.
 
-### .start(callback <function>);
+### .start(callback [function]);
 
 Starts the **gracenode** process.
 
 **NOTE**: If there is an error while starting the process, it will crush with an exception.
 
-### .stop(error <*error object>)
+### .stop(error [*error object])
 
 Stops the running **gracenode** process.
 
@@ -502,11 +499,11 @@ var logger = gracenode.log.create();
 logger.verbose('I am logging something here');
 ```
 
-#### .log.setPrefix(prefix <string>)
+#### .log.setPrefix(prefix [string])
 
 Defines a prefix to each logging data.
 
-#### .log.create(loggerName <*string>)
+#### .log.create(loggerName [*string])
 
 Returns an instance of logger object.
 
