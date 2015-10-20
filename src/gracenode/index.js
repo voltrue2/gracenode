@@ -84,7 +84,11 @@ exports.start = function (cb) {
 };
 
 exports.stop = function (error) {
-	logger.info('.stop() has been invokded', (error ? error : ''));
+	if (error) {
+		logger.error('.stop() has been invokded', error);
+	} else {
+		logger.info('.stop() has been invokded');
+	}
 	cluster.stop(error);
 };
 
@@ -120,7 +124,7 @@ function setup(cb) {
 	process.chdir(rootPath);
 	process.on('uncaughtException', function (error) {
 		if (!ready) {
-			cluster.stop(error);
+			exports.stop(error);
 		} else {
 			logger.fatal(error);
 		}
