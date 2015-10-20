@@ -183,6 +183,7 @@ gn.start(function () {
 
 Returns a application root path as a string.
 
+
 ### .config(configObj <object>)
 
 Set configurations as an object as an option.
@@ -190,6 +191,7 @@ Set configurations as an object as an option.
 This function can be called multiple times and it will merge all configuration objects being passed.
 
 **NOTE**: The same configuration properties will be overwritten.
+
 
 ### .onExit(taskFunction <function>)
 
@@ -203,6 +205,7 @@ gracenode.onExit(function (callback) {
 	callback();
 });
 ```
+
 
 #### Default Configurations
 
