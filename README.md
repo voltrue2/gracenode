@@ -161,3 +161,18 @@ gn.start({
 
 **NOTE 4:** More details on `.use()` and its options will be explained later in this `README`.
 
+#### Accessing Bootstrapped Modules
+
+**gracenode** has a property `.mod` that holds all bootrstapped modules. The first argument of `.use()` will be the name of bootstrapped module.
+
+Here is how you would access the bootstrapped modules in your application code:
+
+```javascript
+var gn = require('gracenode');
+
+gn.use('myModule', '/path/to/my/module/');
+
+gn.start(function () {
+	gn.mod.myModule.doSomething();
+});
+```
