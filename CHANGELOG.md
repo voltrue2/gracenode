@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 1.8.12
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency aeterno and gracelog version updated
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.8.11
 
 ## Added
