@@ -37,7 +37,7 @@ To install gracenode you can either add it to your package.json like so:
 ```json
 {
     "dependeicies": {
-        "gracenode": "0.2.2"
+        "gracenode": "2.0.0"
     }
 }
 ```
