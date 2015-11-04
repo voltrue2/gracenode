@@ -385,9 +385,21 @@ Default is `true`.
 
 Alias of `.onExit()`.
 
-### .use(moduleName [string], modulePath [string], options [object])
+### .use(moduleName [string], modulePath [string or object], options [object])
 
 Tells **gracenode** to bootstrap and set up a given module.
+
+**Example**:
+
+```javascript
+gracenode.use('myMod', '/path/to/myMod');
+```
+
+or
+
+```javascript
+gracenode.use('myMod', require('/path/to/myMod'));
+```
 
 **gracenode** will be loading the module from `modulePath`.
 

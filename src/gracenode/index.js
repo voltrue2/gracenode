@@ -49,8 +49,11 @@ exports.onExit = function (taskFunc, runOnMaster) {
 exports.registerShutdownTask = exports.onExit;
 
 // add module name and path to be bootstrapped by .start()
-exports.use = function (name, path, options) {
-	mod.use(name, rootPath + path, options);
+exports.use = function (name, path, options) { 
+	if (typeof path === 'string') {
+		path = rootPath + path;
+	}
+	mod.use(name, path, options);
 };
 
 exports.isMaster = function () {

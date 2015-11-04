@@ -19,28 +19,28 @@ var pathList = [];
 var pending = {};
 var loaded = {};
 
-exports.use = function (name, path, options) {
+exports.use = function (name, pathOrMod, options) {
 	if (pending[name]) {
 		throw er.create(
 			ER.DUP_NAME, name +
 			': ' +
-			'[' + path + '] & ' +
+			'[' + pathOrMod + '] & ' +
 			'[' + pending[name].path + ']'
 		);
 	}
-	if (pathList.indexOf(path) !== -1) {
-		throw er.create(ER.DUP_PATH, name + ': ' + path);
+	if (pathList.indexOf(pathOrMod) !== -1) {
+		throw er.create(ER.DUP_PATH, name + ': ' + pathOrMod);
 	}
 	if (!options) {
 		options = {};
 	}
 	pending[name] = {
-		path: path,
+		path: pathOrMod,
 		config: options.config || null,
 		setup: options.setup || null,
 		exit: options.exit || null
 	};
-	pathList.push(path);
+	pathList.push(pathOrMod);
 };
 
 exports.start = function (configMap, onExit, cb) {
@@ -48,6 +48,23 @@ exports.start = function (configMap, onExit, cb) {
 	var keys = Object.keys(pending);
 	var handle = function (key, next) {
 		var item = pending[key];
+		if (typeof item.path === 'object') {
+			setupMod(configMap, onExit, key, item.path, function (error) {
+				if (error) {
+					return next(error);
+				}
+				var modName = createModName(key);
+				loaded[modName] = item.path;
+				logger.info(
+					'Bootstrapped a module:',
+					'gracenode.mod.' + modName,
+					'[', key, ']',
+					item.path
+				);
+				next();
+			});
+			return;
+		}
 		logger.verbose('Bootstrapping a module:', key, item.path);
 		fs.exists(item.path, function (exists) {
 			if (!exists) {
