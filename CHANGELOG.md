@@ -22,6 +22,204 @@ All bootstrapped modules will be under `gracenode.mod`.
 
 This is a replacement for `gracenode.setConfigPath()` and `gracenode.setConfigFiles()`.
 
+#### .config(configObj [object])
+
+Set configurations as an object as an option.
+
+This function can be called multiple times and it will merge all configuration objects being passed.
+
+**NOTE**: The same configuration properties will be overwritten.
+
+### .onExit(taskFunction [function])
+
+Assigns a function to be executed on process exit of **gracenode**. The assigned function will have a callback function passed.
+
+**Example**:
+
+```javascript
+gracenode.onExit(function (callback) {
+	// do something before terminating the process
+	callback();
+});
+```
+
+#### Default Configurations
+
+**gracenode** can be configured with the following properties by default:
+
+```
+{
+	log: {
+		rotationType: [string],
+		useTimestamp: [boolean],
+		bufferSize: [int],
+		bufferFlushInterval: [int],
+		oneFile: [boolean],
+		file: [string],
+		console: [boolean],
+		remote: [object],
+		color: [boolean],
+		showHidden: [boolean],
+		depth: [int],
+		level: [string]
+	},
+	cluster: {
+		max: [int],
+		autoSpawn: [boolean],
+		sync: [boolean]
+	}
+}
+```
+
+**NOTE**: To use configurations for bootstrapped module, simply use the same name as used in `.use()`.
+
+##### log.rotationType
+
+Defines log file rotation type.
+
+The valid types are:
+
+- `year`
+
+- `month`
+
+- `day`
+
+- `hour`
+
+Default is `day`,
+
+##### log.useTimestamp
+
+If `true`, the logging time will be in Unix timestamp.
+
+Default is `false`.
+
+##### log.bufferSize
+
+Defines the buffer size for log data in bytes.
+
+Default is 8128 bytes (8KB).
+
+**NOTE**: File logging only.
+
+##### log.bufferFlushInterval
+
+Defines auto-buffer-flush interval in milliseconds.
+
+Default is 5000ms (5 seconds).
+
+**NOTE**: File logging only.
+
+##### log.oneFile
+
+If `true`, file logging will be combined in to one file for all log levels.
+
+Default is `false`.
+
+**NOTE**: File logging only.
+
+##### log.file
+
+Defines the path to the logging directory.
+
+If this is not set, **gracenode** will NOT log to file, but stdout/stderr stream only.
+
+Default is not set.
+
+##### log.console
+
+If `true`, all logging will be outputting to stdout/stderr stream.
+
+Default is `true`.
+
+##### log.remote
+
+Defines the configurations to send logging data to a remote server via UDP protocol.
+
+```
+{
+	host: [string],
+	port: [int]
+}
+```
+
+Default is not set.
+
+##### log.color
+
+If `true`, logging data will be colored.
+
+Default is `false`.
+
+##### log.showHidden
+
+If `true`, logging objects will show hidden properties.
+
+Default is `false`.
+
+##### log.depth
+
+Defines how far logging module should recursively output objects.
+
+Default is not set.
+
+##### log.level
+
+Defines from which log level to output.
+
+The valid log levels are:
+
+- `verbose`
+
+- `debug`
+
+- `table`
+
+- `trace`
+
+- `info`
+
+- `warn`
+
+- `error`
+
+- `fatal`
+
+Use `>`, `>=` to control the definition of log level.
+
+**Example**
+
+```
+'>= info'
+```
+
+The above example will be logging from log level info to lower (info, warn, error, fatal).
+
+**NOTE**: From the top highest to lowest
+
+##### cluster.max
+
+Defines how many cluster worker processes.
+
+If `0` is given, **gracenode** will not be running in cluster.
+
+Default is `0`.
+
+##### cluster.autoSpawn
+
+If `true`, terminated worker processes will be automatically respawned and replaced.
+
+Default is `false`.
+
+##### cluster.sync
+
+If `true`, all workers will share a list of existing workers and their `pid`.
+
+This may lead to server stress.
+
+Default is `true`.
+
 ### gracenode.stop() added
 
 This is a replacement for `gracenode.exit()`.
