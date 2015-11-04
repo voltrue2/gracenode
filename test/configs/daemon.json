@@ -1,6 +1,0 @@
-{
-	"cluster": {
-		"enable": true,
-		"max": 3
-	}
-}

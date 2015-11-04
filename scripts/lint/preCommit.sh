@@ -17,4 +17,20 @@ else
 	path="./scripts/lint/";
 fi
 
-"$path"lint.sh -a index.js core/ modules/ lib/
+"$path"lint.sh -a index.js src/ lib/
+
+if [ $? -eq 0 ]; then
+	echo "OK";
+else
+	exit 1;
+fi
+
+`echo make test`
+
+if [ $? -eq 0 ]; then
+	echo "OK";
+else
+	exit 1;
+fi
+
+

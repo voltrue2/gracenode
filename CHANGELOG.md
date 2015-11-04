@@ -2,6 +2,375 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.0
+
+Version 2.0.0 has introduced a lot of changes including backward compatibility breaks.
+
+- gracenode no longer handles meshnetwork out-of-the-box and removed all related functions.
+
+- gracenode's new `.config()` function can either read from a file (.json) or an object. 
+
+- gracenode no longer parses command-line arguments.
+
+## Added
+
+### gracenode.mod added
+
+All bootstrapped modules will be under `gracenode.mod`.
+
+### gracenode.config() added
+
+This is a replacement for `gracenode.setConfigPath()` and `gracenode.setConfigFiles()`.
+
+#### .config(configObj [object])
+
+Set configurations as an object as an option.
+
+This function can be called multiple times and it will merge all configuration objects being passed.
+
+**NOTE**: The same configuration properties will be overwritten.
+
+### .onExit(taskFunction [function])
+
+Assigns a function to be executed on process exit of **gracenode**. The assigned function will have a callback function passed.
+
+**Example**:
+
+```javascript
+gracenode.onExit(function (callback) {
+	// do something before terminating the process
+	callback();
+});
+```
+
+#### Default Configurations
+
+**gracenode** can be configured with the following properties by default:
+
+```
+{
+	log: {
+		rotationType: [string],
+		useTimestamp: [boolean],
+		bufferSize: [int],
+		bufferFlushInterval: [int],
+		oneFile: [boolean],
+		file: [string],
+		console: [boolean],
+		remote: [object],
+		color: [boolean],
+		showHidden: [boolean],
+		depth: [int],
+		level: [string]
+	},
+	cluster: {
+		max: [int],
+		autoSpawn: [boolean],
+		sync: [boolean]
+	}
+}
+```
+
+**NOTE**: To use configurations for bootstrapped module, simply use the same name as used in `.use()`.
+
+##### log.rotationType
+
+Defines log file rotation type.
+
+The valid types are:
+
+- `year`
+
+- `month`
+
+- `day`
+
+- `hour`
+
+Default is `day`,
+
+##### log.useTimestamp
+
+If `true`, the logging time will be in Unix timestamp.
+
+Default is `false`.
+
+##### log.bufferSize
+
+Defines the buffer size for log data in bytes.
+
+Default is 8128 bytes (8KB).
+
+**NOTE**: File logging only.
+
+##### log.bufferFlushInterval
+
+Defines auto-buffer-flush interval in milliseconds.
+
+Default is 5000ms (5 seconds).
+
+**NOTE**: File logging only.
+
+##### log.oneFile
+
+If `true`, file logging will be combined in to one file for all log levels.
+
+Default is `false`.
+
+**NOTE**: File logging only.
+
+##### log.file
+
+Defines the path to the logging directory.
+
+If this is not set, **gracenode** will NOT log to file, but stdout/stderr stream only.
+
+Default is not set.
+
+##### log.console
+
+If `true`, all logging will be outputting to stdout/stderr stream.
+
+Default is `true`.
+
+##### log.remote
+
+Defines the configurations to send logging data to a remote server via UDP protocol.
+
+```
+{
+	host: [string],
+	port: [int]
+}
+```
+
+Default is not set.
+
+##### log.color
+
+If `true`, logging data will be colored.
+
+Default is `false`.
+
+##### log.showHidden
+
+If `true`, logging objects will show hidden properties.
+
+Default is `false`.
+
+##### log.depth
+
+Defines how far logging module should recursively output objects.
+
+Default is not set.
+
+##### log.level
+
+Defines from which log level to output.
+
+The valid log levels are:
+
+- `verbose`
+
+- `debug`
+
+- `table`
+
+- `trace`
+
+- `info`
+
+- `warn`
+
+- `error`
+
+- `fatal`
+
+Use `>`, `>=` to control the definition of log level.
+
+**Example**
+
+```
+'>= info'
+```
+
+The above example will be logging from log level info to lower (info, warn, error, fatal).
+
+**NOTE**: From the top highest to lowest
+
+##### cluster.max
+
+Defines how many cluster worker processes.
+
+If `0` is given, **gracenode** will not be running in cluster.
+
+Default is `0`.
+
+##### cluster.autoSpawn
+
+If `true`, terminated worker processes will be automatically respawned and replaced.
+
+Default is `false`.
+
+##### cluster.sync
+
+If `true`, all workers will share a list of existing workers and their `pid`.
+
+This may lead to server stress.
+
+Default is `true`.
+
+### gracenode.stop() added
+
+This is a replacement for `gracenode.exit()`.
+
+### gracenode.onExit() added
+
+This is a replacement for `gracenode.registerShutdownTask()`.
+
+## Changed
+
+### gracenode.use() changed
+
+The behavior of `gracenode.use()` has changed.
+
+#### .use(moduleName [string], pathOrMod [string or object], options [object])
+
+Tells **gracenode** to bootstrap and set up a given module.
+
+**Example**:
+
+```javascript
+gracenode.use('myMod', '/path/to/myMod');
+```
+
+or
+
+```javascript
+gracenode.use('myMod', require('/path/to/myMod'));
+```
+
+**gracenode** will be loading the module from `modulePath`.
+
+#### options [object]
+
+Assigns an optional functions to be executed for the bootstrapped module.
+
+**Structure**:
+
+```
+{
+	config: [function],
+	setup: [function],
+	exit: [function]
+}
+```
+
+##### options.config [function]
+
+A function to be executed when starting the **gracenode** process to read configuration data.
+
+The assigned function be will passed a configuration data.
+
+**Example**
+
+```javascript
+gracenode.use('myMod', '/path/to/my/mod/', {
+	config: function (configData) {
+		this.configData = configData;
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+##### .options.setup [function]
+
+A function to be executed when starting the **gracenode** process after `options.config()` if provided.
+
+If `options.config()` is not provided, it will be called at the start of bootstrapping the module.
+
+The function will be passed a callback function.
+
+**Example**
+
+```javascript
+gracenode.use('myMod', {
+	setup: function (callback) {
+		// do something here
+		callback();
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+##### .options.exit [function]
+
+A function to be executed on exitting of the **gracenode** process.
+
+It is useful to clean up before the exit.
+
+The function will be passed a callback function.
+
+**Example**
+```javascript
+gracenode.use('myMod', '/path/to/my/mod/', {
+	exit: function (callback) {
+		// do something here
+		callback();
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+### 
+
+## Deprecated
+
+### gracenode.registerShutdownTask() has been deprecated
+
+## Removed
+
+### gracenode.exit() removed
+
+### gracenode.setConfigPath() removed
+
+### gracenode.setConfigFiles() removed
+
+### gracenode.argv() removed
+
+### gracenode.setHelpText() removed
+
+### gracenode.defineOption() removed
+
+### gracenode.exitOnBadOption() removed
+
+### gracenode.addModulePath() removed
+
+### gracenode.getProcessType() removed
+
+### gracenode.load() removed 
+
+### gracenode.unload() removed
+
+### gracenode.require() removed
+
+### gracenode.send() removed
+
+### gracenode.meshNetJoin() removed
+
+### gracenode.meshNetReceive() removed
+
+### gracenode.meshNetEachNode() removed
+
+### All events removed
+
+gracenode is no longer an event emitter.
+
+***
+
 ## Version 1.8.12
 
 ## Added
@@ -92,6 +461,7 @@ None
 
 #### Dependency aeterno module's version updated to 0.4.7
 
+<<<<<<< HEAD
 There are many changes and added features for daemonizing your application:
 
 https://github.com/voltrue2/gracenode#daemonizing-your-application-process
@@ -103,6 +473,11 @@ There are many changes and added features for logging:
 https://github.com/voltrue2/gracenode/tree/develop/modules/log
 
 #### Dependency floodnet module's version updated to 0.1.0
+=======
+#### Dependency gracelog module's version updated to 0.5.1
+
+#### Dependency flootnet module's version updated to 0.1.0
+>>>>>>> 2.0
 
 ## Deprecated
 

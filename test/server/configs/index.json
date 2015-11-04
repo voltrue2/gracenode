@@ -1,0 +1,10 @@
+{
+	"modules": {
+		"log": {
+			"console": true,
+			"color": true,
+			"depth": 20,
+			"level": ">= warn"
+		}
+	}
+}
