@@ -2,6 +2,177 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.0
+
+Version 2.0.0 has introduced a lot of changes including backward compatibility breaks.
+
+- gracenode no longer handles meshnetwork out-of-the-box and removed all related functions.
+
+- gracenode's new `.config()` function can either read from a file (.json) or an object. 
+
+- gracenode no longer parses command-line arguments.
+
+## Added
+
+### gracenode.mod added
+
+All bootstrapped modules will be under `gracenode.mod`.
+
+### gracenode.config() added
+
+This is a replacement for `gracenode.setConfigPath()` and `gracenode.setConfigFiles()`.
+
+### gracenode.stop() added
+
+This is a replacement for `gracenode.exit()`.
+
+### gracenode.onExit() added
+
+This is a replacement for `gracenode.registerShutdownTask()`.
+
+## Changed
+
+### gracenode.use() changed
+
+The behavior of `gracenode.use()` has changed.
+
+#### .use(moduleName [string], pathOrMod [string or object], options [object])
+
+Tells **gracenode** to bootstrap and set up a given module.
+
+**Example**:
+
+```javascript
+gracenode.use('myMod', '/path/to/myMod');
+```
+
+or
+
+```javascript
+gracenode.use('myMod', require('/path/to/myMod'));
+```
+
+**gracenode** will be loading the module from `modulePath`.
+
+#### options [object]
+
+Assigns an optional functions to be executed for the bootstrapped module.
+
+**Structure**:
+
+```
+{
+	config: [function],
+	setup: [function],
+	exit: [function]
+}
+```
+
+##### options.config [function]
+
+A function to be executed when starting the **gracenode** process to read configuration data.
+
+The assigned function be will passed a configuration data.
+
+**Example**
+
+```javascript
+gracenode.use('myMod', '/path/to/my/mod/', {
+	config: function (configData) {
+		this.configData = configData;
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+##### .options.setup [function]
+
+A function to be executed when starting the **gracenode** process after `options.config()` if provided.
+
+If `options.config()` is not provided, it will be called at the start of bootstrapping the module.
+
+The function will be passed a callback function.
+
+**Example**
+
+```javascript
+gracenode.use('myMod', {
+	setup: function (callback) {
+		// do something here
+		callback();
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+##### .options.exit [function]
+
+A function to be executed on exitting of the **gracenode** process.
+
+It is useful to clean up before the exit.
+
+The function will be passed a callback function.
+
+**Example**
+```javascript
+gracenode.use('myMod', '/path/to/my/mod/', {
+	exit: function (callback) {
+		// do something here
+		callback();
+	}
+});
+```
+
+**NOTE**: `this` in the function is the bootstrapped module.
+
+### 
+
+## Deprecated
+
+### gracenode.registerShutdownTask() has been deprecated
+
+## Removed
+
+### gracenode.exit() removed
+
+### gracenode.setConfigPath() removed
+
+### gracenode.setConfigFiles() removed
+
+### gracenode.argv() removed
+
+### gracenode.setHelpText() removed
+
+### gracenode.defineOption() removed
+
+### gracenode.exitOnBadOption() removed
+
+### gracenode.addModulePath() removed
+
+### gracenode.getProcessType() removed
+
+### gracenode.load() removed 
+
+### gracenode.unload() removed
+
+### gracenode.require() removed
+
+### gracenode.send() removed
+
+### gracenode.meshNetJoin() removed
+
+### gracenode.meshNetReceive() removed
+
+### gracenode.meshNetEachNode() removed
+
+### All events removed
+
+gracenode is no longer an event emitter.
+
+***
+
 ## Version 1.8.8
 
 ## Added

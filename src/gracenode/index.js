@@ -45,7 +45,7 @@ exports.onExit = function (taskFunc, runOnMaster) {
 	cluster.addShutdownTask(taskFunc, (runOnMaster) ? true : false);
 };
 
-// backward compatibility alias
+// deprecated backward compatibility alias
 exports.registerShutdownTask = exports.onExit;
 
 // add module name and path to be bootstrapped by .start()
