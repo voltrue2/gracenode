@@ -48,7 +48,7 @@ exports.start = function (configMap, onExit, cb) {
 	var keys = Object.keys(pending);
 	var handle = function (key, next) {
 		var item = pending[key];
-		if (typeof item.path === 'object') {
+		if (typeof item.path !== 'string') {
 			setupMod(configMap, onExit, key, item.path, function (error) {
 				if (error) {
 					return next(error);

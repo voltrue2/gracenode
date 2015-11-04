@@ -23,7 +23,8 @@
 		"mocha": "2.3.3",
 		"staticdata": "0.0.7",
 		"gracenode-server": "0.4.3",
-		"request": "2.64.0"
+		"request": "2.64.0",
+		"express": "4.13.3"
 	},
 	"engine": {
 		"engine": "node >= 0.10.20"

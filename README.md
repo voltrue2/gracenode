@@ -177,6 +177,31 @@ gn.start(function () {
 });
 ```
 
+## Use gracenode With express
+
+gracenode can be used with <a href="https://www.npmjs.com/package/express" target="_blank">express</a> framework.
+
+**Example**:
+
+express framework alone does not handle cluster process and daemonization, but coupling with gracenode,
+
+your express application is now ready for clustering and daemonization.
+
+```javascript
+var gn = require('gracenode');
+
+gn.use('express', require('express'));
+
+gn.start(function () {
+	/*
+	 start express HTTP server when everything is set up
+	including daemonization and clustering
+	*/
+	var app = gn.mod.express();
+	app.listen(portNumber);
+});
+```
+
 ## Methods
 
 ### .getRootPath()
