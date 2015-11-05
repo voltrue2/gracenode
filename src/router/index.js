@@ -1,6 +1,7 @@
 'use strict';
 
 var routes = [];
+var hooks = {};
 
 exports.define = function (path) {
 	var res = {
@@ -8,15 +9,40 @@ exports.define = function (path) {
 		pattern: null,
 		paramNames: []
 	};
+	var headingSlash = path[0] === '/' ? '' : '/';
 	var trailingSlash = path[path.length - 1] === '/' ? '' : '/';
 	var paramNames = path.match(/{(.*?)}/g) || [];
 	for (var i = 0, len = paramNames.length; i < len; i++) {
 		res.paramNames.push(paramNames[i].substring(1, paramNames[i].length - 1));
 	}
-	res.pattern = path.replace(/{(.*?)}/g, '(.*?)').replace(/\//g, '\\/') + trailingSlash;
-	res.path = path.replace(/\/{(.*?)}/g, '');	
+	res.pattern = headingSlash + path.replace(/{(.*?)}/g, '(.*?)').replace(/\//g, '\\/') + trailingSlash;
+	res.path = headingSlash + path.replace(/\/{(.*?)}/g, '');	
 
 	routes.push(res);
+};
+
+exports.hook = function (path, func) {
+	// root exception
+	if (path === '/') {
+		if (!hooks.hasOwnProperty(path)) {
+			hooks[path] = [];
+		}
+		if (Array.isArray(func)) {
+			hooks[path] = hooks[path].concat(func);
+		} else {
+			hooks[path].push(func);
+		}
+		return;
+	}
+	var headingSlash = path[0] === '/' ? '' : '/';
+	var hookPath = headingSlash + path.replace(/\/{(.*?)}/g, '');
+	var len = hookPath.length - 1;
+	hookPath = (hookPath[len] === '/') ? hookPath.substring(0, len) : hookPath;
+	// add the hook function to exact match
+	if (!hooks.hasOwnProperty(hookPath)) {
+		hooks[hookPath] = [];
+	}
+	hooks[hookPath].push(func);
 };
 
 exports.parse = function (fullPath) {
@@ -52,16 +78,32 @@ exports.parse = function (fullPath) {
 		var sep = queryList[i].split('=');
 		parsed.query[sep[0]] = sep[1];
 	}
+	parsed.hooks = findHooks(parsed.path);
 	return parsed;
 };
+
+function findHooks(parsedPath) {
+	var matchedHooks = [];
+	for (var path in hooks) {
+		if (parsedPath.indexOf(path) === 0) {
+			matchedHooks = matchedHooks.concat(hooks[path]);
+		}
+	}
+	return matchedHooks;
+}
 
 /*
 for (var i = 0; i < 200; i++) {
 	exports.define('/vv/' + i);
+	exports.hook('/vv/' + i, function () {});
 }
 exports.define('/a/b/{C}/d/e/{F}/{G}/h');
 exports.define('/abc/def/ghijkl/{word}');
 exports.define('/test/{name}');
+exports.hook('a/b/{C}', function ab() {});
+exports.hook('/test/{name}', function test() {});
+exports.hook('/', function all() {});
+exports.hook('/a/b/{C}/d/e/{F}/{G}/h', function abdeh() {});
 
 var s = Date.now();
 console.log(exports.parse('/a/b/c/d/e/f/g?z=10&y=20'));
