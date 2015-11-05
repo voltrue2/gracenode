@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.1
+
+## Added
+
+### gracenode.getConfig() added
+
+## Changed
+
+### Configuration parser has been improved
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.0
 
 Version 2.0.0 has introduced a lot of changes including backward compatibility breaks.

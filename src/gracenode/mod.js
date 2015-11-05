@@ -29,7 +29,11 @@ exports.use = function (name, pathOrMod, options) {
 		);
 	}
 	if (pathList.indexOf(pathOrMod) !== -1) {
-		throw er.create(ER.DUP_PATH, name + ': ' + pathOrMod);
+		throw er.create(
+			ER.DUP_PATH, name +
+			': ' +
+			((typeof pathOrMod !== 'stirng') ? '[module object]' : pathOrMod)
+		);
 	}
 	if (!options) {
 		options = {};
@@ -59,7 +63,7 @@ exports.start = function (configMap, onExit, cb) {
 					'Bootstrapped a module:',
 					'gracenode.mod.' + modName,
 					'[', key, ']',
-					item.path
+					((typeof item.path !== 'string') ? '[module object]' : item.path)
 				);
 				next();
 			});

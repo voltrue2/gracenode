@@ -6,11 +6,11 @@ var log = require('gracelog');
 var aeterno = require('aeterno');
 var cluster = require('cluster-mode');
 var rootPath = getRootPath(require('./parent').getTopmostParent());
+var config = require('./config');
 var mod = require('./mod');
 
 var logger;
 var clusterConfig;
-var modConfigs = {};
 var ready = false;
 
 var ER = {
@@ -31,14 +31,11 @@ exports.getRootPath = function () {
 };
 
 exports.config = function (obj) {
-	for (var key in obj) {
-		if (!modConfigs.hasOwnProperty(key)) {
-			// new config property
-			modConfigs[key] = obj[key];
-		} else {
-			setConfigProp(key, modConfigs, obj);
-		}
-	}
+	config.load(obj);
+};
+
+exports.getConfig = function (name) {
+	return config.get(name);
 };
 
 exports.onExit = function (taskFunc, runOnMaster) {
@@ -95,31 +92,19 @@ exports.stop = function (error) {
 	cluster.stop(error);
 };
 
-function setConfigProp(key, conf, confSrc) {
-	if (typeof confSrc[key] === 'object') {
-		for (var key2 in confSrc[key]) {
-			if (conf[key].hasOwnProperty(key2)) {
-				conf[key][key2] = confSrc[key][key2];
-				continue;	
-			}
-			setConfigProp(key2, conf[key], confSrc[key]);
-		}
-	} else {
-		conf[key] = confSrc[key];
-	}
-}
-
 function applyConfig() {
-	if (modConfigs.log) {
-		log.config(modConfigs.log);
+	var logConf = config.get('log');
+	var clusterConf = config.get('cluster');
+	if (logConf) {
+		log.config(logConf);
 	}
-	if (modConfigs.cluster) {
+	if (clusterConf) {
 		// this seems redundant, but it is necesarry to do this AFTER log.config()
 		clusterConfig = {
 			max: 0,
 			logger: log.create('cluster')
 		}; 
-		clusterConfig = setOption(clusterConfig, modConfigs.cluster);
+		clusterConfig = setOption(clusterConfig, clusterConf);
 	}
 }
 
@@ -144,12 +129,12 @@ function startCluster(cb) {
 }
 
 function setupLog(cb) {
-	canWrite(modConfigs.log || {}, function (error) {
+	canWrite(config.get('log') || {}, function (error) {
 		if (error) {
 			return cb(
 				new Error(
 					ER.NOT_WRITABLE + ' ' +
-					modConfigs.log.file + ' ' +
+					config.get('log.file') + ' ' +
 					error.message
 				)
 			);
@@ -204,7 +189,7 @@ function setupLogCleaner(cb) {
 
 function startMod(cb) {
 	if (!cluster.isMaster()) {
-		mod.start(modConfigs, exports.onExit, function (error, modules) {
+		mod.start(config.get(), exports.onExit, function (error, modules) {
 			if (error) {
 				return cb(error);
 			}

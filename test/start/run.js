@@ -1,6 +1,12 @@
 var gn = require('../../src/gracenode');
 
 gn.config({
+	log: {
+		console: true,
+		level: '>= verbose'
+	}
+});
+gn.config({
 	cluster: {
 		max: 1 
 	}

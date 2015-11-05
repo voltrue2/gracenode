@@ -191,6 +191,22 @@ This function can be called multiple times and it will merge all configuration o
 
 **NOTE**: The same configuration properties will be overwritten.
 
+### .getConfig(configName [string])
+
+Returns a matching configurations.
+
+**Example**:
+
+```javascript
+var gn = require('gracenode');
+gn.config({
+	log: {
+		file: '/path/to/log/dir/'
+	}
+});
+var logFilePath = gn.getConfig('log.file');
+```
+
 ### .onExit(taskFunction [function])
 
 Assigns a function to be executed on process exit of **gracenode**. The assigned function will have a callback function passed.
