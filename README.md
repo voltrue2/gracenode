@@ -94,6 +94,23 @@ gn.config(require('/path/to/my/custom/config.json'));
 
 **NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="#default-configurations">README</a>.
 
+## How To Log
+
+gracenode comes with a built-in logging library.
+
+**Example**:
+
+```javascript
+var gn = require('gracenode');
+gn.start(function () {
+	// now we can start logging
+	var logger = gn.log.create();
+	logger.info('some message here');
+	logger.info({ a: 'A', b: 'B' });
+	var loggerWithName = gn.log.create('my logger');
+});
+```
+
 ## Start Your Application As A Daemon
 
 There are 2 different ways to start your application as a daemon.
