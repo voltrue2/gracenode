@@ -92,7 +92,7 @@ gn.config(require('/path/to/my/shared/config.json'));
 gn.config(require('/path/to/my/custom/config.json'));
 ```
 
-**NOTE 3:** More details for logging and cluster configurations will be given later in this `README`.
+**NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="#default-configurations">README</a>.
 
 ## Start Your Application As A Daemon
 
@@ -112,7 +112,7 @@ Assuming `app.js` is your appliction file to execute.
 
 `./gracenode app.js start -l /path/to/my/daemon/logging/`
 
-**NOTE:** More details on the daemonization command options will be explain later in this `REAME`.
+**NOTE:** More details on the daemonization command options will be explain later in this <a href="#daemon-commands">`REAME`</a>.
 
 ## Auto-Restarting Of Daemon Process
 
@@ -568,4 +568,122 @@ gracenode.log.on('output', function (ip, logName, level, messageObj) {
 	// do something
 });
 ```
+
+## Daemon Commands
+
+There are some command-line options available for daemon.
+
+### Help
+
+`node app.js --help`, `node app.js -h`, `./gracenode --help`, or `./gracenode -h`.
+
+### Commands
+
+#### start
+
+Start an application as daemon.
+
+`./gracenode start app.js`
+
+`node app.js start`
+
+#### stop
+
+Stop a running application.
+
+`./gracenode stop app.js`
+
+`node app.js stop`
+
+#### restart
+
+Restart a running application.
+
+`./gracenode restart app.js`
+
+`node app.js restart`
+
+#### reload
+
+Gracefully restart a running application.
+
+This command works ONLY if your are running the application in cluster mode.
+
+`./gracenode reload app.js`
+
+`node app.js reload`
+
+#### stopall
+
+Stop all running daemon applications.
+
+`./gracenode stopall`
+
+`node app.js stopall`
+
+To ignore prompting, add an option `-f`.
+
+`./gracenode stopall -f`
+
+`node app.js stopall -f`
+
+#### restartall
+
+Restart all running applications.
+
+`./gracenode restartall`
+
+`node app.js restartall`
+
+To ignore prompting, add an option `-f`.
+
+`./gracenode restartall -f`
+
+`node app.js restartall -f`
+
+#### status
+
+Output running status of a daemon.
+
+`./gracenode status app.js`
+
+`node app.js status`
+
+#### list
+
+Output all running status of daemons
+
+`./gracenode list`
+
+`node app.js list`
+
+#### tail
+
+Tails daemon log files.
+
+`./gracenode tail app.js`
+
+`node app.js tail`
+
+### Options
+
+#### -l, --log=[path]
+
+Write log data into a file.
+
+#### -e, --exec=[path]
+
+Daemonize the target application with the given interpreter.
+
+#### -w, -a
+
+Automatically restart the daemon process if watch file(s) change.
+
+#### -v, --verbose
+
+Be more verbose.
+
+#### -f
+
+Stops or restarts all running daemon processes without user inputs. This option is for {stopall|restartall} command only.
 
