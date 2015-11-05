@@ -57,5 +57,19 @@
                         "afterEach": false
                 }
         },
+	"keywords": [
+		"framework",
+		"grace",
+		"node",
+		"gracenode",
+		"boostrap",
+		"cluster",
+		"daemon",
+		"express",
+		"light",
+		"organize",
+		"structure",
+		"modular"	
+	],
 	"license": "MIT"
 }
