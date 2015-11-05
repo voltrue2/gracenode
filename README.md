@@ -112,7 +112,7 @@ Assuming `app.js` is your appliction file to execute.
 
 `./gracenode app.js start -l /path/to/my/daemon/logging/`
 
-**NOTE:** More details on the daemonization command options will be explain later in this <a href="#daemon-commands">`REAME`</a>.
+**NOTE:** More details on the daemonization command options will be explain later in this <a href="#daemon-commands">README</a>.
 
 ## Auto-Restarting Of Daemon Process
 
@@ -159,7 +159,7 @@ gn.start({
 
 **NOTE 3:** `this` inside of the functions you assign to the 3rd argument is the module you are "using". In this example, `this` is `foo` module.
 
-**NOTE 4:** More details on `.use()` and its options will be explained later in this `README`.
+**NOTE 4:** More details on `.use()` and its options will be explained later in this <a href="#usemodulename-string-modulepath-string-options-object">README</a>.
 
 #### Accessing Bootstrapped Modules
 
@@ -396,10 +396,6 @@ If `true`, all workers will share a list of existing workers and their `pid`.
 This may lead to server stress.
 
 Default is `true`.
-
-### .registerShutdownTask(taskFunction [function])
-
-Alias of `.onExit()`.
 
 ### .use(moduleName [string], modulePath [string], options [object])
 
