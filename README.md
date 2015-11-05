@@ -94,23 +94,6 @@ gn.config(require('/path/to/my/custom/config.json'));
 
 **NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="#default-configurations">README</a>.
 
-## How To Log
-
-gracenode comes with a built-in logging library.
-
-**Example**:
-
-```javascript
-var gn = require('gracenode');
-gn.start(function () {
-	// now we can start logging
-	var logger = gn.log.create();
-	logger.info('some message here');
-	logger.info({ a: 'A', b: 'B' });
-	var loggerWithName = gn.log.create('my logger');
-});
-```
-
 ## Start Your Application As A Daemon
 
 There are 2 different ways to start your application as a daemon.
@@ -218,7 +201,7 @@ gn.start(function () {
 
 ### .log
 
-A logger. For more details, please read <a href="#configure-logging-and-cluster-management">here</a>.
+A logger. For more details, please read <a href="#logging">here</a>.
 
 ### .lib
 
@@ -556,6 +539,9 @@ In order to log some data, you need to create a logger.
 ```javascript
 var logger = gracenode.log.create();
 logger.verbose('I am logging something here');
+logger.info({ example: 'Example Object' });
+var loggerWithName = gracenode.log.create('my logger');
+loggerWithName.warn('warning!');
 ```
 
 #### .log.setPrefix(prefix [string])
@@ -602,7 +588,9 @@ Log level `fatal`.
 
 #### Log Event
 
-**gracenode** log module emits an even on each log output.
+gracenode log module emits an even on each log output.
+
+It is useful for capturing and sending all logging to a database etc.
 
 ##### output
 
