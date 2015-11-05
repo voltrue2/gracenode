@@ -16,13 +16,13 @@
 
 ## Installation via npm
 
-**NOTE:** If you are running your application as a daemon with older version of gracenode, please make sure to stop the daemon before installing the newer version.
+**NOTE:** If you are running your application as a daemon with older version of **gracenode**, please make sure to stop the daemon before installing the newer version.
 
 `npm install gracenode`
 
 ## Add gracenode as your application's dependency
 
-To install gracenode you can either add it to your package.json like so:
+To install **gracenode** you can either add it to your package.json like so:
 
 **Install From Git Repository**
 ```json
@@ -48,7 +48,7 @@ To install gracenode you can either add it to your package.json like so:
 
 ## How To Use gracenode
 
-In order to use gracenode, you need to properly set it up in your application root file (The file that starts your application).
+In order to use **gracenode**, you need to properly set it up in your application root file (The file that starts your application).
 
 ### Configure Logging and Cluster Management
 
@@ -106,7 +106,7 @@ Assuming `app.js` is your appliction file to execute.
 
 #### Example 2:
 
-gracenode creates `./gracenode` executable when you install gracenode.
+**gracenode** creates `./gracenode` executable when you install **gracenode**.
 
 Assuming `app.js` is your appliction file to execute.
 
@@ -179,7 +179,7 @@ gn.start(function () {
 
 ## Use gracenode With express Framework
 
-gracenode can be used along side with <a href="https://www.npmjs.com/package/express" target="_blank">express</a>.
+**gracenode** can be used along side with <a href="https://www.npmjs.com/package/express" target="_blank">express</a>.
 
 It will give your express application the support for clustering and daemoning out-of-the-box.
 
@@ -530,7 +530,7 @@ Returns `true` if the process is running in cluster.
 
 **gracenode** comes will built-in logging module.
 
-It is access as `gracenode.log`.
+It is accessed as `gracenode.log`.
 
 ### How To Log
 
@@ -588,7 +588,7 @@ Log level `fatal`.
 
 #### Log Event
 
-gracenode log module emits an even on each log output.
+**gracenode** logger emits an even on each log output.
 
 It is useful for capturing and sending all logging to a database etc.
 
