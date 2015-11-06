@@ -91,4 +91,12 @@ describe('gracenode', function () {
 		});
 	});
 
+	it('can successfully start in cluster mode', function (done) {
+		runApp(run + ' withConf ../modules/withConf withSetup ../modules/withSetup cluster', function (error, out, err) {
+			test('equal', error, null);
+			test('equal', err, '');
+			done();
+		});
+	});
+
 });

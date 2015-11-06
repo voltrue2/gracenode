@@ -6,12 +6,10 @@ var domain = 'http://localhost:' + port;
 var gn = require('../gracenode');
 
 gn.config({
-	/*
 	router: {
 		port: port,
 		host: 'localhost'
 	},
-	*/
 	log: {
 		color: true
 	}

@@ -31,9 +31,19 @@ if (process.argv[4] && process.argv[5]) {
 	gn.use(process.argv[4], process.argv[5]);
 }
 
+if (process.argv[6]) {
+	gn.config({
+		cluster: {
+			max: 2
+		}
+	});
+}
+
 gn.start(function () {
-	if (!gn.mod.async) {
-		gn.stop(new Error('noAsync'));
+	if (!gn.isMaster()) {
+		if (!gn.mod.async) {
+			gn.stop(new Error('noAsync'));
+		}
 	}
 	gn.stop();
 });
