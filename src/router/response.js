@@ -3,6 +3,9 @@
 var fs = require('fs');
 var zlib = require('zlib');
 var mime = require('./mime');
+var util = require('./util');
+var gn = require('../gracenode');
+var logger = gn.log.create('router.response');
 
 var DEFAULT_HEADERS = {
 	'Cache-Control': 'no-cache, must-revalidate',
@@ -84,10 +87,19 @@ Response.prototype.download = function (dataOrPath, status) {
 	}
 	// data
 	this.headers['Content-Length'] = dataOrPath.length;
-	this.send(dataOrPath, status);
+	this._send(dataOrPath, status);
 };
 
 Response.prototype.file = function (path, status) {
+	if (this._sent) {
+		logger.warn(
+			'Cannot send response more than once:',
+			util.fmt('url', this._req.method + ' ' + this._req.url),
+			util.fmt('id', this._req.id)
+		);
+		return;
+	}
+	this._sent = true;
 	var that = this;
 	fs.readFile(path, function (error, data) {
 		if (error) {
@@ -102,6 +114,15 @@ Response.prototype.file = function (path, status) {
 };
 
 Response.prototype.stream = function (path) {
+	if (this._sent) {
+		logger.warn(
+			'Cannot send response more than once:',
+			util.fmt('url', this._req.method + ' ' + this._req.url),
+			util.fmt('id', this._req.id)
+		);
+		return;
+	}
+	this._sent = true;
 	var that = this;
 	fs.stat(path, function (error, stat) {
 		if (error) {
@@ -109,6 +130,11 @@ Response.prototype.stream = function (path) {
 			that.error(error, 404);
 			return;
 		}
+		logger.info(
+			'Stream:',
+			util.fmt('url', that._req.method + ' ' + that._req.url),
+			util.fmt('id', that._req.id)
+		);
 		var type = mime.getFromPath(path);
 		var total = stat.size;
 		if (that._req.headers.range) {
@@ -146,9 +172,14 @@ Response.prototype.redirect = function (path, status) {
 
 Response.prototype._send = function (data, status) {
 	if (this._sent) {
-		// log an error/warn here
+		logger.warn(
+			'Cannot send response more than once:',
+			util.fmt('url', this._req.method + ' ' + this._req.url),
+			util.fmt('id', this._req.id)
+		);
 		return;
 	}
+	this._sent = true;
 	var that = this;
 	gzip(this._gzip, data, function (error, zipped, size, dataType) {
 		if (error) {
@@ -156,7 +187,6 @@ Response.prototype._send = function (data, status) {
 			that.error(error, 500);
 			return;	
 		}
-		that._sent = true;
 		that.headers['Content-Length'] = size;
 		if (dataType === 'string') {
 			that.headers['Content-Encoding'] = 'UTF-8';
@@ -178,15 +208,42 @@ function gzip(mustGzip, data, cb) {
 }
 
 function send(req, res, headers, data, type, status) {
+	status = status || DEFAULT_STATUS;
 	// setup response headers
 	res.writeHead(status || DEFAULT_STATUS, headers);
+	// request execution time
+	var time = Date.now() - req.startTime;
 	// respond
 	if (req.method === 'HEAD') {
 		// HEAD does not send content
+		logger.info(
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			util.fmt('status', status),
+			util.fmt('time', time + 'ms'),
+			headers
+		);
 		res.end('', 'binary');
 		return;
 	}
 	// log here and change the level based on status
+	if (status < 400) {
+		logger.info(
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			util.fmt('status', status),
+			util.fmt('time', time + 'ms'),
+			headers
+		);
+	} else {
+		logger.error(
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			util.fmt('status', status),
+			util.fmt('time', time + 'ms'),
+			headers
+		);
+	}
 	res.end(data, type);
 }
 

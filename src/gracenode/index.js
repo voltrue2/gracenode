@@ -26,6 +26,8 @@ exports.lib = require(__dirname + '/../../lib');
 
 exports.log = log;
 
+exports.router = require('../router');
+
 exports.getRootPath = function () {
 	return rootPath;
 };
@@ -70,7 +72,8 @@ exports.start = function (cb) {
 			startCluster,
 			setupLog,
 			startMod,
-			setupLogCleaner
+			setupLogCleaner,
+			startRouter
 		];
 		var done = function (error) {
 			if (error) {
@@ -85,9 +88,9 @@ exports.start = function (cb) {
 
 exports.stop = function (error) {
 	if (error) {
-		logger.error('.stop() has been invokded', error);
+		logger.error('.stop() has been invoked', error);
 	} else {
-		logger.info('.stop() has been invokded');
+		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
 };
@@ -95,16 +98,23 @@ exports.stop = function (error) {
 function applyConfig() {
 	var logConf = config.get('log');
 	var clusterConf = config.get('cluster');
+	var routerPort = config.get('router.port');
+	var routerHost = config.get('router.host');
+	var isLogging = false;
 	if (logConf) {
+		isLogging = true;
 		log.config(logConf);
 	}
+	// this seems redundant, but it is necesarry to do this AFTER log.config()
+	clusterConfig = {
+		max: 0,
+		logger: isLogging ? log.create('cluster') : null
+	}; 
 	if (clusterConf) {
-		// this seems redundant, but it is necesarry to do this AFTER log.config()
-		clusterConfig = {
-			max: 0,
-			logger: log.create('cluster')
-		}; 
 		clusterConfig = setOption(clusterConfig, clusterConf);
+	}
+	if (routerPort && routerHost) {
+		exports.router.config({ port: routerPort, host: routerHost });
 	}
 }
 
@@ -199,6 +209,14 @@ function startMod(cb) {
 		return;
 	}
 	logger.verbose('Master process does not bootstrap modules');
+	cb();
+}
+
+function startRouter(cb) {
+	if (config.get('router.port') && config.get('router.host')) {
+		exports.router.setup(cb);
+		return;
+	}
 	cb();
 }
 

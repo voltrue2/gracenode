@@ -1,11 +1,15 @@
 'use strict';
 
+var uuid = require('node-uuid');
 var async = require('async');
 var http = require('http');
 var Cookies = require('cookies');
 var parser = require('./parser');
 var request = require('./request');
 var Response = require('./response');
+var util = require('./util');
+var gn = require('../gracenode');
+var logger = gn.log.create('router');
 var config;
 var server;
 
@@ -33,7 +37,10 @@ exports.setup = function (cb) {
 		requestHandler(req, res);
 	});
 	server.on('listening', function () {
-		
+		logger.info(
+			'HTTP server router started:',
+			config.host + ':' + config.port
+		);
 		cb();
 	});
 	server.on('error', function () {
@@ -43,6 +50,24 @@ exports.setup = function (cb) {
 			config.port
 		));
 	});
+	gn.onExit(function (next) {
+		try {
+			logger.info('Stopping HTTP server...');
+			server.close();
+			logger.info(
+				'HTTP server stopped gracefully:',
+				config.host + ':' + config.port
+			);
+			next();
+		} catch (e) {
+			if (e.message === 'Not running') {
+				logger.verbose(e.message);
+				return next();
+			}
+			logger.error('HTTP server error on stop:', e);
+			next(e);
+		}
+	});
 	server.listen(config.port, config.host);
 };
 
@@ -51,6 +76,11 @@ function requestHandler(req, res) {
 	var parsed = parser.parse(method, req.url);	
 	var response = new Response(req, res);
 
+	// assign request ID
+	req.id = uuid.v4();
+	// set start time
+	req.startTime = Date.now();
+
 	if (parsed === null) {
 		// 404
 		response.error(new Error(ERROR.NOT_FOUND), 404);
@@ -58,6 +88,12 @@ function requestHandler(req, res) {
 	}
 
 	var handleHook = function (hook, next) {
+		logger.verbose(
+			'Execute request hook for',
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			util.fmt('hook name', (hook.name || 'anonymous'))
+		);
 		hook(req, response, next);
 	};
 
@@ -79,6 +115,16 @@ function requestHandler(req, res) {
 		req.cookies = new Cookies(req, res);
 		// no hooks
 		if (!parsed.hooks.length) {
+			logger.verbose(
+				'Handle request:',
+				util.fmt('url', req.method + ' ' + req.url),
+				util.fmt('id', req.id),
+				'\n<request headers>', req.headers,
+				'\n<args>', req.args,
+				'\n<query>', req.query,
+				'\n<params>', req.params,
+				'\n<body>', req.body
+			);
 			parsed.handler(req, response);
 			return;
 		}
@@ -89,6 +135,16 @@ function requestHandler(req, res) {
 				response.error(error, 400);
 				return;
 			}
+			logger.verbose(
+				'Handle request:',
+				util.fmt('url', req.method + ' ' + req.url),
+				util.fmt('id', req.id),
+				'\n<request headers>', req.headers,
+				'\n<args>', req.args,
+				'\n<query>', req.query,
+				'\n<params>', req.params,
+				'\n<body>', req.body
+			);
 			parsed.handler(req, response);
 		});
 	});

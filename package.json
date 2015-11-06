@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "Framework for node.js to boostrap other node.js modules for easy use and uniformed synchronus setup.",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -19,7 +19,8 @@
 		"cluster-mode": "0.1.3",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
-		"cookies": "0.5.1"
+		"cookies": "0.5.1",
+		"node-uuid": "1.4.3"	
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",

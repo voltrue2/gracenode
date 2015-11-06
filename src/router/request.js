@@ -3,6 +3,9 @@
 var queryString = require('querystring');
 var multiparty = require('multiparty');
 var mime = require('./mime');
+var util = require('./util');
+var gn = require('../gracenode');
+var logger = gn.log.create('router.request');
 
 exports.getReqBody = function (req, cb) {
 	if (mime.is(req.headers, 'multipart')) {
@@ -16,6 +19,12 @@ exports.getReqBody = function (req, cb) {
 			for (var f in files) {
 				body.files.push(files[f][0]);
 			}
+			logger.verbose(
+				'Reuest body:',
+				util.fmt('url', req.method + ' ' + req.url),
+				util.fmt('id', req.id),
+				'\n<body>', body
+			);
 			cb(null, body);
 		});
 		return;
@@ -26,6 +35,12 @@ exports.getReqBody = function (req, cb) {
 	});
 	req.on('end', function () {
 		var data = readRequestBody(req.url, req.headers, body);
+		logger.verbose(
+			'Reuest body:',
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			'\n<body>', data
+		);
 		cb(null, data);
 	});
 	req.on('error', function (error) {

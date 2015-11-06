@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.2
+
+## Added
+
+### gracenode.router added
+
+## Changed
+
+### Bug fix: gracenode.getConfig() fixed for returning non-existing config value
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.1
 
 ## Added

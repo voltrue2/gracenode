@@ -21,8 +21,10 @@ exports.get = function (name) {
 	var i = 0;
 	var list = name.split('.');
 	var tmp = config;
-	while (tmp[list[i]]) {
-		tmp = tmp[list[i]];
+	tmp = tmp[list[i]] || null;
+	i += 1;
+	while (tmp && tmp[list[i]]) {
+		tmp = tmp[list[i]] || null;
 		i += 1;
 	}
 	return gn.lib.cloneObj(tmp);
