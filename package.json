@@ -72,7 +72,12 @@
 		"light",
 		"organize",
 		"structure",
-		"modular"	
+		"modular",
+		"router",
+		"web",
+		"api",
+		"http",
+		"rest"	
 	],
 	"license": "MIT"
 }

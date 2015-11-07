@@ -211,7 +211,7 @@ A library of built-in utility functions.
 
 An HTTP server router to help you build HTTP rest server.
 
-For more details please read <a href="#">here</a>.
+For more details please read <a href="#router-1">here</a>.
 
 #### Register Routings
 
