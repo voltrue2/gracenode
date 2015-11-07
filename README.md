@@ -211,9 +211,11 @@ A library of built-in utility functions.
 
 An HTTP server router to help you build HTTP rest server.
 
+For more details please read <a href="#">here</a>.
+
 #### Register Routings
 
-To register HTTP end points, call the following functions.
+To register HTTP endpoints, call the following functions.
 
 **NOTE**: The routing must be done BEFORE calling `gracenode.start()`.
 
@@ -778,4 +780,268 @@ Be more verbose.
 #### -f
 
 Stops or restarts all running daemon processes without user inputs. This option is for {stopall|restartall} command only.
+
+## Router
+
+Router lets you build HTTP server and REST endpoints easily.
+
+### Configure Port and Host
+
+`gracenode.router` needs a port number and a host name to start the HTTP server.
+
+```
+router: {
+	port: <number>,
+	host: <string>
+}
+```
+
+**Example**:
+
+```javascript
+var gn = require('gracenode');
+
+gn.config({
+	router: {
+		port: 8888,
+		host: 'localhost'
+	}
+});
+
+gn.start(function () {
+	// HTTP server is ready
+});
+
+```
+
+**NOTE**: Once you give `port` and `host`, **gracenode** will automatically start the HTTP server while `gracenode.start()`.
+
+### Register endpoints
+
+You must register endpoint routes in order to setup your REST server with `gracenode.router`.
+
+**NOTE**: Registration of all endpoints must be done BEFORE calling `gracenode.start()`.
+
+#### GET
+
+```javascript
+gracenode.router.get('/example', function (req, res) {
+	// respond as JSON
+	res.json({ say: 'hello' });
+});
+```
+
+##### Define URL parameters
+
+`gracenode.router` allows you to define parameters in the request URLs.
+
+**Example**:
+
+The example below defines a URL parameter `name`.
+
+```
+GET /example/{name}
+```
+
+```
+GET /example/Kevin
+```
+
+The above request URL will be routed to the handler of `GET /example/{name}`.
+
+To access `{name}`:
+
+```
+exports.exampleHandler = function (req, res) {
+	// Kevin
+	var name = req.params.name;
+};
+```
+
+#### POST, PUT, DELETE, PATCH, and HEAD
+
+To register endpoints for request method other than `GET`, use the following:
+
+```
+gracenode.router.post(url [string], handler [function]);
+
+gracenode.router.put(url [string], handler [function]);
+
+gracenode.router.delete(url [string], handler [function]);
+
+gracenode.router.patch(url [string], handler [function]);
+
+gracenode.router.head(url [string], handler [function]);
+```
+
+#### req
+
+The handler functions of endpoints will be passed two arguments.
+
+The first argument is `req`. It is an expanded `request` object.
+
+**Properties**:
+
+##### req.url
+
+Request URL.
+
+##### req.headers
+
+Request headers.
+
+##### req.id
+
+Unique ID for each request.
+
+##### req.args
+
+Object to hold user data for sharing the data among <a href="#">request hooks</a> and handler.
+
+**Example**:
+
+```
+// set session ID
+req.args.sessionId = 'xxxx';
+
+// you can use the session ID elsewhere
+var sessionId = req.args.sessionId;
+```
+
+##### req.query
+
+Object that holds GET query data.
+
+**Example**:
+
+```
+// request URL: GET /example?id=1234
+var id = req.query.id;
+```
+
+##### req.params
+
+Object that holds URL parameters.
+
+**Example**:
+
+Example Request: `GET /example/animal/info/cat`.
+
+```javascript
+gracenode.router.get('/example/{category}/info/{name}', function (req, res) {
+	// animal
+	var category = req.params.category;
+	// cat
+	var name = req.params.name;
+	// do somethinf
+});
+```
+
+##### req.body
+
+Object that holds request body (For POST, PUT, DELETE, and PATCH).
+
+#### res
+
+Response object tat wraps the HTTP response object of node.js.
+
+##### res.headers
+
+Object that holds response headers.
+
+**To Set Response Headers**:
+
+```javascript
+gracenode.router.post('/example', function (req, res) {
+	// set a custom header
+	res.headers.sessionId = 'xxxx';
+	// respond
+	res.html(htmlData);
+});
+```
+
+##### res.json(data [object], status [*number])
+
+Send response as JSON.
+
+The default status is 200.
+
+##### res.html(html [string], status [*number])
+
+Send response as HTML.
+
+The default status is 200.
+
+##### res.text(text [string], status [*number])
+
+Send response as plain text.
+
+The default status is 200
+
+###### res.download(filePath [string], status [*number])
+
+File download response.
+
+The default status is 200.
+
+###### res.stream(filePath [string])
+
+Stream file. 
+
+Useful for HTML5 video streaming etc.
+
+###### res.error(error [object], [*number])
+
+Send response as error (response data is JSON object).
+
+The default status is 400.
+
+#### Register Request Hooks
+
+`gracenode.router` allows you to setup request hook functions for your endpoints.
+
+Useful for session varification etc.
+
+##### gracenode.router.hook(url [string], hook [function])
+
+Registered hook functions are executed on every match request.
+
+**Example**:
+
+```javascript
+gracenode.router.hook('/', hookForAllRequest);
+gracenode.router.hook('/exmaple', hookForExampleRequest);
+gracenode.router.hook('/example/one', hookForExampleOneReuqest);
+
+gracenode.router.get('/example', exampleHandler);
+gracenode.router.get('/example/one', exampleOneHandler);
+```
+
+- `GET /example` will have `hookForAllRequest`, `hookForExampleRequest` as request hooks and they will be executed BEFORE `exmapleHandler`.
+
+- `GET /example/one` will have `hookForAllRequest`, `hookForExampleRequest`, and `hookForExampleOneRequest` as request hooks and they will be executed BEFORE `exampleOneHandler`.
+
+**Hook Function**:
+
+```javascript
+function hook(req, res, next) {
+	// call next() to move on to next hook or handler
+	next();
+}
+```
+
+Each hook function will have `req`, `res`, and `next` as arguments.
+
+`req` is the expanded request object. 
+
+`res` is the response object.
+
+`next` is the function to move on to next hook or handler.
+
+#### gracenode.error(status [number], handler [function])
+
+`gracenode.router` can optionally execute an error handler for specific error status such as 404.
+
+This is useful when you need to display uniform 404 page on every 404 response etc.
+
 
