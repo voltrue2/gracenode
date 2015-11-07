@@ -207,6 +207,67 @@ A logger. For more details, please read <a href="#logging">here</a>.
 
 A library of built-in utility functions.
 
+### .router
+
+An HTTP server router to help you build HTTP rest server.
+
+#### Register Routings
+
+To register HTTP end points, call the following functions.
+
+**NOTE**: The routing must be done BEFORE calling `gracenode.start()`.
+
+#### Configurations
+
+```
+gracenode.config({
+	router: {
+		port: <number>,
+		host: <string>
+	}
+});
+```
+
+#### gracenode.router.get(url [string], handler [function])
+
+Registers a routing for GET requests.
+
+**Example**:
+
+```javascript
+var gn = require('gracenode');
+gn.config({
+	router: {
+		port: 8888,
+		host: 'localhost'
+	}
+});
+gn.router.get('/example', function (req, res) {
+	res.json({ title: 'Hello World' });
+});
+gn.router.get('/mypage', require('/path/to/mypage/handler'));
+```
+
+#### gracenode.router.post(url [string], handler [function])
+
+Registers a routing for POST requests.
+
+#### gracenode.router.put(url [string], handler [function])
+
+Registers a routing for PUT requests.
+
+#### gracenode.router.delete(url [string], handler [function])
+
+Registers a routing for DELETE requests.
+
+#### gracenode.router.head(url [string], handler [function])
+
+Registers a routing for HEAD requests.
+
+#### gracenode.router.patch(url [string], handler [function])
+
+Registers a routing for PATCH requests.
+
 ## Methods
 
 ### .getRootPath()

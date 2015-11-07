@@ -1,16 +1,18 @@
 'use strict';
 
+var gn = require('../gracenode');
+var logger = gn.log.create('router.parser');
 var routes = {
-	get: [],
-	head: [],
-	post: [],
-	put: [],
-	delete: [],
-	patch: []
+	GET: [],
+	POST: [],
+	PUT: [],
+	DELETE: [],
+	PATCH: []
 };
 var hooks = {};
 
 exports.define = function (method, path, handler) {
+	method = (method === 'HEAD') ? 'GET' : method;
 	var res = {
 		handler: null,
 		path: null,
@@ -26,8 +28,11 @@ exports.define = function (method, path, handler) {
 	res.pattern = headingSlash + path.replace(/{(.*?)}/g, '(.*?)').replace(/\//g, '\\/') + trailingSlash;
 	res.path = headingSlash + path.replace(/\/{(.*?)}/g, '');	
 	res.handler = handler;
-	method = method.toLowerCase();
 	routes[method].push(res);
+	routes[method].sort(function (a, b) {
+		return b.pattern.length - a.pattern.length;
+	});
+	logger.verbose('HTTP endpoint route registered:', method, res.path, res);
 };
 
 exports.hook = function (path, func) {
@@ -51,11 +56,16 @@ exports.hook = function (path, func) {
 	if (!hooks.hasOwnProperty(hookPath)) {
 		hooks[hookPath] = [];
 	}
-	hooks[hookPath].push(func);
+	if (Array.isArray(func)) {
+		hooks[hookPath] = hooks[hookPath].concat(func);
+	} else {
+		hooks[hookPath].push(func);
+	}
+	logger.verbose('HTTP request hook registed:', hookPath);
 };
 
 exports.parse = function (method, fullPath) {
-	fullPath = encodeURI(fullPath);
+	method = (method === 'HEAD') ? 'GET' : method;
 	var parsed = {
 		query: {},
 		params: {}
@@ -64,85 +74,53 @@ exports.parse = function (method, fullPath) {
 	var queryList = (queryIndex === -1) ? [] : fullPath.substring(queryIndex + 1).split('&');
 	var path = ((queryIndex === -1) ? fullPath : fullPath.substring(0, queryIndex));
 	path += (path[path.length - 1] === '/') ? '' : '/';
-	var matched = false;
-	var list = routes[method.toLowerCase()] || [];
-	for (var j = 0, jen = list.length; j < jen; j++) {
-		if (path.search(list[j].pattern) === 0) {
-			var item = list[j];
-			var res = path.match(item.pattern);
-			// first element is the matched string
-			// discard it
-			res.shift();
-			parsed.origin = decodeURI(path);
-			parsed.path = item.path;
-			parsed.handler = item.handler;
-			for (var k = 0, ken = item.paramNames.length; k < ken; k++) {
-				parsed.params[item.paramNames[k]] = decodeURI(res[k]) || null;
-			}
-			matched = true;
+	var list = routes[method] || [];
+	var matched;
+	for (var h = 0, hen = list.length; h < hen; h++) {
+		var item = list[h];
+		if (path.search(item.pattern) === 0) {
+			matched = item;
 			break;
 		}
 	}
 	if (!matched) {
+		// failed to resolve
 		return null;
 	}
+	// get request handler
+	var res = path.match(matched.pattern);
+	// first element is the matched string
+	// discard it
+	res.shift();
+	parsed.origin = decodeURI(path);
+	parsed.path = matched.path;
+	parsed.pattern = matched.pattern;
+	parsed.handler = matched.handler;
+	for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
+		parsed.params[matched.paramNames[k]] = decodeURI(res[k]) || null;
+	}
+	// parse request query
 	for (var i = 0, len = queryList.length; i < len; i++) {
 		var sep = queryList[i].split('=');
 		parsed.query[sep[0]] = sep[1];
 	}
+	// find request hooks
 	parsed.hooks = findHooks(parsed.path);
 	return parsed;
 };
 
-function findHooks(parsedPath) {
+function findHooks(reqPath) {
 	var matchedHooks = [];
 	for (var path in hooks) {
-		if (parsedPath.indexOf(path) === 0) {
+		if (path === '/') {
+			matchedHooks = matchedHooks.concat(hooks[path]);
+			continue;
+		}
+		var index = reqPath.indexOf(path);
+		var lastChar = reqPath[path.length];
+		if (index === 0 && (lastChar === '/' || lastChar === undefined)) {
 			matchedHooks = matchedHooks.concat(hooks[path]);
 		}
 	}
 	return matchedHooks;
 }
-
-/*
-for (var i = 0; i < 200; i++) {
-	exports.define('GET', '/vv/' + i, function () {});
-	exports.hook('/vv/' + i, function () {});
-}
-exports.define('GET', '/a/b/{C}/d/e/{F}/{G}/h', function () {});
-exports.define('GET', '/abc/def/ghijkl/{word}', function () {});
-exports.define('GET', '/test/{name}', function () {});
-exports.hook('a/b/{C}', function ab() {});
-exports.hook('/test/{name}', function test() {});
-exports.hook('/', function all() {});
-exports.hook('/a/b/{C}/d/e/{F}/{G}/h', function abdeh() {});
-
-var s = Date.now();
-console.log(exports.parse('GET', '/a/b/c/d/e/f/g?z=10&y=20'));
-console.log('no match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/a/b/c/d/e/f/g/?z=10&y=20'));
-console.log('no match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/a/b/c/d/e/日本語/g'));
-console.log('no match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/abc/def/ghijkl/i_am_a_param'));
-console.log('match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/abc/def/ghijkl/i_am_a_param/hmmm'));
-console.log('match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/a/b/XXX/d/e/YYY/ZZZ/h'));
-console.log('match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/a/b/日本語/d/e/英語/ZZZ/h?id=100&name=fff'));
-console.log('match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/test/fff/a/b/XXX/d/e/YYY/ZZZ/h'));
-console.log('no match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-s = Date.now();
-console.log(exports.parse('GET', '/test/KeithJarrett/1/2/3/4/5/6/7/8/9/0/?type=piano&genre=jazz'));
-console.log('match >>>>>>>>>>>>>', Date.now() - s + ' ms');
-*/
-

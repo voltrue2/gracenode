@@ -35,6 +35,11 @@ exports.getReqBody = function (req, cb) {
 	});
 	req.on('end', function () {
 		var data = readRequestBody(req.url, req.headers, body);
+		if (req.method === 'GET' || req.method === 'HEAD') {
+			for (var key in data) {
+				req.query[key] = data[key];
+			}
+		}
 		logger.verbose(
 			'Reuest body:',
 			util.fmt('url', req.method + ' ' + req.url),
@@ -81,6 +86,11 @@ function typecast(data) {
 			default:
 				// do nothing
 				break;
+		}
+		if (typeof data === 'object') {
+			for (var i in data) {
+				data[i] = typecast(data[i]);
+			}
 		}
 		try {
 			return JSON.parse(data);

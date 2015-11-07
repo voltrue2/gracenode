@@ -24,7 +24,7 @@ var REDIRECT_STATUS_LIST = [
 var DEFAULT_ERROR_STATUS = 400;
 var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 
-function Response(req, res) {
+function Response(req, res, errorMap) {
 	// public
 	this.headers = {};
 	// private
@@ -32,6 +32,8 @@ function Response(req, res) {
 	this._res = res;
 	this._gzip = true;
 	this._sent = false;
+	this._errorHandled = false;
+	this._errorMap = errorMap;
 	// default response headers
 	for (var i in DEFAULT_HEADERS) {
 		this.headers[i] = DEFAULT_HEADERS[i];
@@ -51,22 +53,26 @@ Response.prototype.error = function (error, status) {
 		data = error;
 	}
 	status = status || DEFAULT_ERROR_STATUS;
-	this.headers['Content-Type'] = 'application/json; charaset=UTF-8';
+	this.headers['Content-Type'] = 'application/json; charset=UTF-8';
 	this._send(JSON.stringify(data), status);
 };
 
 Response.prototype.json = function (data, status) {
-	this.headers['Content-Type'] = 'application/json; charaset=UTF-8';
+	this.headers['Content-Type'] = 'application/json; charset=UTF-8';
 	this._send(JSON.stringify(data), status);
 };
 
 Response.prototype.html = function (data, status) {
-	this.headers['Content-Type'] = 'text/html; charaset=UTF-8';
+	this.headers['Content-Type'] = 'text/html; charset=UTF-8';
 	this._send(data, status);
 };
 
 Response.prototype.text = function (data, status) {
-	this.headers['Content-Type'] = 'text/plain; charaset=UTF-8';
+	this.headers['Content-Type'] = 'text/plain; charset=UTF-8';
+	this._send(data, status);
+};
+
+Response.prototype.data = function (data, status) {
 	this._send(data, status);
 };
 
@@ -80,6 +86,9 @@ Response.prototype.download = function (dataOrPath, status) {
 				that.error(error, 404);
 				return;
 			}
+			var filename = dataOrPath.substring(dataOrPath.lastIndexOf('/') + 1); 
+			that.headers['Content-Disposition'] = 'attachment; filename=' + filename;
+			that.headers['Content-Type'] = mime.getFromPath(dataOrPath);
 			that.headers['Content-Length'] = data.length;
 			that._send(data, status);
 		});
@@ -179,8 +188,28 @@ Response.prototype._send = function (data, status) {
 		);
 		return;
 	}
+	// check for error handler in errorMap
+	if (!this._errorHandled && this._errorMap[status]) {
+		var errorHandler = this._errorMap[status];
+		this._errorHandled = true;
+		logger.error(
+			'Error response handler found:',
+			util.fmt('url', this._req.method + ' ' + this._req.url),
+			util.fmt('id', this._req.id),
+			util.fmt('status', status),
+			'<error>', data
+		);
+		errorHandler(this._req, this);
+		return;
+	}
 	this._sent = true;
 	var that = this;
+	logger.verbose(
+		'Response data:',
+		util.fmt('url', this._req.method + ' ' + this._req.url),
+		util.fmt('id', this._req.id),
+		'<data>', data
+	);
 	gzip(this._gzip, data, function (error, zipped, size, dataType) {
 		if (error) {
 			// forced 500 error
@@ -216,13 +245,23 @@ function send(req, res, headers, data, type, status) {
 	// respond
 	if (req.method === 'HEAD') {
 		// HEAD does not send content
-		logger.info(
-			util.fmt('url', req.method + ' ' + req.url),
-			util.fmt('id', req.id),
-			util.fmt('status', status),
-			util.fmt('time', time + 'ms'),
-			headers
-		);
+		if (status < 400) {
+			logger.info(
+				util.fmt('url', req.method + ' ' + req.url),
+				util.fmt('id', req.id),
+				util.fmt('status', status),
+				util.fmt('time', time + 'ms'),
+				headers
+			);
+		} else {
+			logger.error(
+				util.fmt('url', req.method + ' ' + req.url),
+				util.fmt('id', req.id),
+				util.fmt('status', status),
+				util.fmt('time', time + 'ms'),
+				headers
+			);
+		}
 		res.end('', 'binary');
 		return;
 	}

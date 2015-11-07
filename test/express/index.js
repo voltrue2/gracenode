@@ -1,5 +1,5 @@
 var logEnabled = process.argv[process.argv.length - 1].replace('--log=', '') === 'true' ? true : false;
-var port = 9099;
+var port = 9899;
 var assert = require('assert');
 var request = require('./request');
 var gn = require('../../src/gracenode');
@@ -11,6 +11,10 @@ describe('gracenode w/ express', function () {
 		gn.config({
 			log: {
 				console: logEnabled
+			},
+			router: {
+				port: null,
+				host: null
 			}
 		});
 		gn.use('express', require('express'));

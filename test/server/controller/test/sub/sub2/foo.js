@@ -1,8 +1,10 @@
-var gn = require('gracenode');
-var logger = gn.log.create();
 
 exports.GET = function (req, res) {
-	logger.debug('controller:', req.controller);
-	logger.debug('method:', req.method);
-	res.json({ key: req.get('key'), method: 'sub2/foo', params: req.parameters });
+	var params = req.parameters || [];
+	if (!params.length) {
+		for (var i in req.params) {
+			params.push(req.params[i]);
+		}
+	}
+	res.json({ key: req.get ? req.get('key') : req.args.key, method: 'sub2/foo', params: params });
 };

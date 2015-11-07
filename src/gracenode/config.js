@@ -14,20 +14,36 @@ exports.load = function (configObj) {
 };
 
 // dotted notation is supported
-exports.get = function (name) {
-	if (!name) {
+exports.get = function (propName) {
+	if (!propName) {
 		return gn.lib.cloneObj(config);
 	}
-	var i = 0;
-	var list = name.split('.');
-	var tmp = config;
-	tmp = tmp[list[i]] || null;
-	i += 1;
-	while (tmp && tmp[list[i]]) {
-		tmp = tmp[list[i]] || null;
-		i += 1;
+	var propNames = [];
+	if (propName.indexOf('.') !== -1) {
+		// split it by period
+		propNames = propName.split('.');
+	} else {
+		propNames.push(propName);
 	}
-	return gn.lib.cloneObj(tmp);
+	// this is to indicate if we found a match of configurations at least once or not
+	// if found is false, we return null
+	var found = false;
+	var conf = config;
+	for (var i = 0, len = propNames.length; i < len; i++) {
+		var prop = propNames[i];
+		if (conf[prop] !== undefined) {
+			conf = conf[prop];
+			found = true;
+		} else {
+			// if the configurations you are looking for is not found, return null
+			conf = null;
+			break;
+		}
+	}
+	if (!found) {
+		conf = null;
+	}
+	return gn.lib.cloneObj(conf);
 };
 
 function merge(key, origin, obj) {

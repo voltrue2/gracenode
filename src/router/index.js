@@ -12,6 +12,8 @@ var gn = require('../gracenode');
 var logger = gn.log.create('router');
 var config;
 var server;
+var trailingSlash = false;
+var errorMap = {};
 
 var ERROR = {
 	NOT_FOUND: 'NOT_FOUND',
@@ -24,18 +26,48 @@ exports.config = function (configIn) {
 	config = configIn;
 };
 
-exports.register = function (method, path, handler) {
-	parser.define(method, path, handler);
+exports.get = function (path, handler) {
+	parser.define('GET', path, handler);
+};
+
+exports.post = function (path, handler) {
+	parser.define('POST', path, handler);
+};
+
+exports.head = function (path, handler) {
+	parser.define('HEAD', path, handler);
+};
+
+exports.put = function (path, handler) {
+	parser.define('PUT', path, handler);
+};
+
+exports.delete = function (path, handler) {
+	parser.define('DELETE', path, handler);
+};
+
+exports.patch = function (path, handler) {
+	parser.define('PATCH', path, handler);
+};
+
+exports.forceTrailingSlash = function () {
+	trailingSlash = true;
 };
 
 exports.hook = function (path, func) {
 	parser.hook(path, func);
 };
 
+exports.error = function (status, func) {
+	if (errorMap[status]) {
+		logger.error('Error already registerd for', status);
+		throw new Error('ERROR_ALREADY_REGISTERD');
+	}
+	errorMap[status] = func;
+};
+
 exports.setup = function (cb) {
-	server = http.createServer(function (req, res) {
-		requestHandler(req, res);
-	});
+	server = http.createServer(requestHandler);
 	server.on('listening', function () {
 		logger.info(
 			'HTTP server router started:',
@@ -43,12 +75,12 @@ exports.setup = function (cb) {
 		);
 		cb();
 	});
-	server.on('error', function () {
-		cb(new Error(
-			'HTTP_SERVER_FAILED: ' +
-			config.host + ':' +
-			config.port
-		));
+	server.on('error', function (error) {
+		logger.fatal(
+			'HTTP server router failed to start:',
+			(config.host + ':' + config.port)
+		);
+		cb(error);
 	});
 	gn.onExit(function (next) {
 		try {
@@ -68,18 +100,47 @@ exports.setup = function (cb) {
 			next(e);
 		}
 	});
-	server.listen(config.port, config.host);
+	try {
+		server.listen(config.port, config.host);
+	} catch (error) {
+		logger.fatal(
+			'HTTP server router failed to start:',
+			config.host, ':', config.port
+		);
+		cb(error);
+	}
 };
 
 function requestHandler(req, res) {
+	if (trailingSlash) {
+		var uriComponents = req.url.split('?');
+		var uri = uriComponents[0];
+		var queries = uriComponents[1] ? '?' + uriComponents[1] : '';
+		var trailing = uri.substring(uri.length - 1);
+		if (trailing !== '/') {
+			logger.verbose(
+				'Enforcing trailing slash on',
+				util.fmt('url', req.method + ' ' + req.url)
+			);
+			res.writeHeader(307, { location: uri + '/' + queries });
+			return res.end();
+		}
+	}
 	var method = req.method;
 	var parsed = parser.parse(method, req.url);	
-	var response = new Response(req, res);
+	var response = new Response(req, res, errorMap);
 
 	// assign request ID
 	req.id = uuid.v4();
 	// set start time
 	req.startTime = Date.now();
+
+	logger.info(
+		'Request Resolved:',
+		util.fmt('url', req.method + ' ' + req.url),
+		util.fmt('id', req.id),
+		'\n<resolved>', parsed
+	);
 
 	if (parsed === null) {
 		// 404
@@ -97,18 +158,21 @@ function requestHandler(req, res) {
 		hook(req, response, next);
 	};
 
+	// shared data for hooks and request handler
+	req.args = {};
+	// parsed url path
+	req.path = parsed.path;
+	// request GET parameters
+	req.query = parsed.query;
+	// request URL parameters
+	req.params = parsed.params;
+	// extract request body
 	request.getReqBody(req, function (error, body) {
 		if (error) {
 			// 500
 			response.error(error, 500);
 			return;
 		}
-		// shared data for hooks and request handler
-		req.args = {};
-		// request GET parameters
-		req.query = parsed.query;
-		// request URL parameters
-		req.params = parsed.params;
 		// request body parameters
 		req.body = body;
 		// cookies

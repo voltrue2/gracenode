@@ -12,5 +12,13 @@ exports.expected = {
 };
 
 exports.GET = function (req, res) {
+	if (req.args) {
+		if (typeof req.query.id !== 'number') {
+			return res.error(new Error('id must be a number'), 400);
+		}
+		if (typeof req.query.name !== 'string') {
+			return res.error(new Error('name must be a string'), 400);
+		}
+	}
 	res.json('ok');
 };

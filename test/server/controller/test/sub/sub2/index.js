@@ -4,5 +4,11 @@ exports.params = [
 ];
 
 exports.GET = function (req, res) {
-	res.json({ key: req.get('key'), method: 'sub2/index', params: req.parameters });
+	var params = req.parameters || [];
+	if (!params.length) {
+		for (var i in req.params) {
+			params.push(req.params[i]);
+		}
+	}
+	res.json({ key: req.get ? req.get('key') : req.args.key, method: 'sub2/index', params: params });
 };

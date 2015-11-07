@@ -8,14 +8,17 @@ exports.PUT = function (req, res) {
 		if (error) {
 			return res.error(error, 500);
 		}
-		req.moveUploadedFile(path, newPath, function (error) {
+		var mv = req.moveUploadedFile || fs.rename;
+		mv(path, newPath, function (error) {
 			if (error) {
 				return res.error(error, 500);
 			}
-			req.getUploadedFileData(newPath, function (error, data) {
+			var read = req.getUploadedFileData || fs.readFile;
+			read(newPath, function (error, data) {
 				if (error) {
 					return res.error(error, 500);
 				}
+				data = data.toString();
 				res.json({ data: data });
 			});
 		});

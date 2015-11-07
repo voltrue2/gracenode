@@ -1,4 +1,8 @@
 exports.GET = function (req, res) {
-	res.header('url', req.url);
+	if (res.header) {
+		res.header('url', req.url);
+	} else {
+		res.headers.url = req.url;
+	}
 	res.json('here');
 };
