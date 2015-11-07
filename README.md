@@ -250,6 +250,8 @@ gn.router.get('/example', function (req, res) {
 gn.router.get('/mypage', require('/path/to/mypage/handler'));
 ```
 
+<a href="#router-1">More Details Here</a>
+
 ## Methods
 
 ### .getRootPath()
