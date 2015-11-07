@@ -14,6 +14,8 @@
 
 - Provides plethora of utility functions to aid development.
 
+- Provides HTTP router for web applications.
+
 ## Installation via npm
 
 **NOTE:** If you are running your application as a daemon with older version of **gracenode**, please make sure to stop the daemon before installing the newer version.
