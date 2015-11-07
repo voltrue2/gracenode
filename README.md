@@ -250,26 +250,6 @@ gn.router.get('/example', function (req, res) {
 gn.router.get('/mypage', require('/path/to/mypage/handler'));
 ```
 
-#### gracenode.router.post(url [string], handler [function])
-
-Registers a routing for POST requests.
-
-#### gracenode.router.put(url [string], handler [function])
-
-Registers a routing for PUT requests.
-
-#### gracenode.router.delete(url [string], handler [function])
-
-Registers a routing for DELETE requests.
-
-#### gracenode.router.head(url [string], handler [function])
-
-Registers a routing for HEAD requests.
-
-#### gracenode.router.patch(url [string], handler [function])
-
-Registers a routing for PATCH requests.
-
 ## Methods
 
 ### .getRootPath()
