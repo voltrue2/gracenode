@@ -925,7 +925,7 @@ gracenode.router.get('/example/{category}/info/{name}', function (req, res) {
 
 Object that holds request body (For POST, PUT, DELETE, and PATCH).
 
-##### req.cookie()
+##### req.cookies()
 
 Returns a cookie object.
 
