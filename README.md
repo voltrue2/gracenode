@@ -98,7 +98,7 @@ gn.config(require('/path/to/my/shared/config.json'));
 gn.config(require('/path/to/my/custom/config.json'));
 ```
 
-**NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="#default-configurations">README</a>.
+**NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="https://github.com/voltrue2/gracenode#default-configurations">README</a>.
 
 ## Start Your Application As A Daemon
 
@@ -118,7 +118,7 @@ Assuming `app.js` is your appliction file to execute.
 
 `./gracenode app.js start -l /path/to/my/daemon/logging/`
 
-**NOTE:** More details on the daemonization command options will be explain later in this <a href="#daemon-commands">README</a>.
+**NOTE:** More details on the daemonization command options will be explain later in this <a href="https://github.com/voltrue2/gracenode#daemon-commands">README</a>.
 
 ## Auto-Restarting Of Daemon Process
 
@@ -165,7 +165,7 @@ gn.start({
 
 **NOTE 3:** `this` inside of the functions you assign to the 3rd argument is the module you are "using". In this example, `this` is `foo` module.
 
-**NOTE 4:** More details on `.use()` and its options will be explained later in this <a href="#usemodulename-string-modulepath-string-options-object">README</a>.
+**NOTE 4:** More details on `.use()` and its options will be explained later in this <a href="https://github.com/voltrue2/gracenode#usemodulename-string-modulepath-string-options-object">README</a>.
 
 #### Accessing Bootstrapped Modules
 
@@ -207,7 +207,7 @@ gn.start(function () {
 
 ### .log
 
-A logger. For more details, please read <a href="#logging">here</a>.
+A logger. For more details, please read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
 
 ### .lib
 
@@ -217,7 +217,7 @@ A library of built-in utility functions.
 
 An HTTP server router to help you build HTTP rest server.
 
-For more details please read <a href="#router-1">here</a>.
+For more details please read <a href="https://github.com/voltrue2/gracenode#router-1">here</a>.
 
 #### Register Routings
 
@@ -254,7 +254,7 @@ gn.router.get('/example', function (req, res) {
 gn.router.get('/mypage', require('/path/to/mypage/handler'));
 ```
 
-<a href="#router-1">More Details Here</a>
+<a href="https://github.com/voltrue2/gracenode#router-1">More Details Here</a>
 
 ## Methods
 
@@ -880,7 +880,7 @@ Unique ID for each request.
 
 ##### req.args
 
-Object to hold user data for sharing the data among <a href="#">request hooks</a> and handler.
+Object to hold user data for sharing the data among <a href="https://github.com/voltrue2/gracenode#register-request-hooks">request hooks</a> and handler.
 
 **Example**:
 
