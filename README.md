@@ -211,7 +211,7 @@ A logger. For more details, please read <a href="https://github.com/voltrue2/gra
 
 ### .lib
 
-A library of built-in utility functions.
+A library of built-in utility functions. For more details: <a href="https://github.com/voltrue2/gracenode#gracenodelib">here</a>.
 
 ### .router
 
