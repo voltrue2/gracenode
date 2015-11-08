@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.4
+
+## Added
+
+### req.cookies() added
+
+## Changed
+
+### README added for cookies
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.3
 
 ## Added

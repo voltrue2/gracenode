@@ -925,6 +925,32 @@ gracenode.router.get('/example/{category}/info/{name}', function (req, res) {
 
 Object that holds request body (For POST, PUT, DELETE, and PATCH).
 
+##### req.cookie()
+
+Returns a cookie object.
+
+**Example**:
+
+How to set a cookie data
+
+```javascript
+gracenode.router.login('/login', function (req, res) {
+	// do some loging operations here
+	var cookies = req.cookies();
+	cookies.set('sessionId', sessionId);
+	// respond here
+});
+```
+
+How to get a cookie data
+
+```javascript
+gracenode.router.get('/example', function (req, res) {
+	var cookies = req.cookies();
+	var sessionId = cookies.get('session');
+});
+```
+
 #### res
 
 Response object tat wraps the HTTP response object of node.js.

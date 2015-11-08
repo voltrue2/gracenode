@@ -177,19 +177,10 @@ function requestHandler(req, res) {
 		// request body parameters
 		req.body = body;
 		// cookies
-		req.cookies = new Cookies(req, res);
+		req.cookies = createCookieGetter(req, res);
 		// no hooks
 		if (!parsed.hooks.length) {
-			logger.verbose(
-				'Handle request:',
-				util.fmt('url', req.method + ' ' + req.url),
-				util.fmt('id', req.id),
-				'\n<request headers>', req.headers,
-				'\n<args>', req.args,
-				'\n<query>', req.query,
-				'\n<params>', req.params,
-				'\n<body>', req.body
-			);
+			reqHandlerLog(req);
 			parsed.handler(req, response);
 			return;
 		}
@@ -200,17 +191,27 @@ function requestHandler(req, res) {
 				response.error(error, 400);
 				return;
 			}
-			logger.verbose(
-				'Handle request:',
-				util.fmt('url', req.method + ' ' + req.url),
-				util.fmt('id', req.id),
-				'\n<request headers>', req.headers,
-				'\n<args>', req.args,
-				'\n<query>', req.query,
-				'\n<params>', req.params,
-				'\n<body>', req.body
-			);
+			reqHandlerLog(req);
 			parsed.handler(req, response);
 		});
 	});
+}
+
+function createCookieGetter(req, res) {
+	return function () {
+		return new Cookies(req, res);
+	};
+}
+
+function reqHandlerLog(req) {
+	logger.verbose(
+		'Handle request:',
+		util.fmt('url', req.method + ' ' + req.url),
+		util.fmt('id', req.id),
+		'\n<request headers>', req.headers,
+		'\n<args>', req.args,
+		'\n<query>', req.query,
+		'\n<params>', req.params,
+		'\n<body>', req.body
+	);
 }
