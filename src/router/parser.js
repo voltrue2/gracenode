@@ -29,6 +29,7 @@ exports.define = function (method, path, handler) {
 	res.path = headingSlash + path.replace(/\/{(.*?)}/g, '');	
 	res.handler = handler;
 	routes[method].push(res);
+	// sort the order of routes long uri to short uri
 	routes[method].sort(function (a, b) {
 		return b.pattern.length - a.pattern.length;
 	});

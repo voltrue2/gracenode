@@ -153,12 +153,36 @@ describe('gracenode.router', function () {
 		gn.router.get('/test/sub/{one}/{two}', require(pre + '/test/sub/index').GET);
 		gn.router.get('/test/sub/sub2/foo/{one}/{two}', require(pre + '/test/sub/sub2/foo').GET);
 		gn.router.get('/test/sub/sub2/{one}/{two}', require(pre + '/test/sub/sub2/index').GET);
+		gn.router.get('/car', function (req, res) {
+			res.text('/car');
+		});
+		gn.router.get('/car/{type}/detail/{info}', function (req, res) {
+			res.text('/car/' + req.params.type + '/detail/' + req.params.info);
+		});
 	});
 
 	it('can register error handlers', function () {
 		gn.router.error(500, require(pre + '/error/internal').GET);
 		gn.router.error(404, require(pre + '/error/notFound').GET);
 		gn.router.error(403, require(pre + '/error/unauthorized').POST);
+	});
+
+	it('can handle a GET request /car', function (done) {
+		request.GET(http + '/car', {}, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(body, '/car');
+			assert.equal(status, 200);
+			done();
+		});
+	});
+
+	it('can handle a GET request /car/{type}/detail/{info}', function (done) {
+		request.GET(http + '/car/suv/detail/black', {}, options, function (error, body, status) {
+			assert.equal(error, undefined);
+			assert.equal(body, '/car/suv/detail/black');
+			assert.equal(status, 200);
+			done();
+		});
 	});
 
 	it('can handle a GET request /test/get2/one/two/three/', function (done) {
