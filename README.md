@@ -67,6 +67,10 @@ gn.configure({
 	cluster: {
 		// Maximum number of workers
 		max: 0
+	},
+	ruter: {
+		port: 8888,
+		host: 'localhost'
 	}
 });
 
@@ -1022,7 +1026,7 @@ Each hook function will have `req`, `res`, and `next` as arguments.
 
 `next` is the function to move on to next hook or handler.
 
-#### gracenode.error(status [number], handler [function])
+##### gracenode.router.error(status [number], handler [function])
 
 `gracenode.router` can optionally execute an error handler for specific error status such as 404.
 
