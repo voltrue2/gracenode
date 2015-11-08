@@ -223,8 +223,6 @@ For more details please read <a href="#router-1">here</a>.
 
 To register HTTP endpoints, call the following functions.
 
-**NOTE**: The routing must be done BEFORE calling `gracenode.start()`.
-
 #### Configurations
 
 ```
@@ -807,8 +805,6 @@ gn.start(function () {
 ### Register endpoints
 
 You must register endpoint routes in order to setup your REST server with `gracenode.router`.
-
-**NOTE**: Registration of all endpoints must be done BEFORE calling `gracenode.start()`.
 
 #### GET
 

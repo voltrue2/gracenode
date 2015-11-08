@@ -60,9 +60,10 @@ exports.hook = function (path, func) {
 
 exports.error = function (status, func) {
 	if (errorMap[status]) {
-		logger.error('Error already registerd for', status);
+		logger.error('Error handler already registerd for', status);
 		throw new Error('ERROR_ALREADY_REGISTERD');
 	}
+	logger.info('Error handler registered for:');
 	errorMap[status] = func;
 };
 
