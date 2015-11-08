@@ -198,25 +198,21 @@ function setupLogCleaner(cb) {
 }
 
 function startMod(cb) {
-	if (!cluster.isMaster()) {
-		mod.start(config.get(), exports.onExit, function (error, modules) {
-			if (error) {
-				return cb(error);
-			}
-			exports.mod = modules;
-			cb();
-		});
-		return;
-	}
-	logger.verbose('Master process does not bootstrap modules');
-	cb();
+	mod.start(config.get(), exports.onExit, function (error, modules) {
+		if (error) {
+			return cb(error);
+		}
+		exports.mod = modules;
+		cb();
+	});
 }
 
 function startRouter(cb) {
-	if (config.get('router.port') && config.get('router.host')) {
+	if (!cluster.isMaster() && config.get('router.port') && config.get('router.host')) {
 		exports.router.setup(cb);
 		return;
 	}
+	logger.verbose('Master process does not start HTTP server router');
 	cb();
 }
 

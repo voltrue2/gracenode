@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.5
+
+## Added
+
+None
+
+## Changed
+
+### gracenode router does not start the server on master process in cluster mode
+
+### gracenode bootstrapped modules on master process in cluster mode
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.4
 
 ## Added

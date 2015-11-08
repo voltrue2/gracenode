@@ -40,10 +40,13 @@ if (process.argv[6]) {
 }
 
 gn.start(function () {
-	if (!gn.isMaster()) {
-		if (!gn.mod.async) {
-			gn.stop(new Error('noAsync'));
-		}
+	if (!gn.mod.async) {
+		gn.stop(new Error('noAsync'));
 	}
-	gn.stop();
+	if (gn.isMaster() && !gn.mod.async) {
+		gn.stop(new Error('noAsyncOnMaster'));
+	}
+	setTimeout(function () {
+		gn.stop();
+	}, 1000);
 });
