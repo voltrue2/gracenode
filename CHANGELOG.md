@@ -10,9 +10,9 @@ None
 
 ## Changed
 
-### gracenode router does not start the server on master process in cluster mode
+### gracenode router now does not start the server on master process in cluster mode
 
-### gracenode bootstrapped modules on master process in cluster mode
+### gracenode now bootstrappes modules on master process in cluster mode
 
 ## Deprecated
 
