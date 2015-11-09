@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### Bug fix: fixed the broken ./gracenode symbolic link
+
 ### gracenode router now does not start the server on master process in cluster mode
 
 ### gracenode now bootstrappes modules on master process in cluster mode

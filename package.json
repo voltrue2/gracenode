@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"preinstall": "rm -f ../../gracenode",
-		"install": "ln -fs node_modules/gracenode2/aeterno ../../gracenode"
+		"install": "ln -fs node_modules/gracenode/aeterno ../../gracenode"
 	},
 	"dependencies": {
 		"async": "1.4.2",
