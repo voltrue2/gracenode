@@ -14,7 +14,7 @@ exports.load = function (path, cb) {
 
 exports.getLoadedByPath = function (path) {
 	if (loaded[path]) {
-		return loaded;
+		return loaded[path];
 	}
 	return null;
 };
@@ -42,7 +42,7 @@ function load(path, cb) {
 			}
 			var prerenderedData = render.prerender(content);
 			loaded[path.replace(dirpath, '')] = {
-				source: content,
+				source: prerenderedData.content,
 				tags: prerenderedData.list,
 				vars: prerenderedData.vars
 			};
@@ -50,10 +50,3 @@ function load(path, cb) {
 		});
 	});
 }
-
-exports.load('/var/www/npm-repo/node_modules/gracenode/src/render/templates', function (error) {
-	if (error) {
-		return console.error('Error', error);
-	}
-	console.log(JSON.stringify(loaded, null, 2));
-});

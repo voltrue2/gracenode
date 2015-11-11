@@ -6,10 +6,12 @@
 <script type="text/javascript" src="{{ list.1 }}"></script>
 </head>
 <body>
-{{require(/templates/two/require.html)}}
+{{require(/two/require.html)}}
 {{ if (a === b):
 <h1>{a} is {b}</h1>
+else if (a !== b):
+<h1>{a} is NOT {b}</h1>
 endif }}
-{{require({a}/templates/two/require.html)}}
+{{require({c}/require.html)}}
 </body>
 </html>

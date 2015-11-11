@@ -1,9 +1,11 @@
 'use strict';
 
+var loader = require('./loader');
+
 var COND_TAG = /{{(.*?)}}/;
 //var VAR_TAG = /{(.*?)}/g;
 var VAR_TAG = /({{(.*?)}}|{(.*?)})/g;
-var ACTION_TYPES = [
+var LOGIC_TYPES = [
 	'if',
 	'for',
 	'require'
@@ -24,9 +26,24 @@ endfor }}
 */
 
 exports.prerender = function (content) {
-	// remove line breaks
-	content = content.replace(/(\n|\r)/g, '');
+	// remove line breaks and tabs
+	content = content.replace(/(\n|\r|\t)/g, '');
 	return extract(content);
+};
+
+exports.render = function (path, vars) {
+	var loaded = loader.getLoadedByPath(path);
+	if (!loaded) {
+		return null;
+	}
+	var content = loaded.source;
+	var tags = loaded.tags;
+	var varTags = loaded.vars;
+	// apply logics
+	content = applyLogics(content, tags, vars, varTags);
+	// apply vars (logics must be applied first)
+	content = applyVars(content, vars, varTags);
+	return content;
 };
 
 function extract(content) {
@@ -45,47 +62,46 @@ function extract(content) {
 		tmp = tmp.replace(tag, '');
 		// remove open and close {{ and }}
 		tag = tag.substring(2, tag.length - 2);
-		var action = extractAction(tag);
-		if (!action) {
-			// no action means the tag is a variable
+		var logic = extractLogic(tag);
+		if (!logic) {
+			// no logic means the tag is a variable
 			vars = extractVars(vars, '{{' + tag + '}}');
 		} else {
 			vars = extractVars(vars, tag);
+			list.push({
+				tag: '{{' + tag + '}}',
+				logic: logic
+			});
 		}
-		list.push({
-			tag: '{{' + tag + '}}',
-			action: action
-		});
 		index += 1;
 		// next
 		matched = tmp.match(COND_TAG); 
 	}
-
-	return { list: list, vars: vars };
+	return { content: content, list: list, vars: vars };
 }
 
-function extractAction(tag) {
-	var action = null;
+function extractLogic(tag) {
+	var logic = null;
 	var conditions = null;
 	tag = tag.replace(/\ /g, '');
-	for (var i = 0, len = ACTION_TYPES.length; i < len; i++) {
-		if (tag.toLowerCase().indexOf(ACTION_TYPES[i]) === 0) {
-			action = ACTION_TYPES[i];
-			conditions = extractActionConditions(action, tag);
+	for (var i = 0, len = LOGIC_TYPES.length; i < len; i++) {
+		if (tag.toLowerCase().indexOf(LOGIC_TYPES[i]) === 0) {
+			logic = LOGIC_TYPES[i];
+			conditions = extractLogicConditions(logic, tag);
 			break;
 		}
 	}
-	if (!action && !conditions) {
+	if (!logic && !conditions) {
 		return null;
 	}
 	return {
-		action: action,
+		logic: logic,
 		conditions: conditions
 	};
 }
 
-function extractActionConditions(action, tag) {
-	switch (action) {
+function extractLogicConditions(logic, tag) {
+	switch (logic) {
 		case 'if':
 			return getIfConditions(tag);		
 		case 'for':		
@@ -93,7 +109,7 @@ function extractActionConditions(action, tag) {
 		case 'require':
 			return getRequireConditions(tag);
 		default:
-			throw new Error('InvalidAction: ' + action + '\n' + tag);
+			throw new Error('InvalidLogic: ' + logic + '\n' + tag);
 	}
 }
 
@@ -176,4 +192,136 @@ function extractVars(vars, tag) {
 		}
 	}
 	return vars;
+}
+
+function applyVars(content, vars, varTags) {
+	for (var varTag in varTags) {
+		var varName = varTag.replace(/\ /g, '').replace(/({|})/g, '');
+		var value;
+		if (varName.indexOf('.') !== -1) {
+			// variable must be either an array or an object
+			var sep = varName.split('.');
+			value = vars[sep[0]];
+			for (var i = 1, len = sep.length; i < len; i++) {
+				if (value[sep[i]] !== undefined) {
+					value = value[sep[i]];
+				}
+			}
+			if (typeof value === 'object') {
+				value = JSON.stringify(value);
+			}
+		} else {
+			value = vars[varName];
+		}
+		if (value === undefined) {
+			// there is no value
+			continue;
+		}
+		content = content.replace(new RegExp(varTag, 'g'), value);
+	}
+	return content;
+}
+
+function applyLogics(content, tags, vars, varTags) {
+	if (!tags) {
+		// no logic to apply
+		return content;
+	}
+	for (var i = 0, len = tags.length; i < len; i++) {
+		var item = tags[i];
+		var tag = item.tag;
+		var logic = item.logic.logic;
+		var conditions = item.logic.conditions;
+		switch (logic) {
+			case 'require':
+				content = handleRequire(content, tag, conditions, vars, varTags);		
+				break;
+			case 'if':
+				break;
+			case 'for':
+				content = handleFor(content, tag, conditions, vars, varTags);
+				break;
+			default:
+				break;
+		}
+	}
+	return content;
+}
+
+function handleRequire(content, tag, conditions, vars, varTags) {
+	// apply variables
+	conditions = applyVars(conditions, vars, varTags);
+	var required = exports.render(conditions, vars);
+	if (!required) {
+		// TODO: require error...
+		return content;
+	}
+	// add required
+	return content.replace(tag, required);
+}
+
+function handleFor(content, tag, conditions, vars, varTags) {
+	// apply variables to all conditions
+	for (var i = 0, len = conditions.conditions.length; i < len; i++) {
+		conditions[i] = applyVars(conditions.conditions[i], vars, varTags);
+	}
+	// evaluate the conditions for loop
+	var startData = conditions[0].split('=');
+	var startVar = startData[0];
+	var start = parseFloat(startData[1]);
+	var max = conditions[1].split(/(<|>|<\=|>\=)/);
+	var maxOp = max[1];
+	var maxVal = parseFloat(max[2]);
+	// ++, --, +=, -= as a string
+	var changes = conditions[2].match(/(\+\+|\-\-|\+\=|\-\=)/);
+	var changeOp = changes[1];
+	var changeVal;
+	if (!isNaN(conditions[2])) {
+		changeVal = parseFloat(conditions[2]);
+	} else {
+		changeVal = 1;
+	}
+	// iterate
+	var iterateContent = conditions.iterate;
+	var loop = true;
+	var iterated = '';
+	var replacer = function (str) {
+		var replaced = str.replace('.' + startVar, '.' + start);
+		varTags[replaced] = replaced.replace(/({|})/g, '');
+		return replaced;
+	};
+	while (loop) {
+		// iteration operation
+		var iteVars = {};
+		var iteVarTags = {};
+		iteVars[startVar] = start;
+		iteVarTags['{' + startVar + '}'] = startVar;
+		var ite = applyVars(iterateContent, iteVars, iteVarTags);
+		ite = ite.replace(new RegExp('{(.*?).' + startVar + '}', 'g'), replacer);
+		// apply variables
+		iterated += applyVars(ite, vars, varTags);
+		// move the loop
+		if (changeOp === '++' || changeOp === '+=') {
+			start += changeVal;
+		} else if (changeOp === '--' || changeOp === '-=') {
+			start -= changeVal;
+		} else {
+			throw new Error('InvalidLoop: ' + start + ' ' + changeOp + ' ' + changeVal);
+		}
+		// loop stop evaluation	
+		if (maxOp === '<') {
+			loop = start < maxVal;
+		} else if (maxOp === '>') {
+			loop = start > maxVal;
+		} else if (maxOp === '<=') {
+			loop = start <= maxVal;
+		} else if (maxOp === '>=') {
+			loop = start >= maxVal;
+		} else {
+			throw new Error('InvalidLoop: ' + start + ' ' + maxOp + ' ' + maxVal);
+		}
+	}
+	// apply the iterated result
+	content = content.replace(tag, iterated);
+	return content;
 }
