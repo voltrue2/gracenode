@@ -240,6 +240,7 @@ function applyLogics(content, tags, vars, varTags) {
 				content = handleRequire(content, tag, conditions, vars, varTags);		
 				break;
 			case 'if':
+				content = handleIf(content, tag, conditions, vars);
 				break;
 			case 'for':
 				content = handleFor(content, tag, conditions, vars, varTags);
@@ -256,11 +257,96 @@ function handleRequire(content, tag, conditions, vars, varTags) {
 	conditions = applyVars(conditions, vars, varTags);
 	var required = exports.render(conditions, vars);
 	if (!required) {
-		// TODO: require error...
-		return content;
+		throw new Error('RequireFailed: ' + conditions);
 	}
 	// add required
 	return content.replace(tag, required);
+}
+
+function handleIf(content, tag, conditions, vars) {
+	for (var action in conditions) {
+		var andOr;
+		var pass = false;
+		// evaluate multiple or single else if
+		if (action === 'elseif') {
+			var elseifList = conditions[action];
+			for (var j = 0, jen = elseifList.length; j < jen; j++) {
+				var dataList = elseifList[j].conditions;
+				for (var k = 0, ken = dataList.length; k < ken; k++) {
+					if (dataList[k] !== '&&' && dataList[k] !== '||') {
+						var con = dataList[k].split(/(===|!==|==|!=)/);
+						var val11 = vars[con[0]];
+						var val22 = vars[con[2]];
+						switch (con[1]) {
+							case '===':
+							case '==':
+								pass = val11 === val22;
+								break;
+							case '!==':
+							case '!=':
+								pass = val11 !== val22;
+								break;
+							default:
+								throw new Error('InvalidIfConditions: ' + val11 + con[1] + val22);
+						}
+						pass = (!pass && andOr === '||' && prevPass) ? true : true;
+					}
+				}
+				// one of the else-ifs was true
+				if (pass) {
+					content = content.replace(tag, elseifList[j].result);
+					break;
+				}
+			}
+			if (pass) {
+				break;
+			} else {
+				continue;
+			}
+		}
+		var list = conditions[action].conditions;
+	
+		// else	
+		if (!list && action === 'else') {
+			content = content.replace(tag, conditions[action].result);	
+			break;
+		}	
+
+		// evaluate if conditions
+		for (var i = 0, len = list.length; i < len; i++) {
+			if (list[i] !== '&&' && list[i] !== '||') {
+				var prevPass = pass;
+				var cond = list[i].split(/(===|!==|==|!=)/);		
+				var val1 = vars[cond[0]];
+				var val2 = vars[cond[2]];
+				switch (cond[1]) {
+					case '===':
+					case '==':
+						pass = val1 === val2;
+						break;
+					case '!==':
+					case '!=':
+						pass = val1 !== val2;
+						break;
+					default:
+						throw new Error('InvalidIfConditions: ' + val1 + cond[1] + val2);
+				}
+				if (andOr && andOr === '||' && prevPass) {
+					pass = true;
+				}
+			} else {
+				andOr = list[i];
+			}
+		}
+
+		// if was true		
+		if (pass) {
+			content = content.replace(tag, conditions[action].result);
+			break;
+		}
+	}
+
+	return content;
 }
 
 function handleFor(content, tag, conditions, vars, varTags) {
