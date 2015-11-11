@@ -265,45 +265,13 @@ function handleRequire(content, tag, conditions, vars, varTags) {
 
 function handleIf(content, tag, conditions, vars) {
 	for (var action in conditions) {
-		var andOr;
 		var pass = false;
 		// evaluate multiple or single else if
 		if (action === 'elseif') {
 			var elseifList = conditions[action];
 			for (var j = 0, jen = elseifList.length; j < jen; j++) {
 				var dataList = elseifList[j].conditions;
-				for (var k = 0, ken = dataList.length; k < ken; k++) {
-					if (dataList[k] !== '&&' && dataList[k] !== '||') {
-						var con = dataList[k].split(/(===|!==|==|!=|>=|<=|>|<)/);
-						var val11 = vars[con[0]] === undefined ? vars[con[0]] : con[0];
-						var val22 = vars[con[2]] === undefined ? vars[con[2]] : con[2];
-						switch (con[1]) {
-							case '===':
-							case '==':
-								pass = val11 === val22;
-								break;
-							case '!==':
-							case '!=':
-								pass = val11 !== val22;
-								break;
-							case '>=':
-								pass = val1 >= val2;
-								break;
-							case '<=':
-								pass = val1 <= val2;
-								break;
-							case '>':
-								pass = val1 > val2;
-								break;
-							case '<':
-								pass = val1 < val2;
-								break;
-							default:
-								throw new Error('InvalidIfConditions: ' + JSON.stringify(dataList[k]));
-						}
-						pass = (!pass && andOr === '||' && prevPass) ? true : true;
-					}
-				}
+				pass = evalIf(dataList, vars);
 				// one of the else-ifs was true
 				if (pass) {
 					content = content.replace(tag, elseifList[j].result);
@@ -316,6 +284,7 @@ function handleIf(content, tag, conditions, vars) {
 				continue;
 			}
 		}
+
 		var list = conditions[action].conditions;
 	
 		// else	
@@ -325,46 +294,7 @@ function handleIf(content, tag, conditions, vars) {
 		}	
 
 		// evaluate if conditions
-		for (var i = 0, len = list.length; i < len; i++) {
-			if (list[i] !== '&&' && list[i] !== '||') {
-				var prevPass = pass;
-				var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
-				var val1 = vars[cond[0]] === undefined ? vars[cond[0]] : cond[0];
-				var val2 = vars[cond[2]] === undefined ? vars[cond[2]] : cond[2];
-				switch (cond[1]) {
-					case '===':
-					case '==':
-						pass = val1 === val2;
-						break;
-					case '!==':
-					case '!=':
-						pass = val1 !== val2;
-						break;
-					case '>=':
-						pass = val1 >= val2;
-						break;
-					case '<=':
-						pass = val1 <= val2;
-						break;
-					case '>':
-						pass = val1 > val2;
-						break;
-					case '<':
-						pass = val1 < val2;
-						break;
-					default:
-
-						console.log(cond);
-
-						throw new Error('InvalidIfConditions: ' + JSON.stringify(list[i]));
-				}
-				if (andOr && andOr === '||' && prevPass) {
-					pass = true;
-				}
-			} else {
-				andOr = list[i];
-			}
-		}
+		pass = evalIf(list, vars);
 
 		// if was true		
 		if (pass) {
@@ -374,6 +304,49 @@ function handleIf(content, tag, conditions, vars) {
 	}
 
 	return content;
+}
+
+function evalIf(list, vars) {
+	var andOr;
+	var pass = false;
+	for (var i = 0, len = list.length; i < len; i++) {
+		if (list[i] !== '&&' && list[i] !== '||') {
+			var prevPass = pass;
+			var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
+			var val1 = vars[cond[0]] === undefined ? vars[cond[0]] : cond[0];
+			var val2 = vars[cond[2]] === undefined ? vars[cond[2]] : cond[2];
+			switch (cond[1]) {
+				case '===':
+				case '==':
+					pass = val1 === val2;
+					break;
+				case '!==':
+				case '!=':
+					pass = val1 !== val2;
+					break;
+				case '>=':
+					pass = val1 >= val2;
+					break;
+				case '<=':
+					pass = val1 <= val2;
+					break;
+				case '>':
+					pass = val1 > val2;
+					break;
+				case '<':
+					pass = val1 < val2;
+					break;
+				default:
+					throw new Error('InvalidIfConditions: ' + JSON.stringify(list[i]));
+			}
+			if (andOr && andOr === '||' && prevPass) {
+				pass = true;
+			}
+		} else {
+			andOr = list[i];
+		}
+	}
+	return pass;
 }
 
 function handleFor(content, tag, conditions, vars, varTags) {
