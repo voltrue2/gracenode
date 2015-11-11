@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="{{ jspath }}"></script>
+<script type="text/javascript" src="{{ list.0 }}"></script>
+<script type="text/javascript" src="{{ list.1 }}"></script>
+</head>
+<body>
+{{require(/templates/two/require.html)}}
+{{ if (a === b):
+<h1>{a} is {b}</h1>
+endif }}
+{{require({a}/templates/two/require.html)}}
+</body>
+</html>
