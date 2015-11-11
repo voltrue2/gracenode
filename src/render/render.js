@@ -274,9 +274,9 @@ function handleIf(content, tag, conditions, vars) {
 				var dataList = elseifList[j].conditions;
 				for (var k = 0, ken = dataList.length; k < ken; k++) {
 					if (dataList[k] !== '&&' && dataList[k] !== '||') {
-						var con = dataList[k].split(/(===|!==|==|!=)/);
-						var val11 = vars[con[0]];
-						var val22 = vars[con[2]];
+						var con = dataList[k].split(/(===|!==|==|!=|>=|<=|>|<)/);
+						var val11 = vars[con[0]] === undefined ? vars[con[0]] : con[0];
+						var val22 = vars[con[2]] === undefined ? vars[con[2]] : con[2];
 						switch (con[1]) {
 							case '===':
 							case '==':
@@ -286,8 +286,20 @@ function handleIf(content, tag, conditions, vars) {
 							case '!=':
 								pass = val11 !== val22;
 								break;
+							case '>=':
+								pass = val1 >= val2;
+								break;
+							case '<=':
+								pass = val1 <= val2;
+								break;
+							case '>':
+								pass = val1 > val2;
+								break;
+							case '<':
+								pass = val1 < val2;
+								break;
 							default:
-								throw new Error('InvalidIfConditions: ' + val11 + con[1] + val22);
+								throw new Error('InvalidIfConditions: ' + JSON.stringify(dataList[k]));
 						}
 						pass = (!pass && andOr === '||' && prevPass) ? true : true;
 					}
@@ -316,9 +328,9 @@ function handleIf(content, tag, conditions, vars) {
 		for (var i = 0, len = list.length; i < len; i++) {
 			if (list[i] !== '&&' && list[i] !== '||') {
 				var prevPass = pass;
-				var cond = list[i].split(/(===|!==|==|!=)/);		
-				var val1 = vars[cond[0]];
-				var val2 = vars[cond[2]];
+				var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
+				var val1 = vars[cond[0]] === undefined ? vars[cond[0]] : cond[0];
+				var val2 = vars[cond[2]] === undefined ? vars[cond[2]] : cond[2];
 				switch (cond[1]) {
 					case '===':
 					case '==':
@@ -328,8 +340,23 @@ function handleIf(content, tag, conditions, vars) {
 					case '!=':
 						pass = val1 !== val2;
 						break;
+					case '>=':
+						pass = val1 >= val2;
+						break;
+					case '<=':
+						pass = val1 <= val2;
+						break;
+					case '>':
+						pass = val1 > val2;
+						break;
+					case '<':
+						pass = val1 < val2;
+						break;
 					default:
-						throw new Error('InvalidIfConditions: ' + val1 + cond[1] + val2);
+
+						console.log(cond);
+
+						throw new Error('InvalidIfConditions: ' + JSON.stringify(list[i]));
 				}
 				if (andOr && andOr === '||' && prevPass) {
 					pass = true;
