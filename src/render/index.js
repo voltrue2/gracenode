@@ -17,6 +17,7 @@ exports.render = function (path, vars) {
 	return render.render(path, vars);
 };
 
+/*
 exports.config('/var/www/npm-repo/node_modules/gracenode/test/render/templates');
 exports.setup(function (error) {
 	if (error) {
@@ -33,3 +34,4 @@ exports.setup(function (error) {
 	
 	console.log(rendered);
 });
+*/

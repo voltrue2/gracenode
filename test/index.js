@@ -8,3 +8,5 @@ require('./router');
 require('./express');
 // test daemon of gracenode
 require('./daemon');
+// test gracenode.render
+require('./render');

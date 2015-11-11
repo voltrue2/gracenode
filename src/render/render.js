@@ -32,9 +32,12 @@ exports.prerender = function (content) {
 };
 
 exports.render = function (path, vars) {
+	if (!vars) {
+		vars = {};
+	}
 	var loaded = loader.getLoadedByPath(path);
 	if (!loaded) {
-		return null;
+		throw new Error('Pre-renderedNotFound: ' + path);
 	}
 	var content = loaded.source;
 	var tags = loaded.tags;
@@ -203,7 +206,7 @@ function applyVars(content, vars, varTags) {
 			var sep = varName.split('.');
 			value = vars[sep[0]];
 			for (var i = 1, len = sep.length; i < len; i++) {
-				if (value[sep[i]] !== undefined) {
+				if (value && value[sep[i]] !== undefined) {
 					value = value[sep[i]];
 				}
 			}
@@ -269,15 +272,15 @@ function handleFor(content, tag, conditions, vars, varTags) {
 	var startData = conditions[0].split('=');
 	var startVar = startData[0];
 	var start = parseFloat(startData[1]);
-	var max = conditions[1].split(/(<|>|<\=|>\=)/);
+	var max = conditions[1].split(/(<\=|>\=|<|>)/);
 	var maxOp = max[1];
 	var maxVal = parseFloat(max[2]);
 	// ++, --, +=, -= as a string
-	var changes = conditions[2].match(/(\+\+|\-\-|\+\=|\-\=)/);
+	var changes = conditions[2].split(/(\+\+|\-\-|\+\=|\-\=)/);
 	var changeOp = changes[1];
 	var changeVal;
-	if (!isNaN(conditions[2])) {
-		changeVal = parseFloat(conditions[2]);
+	if (changes[2] !== '' && !isNaN(changes[2])) {
+		changeVal = parseFloat(changes[2]);
 	} else {
 		changeVal = 1;
 	}
