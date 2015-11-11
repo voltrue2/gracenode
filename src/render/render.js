@@ -46,6 +46,10 @@ exports.render = function (path, vars) {
 	content = applyLogics(content, tags, vars, varTags);
 	// apply vars (logics must be applied first)
 	content = applyVars(content, vars, varTags);
+	// embed variables as javascript object
+	var js = '<script type="text/javascript">' +
+		'window.gracenode=' + JSON.stringify(vars) + ';</script>';
+	content = content.replace('</head>', js + '</head>');
 	return content;
 };
 
