@@ -17,7 +17,7 @@ exports.render = function (path, vars) {
 	return render.render(path, vars);
 };
 
-exports.config('/var/www/npm-repo/node_modules/gracenode/src/render/templates');
+exports.config('/var/www/npm-repo/node_modules/gracenode/test/render/templates');
 exports.setup(function (error) {
 	if (error) {
 		return console.error(error);
