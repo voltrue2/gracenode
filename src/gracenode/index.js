@@ -10,6 +10,7 @@ var config = require('./config');
 var mod = require('./mod');
 
 var logger;
+var renderPath;
 var clusterConfig;
 var ready = false;
 
@@ -25,6 +26,8 @@ exports.mod = {};
 exports.lib = require(__dirname + '/../../lib');
 
 exports.log = log;
+
+exports.render = require('../render');
 
 exports.router = require('../router');
 
@@ -73,6 +76,7 @@ exports.start = function (cb) {
 			setupLog,
 			startMod,
 			setupLogCleaner,
+			setupRender,
 			startRouter
 		];
 		var done = function (error) {
@@ -101,6 +105,7 @@ function applyConfig() {
 	var routerPort = config.get('router.port');
 	var routerHost = config.get('router.host');
 	var isLogging = false;
+	renderPath = config.get('render.path');
 	if (logConf) {
 		isLogging = true;
 		log.config(logConf);
@@ -109,7 +114,7 @@ function applyConfig() {
 	clusterConfig = {
 		max: 0,
 		logger: isLogging ? log.create('cluster') : null
-	}; 
+	};
 	if (clusterConf) {
 		clusterConfig = setOption(clusterConfig, clusterConf);
 	}
@@ -205,6 +210,16 @@ function startMod(cb) {
 		exports.mod = modules;
 		cb();
 	});
+}
+
+function setupRender(cb) {
+	if (renderPath) {
+		logger.info('Pre-render template files in', renderPath);
+		exports.render.config(renderPath);
+		exports.render.setup(cb);
+		return;
+	}
+	cb();
 }
 
 function startRouter(cb) {

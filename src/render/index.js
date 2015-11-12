@@ -10,6 +10,9 @@ exports.config = function (path) {
 };
 
 exports.setup = function (cb) {
+	if (!pathPrefix) {
+		return cb(new Error('RenderMissingPath'));
+	}
 	loader.load(pathPrefix, cb);	
 };
 

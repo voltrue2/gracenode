@@ -1,11 +1,19 @@
 var assert = require('assert');
-var render = require('../../src/render');
+var gn = require('../../src/gracenode');
 
 describe('gracenode.render', function () {
 	
 	it('can set up gracenode.render', function (done) {
-		render.config(__dirname + '/templates');
-		render.setup(done);
+		gn.config({
+			render: {
+				path: __dirname + '/templates'
+			},
+			router: {
+				host: 'localhost',
+				port: 4444
+			}
+		});
+		gn.start(done);
 	});
 
 	it('can render a template', function () {
@@ -21,7 +29,7 @@ describe('gracenode.render', function () {
 			d: '日本語',
 			e: '"quoted"'
 		};
-		var rendered = render.render('/one/index.html', data);
+		var rendered = gn.render.render('/one/index.html', data);
 		var expected = '<!DOCTYPE html><html><head><script type="text/javascript" src="/test/path">';
 		expected += '</script><script type="text/javascript" src="/test/list/1"></script><script type="text/javascript"';
 		expected += ' src="/test/list/2"></script>';

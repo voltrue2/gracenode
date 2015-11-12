@@ -207,11 +207,17 @@ gn.start(function () {
 
 ### .log
 
-A logger. For more details, please read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
+Logging module. For more details, please read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
 
 ### .lib
 
-A library of built-in utility functions. For more details: <a href="https://github.com/voltrue2/gracenode#gracenodelib">here</a>.
+Library of built-in utility functions. For more details: <a href="https://github.com/voltrue2/gracenode#gracenodelib">here</a>.
+
+### .render
+
+Dynamic renderer for HTML and other contents to be served from the server.
+
+
 
 ### .router
 
