@@ -53,4 +53,19 @@ describe('gracenode.render', function () {
 		assert.equal(expected, rendered);
 	});
 
+	it('can render complex object and array mix variables', function () {
+		var data = {
+			one: { type: 'string', value: 'One' },
+			two: { type: 'number', value: 2 },
+			three: { type: 'array', value: [3] }
+		};
+		var vars = {
+			keys: Object.keys(data),
+			data: data
+		};
+		var rendered = gn.render('/index.html', vars);
+		var expected = fs.readFileSync(__dirname + '/expected/3.html', 'utf8');
+		assert.equal(expected, rendered);
+	});
+
 });

@@ -4,10 +4,17 @@ var loader = require('./loader');
 
 var COND_TAG = /{{(.*?)}}/;
 var VAR_TAG = /({{(.*?)}}|{(.*?)})/g;
+var LOGICS = {
+	IF: 'if',
+	FOR: 'for',
+	FOREACH: 'foreach',
+	REQ: 'require'
+};
 var LOGIC_TYPES = [
-	'if',
-	'for',
-	'require'
+	LOGICS.IF,
+	LOGICS.FOREACH,
+	LOGICS.FOR,
+	LOGICS.REQ
 ];
 var LB = '(_n_)';
 var LBR = /\(_n_\)/g;
@@ -99,7 +106,6 @@ function extract(content) {
 function extractLogic(tag) {
 	var logic = null;
 	var conditions = null;
-	//tag = tag.replace(/(\ /g, '');
 	tag = tag.replace(ALLR, '');
 	for (var i = 0, len = LOGIC_TYPES.length; i < len; i++) {
 		if (tag.toLowerCase().indexOf(LOGIC_TYPES[i]) === 0) {
@@ -119,11 +125,13 @@ function extractLogic(tag) {
 
 function extractLogicConditions(logic, tag) {
 	switch (logic) {
-		case 'if':
+		case LOGICS.IF:
 			return getIfConditions(tag);		
-		case 'for':		
+		case LOGICS.FOR:		
 			return getForConditions(tag);
-		case 'require':
+		case LOGICS.FOREACH:
+			return getForEachConditions(tag);
+		case LOGICS.REQ:
 			return getRequireConditions(tag);
 		default:
 			throw new Error('InvalidLogic: ' + logic + '\n' + tag);
@@ -135,14 +143,14 @@ function getIfConditions(tag) {
 	var tmp;
 	var index = 0;
 	// look for if
-	var openIndex = tag.indexOf('if(');
+	var openIndex = tag.indexOf(LOGICS.ID + '(');
 	var closeIndex = tag.indexOf('):');
-	res['if'] = {
+	res[LOGICS.IF] = {
 		conditions: tag.substring(openIndex + 3, closeIndex).split(/(\&\&|\|\|)/g),
 		result: tag.substring(closeIndex + 2, tag.search(/(elseif\(|else|endif)/))
 	};
 	// look for else if
-	tag = tag.substring(tag.indexOf(res['if'].result) + res['if'].result.length, tag.length);
+	tag = tag.substring(tag.indexOf(res[LOGICS.IF].result) + res[LOGICS.IF].result.length, tag.length);
 	openIndex = tag.indexOf('elseif(');
 	while (openIndex !== -1) {
 		if (!res.elseif) {
@@ -170,7 +178,7 @@ function getIfConditions(tag) {
 	}
 	// look for else
 	openIndex = tag.indexOf('else:');
-	closeIndex = tag.lastIndexOf('endif');
+	closeIndex = tag.lastIndexOf('end' + LOGICS.IF);
 	if (openIndex !== -1) {
 		res['else'] = {
 			conditions: null,
@@ -181,18 +189,29 @@ function getIfConditions(tag) {
 }
 
 function getForConditions(tag) {
-	var open = 'for(';
+	var open = LOGICS.FOR + '(';
 	var closeIndex = tag.lastIndexOf('):');
 	var conditions = tag.substring(tag.indexOf(open) + open.length, closeIndex).split(';');
-	var iterate = tag.substring(closeIndex + 2, tag.lastIndexOf('endfor'));
+	var iterate = tag.substring(closeIndex + 2, tag.lastIndexOf('end' + LOGICS.FOR));
 	return {
 		conditions: conditions,
 		iterate: iterate
 	};
 }
 
+function getForEachConditions(tag) {
+	var openIndex = tag.indexOf(LOGICS.FOREACH + '(') + LOGICS.FOREACH.length + 1;
+	var closeIndex = tag.lastIndexOf('):');
+	var condition = tag.substring(openIndex, closeIndex).replace(/({|})/g, '');
+	var iterate = tag.substring(closeIndex + 2, tag.indexOf('end' + LOGICS.FOREACH));
+	return {
+		condition: condition,
+		iterate: iterate
+	};
+}
+
 function getRequireConditions(tag) {
-	var open = 'require(';
+	var open = LOGICS.REQ + '(';
 	return tag.substring(tag.indexOf(open) + open.length, tag.lastIndexOf(')'));
 }
 
@@ -250,14 +269,17 @@ function applyLogics(content, tags, vars, varTags) {
 		var logic = item.logic.logic;
 		var conditions = item.logic.conditions;
 		switch (logic) {
-			case 'require':
+			case LOGICS.REQ:
 				content = handleRequire(content, tag, conditions, vars, varTags);		
 				break;
-			case 'if':
+			case LOGICS.IF:
 				content = handleIf(content, tag, conditions, vars);
 				break;
-			case 'for':
+			case LOGICS.FOR:
 				content = handleFor(content, tag, conditions, vars, varTags);
+				break;
+			case LOGICS.FOREACH:
+				content = handleForEach(content, tag, conditions, vars, varTags);
 				break;
 			default:
 				break;
@@ -425,6 +447,28 @@ function handleFor(content, tag, conditions, vars, varTags) {
 		}
 	}
 	// apply the iterated result
+	content = content.replace(tag, iterated);
+	return content;
+}
+
+function handleForEach(content, tag, data, vars, varTags) {
+	var objName = data.condition;
+	var obj = vars[objName];
+	if (!obj) {
+		return content;
+	}
+	var iterated = '';
+	var replacer = function (str) {
+		var replaced = str.replace('.key', '.' + key);
+		varTags[replaced] = replaced.replace(/({|})/g, '');
+		return replaced;
+	};
+	var key;
+	for (key in obj) {
+		var reg = new RegExp('{' + objName + '.key(.*?)}', 'g');
+		var ite = data.iterate.replace(reg, replacer);
+		iterated += applyVars(ite, vars, varTags);
+	}
 	content = content.replace(tag, iterated);
 	return content;
 }
