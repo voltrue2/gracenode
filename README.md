@@ -972,6 +972,8 @@ endforeach}}
 
 `{map.key}` = `map[key]`
 
+**NOTE:** Object key is always `key`.
+
 **Example**
 
 ```html
