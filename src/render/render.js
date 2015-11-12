@@ -3,13 +3,17 @@
 var loader = require('./loader');
 
 var COND_TAG = /{{(.*?)}}/;
-//var VAR_TAG = /{(.*?)}/g;
 var VAR_TAG = /({{(.*?)}}|{(.*?)})/g;
 var LOGIC_TYPES = [
 	'if',
 	'for',
 	'require'
 ];
+var LB = '(_n_)';
+var LBR = /\(_n_\)/g;
+var TB = '(_t_)';
+var TBR = /\(_t_\)/g;
+var ALLR = /(\ |\(_n_\)|\(_t_\))/g;
 
 /*
  if syntax
@@ -27,7 +31,8 @@ endfor }}
 
 exports.prerender = function (content) {
 	// remove line breaks and tabs
-	content = content.replace(/(\n|\r|\t)/g, '');
+	content = content.replace(/(\n|\r)/g, LB);
+	content = content.replace(/(\t)/g, TB);
 	return extract(content);
 };
 
@@ -49,7 +54,11 @@ exports.render = function (path, vars) {
 	// embed variables as javascript object
 	var js = '<script type="text/javascript">' +
 		'window.gracenode=' + JSON.stringify(vars) + ';</script>';
-	content = content.replace('</head>', js + '</head>');
+	content = content.replace('</head>', js + '\n</head>');
+	// bring back line breaks and tabs
+	content = content.replace(LBR, '\n');
+	content = content.replace(TBR, '\t');
+
 	return content;
 };
 
@@ -90,7 +99,8 @@ function extract(content) {
 function extractLogic(tag) {
 	var logic = null;
 	var conditions = null;
-	tag = tag.replace(/\ /g, '');
+	//tag = tag.replace(/(\ /g, '');
+	tag = tag.replace(ALLR, '');
 	for (var i = 0, len = LOGIC_TYPES.length; i < len; i++) {
 		if (tag.toLowerCase().indexOf(LOGIC_TYPES[i]) === 0) {
 			logic = LOGIC_TYPES[i];
