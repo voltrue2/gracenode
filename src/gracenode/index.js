@@ -8,6 +8,7 @@ var cluster = require('cluster-mode');
 var rootPath = getRootPath(require('./parent').getTopmostParent());
 var config = require('./config');
 var mod = require('./mod');
+var render = require('../render');
 
 var logger;
 var renderPath;
@@ -27,7 +28,7 @@ exports.lib = require(__dirname + '/../../lib');
 
 exports.log = log;
 
-exports.render = require('../render');
+exports.render = render.render;
 
 exports.router = require('../router');
 
@@ -215,8 +216,8 @@ function startMod(cb) {
 function setupRender(cb) {
 	if (renderPath) {
 		logger.info('Pre-render template files in', renderPath);
-		exports.render.config(renderPath);
-		exports.render.setup(cb);
+		render.config(renderPath);
+		render.setup(cb);
 		return;
 	}
 	cb();

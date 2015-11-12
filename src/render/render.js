@@ -70,7 +70,7 @@ function extract(content) {
 	var vars = {};
 
 	if (!matched) {
-		return { list: [], vars: null };
+		return { content: content, list: [], vars: null };
 	}
 
 	while (matched) {
@@ -400,7 +400,7 @@ function handleFor(content, tag, conditions, vars, varTags) {
 		iteVars[startVar] = start;
 		iteVarTags['{' + startVar + '}'] = startVar;
 		var ite = applyVars(iterateContent, iteVars, iteVarTags);
-		ite = ite.replace(new RegExp('{(.*?).' + startVar + '}', 'g'), replacer);
+		ite = ite.replace(new RegExp('{(.*?).' + startVar + '(.*?)}', 'g'), replacer);
 		// apply variables
 		iterated += applyVars(ite, vars, varTags);
 		// move the loop

@@ -30,8 +30,26 @@ describe('gracenode.render', function () {
 			d: '日本語',
 			e: '"quoted"'
 		};
-		var rendered = gn.render.render('/one/index.html', data);
+		var rendered = gn.render('/one/index.html', data);
 		var expected = fs.readFileSync(__dirname + '/expected/1.html', 'utf8');
+		assert.equal(expected, rendered);
+	});
+
+	it('can render a template and require css style and javascript', function () {
+		var data = {
+			title: 'ペットの名前一覧',
+			subtitle: 'Table',
+			list: [
+				{ category: 'Dog', name: 'Fuchsia' },
+				{ category: 'Cat', name: 'Genki' },
+				{ category: 'Cat', name: '元気' }
+			],
+			num: 1000,
+			color: '#00f',
+			max: 10
+		};
+		var rendered = gn.render('/three/index.html', data);
+		var expected = fs.readFileSync(__dirname + '/expected/2.html', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
