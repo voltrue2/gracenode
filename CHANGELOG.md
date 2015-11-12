@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.6
+
+## Added
+
+### Render added
+
+gracenode added `.render()` to render HTML file etc.
+
+## Changed
+
+None
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.5
 
 ## Added

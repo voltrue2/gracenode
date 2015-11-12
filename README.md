@@ -217,7 +217,19 @@ Library of built-in utility functions. For more details: <a href="https://github
 
 Dynamic renderer for HTML and other contents to be served from the server.
 
+For more details, please read <a href="https://github.com/voltrue2/gracenode#render">here</a>.
 
+**Example**:
+
+```javascript
+gracenode.router.get('/', function (req, res) {
+	var data = {
+		title: 'Hello World'
+	};
+	var renderedHTML = gracenode.render('view/index.html', data); 
+	res.html(renderedHTML);
+});
+```
 
 ### .router
 
@@ -773,9 +785,230 @@ Be more verbose.
 
 Stops or restarts all running daemon processes without user inputs. This option is for {stopall|restartall} command only.
 
+## Render
+
+Render allows you to create dynamic content from templated static files.
+
+It is useful for web pages etc.
+
+### gracenode.render(path [string], data [object])
+
+#### path
+
+A path to the pre-rendered file data to render. 
+
+#### data
+
+An object to be inserted into the rendered file data.
+
+### Access
+
+`gracenode.render`
+
+### Configurations
+
+Render requires a path to read the template files from.
+
+It will then read all template files and pre-render them on the application process start.
+
+```
+render: {
+	path: '/path/to/my/templates'
+}
+```
+
+**Example**:
+
+```javascript
+var gn = require('gracenode');
+gn.config({
+	render: {
+		path: '/path/to/my/template/files/'
+	}
+});
+```
+
+### Embedding Dynamic Data
+
+Render can insert dynamically define values to rendered template file data.
+
+#### Embed Variables
+
+**Syntax**
+
+```
+{{variableName}}
+```
+
+**Example**:
+
+```html
+<div>{{myCar}}</div>
+```
+
+```javascript
+var rendered = gracenode.render('/myview.html', {
+	myCar: 'BMW'
+});
+```
+The above examples will result in `{{myCar}}` being replaced by `{ myCar: 'BMW' }`, so the rendered result is:
+
+```html
+<div>BMW</div>
+```
+
+#### Handle Require Statement
+
+Render can combine multiple pre-rendered template files into one file and render it as one render data.
+
+**Syntax**
+
+```
+{{require(/path/to/my/partial.html)}}
+```
+
+#### Handle If/Else If/Else Statements
+
+Render handles simple if statements.
+
+**WARNING**: You must not have nested if statements.
+
+**WARNING**: You must not mix if statement and for statement.
+
+**Syntax**
+
+```
+{{if (a === b):
+	<div>{a}&nbps;is&nbsp;{b}</div>
+endif}}
+```
+
+**Example**:
+
+```html
+{{if (a === b):
+	<div>{a}&nbps;is&nbsp;{b}</div>
+else if (a > b):
+	<div>{a}&nbsp;is&nbsp;greater&nbps;than&nbsp;{b}</div>
+else
+	<div>{a}&nbps;is&nbsp;NOT&nbsp;{b}</div>
+endif}}
+```
+
+```javascript
+var rendered = gracenode.render('myview.html', {
+	a: 100,
+	b: 10
+});
+```
+
+**IMPORTANT**: The variables inside **IF** must be `{variableName}` NOT `{{variableName}}`.
+
+The above example will result in `<div>{a}&nbsp;is&nbsp;greater&nbps;than&nbsp;{b}</div>` to be in the rendered result:
+
+```html
+<div>100&nbsp;is&nbsp;greater&nbps;than&nbsp;10</div>
+```
+
+#### Handle For Statements (Array Only)
+
+Render handles simple for statements.
+
+**WARNING**: You must not have nested for statements.
+
+**WARNING**: You must not mix if statement and for statement.
+
+**Syntax**
+
+```
+{{for (i = i < {list.length}; i++):
+	<div>{i}:{list.i}</div>
+endfor}}
+```
+
+**NOTE**: `{list.i}` = `list[i]`
+
+**Example**:
+
+```html
+{{for (i = 0; i < {list.length}; i++):
+	<div>{i}:{list.i}</div>
+endfor}}
+```
+
+```javascript
+var rendered = gracenode.render('/myview.html', {
+	list: [
+		'Apple',
+		'Carrot',
+		'Orange'
+	]
+});
+```
+
+**IMPORTANT**: The variables inside **IF** must be `{variableName}` NOT `{{variableName}}`.
+
+The above example will result in:
+
+```html
+<div>0:Apple</div>
+<div>1:Carrot</div>
+<div>2:Orange</div>
+```
+
+#### Handle ForEach Statement (Object Only)
+
+Render handles a simple for loop for object as `foreach`.
+
+**Syntax**
+
+```
+{{foreach ({map})
+	<div>{key}:{map.key}</div>
+endforeach}}
+```
+
+**NOTE**:
+
+`{map.key}` = `map[key]`
+
+**Example**
+
+```html
+{{foreach ({map})
+	<div>{key}:{map.key}</div>
+endforeach}}
+```
+
+```javascript
+var rendered = gracenode.render('/myview.html', {
+	map: {
+		meat: beef,
+		meat: pork,
+		fruit: apple,
+		veggi: beans
+	}
+});
+```
+
+**IMPORTANT**: The variables inside **IF** must be `{variableName}` NOT `{{variableName}}`.
+
+The above example will result in:
+
+```html
+<div>meat:beef</div>
+<div>meat:pork</div>
+<div>fruit:apple</div>
+<div>veggi:beans</div>
+```
+
 ## Router
 
 Router lets you build HTTP server and REST endpoints easily.
+
+### Access
+
+`gracenode.router`
 
 ### Configure Port and Host
 
