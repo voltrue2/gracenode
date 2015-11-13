@@ -1,12 +1,12 @@
 // test starting up of gracenode
-//require('./start');
+require('./start');
 // test with gracenode-server
-//require('./server');
+require('./server');
 // test with express
-//require('./express');
+require('./express');
 // test daemon of gracenode
-//require('./daemon');
+require('./daemon');
 // test gracenode.router
-//require('./router');
+require('./router');
 // test gracenode.render
 require('./render');
