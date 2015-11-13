@@ -791,7 +791,7 @@ Render allows you to create dynamic content from templated static files.
 
 It is useful for web pages etc.
 
-### gracenode.render(path [string], data [object])
+### gracenode.render(path [string], data [object], cacheTtl [*number])
 
 #### path
 
@@ -801,9 +801,15 @@ A path to the pre-rendered file data to render.
 
 An object to be inserted into the rendered file data.
 
-### Access
+#### cacheTtl
 
-`gracenode.render`
+An option to use cache for rendered template data.
+
+If this parameter is not given, it does not use cache
+
+The cache data will be ignored if given `data` is different from the cached rendered data.
+
+**NOTE**: cacheTtl is in miliseconds. If the cache needs to last for 24 hours, cacheTtl = 8640000.
 
 ### Configurations
 

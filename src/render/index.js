@@ -2,6 +2,7 @@
 
 var loader = require('./loader');
 var render = require('./render');
+var cache = require('./cache');
 
 var pathPrefix = '';
 
@@ -16,6 +17,15 @@ exports.setup = function (cb) {
 	loader.load(pathPrefix, cb);	
 };
 
-exports.render = function (path, vars) {
+exports.render = function (path, vars, cacheTtl) {
+	if (cacheTtl) {
+		var res = cache.get(vars);
+		if (res) {
+			return res;
+		}
+		var rendered = render.render(path, vars);
+		cache.set(vars, rendered, cacheTtl);
+		return rendered;
+	}
 	return render.render(path, vars);
 };
