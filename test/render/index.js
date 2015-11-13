@@ -358,7 +358,8 @@ describe('gracenode.render', function () {
 		e = Date.now();
 		var time2 = e - s;
 		assert.equal(expected, rendered);
-		
+		assert.equal(time1 > time2, true);	
+	
 		console.log('Render time:', time1 + 'ms', 'Cached time:', time2 + 'ms');
 	});
 
