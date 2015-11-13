@@ -143,8 +143,17 @@ function getIfConditions(tag) {
 	var tmp;
 	var index = 0;
 	// look for if
-	var openIndex = tag.indexOf(LOGICS.ID + '(');
+	var openIndex = tag.indexOf(LOGICS.IF + '(');
 	var closeIndex = tag.indexOf('):');
+
+	if (openIndex === -1) {
+		throw new Error('InvalidOpen: ' + tag);
+	}
+
+	if (closeIndex === -1) {
+		throw new Error('InvalidClose: ' + tag);
+	}
+	
 	res[LOGICS.IF] = {
 		conditions: tag.substring(openIndex + 3, closeIndex).split(/(\&\&|\|\|)/g),
 		result: tag.substring(closeIndex + 2, tag.search(/(elseif\(|else|endif)/))
@@ -185,14 +194,34 @@ function getIfConditions(tag) {
 			result: tag.substring(openIndex + 5, closeIndex)
 		};
 	}
+
+	if (closeIndex === -1) {
+		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.IF + ' not found>');
+	}
+
 	return res;
 }
 
 function getForConditions(tag) {
 	var open = LOGICS.FOR + '(';
+	var openIndex = tag.indexOf(open);
 	var closeIndex = tag.lastIndexOf('):');
-	var conditions = tag.substring(tag.indexOf(open) + open.length, closeIndex).split(';');
-	var iterate = tag.substring(closeIndex + 2, tag.lastIndexOf('end' + LOGICS.FOR));
+	var conditions = tag.substring(openIndex + open.length, closeIndex).split(';');
+	var endIndex = tag.lastIndexOf('end' + LOGICS.FOR);
+	var iterate = tag.substring(closeIndex + 2, endIndex);
+
+	if (openIndex === -1) {
+		throw new Error('InvalidOpen: ' + tag);
+	}
+
+	if (closeIndex === -1) {
+		throw new Error('InvalidClose: ' + tag);
+	}
+
+	if (endIndex === -1) {
+		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.FOR + ' not found>');
+	}
+
 	return {
 		conditions: conditions,
 		iterate: iterate
@@ -203,7 +232,21 @@ function getForEachConditions(tag) {
 	var openIndex = tag.indexOf(LOGICS.FOREACH + '(') + LOGICS.FOREACH.length + 1;
 	var closeIndex = tag.lastIndexOf('):');
 	var condition = tag.substring(openIndex, closeIndex).replace(/({|})/g, '');
-	var iterate = tag.substring(closeIndex + 2, tag.indexOf('end' + LOGICS.FOREACH));
+	var endIndex = tag.indexOf('end' + LOGICS.FOREACH);
+	var iterate = tag.substring(closeIndex + 2, endIndex);
+
+	if (openIndex === -1) {
+		throw new Error('InvalidOpen: ' + tag);
+	}
+
+	if (closeIndex === -1) {
+		throw new Error('InvalidClose: ' + tag);
+	}
+
+	if (endIndex === -1) {
+		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.FOREACH + ' not found>');
+	}
+
 	return {
 		condition: condition,
 		iterate: iterate
