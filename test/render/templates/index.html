@@ -9,8 +9,8 @@
 	<div>class&nbps;name:&nbsp;{keys.abc}</div>
 endfor}}
 {{
-	foreach ({data}):
-		<div>{data.key.type}:{data.key.value}</div>
+	foreach (i in {data}):
+		<div>{data.i.type}:{data.i.value}</div>
 	endforeach
 }}
 </body>

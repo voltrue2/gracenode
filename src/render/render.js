@@ -264,9 +264,6 @@ function getForConditions(tag) {
 function getForEachConditions(tag) {
 	var openIndex = tag.indexOf(LOGICS.FOREACH + '(') + LOGICS.FOREACH.length + 1;
 	var closeIndex = tag.lastIndexOf('):');
-	var condition = tag.substring(openIndex, closeIndex).replace(/({|})/g, '');
-	var endIndex = tag.indexOf('end' + LOGICS.FOREACH);
-	var iterate = tag.substring(closeIndex + 2, endIndex);
 
 	if (openIndex === -1) {
 		throw new Error('InvalidOpen: ' + tag);
@@ -276,12 +273,21 @@ function getForEachConditions(tag) {
 		throw new Error('InvalidClose: ' + tag);
 	}
 
+	var sep = tag.substring(openIndex, closeIndex).split(/in{/);
+	var key = sep[0];
+	var obj = sep[1].replace('}', '');
+	var endIndex = tag.indexOf('end' + LOGICS.FOREACH);
+	var iterate = tag.substring(closeIndex + 2, endIndex);
+
 	if (endIndex === -1) {
 		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.FOREACH + ' not found>');
 	}
 
 	return {
-		condition: condition,
+		condition: {
+			key: key,
+			obj: obj
+		},
 		iterate: iterate
 	};
 }
@@ -518,20 +524,21 @@ function handleFor(content, tag, conditions, vars, varTags) {
 }
 
 function handleForEach(content, tag, data, vars, varTags) {
-	var objName = data.condition;
+	var objName = data.condition.obj;
+	var keyName = data.condition.key;
 	var obj = vars[objName];
 	if (!obj) {
 		return content;
 	}
 	var iterated = '';
 	var replacer = function (str) {
-		var replaced = str.replace('.key', '.' + key);
+		var replaced = str.replace('.' + keyName, '.' + key);
 		varTags[replaced] = replaced.replace(/({|})/g, '');
 		return replaced;
 	};
 	var key;
 	for (key in obj) {
-		var reg = new RegExp('{' + objName + '.key(.*?)}', 'g');
+		var reg = new RegExp('{' + objName + '.' + keyName + '(.*?)}', 'g');
 		var ite = data.iterate.replace(reg, replacer);
 		iterated += applyVars(ite, vars, varTags);
 	}

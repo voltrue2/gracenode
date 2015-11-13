@@ -969,7 +969,7 @@ Render handles a simple for loop for object as `foreach`.
 **Syntax**
 
 ```
-{{foreach ({map})
+{{foreach (key in {map})
 	<div>{key}:{map.key}</div>
 endforeach}}
 ```
@@ -977,8 +977,6 @@ endforeach}}
 **NOTE**:
 
 `{map.key}` = `map[key]`
-
-**NOTE:** Object key is always `key`.
 
 **Example**
 
