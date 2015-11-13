@@ -908,7 +908,7 @@ var rendered = gracenode.render('myview.html', {
 });
 ```
 
-**IMPORTANT**: The variables inside **IF** must be `{variableName}` NOT `{{variableName}}`.
+**IMPORTANT**: The variables inside **if** must be `{variableName}` NOT `{{variableName}}`.
 
 The above example will result in `<div>{a}&nbsp;is&nbsp;greater&nbps;than&nbsp;{b}</div>` to be in the rendered result:
 
@@ -952,7 +952,7 @@ var rendered = gracenode.render('/myview.html', {
 });
 ```
 
-**IMPORTANT**: The variables inside **IF** must be `{variableName}` NOT `{{variableName}}`.
+**IMPORTANT**: The variables inside **for** must be `{variableName}` NOT `{{variableName}}`.
 
 The above example will result in:
 
@@ -981,7 +981,7 @@ endforeach}}
 **Example**
 
 ```html
-{{foreach ({map})
+{{foreach (key in {map})
 	<div>{key}:{map.key}</div>
 endforeach}}
 ```
@@ -997,7 +997,7 @@ var rendered = gracenode.render('/myview.html', {
 });
 ```
 
-**IMPORTANT**: The variables inside **IF** must be `{variableName}` NOT `{{variableName}}`.
+**IMPORTANT**: The variables inside **foreach** must be `{variableName}` NOT `{{variableName}}`.
 
 The above example will result in:
 
