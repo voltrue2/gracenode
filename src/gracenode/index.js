@@ -13,6 +13,7 @@ var render = require('../render');
 var logger;
 var renderPath;
 var clusterConfig;
+var onExceptions = [];
 var ready = false;
 
 var ER = {
@@ -46,6 +47,13 @@ exports.getConfig = function (name) {
 
 exports.onExit = function (taskFunc, runOnMaster) {
 	cluster.addShutdownTask(taskFunc, (runOnMaster) ? true : false);
+};
+
+exports.onException = function (func) {
+	if (typeof func !== 'function') {
+		throw new Error('InvalidOnExceptionCallback:' + func);
+	}
+	onExceptions.push(func);
 };
 
 // deprecated backward compatibility alias
@@ -132,8 +140,15 @@ function setup(cb) {
 		} else {
 			logger.fatal(error);
 		}
+		execOnExceptions(error);
 	});
 	cb();
+}
+
+function execOnExceptions(error) {
+	for (var i = 0, len = onExceptions.length; i < len; i++) {
+		onExceptions[i](error);
+	}
 }
 
 function startCluster(cb) {
@@ -216,8 +231,15 @@ function startMod(cb) {
 function setupRender(cb) {
 	if (renderPath) {
 		logger.info('Pre-render template files in', renderPath);
+		var start = Date.now();
 		render.config(renderPath);
-		render.setup(cb);
+		render.setup(function (error) {
+			if (error) {
+				return cb(error);
+			}
+			logger.info('Pre-render template files complete [' + (Date.now() - start) + 'ms]');
+			cb();
+		});
 		return;
 	}
 	cb();

@@ -1,0 +1,9 @@
+<div>Required!!</div>
+<h2>Variable&nbsp;b&nbsp;is&nbsp;{{b}}</h2>
+{{
+	for (i = 0; i < {list.length}; i++):
+	<div>{i}&nbsp;=&nbsp;{list.i}</div>
+	endfor
+}}
+{{ if ({a} !== {b} && {b} != {c}): <div>Yay!</div> endif }}
+{{ if ({a} == {c} || 10 > 100): <div>No!!!</div>else:<div>Yes&nbsp;it&nbsp;is&nbsp;else</div>endif }}

@@ -3,11 +3,14 @@
 var fs = require('fs');
 var async = require('async');
 var render = require('./render');
+var gn = require('../gracenode');
 
+var logger;
 var dirpath;
 var loaded = {};
 
 exports.load = function (path, cb) {
+	logger = gn.log.create('render.loader');
 	dirpath = path;
 	load(path, cb);
 };
@@ -40,12 +43,14 @@ function load(path, cb) {
 			if (error) {
 				return cb(error);
 			}
+			var pathName = path.replace(dirpath, '');
 			var prerenderedData = render.prerender(content);
-			loaded[path.replace(dirpath, '')] = {
+			loaded[pathName] = {
 				source: prerenderedData.content,
 				tags: prerenderedData.list,
 				vars: prerenderedData.vars
 			};
+			logger.verbose('Pre-rendered:', pathName, 'from', path);
 			cb();
 		});
 	});

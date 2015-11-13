@@ -30,8 +30,8 @@ describe('gracenode.render', function () {
 			d: '日本語',
 			e: '"quoted"'
 		};
-		var rendered = gn.render('/one/index.html', data);
-		var expected = fs.readFileSync(__dirname + '/expected/1.html', 'utf8');
+		var rendered = gn.render('/one/index', data);
+		var expected = fs.readFileSync(__dirname + '/expected/1', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
@@ -48,8 +48,8 @@ describe('gracenode.render', function () {
 			color: '#00f',
 			max: 10
 		};
-		var rendered = gn.render('/three/index.html', data);
-		var expected = fs.readFileSync(__dirname + '/expected/2.html', 'utf8');
+		var rendered = gn.render('/three/index', data);
+		var expected = fs.readFileSync(__dirname + '/expected/2', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
@@ -63,8 +63,8 @@ describe('gracenode.render', function () {
 			keys: Object.keys(data),
 			data: data
 		};
-		var rendered = gn.render('/index.html', vars);
-		var expected = fs.readFileSync(__dirname + '/expected/3.html', 'utf8');
+		var rendered = gn.render('/index', vars);
+		var expected = fs.readFileSync(__dirname + '/expected/3', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
@@ -205,8 +205,8 @@ describe('gracenode.render', function () {
 				'Zimbabwe'
 			]
 		};
-		var rendered = gn.render('/large/1.html', data);
-		var expected = fs.readFileSync(__dirname + '/expected/4.html', 'utf8');
+		var rendered = gn.render('/large/1', data);
+		var expected = fs.readFileSync(__dirname + '/expected/4', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
@@ -348,13 +348,13 @@ describe('gracenode.render', function () {
 			]
 		};
 		var s = Date.now();
-		var rendered = gn.render('/large/1.html', data, 1000);
+		var rendered = gn.render('/large/1', data, 1000);
 		var e = Date.now();
 		var time1 = e - s;
-		var expected = fs.readFileSync(__dirname + '/expected/4.html', 'utf8');
+		var expected = fs.readFileSync(__dirname + '/expected/4', 'utf8');
 		assert.equal(expected, rendered);
 		s = Date.now();
-		rendered = gn.render('/large/1.html', data, 1000);
+		rendered = gn.render('/large/1', data, 1000);
 		e = Date.now();
 		var time2 = e - s;
 		assert.equal(expected, rendered);

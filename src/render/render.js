@@ -160,8 +160,8 @@ function getIfConditions(tag) {
 			var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
 			list[i] = {
 				op: cond[1],
-				val1: cond[0],
-				val2: cond[2]
+				val1: cond[0].replace(/({|})/g, ''),
+				val2: cond[2].replace(/({|})/g, '')
 			};
 		}
 	}	
@@ -184,8 +184,8 @@ function getIfConditions(tag) {
 				var sep = conds[j].split(/(===|!==|==|!=|>=|<=|>|<)/);		
 				conds[j] = {
 					op: sep[1],
-					val1: sep[0],
-					val2: sep[2]
+					val1: sep[0].replace(/({|})/g, ''),
+					val2: sep[2].replace(/({|})/g, '')
 				};
 			}
 		}	

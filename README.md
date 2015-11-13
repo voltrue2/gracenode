@@ -304,6 +304,10 @@ gn.config({
 var logFilePath = gn.getConfig('log.file');
 ```
 
+### .onException(callback [function])
+
+Assigns a function to be executed on `uncaughtException` event.
+
 ### .onExit(taskFunction [function])
 
 Assigns a function to be executed on process exit of **gracenode**. The assigned function will have a callback function passed.
