@@ -888,7 +888,7 @@ Render handles simple if statements.
 **Syntax**
 
 ```
-{{if (a === b):
+{{if ({a} === {b}):
 	<div>{a}&nbps;is&nbsp;{b}</div>
 endif}}
 ```
@@ -896,7 +896,7 @@ endif}}
 **Example**:
 
 ```html
-{{if (a === b):
+{{if ({a} === {b}):
 	<div>{a}&nbps;is&nbsp;{b}</div>
 else if (a > b):
 	<div>{a}&nbsp;is&nbsp;greater&nbps;than&nbsp;{b}</div>
