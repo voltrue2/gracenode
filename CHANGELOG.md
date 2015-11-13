@@ -6,6 +6,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+### gracenode.onException() added
+
 ### Render added
 
 gracenode added `.render()` to render HTML file etc.
