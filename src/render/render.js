@@ -153,9 +153,21 @@ function getIfConditions(tag) {
 	if (closeIndex === -1) {
 		throw new Error('InvalidClose: ' + tag);
 	}
-	
+
+	var list = tag.substring(openIndex + 3, closeIndex).split(/(\&\&|\|\|)/g);
+	for (var i = 0, len = list.length; i < len; i++) {
+		if (list[i] !== '&&' && list[i] !== '||') {
+			var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
+			list[i] = {
+				op: cond[1],
+				val1: cond[0],
+				val2: cond[2]
+			};
+		}
+	}	
+
 	res[LOGICS.IF] = {
-		conditions: tag.substring(openIndex + 3, closeIndex).split(/(\&\&|\|\|)/g),
+		conditions: list,
 		result: tag.substring(closeIndex + 2, tag.search(/(elseif\(|else|endif)/))
 	};
 	// look for else if
@@ -166,11 +178,21 @@ function getIfConditions(tag) {
 			res.elseif = [];
 		}
 		closeIndex = tag.indexOf('):');
-		var cond = tag.substring(openIndex + 7, closeIndex).split(/(\&\&|\|\|)/g);
+		var conds = tag.substring(openIndex + 7, closeIndex).split(/(\&\&|\|\|)/g);
+		for (var j = 0, jen = conds.length; j < jen; j++) {
+			if (conds[j] !== '&&' && conds[j] !== '||') {
+				var sep = conds[j].split(/(===|!==|==|!=|>=|<=|>|<)/);		
+				conds[j] = {
+					op: sep[1],
+					val1: sep[0],
+					val2: sep[2]
+				};
+			}
+		}	
 		tag = tag.replace('elseif', '');
 		closeIndex = tag.indexOf('):');
 		res.elseif[index] = {
-			conditions: cond,
+			conditions: conds,
 			result: tag.substring(closeIndex + 2, tag.search(/(elseif\(|else|endif)/)) 
 		};
 		tmp = tag.substring(tag.indexOf(res.elseif[index].result) + res.elseif[index].result.length);
@@ -198,7 +220,7 @@ function getIfConditions(tag) {
 	if (closeIndex === -1) {
 		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.IF + ' not found>');
 	}
-
+	
 	return res;
 }
 
@@ -385,16 +407,15 @@ function handleIf(content, tag, conditions, vars) {
 	return content;
 }
 
-function evalIf(list, vars) {
+function evalIf(list) {
 	var andOr;
 	var pass = false;
 	for (var i = 0, len = list.length; i < len; i++) {
 		if (list[i] !== '&&' && list[i] !== '||') {
 			var prevPass = pass;
-			var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
-			var val1 = vars[cond[0]] === undefined ? vars[cond[0]] : cond[0];
-			var val2 = vars[cond[2]] === undefined ? vars[cond[2]] : cond[2];
-			switch (cond[1]) {
+			var val1 = list[i].val1;
+			var val2 = list[i].val2;
+			switch (list[i].op) {
 				case '===':
 				case '==':
 					pass = val1 === val2;
