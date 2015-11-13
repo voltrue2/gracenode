@@ -244,8 +244,19 @@ function getForConditions(tag) {
 		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.FOR + ' not found>');
 	}
 
+	var cond = {};
+	var startData = conditions[0].split('=');
+	var max = conditions[1].split(/(<\=|>\=|<|>)/);
+	var changes = conditions[2].split(/(\+\+|\-\-|\+\=|\-\=)/);
+	cond.var = startData[0];
+	cond.start = startData[1];
+	cond.maxOp = max[1];
+	cond.maxVal = max[2];
+	cond.changeOp = changes[1];
+	cond.changeVal = changes[2];
+
 	return {
-		conditions: conditions,
+		conditions: cond,
 		iterate: iterate
 	};
 }
@@ -451,23 +462,14 @@ function evalIf(list) {
 
 function handleFor(content, tag, conditions, vars, varTags) {
 	// apply variables to all conditions
-	for (var i = 0, len = conditions.conditions.length; i < len; i++) {
-		conditions[i] = applyVars(conditions.conditions[i], vars, varTags);
-	}
-	// evaluate the conditions for loop
-	var startData = conditions[0].split('=');
-	var startVar = startData[0];
-	var start = parseFloat(startData[1]);
-	var max = conditions[1].split(/(<\=|>\=|<|>)/);
-	var maxOp = max[1];
-	var maxVal = parseFloat(max[2]);
-	// ++, --, +=, -= as a string
-	var changes = conditions[2].split(/(\+\+|\-\-|\+\=|\-\=)/);
-	var changeOp = changes[1];
-	var changeVal;
-	if (changes[2] !== '' && !isNaN(changes[2])) {
-		changeVal = parseFloat(changes[2]);
-	} else {
+	var cond = conditions.conditions;
+	var startVar = cond.var;
+	var start = parseFloat(cond.start);
+	var maxOp = cond.maxOp;
+	var maxVal = parseFloat(applyVars(cond.maxVal, vars, varTags));
+	var changeOp = cond.changeOp;
+	var changeVal = parseFloat(cond.changeVal);
+	if (isNaN(changeVal)) {
 		changeVal = 1;
 	}
 	// iterate
