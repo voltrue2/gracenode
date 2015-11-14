@@ -77,6 +77,7 @@ exports.isCluster = function () {
 
 // call this when everything is ready
 exports.start = function (cb) {
+	var start = Date.now();
 	applyConfig();
 	aeterno.run(function () {
 		var tasks = [
@@ -92,6 +93,8 @@ exports.start = function (cb) {
 			if (error) {
 				return exports.stop(error);
 			}
+			var time = Date.now() - start;
+			logger.info('gracenode is ready:', '[time:' + time + 'ms]');
 			cb();
 			ready = true;
 		};

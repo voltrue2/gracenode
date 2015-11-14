@@ -13,6 +13,9 @@
 <div>0&nbsp;=&nbsp;/test/list/1</div><div>1&nbsp;=&nbsp;/test/list/2</div>
 <div>Yay!</div>
 <div>Yes&nbsp;it&nbsp;is&nbsp;else</div>
+<div>require 2</div>
+<div>0&nbsp;=&nbsp;/test/list/1</div><div>1&nbsp;=&nbsp;/test/list/2</div>
+
 
 <h1>A&nbsp;is&nbsp;NOT&nbsp;B</h1>
 <div>Required!!</div>
@@ -20,6 +23,9 @@
 <div>0&nbsp;=&nbsp;/test/list/1</div><div>1&nbsp;=&nbsp;/test/list/2</div>
 <div>Yay!</div>
 <div>Yes&nbsp;it&nbsp;is&nbsp;else</div>
+<div>require 2</div>
+<div>0&nbsp;=&nbsp;/test/list/1</div><div>1&nbsp;=&nbsp;/test/list/2</div>
+
 
 <script type="text/javascript">
 var list = [1,2,3,4,5,6,7,8,9];

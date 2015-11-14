@@ -885,7 +885,7 @@ Render handles simple if statements.
 
 **WARNING**: You must not have nested if statements.
 
-**WARNING**: You must not mix if statement and for statement.
+**WARNING**: You must not have if statement inside of for statement. 
 
 **Syntax**
 
@@ -928,7 +928,7 @@ Render handles simple for statements.
 
 **WARNING**: You must not have nested for statements.
 
-**WARNING**: You must not mix if statement and for statement.
+**WARNING**: You must not have if statement inside for statement.
 
 **Syntax**
 

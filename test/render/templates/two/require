@@ -7,3 +7,4 @@
 }}
 {{ if ({a} !== {b} && {b} != {c}): <div>Yay!</div> endif }}
 {{ if ({a} == {c} || 10 > 100): <div>No!!!</div>else:<div>Yes&nbsp;it&nbsp;is&nbsp;else</div>endif }}
+{{require(/two/require2)}}
