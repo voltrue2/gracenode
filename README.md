@@ -793,6 +793,8 @@ Stops or restarts all running daemon processes without user inputs. This option 
 
 Render allows you to create dynamic content from templated static files.
 
+It also supports caching rendered data for static templates to improve the run-time performance.
+
 It is useful for web pages etc.
 
 ### gracenode.render(path [string], data [object], cacheTtl [*number])
