@@ -902,7 +902,7 @@ endif}}
 	<div>{a}&nbps;is&nbsp;{b}</div>
 else if (a > b):
 	<div>{a}&nbsp;is&nbsp;greater&nbps;than&nbsp;{b}</div>
-else
+else:
 	<div>{a}&nbps;is&nbsp;NOT&nbsp;{b}</div>
 endif}}
 ```
