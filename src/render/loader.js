@@ -39,7 +39,6 @@ function load(path, cb) {
 			});
 			return;
 		}
-		var start = Date.now();
 		fs.readFile(path, 'utf8', function (error, content) {
 			if (error) {
 				return cb(error);
@@ -51,8 +50,7 @@ function load(path, cb) {
 				tags: prerenderedData.list,
 				vars: prerenderedData.vars
 			};
-			var time = Date.now() - start;
-			logger.verbose('Pre-rendered:', '[' + pathName + ']', '[time:' + time + 'ms]', 'from', path);
+			logger.verbose('Pre-rendered:', '[' + pathName + ']', 'from', path);
 			cb();
 		});
 	});
