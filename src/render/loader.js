@@ -33,7 +33,7 @@ function load(path, cb) {
 					return cb(error);
 				}
 				path = path + ((path[path.length - 1] !== '/') ? '/' : '');
-				async.forEachSeries(list, function (file, next) {
+				async.forEach(list, function (file, next) {
 					load(path + file, next);
 				}, cb);
 			});

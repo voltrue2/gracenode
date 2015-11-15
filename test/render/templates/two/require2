@@ -1,0 +1,6 @@
+<div>require 2</div>
+{{
+        for (i = 0; i < {list.length}; i++):
+        <div>{i}&nbsp;=&nbsp;{list.i}</div>
+        endfor
+}}
