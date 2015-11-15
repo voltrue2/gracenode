@@ -22,6 +22,19 @@ var TB = '(_t_)';
 var TBR = /\(_t_\)/g;
 var ALLR = /(\ |\(_n_\)|\(_t_\))/g;
 
+var REG = {
+	LB: /(\n|\r)/g,
+	TB: /\t/g,
+	IFC: /(\&\&|\|\|)/g,
+	IFE: /(===|!==|==|!=|>=|<=|>|<)/,
+	IFV: /({|})/g,
+	IFS: /(elseif\(|else|endif)/,	
+	FORE: /(<\=|>\=|<|>)/,
+	FORI: /(\+\+|\-\-|\+\=|\-\=)/,
+	FOREACH: /in{/,	
+	VARS: /\ /g
+};
+
 /*
  if syntax
 {{ if (conditions)
@@ -38,8 +51,8 @@ endfor }}
 
 exports.prerender = function (content) {
 	// remove line breaks and tabs
-	content = content.replace(/(\n|\r)/g, LB);
-	content = content.replace(/(\t)/g, TB);
+	content = content.replace(REG.LB, LB);
+	content = content.replace(REG.TB, TB);
 	return extract(content);
 };
 
@@ -154,21 +167,21 @@ function getIfConditions(tag) {
 		throw new Error('InvalidClose: ' + tag);
 	}
 
-	var list = tag.substring(openIndex + 3, closeIndex).split(/(\&\&|\|\|)/g);
+	var list = tag.substring(openIndex + 3, closeIndex).split(REG.IFC);
 	for (var i = 0, len = list.length; i < len; i++) {
 		if (list[i] !== '&&' && list[i] !== '||') {
-			var cond = list[i].split(/(===|!==|==|!=|>=|<=|>|<)/);		
+			var cond = list[i].split(REG.IFE);		
 			list[i] = {
 				op: cond[1],
-				val1: cond[0].replace(/({|})/g, ''),
-				val2: cond[2].replace(/({|})/g, '')
+				val1: cond[0].replace(REG.IFV, ''),
+				val2: cond[2].replace(REG.IFV, '')
 			};
 		}
 	}	
 
 	res[LOGICS.IF] = {
 		conditions: list,
-		result: tag.substring(closeIndex + 2, tag.search(/(elseif\(|else|endif)/))
+		result: tag.substring(closeIndex + 2, tag.search(REG.IFS))
 	};
 	// look for else if
 	tag = tag.substring(tag.indexOf(res[LOGICS.IF].result) + res[LOGICS.IF].result.length, tag.length);
@@ -178,14 +191,14 @@ function getIfConditions(tag) {
 			res.elseif = [];
 		}
 		closeIndex = tag.indexOf('):');
-		var conds = tag.substring(openIndex + 7, closeIndex).split(/(\&\&|\|\|)/g);
+		var conds = tag.substring(openIndex + 7, closeIndex).split(REG.IFC);
 		for (var j = 0, jen = conds.length; j < jen; j++) {
 			if (conds[j] !== '&&' && conds[j] !== '||') {
-				var sep = conds[j].split(/(===|!==|==|!=|>=|<=|>|<)/);		
+				var sep = conds[j].split(REG.IFE);		
 				conds[j] = {
 					op: sep[1],
-					val1: sep[0].replace(/({|})/g, ''),
-					val2: sep[2].replace(/({|})/g, '')
+					val1: sep[0].replace(REG.IFV, ''),
+					val2: sep[2].replace(REG.IFV, '')
 				};
 			}
 		}	
@@ -193,7 +206,7 @@ function getIfConditions(tag) {
 		closeIndex = tag.indexOf('):');
 		res.elseif[index] = {
 			conditions: conds,
-			result: tag.substring(closeIndex + 2, tag.search(/(elseif\(|else|endif)/)) 
+			result: tag.substring(closeIndex + 2, tag.search(REG.IFS)) 
 		};
 		tmp = tag.substring(tag.indexOf(res.elseif[index].result) + res.elseif[index].result.length);
 		if (tmp === tag) {
@@ -246,8 +259,8 @@ function getForConditions(tag) {
 
 	var cond = {};
 	var startData = conditions[0].split('=');
-	var max = conditions[1].split(/(<\=|>\=|<|>)/);
-	var changes = conditions[2].split(/(\+\+|\-\-|\+\=|\-\=)/);
+	var max = conditions[1].split(REG.FORE);
+	var changes = conditions[2].split(REG.FORI);
 	cond.var = startData[0];
 	cond.start = startData[1];
 	cond.maxOp = max[1];
@@ -273,7 +286,7 @@ function getForEachConditions(tag) {
 		throw new Error('InvalidClose: ' + tag);
 	}
 
-	var sep = tag.substring(openIndex, closeIndex).split(/in{/);
+	var sep = tag.substring(openIndex, closeIndex).split(REG.FOREACH);
 	var key = sep[0];
 	var obj = sep[1].replace('}', '');
 	var endIndex = tag.indexOf('end' + LOGICS.FOREACH);
@@ -304,7 +317,7 @@ function extractVars(vars, tag) {
 		for (var i = 0, len = found.length; i < len; i++) {
 			if (!vars[found[i]]) {
 				// for {{variable}}, remove { and }
-				var v = found[i].substring(1, found[i].length - 1).replace(/\ /g, '').replace(/({|})/g, '');
+				var v = found[i].substring(1, found[i].length - 1).replace(REG.VARS, '').replace(REG.IFV, '');
 				vars[found[i]] = v;
 			}
 		}
@@ -314,7 +327,7 @@ function extractVars(vars, tag) {
 
 function applyVars(content, vars, varTags) {
 	for (var varTag in varTags) {
-		var varName = varTag.replace(/\ /g, '').replace(/({|})/g, '');
+		var varName = varTag.replace(REG.VARS, '').replace(REG.IFV, '');
 		var value;
 		if (varName.indexOf('.') !== -1) {
 			// variable must be either an array or an object
@@ -484,7 +497,7 @@ function handleFor(content, tag, conditions, vars, varTags) {
 	var iterated = '';
 	var replacer = function (str) {
 		var replaced = str.replace('.' + startVar, '.' + start);
-		varTags[replaced] = replaced.replace(/({|})/g, '');
+		varTags[replaced] = replaced.replace(REG.IFV, '');
 		return replaced;
 	};
 	while (loop) {
@@ -533,7 +546,7 @@ function handleForEach(content, tag, data, vars, varTags) {
 	var iterated = '';
 	var replacer = function (str) {
 		var replaced = str.replace('.' + keyName, '.' + key);
-		varTags[replaced] = replaced.replace(/({|})/g, '');
+		varTags[replaced] = replaced.replace(REG.IFV, '');
 		return replaced;
 	};
 	var key;
