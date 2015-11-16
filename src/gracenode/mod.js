@@ -17,7 +17,6 @@ var ER = {
 var logger;
 var pathList = [];
 var pending = {};
-var loaded = {};
 
 exports.use = function (name, pathOrMod, options) {
 	if (pending[name]) {
@@ -47,7 +46,7 @@ exports.use = function (name, pathOrMod, options) {
 	pathList.push(pathOrMod);
 };
 
-exports.start = function (configMap, onExit, cb) {
+exports.start = function (gn, configMap, onExit, cb) {
 	logger = log.create('module');
 	var keys = Object.keys(pending);
 	var handle = function (key, next) {
@@ -58,7 +57,7 @@ exports.start = function (configMap, onExit, cb) {
 					return next(error);
 				}
 				var modName = createModName(key);
-				loaded[modName] = item.path;
+				gn.mod[modName] = item.path;
 				logger.info(
 					'Bootstrapped a module:',
 					'gracenode.mod.' + modName,
@@ -105,7 +104,7 @@ exports.start = function (configMap, onExit, cb) {
 					return next(error);
 				}
 				var modName = createModName(key);
-				loaded[modName] = mod;
+				gn.mod[modName] = mod;
 				logger.info(
 					'Bootstrapped a module:',
 					'gracenode.mod.' + modName,
@@ -123,7 +122,7 @@ exports.start = function (configMap, onExit, cb) {
 			return cb(error);
 		}
 		logger.info('Bootstrapping modules completed');
-		cb(null, loaded);
+		cb(null);
 	};
 	async.eachSeries(keys, handle, done);
 };

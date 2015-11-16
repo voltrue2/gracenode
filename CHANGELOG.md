@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.8
+
+## Added
+
+None
+
+## Changed
+
+### gracenode.mod is now populated as it moves forward on starting of gracenode instead of populating all at the end
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.7
 
 ## Added

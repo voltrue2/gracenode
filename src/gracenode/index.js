@@ -104,7 +104,7 @@ exports.start = function (cb) {
 
 exports.stop = function (error) {
 	if (error) {
-		logger.error('.stop() has been invoked', error);
+		logger.error('.stop() has been invoked:', error);
 	} else {
 		logger.info('.stop() has been invoked');
 	}
@@ -222,11 +222,10 @@ function setupLogCleaner(cb) {
 }
 
 function startMod(cb) {
-	mod.start(config.get(), exports.onExit, function (error, modules) {
+	mod.start(exports, config.get(), exports.onExit, function (error) {
 		if (error) {
 			return cb(error);
 		}
-		exports.mod = modules;
 		cb();
 	});
 }
