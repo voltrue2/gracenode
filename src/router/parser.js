@@ -47,6 +47,7 @@ exports.hook = function (path, func) {
 		} else {
 			hooks[path].push(func);
 		}
+		logger.verbose('HTTP request hook registed:', path, 'hooks #', hooks[path].length);
 		return;
 	}
 	var headingSlash = path[0] === '/' ? '' : '/';
@@ -62,7 +63,7 @@ exports.hook = function (path, func) {
 	} else {
 		hooks[hookPath].push(func);
 	}
-	logger.verbose('HTTP request hook registed:', hookPath);
+	logger.verbose('HTTP request hook registed:', hookPath, 'hooks #', hooks[hookPath].length);
 };
 
 exports.parse = function (method, fullPath) {
