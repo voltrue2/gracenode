@@ -16,6 +16,8 @@
 
 - Provides HTTP router for web applications.
 
+- Provides fast HTML template enigne.
+
 ## Installation via npm
 
 **NOTE:** If you are running your application as a daemon with older version of **gracenode**, please make sure to stop the daemon before installing the newer version.
@@ -68,9 +70,14 @@ gn.configure({
 		// Maximum number of workers
 		max: 0
 	},
-	ruter: {
+	router: {
 		port: 8888,
 		host: 'localhost'
+	},
+	render: {
+		path: '/path/to/templates/',
+		// custom cache size for render engine
+		cacheSize: 5000000
 	}
 });
 
@@ -817,6 +824,8 @@ The cache data will be ignored if given `data` is different from the cached rend
 
 **NOTE**: cacheTtl is in miliseconds. If the cache needs to last for 24 hours, cacheTtl = 8640000.
 
+**Default**: Default cache TTL is 1 hour. Pass `0` to ignore caching.
+
 ### Configurations
 
 Render requires a path to read the template files from.
@@ -825,9 +834,14 @@ It will then read all template files and pre-render them on the application proc
 
 ```
 render: {
-	path: '/path/to/my/templates'
+	path: '/path/to/my/templates',
+	*cacheSize: <number>
 }
 ```
+
+**cacheSize** is an optional configuration to change the default cache size in `bytes`.
+
+Default cache size is `2MB`.
 
 **Example**:
 

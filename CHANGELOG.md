@@ -2,6 +2,18 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.7
+
+## Added
+
+### gracenode.render() added a new configuration `cacheSize` in bytes
+
+## Changed
+
+### gracenode.render() performance improved
+
+### gracenode.render() now uses internal caching by default
+
 ## Version 2.0.6
 
 ## Added

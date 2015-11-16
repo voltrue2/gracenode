@@ -11,7 +11,7 @@ var mod = require('./mod');
 var render = require('../render');
 
 var logger;
-var renderPath;
+var renderConf;
 var clusterConfig;
 var onExceptions = [];
 var ready = false;
@@ -117,7 +117,7 @@ function applyConfig() {
 	var routerPort = config.get('router.port');
 	var routerHost = config.get('router.host');
 	var isLogging = false;
-	renderPath = config.get('render.path');
+	renderConf = config.get('render');
 	if (logConf) {
 		isLogging = true;
 		log.config(logConf);
@@ -232,10 +232,10 @@ function startMod(cb) {
 }
 
 function setupRender(cb) {
-	if (renderPath) {
-		logger.info('Pre-render template files in', renderPath);
+	if (renderConf) {
+		logger.info('Pre-render template files in', renderConf);
 		var start = Date.now();
-		render.config(renderPath);
+		render.config(renderConf.path, renderConf.cacheSize);
 		render.setup(function (error) {
 			if (error) {
 				return cb(error);

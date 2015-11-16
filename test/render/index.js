@@ -7,7 +7,8 @@ describe('gracenode.render', function () {
 	it('can set up gracenode.render', function (done) {
 		gn.config({
 			render: {
-				path: __dirname + '/templates'
+				path: __dirname + '/templates',
+				cacheSize: 3989000
 			},
 			router: {
 				host: 'localhost',
@@ -348,7 +349,7 @@ describe('gracenode.render', function () {
 			]
 		};
 		var s = Date.now();
-		var rendered = gn.render('/large/1', data, 1000);
+		var rendered = gn.render('/large/1', data, 0);
 		var e = Date.now();
 		var time1 = e - s;
 		var expected = fs.readFileSync(__dirname + '/expected/4', 'utf8');
@@ -357,10 +358,11 @@ describe('gracenode.render', function () {
 		rendered = gn.render('/large/1', data, 1000);
 		e = Date.now();
 		var time2 = e - s;
-		assert.equal(expected, rendered);
-		assert.equal(time1 > time2, true);	
 	
 		console.log('Render time:', time1 + 'ms', 'Cached time:', time2 + 'ms');
+		
+		assert.equal(expected, rendered);
+		assert.equal(time1 > time2, true);	
 	});
 
 });
