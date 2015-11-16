@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.9
+
+## Added
+
+None
+
+## Changed
+
+### router hook's next callback can pass an error with a property code for http status
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.8
 
 ## Added

@@ -1313,6 +1313,10 @@ Each hook function will have `req`, `res`, and `next` as arguments.
 
 `next` is the function to move on to next hook or handler.
 
+**NOTE**: You may pass an error to `next()` to response as an error. The default status code is `400`.
+
+To change the status code, pass `error.code = <status code>` such as `500`.
+
 ##### gracenode.router.error(status [number], handler [function])
 
 `gracenode.router` can optionally execute an error handler for specific error status such as 404.

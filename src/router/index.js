@@ -188,7 +188,7 @@ function requestHandler(req, res) {
 		async.forEachSeries(parsed.hooks, handleHook, function (error) {
 			if (error) {
 				// error response 400
-				response.error(error, 400);
+				response.error(error, error.code || 400);
 				return;
 			}
 			reqHandlerLog(req);
