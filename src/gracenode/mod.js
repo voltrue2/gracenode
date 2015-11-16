@@ -50,6 +50,7 @@ exports.start = function (gn, configMap, onExit, cb) {
 	logger = log.create('module');
 	var keys = Object.keys(pending);
 	var handle = function (key, next) {
+		var start = Date.now();
 		var item = pending[key];
 		if (typeof item.path !== 'string') {
 			setupMod(configMap, onExit, key, item.path, function (error) {
@@ -62,13 +63,15 @@ exports.start = function (gn, configMap, onExit, cb) {
 					'Bootstrapped a module:',
 					'gracenode.mod.' + modName,
 					'[', key, ']',
-					((typeof item.path !== 'string') ? '[module object]' : item.path)
+					((typeof item.path !== 'string') ? '[module object]' : item.path),
+					'[time:' + (Date.now() - start) + 'ms]'
 				);
 				next();
 			});
 			return;
 		}
 		logger.verbose('Bootstrapping a module:', key, item.path);
+		start = Date.now();
 		fs.exists(item.path, function (exists) {
 			if (!exists) {
 				return next(
@@ -109,7 +112,8 @@ exports.start = function (gn, configMap, onExit, cb) {
 					'Bootstrapped a module:',
 					'gracenode.mod.' + modName,
 					'[', key, ']',
-					item.path
+					item.path,
+					'[time:' + (Date.now() - start) + 'ms]'
 				);
 				next();
 			});
