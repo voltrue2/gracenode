@@ -54,6 +54,7 @@ Response.prototype.error = function (error, status) {
 	}
 	status = status || DEFAULT_ERROR_STATUS;
 	this.headers['Content-Type'] = 'application/json; charset=UTF-8';
+	logger.error('Error response:', data, status);
 	this._send(JSON.stringify(data), status);
 };
 

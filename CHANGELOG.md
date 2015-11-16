@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### router response now loggs errors on res.error()
+
 ### gracenode.mod is now populated as it moves forward on starting of gracenode instead of populating all at the end
 
 ### start logging improved
