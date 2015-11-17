@@ -159,6 +159,9 @@ describe('gracenode.router', function () {
 		gn.router.get('/car/{type}/detail/{info}', function (req, res) {
 			res.text('/car/' + req.params.type + '/detail/' + req.params.info);
 		});
+		gn.router.get('/num/{number:int}/{number:float}', function (req, res) {
+			res.json({ int: req.params.int, float: req.params.float });
+		});
 	});
 
 	it('can register error handlers', function () {
@@ -820,6 +823,16 @@ describe('gracenode.router', function () {
 			assert.equal(status, 200);
 			done();
 		});	
+	});
+
+	it('can define typed params', function (done) {
+		request.GET(http + '/num/100/0.4', null, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.strictEqual(res.int, 100);
+			assert.strictEqual(res.float, 0.4);
+			assert.equal(st, 200);
+			done();
+		});
 	});
 
 });

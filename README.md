@@ -1107,6 +1107,32 @@ exports.exampleHandler = function (req, res) {
 };
 ```
 
+##### Define URL parameters with types
+
+`granode.router` allows you to define typed parameters.
+
+**Valid Types**:
+
+- string
+
+- number
+
+- bool
+
+- object
+
+**Syntax**
+
+```
+{type:paramName}
+```
+
+**Example**:
+
+```
+gracenode.router.get('/example/{number:id}/{string:name}');
+```
+
 #### POST, PUT, DELETE, PATCH, and HEAD
 
 To register endpoints for request method other than `GET`, use the following:

@@ -11,6 +11,19 @@ var routes = {
 };
 var hooks = {};
 
+var TYPES = [
+	'string',
+	'number',
+	'object',
+	'bool'
+];
+var REG = {
+	PARAM: /{(.*?)}/g,
+	PATH: /\/{(.*?)}/g,
+	SLASH: /\//g,
+	HOOK: /\/{(.*?)}/g
+};
+
 exports.define = function (method, path, handler) {
 	if (typeof handler !== 'function') {
 		throw new Error(
@@ -28,12 +41,23 @@ exports.define = function (method, path, handler) {
 	};
 	var headingSlash = path[0] === '/' ? '' : '/';
 	var trailingSlash = path[path.length - 1] === '/' ? '' : '/';
-	var paramNames = path.match(/{(.*?)}/g) || [];
+	var paramNames = path.match(REG.PARAM) || [];
 	for (var i = 0, len = paramNames.length; i < len; i++) {
-		res.paramNames.push(paramNames[i].substring(1, paramNames[i].length - 1));
+		var param = paramNames[i].substring(1, paramNames[i].length - 1);
+		var type = null;
+		var name = param;
+		if (param.indexOf(':') !== -1) {
+			var sep = param.split(':');
+			type = validateType(sep[0]);
+			name = sep[1];
+		}
+		res.paramNames.push({
+			type: type,
+			name: name
+		});
 	}
-	res.pattern = headingSlash + path.replace(/{(.*?)}/g, '(.*?)').replace(/\//g, '\\/') + trailingSlash;
-	res.path = headingSlash + path.replace(/\/{(.*?)}/g, '');	
+	res.pattern = headingSlash + path.replace(REG.PARAM, '(.*?)').replace(REG.SLASH, '\\/') + trailingSlash;
+	res.path = headingSlash + path.replace(REG.PATH, '');
 	res.handler = handler;
 	routes[method].push(res);
 	// sort the order of routes long uri to short uri
@@ -58,7 +82,7 @@ exports.hook = function (path, func) {
 		return;
 	}
 	var headingSlash = path[0] === '/' ? '' : '/';
-	var hookPath = headingSlash + path.replace(/\/{(.*?)}/g, '');
+	var hookPath = headingSlash + path.replace(REG.HOOK, '');
 	var len = hookPath.length - 1;
 	hookPath = (hookPath[len] === '/') ? hookPath.substring(0, len) : hookPath;
 	// add the hook function to exact match
@@ -106,12 +130,14 @@ exports.parse = function (method, fullPath) {
 	parsed.pattern = matched.pattern;
 	parsed.handler = matched.handler;
 	for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
-		parsed.params[matched.paramNames[k]] = decodeURI(res[k]) || null;
+		var type = matched.paramNames[k].type;
+		var name = matched.paramNames[k].name;
+		parsed.params[name] = castType(type, res[k]) || null;
 	}
 	// parse request query
 	for (var i = 0, len = queryList.length; i < len; i++) {
 		var sep = queryList[i].split('=');
-		parsed.query[sep[0]] = sep[1];
+		parsed.query[sep[0]] = cast(sep[1]);
 	}
 	// find request hooks
 	parsed.hooks = findHooks(parsed.path);
@@ -132,4 +158,67 @@ function findHooks(reqPath) {
 		}
 	}
 	return matchedHooks;
+}
+
+function cast(value) {
+	var val = decodeURI(value);
+	if (isNaN(val)) {
+		switch (val) {
+			case 'true':
+			case 'TRUE':
+			case 'True':
+				return true;
+			case 'false':
+			case 'FALSE':
+			case 'False':
+				return false;
+			case 'null':
+			case 'NULL':
+			case 'Null':
+				return null;
+			case 'undefined':
+			case 'UNDEFINED':
+			case 'Undefined':
+				return undefined;
+			default:
+				try {
+					// object
+					return JSON.parse(val);
+				} catch (e) {
+					// string
+					return val;
+				}
+		}
+	}
+	// numeric
+	return parseFloat(val, 10);
+}
+
+function castType(type, value) {
+	var val = decodeURI(value);
+	switch (type) {
+		case 'number':
+			if (isNaN(val)) {
+				throw new Error('InvalidNumber: ' + val);
+			}
+			return parseFloat(val, 10);
+		case 'bool':
+			var bool = val.toLowerCase();
+			if (bool !== 'true' && bool !== 'false') {
+				throw new Error('InvalidBool: ' + val);
+			}
+			return bool === 'true' ? true : false;
+		case 'object':
+			return JSON.parse(val);
+		default:
+			// string
+			return val;
+	}
+}
+
+function validateType(type) {
+	if (TYPES.indexOf(type) === -1) {
+		throw new Error('InvalidType: ' + type);
+	}
+	return type;
 }

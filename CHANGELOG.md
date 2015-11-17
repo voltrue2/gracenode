@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### Router can now define typed parameters
+
 ### Router request handler is now validated for actually being functions
 
 ### Router hook's next callback can pass an error with a property code for http status
