@@ -10,7 +10,9 @@ None
 
 ## Changed
 
-### router hook's next callback can pass an error with a property code for http status
+### Router request handler is now validated for actually being functions
+
+### Router hook's next callback can pass an error with a property code for http status
 
 ## Deprecated
 

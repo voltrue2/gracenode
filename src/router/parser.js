@@ -12,6 +12,13 @@ var routes = {
 var hooks = {};
 
 exports.define = function (method, path, handler) {
+	if (typeof handler !== 'function') {
+		throw new Error(
+			'InvalidRouteHandler: ' +
+			method + ' ' + path +
+			' [' + (typeof handler) + ']'
+		);
+	}
 	method = (method === 'HEAD') ? 'GET' : method;
 	var res = {
 		handler: null,

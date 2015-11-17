@@ -121,13 +121,13 @@ describe('gracenode.router', function () {
 		gn.router.get('/content/json', require(pre + '/content/json').GET);
 		gn.router.get('/error/internal', require(pre + '/error/internal').GET);
 		gn.router.get('/error/notFound', require(pre + '/error/notFound').GET);
-		gn.router.get('/error/unauthorized', require(pre + '/error/unauthorized').GET);
+		gn.router.post('/error/unauthorized', require(pre + '/error/unauthorized').POST);
 		gn.router.get('/expected', require(pre + '/expected/index').GET);
 		gn.router.put('/file/upload', require(pre + '/file/upload').PUT);
-		gn.router.get('/hook/failed', require(pre + '/hook/failed').GET);
-		gn.router.get('/hook/success', require(pre + '/hook/success').GET);
+		gn.router.post('/hook/failed', require(pre + '/hook/failed').POST);
 		gn.router.post('/hook/success', require(pre + '/hook/success').POST);
-		gn.router.get('/hook2/failed', require(pre + '/hook2/failed').GET);
+		gn.router.post('/hook/success', require(pre + '/hook/success').POST);
+		gn.router.post('/hook2/failed', require(pre + '/hook2/failed').POST);
 		gn.router.post('/hook2/failed', require(pre + '/hook2/failed').POST);
 		gn.router.get('/hook3', require(pre + '/hook3/index').GET);
 		gn.router.get('/land/here', require(pre + '/land/here').GET);
