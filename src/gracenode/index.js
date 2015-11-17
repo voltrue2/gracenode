@@ -120,11 +120,16 @@ function applyConfig() {
 	renderConf = config.get('render');
 	if (logConf) {
 		isLogging = true;
+		// defaults
+		if (!logConf.hasOwnProperty('bufferSize')) {
+			logConf.bufferSize = 0;
+		}
 		log.config(logConf);
 	}
 	// this seems redundant, but it is necesarry to do this AFTER log.config()
 	clusterConfig = {
 		max: 0,
+		sync: false,
 		logger: isLogging ? log.create('cluster') : null
 	};
 	if (clusterConf) {

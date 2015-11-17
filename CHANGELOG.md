@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.10
+
+## Added
+
+None
+
+## Changed
+
+### Default configurations for log and cluster
+
+Default Values
+
+`log.bufferSize = 0`
+
+`cluster.sync = false`
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.9
 
 ## Added
