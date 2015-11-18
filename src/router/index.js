@@ -113,6 +113,7 @@ exports.setup = function (cb) {
 };
 
 function requestHandler(req, res) {
+	
 	if (trailingSlash) {
 		var uriComponents = req.url.split('?');
 		var uri = uriComponents[0];
@@ -127,6 +128,7 @@ function requestHandler(req, res) {
 			return res.end();
 		}
 	}
+
 	var method = req.method;
 	var parsed = parser.parse(method, req.url);	
 	var response = new Response(req, res, errorMap);
@@ -148,6 +150,17 @@ function requestHandler(req, res) {
 		response.error(new Error(ERROR.NOT_FOUND), 404);
 		return;	
 	}
+
+	// listener on unexpected connection termination
+	res.on('close', function () {
+		logger.error(
+			'Connection closed unexpectedly:',
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			'<headers>\n',
+			req.headers
+		);		
+	});
 
 	var handleHook = function (hook, next) {
 		logger.verbose(

@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.11
+
+## Added
+
+### Router added a listener for unexpected connection termination
+
+## Changed
+
+None
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.10
 
 ## Added
