@@ -63,7 +63,7 @@ exports.error = function (status, func) {
 		logger.error('Error handler already registerd for', status);
 		throw new Error('ERROR_ALREADY_REGISTERD');
 	}
-	logger.info('Error handler registered for:');
+	logger.info('Error handler registered for:', status, '[' + (func.name || 'anonymous') + ']');
 	errorMap[status] = func;
 };
 

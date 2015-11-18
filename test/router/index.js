@@ -1,5 +1,5 @@
 var logEnabled = process.argv[process.argv.length - 1].replace('--log=', '') === 'true' ? true : false;
-var port = 9099;
+var port = 98052;
 var dummy = '';
 var pre = '../server/controller';
 var assert = require('assert');
@@ -52,11 +52,12 @@ describe('gracenode.router', function () {
 	it('can start HTTP server router', function (done) {
 		gn.config({
 			log: {
-				console: logEnabled
+				console: logEnabled,
+				color: true
 			},
 			router: {
-				port: port,
-				host: 'localhost'
+				host: 'localhost',
+				port: port
 			}
 		});
 		gn.router.forceTrailingSlash();
