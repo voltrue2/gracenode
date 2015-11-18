@@ -157,6 +157,7 @@ function requestHandler(req, res) {
 			'Connection closed unexpectedly:',
 			util.fmt('url', req.method + ' ' + req.url),
 			util.fmt('id', req.id),
+			util.fmt('time', Date.now() - req.startTime),
 			'<headers>\n',
 			req.headers
 		);		
