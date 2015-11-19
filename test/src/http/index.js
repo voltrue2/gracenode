@@ -87,6 +87,15 @@ function parse(val) {
 }
 
 function sendRequest() {
+
+	if (!args.method || !args.url) {
+		//reset
+		step = 0;
+		console.log('Next request');
+		console.log(msg[step]);
+		return;
+	}
+
 	var opts = {
 		gzip: args.gzip,
 		headers: args.headers
@@ -96,8 +105,8 @@ function sendRequest() {
 			console.error('Error:', error);
 		}
 		console.log('Status Code:', st);
-		console.log(res);
 		console.log(JSON.stringify(headers, null, 2));
+		console.log(res);
 		//reset
 		step = 0;
 		console.log('Next request');
