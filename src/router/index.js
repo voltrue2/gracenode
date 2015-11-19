@@ -199,7 +199,7 @@ function requestHandler(req, res) {
 			return;
 		}
 		// execute hooks -> request handler
-		async.forEachSeries(parsed.hooks, handleHook, function (error) {
+		async.eachSeries(parsed.hooks, handleHook, function (error) {
 			if (error) {
 				// error response 400
 				response.error(error, error.code || 400);
