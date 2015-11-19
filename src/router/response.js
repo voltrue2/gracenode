@@ -22,7 +22,6 @@ var REDIRECT_STATUS_LIST = [
 	307 // for 307 keeping the original request type
 ];
 var DEFAULT_ERROR_STATUS = 400;
-var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 
 function Response(req, res, errorMap) {
 	// public
@@ -48,7 +47,7 @@ Response.prototype.error = function (error, status) {
 	var data = {};
 	if (error instanceof Error) {
 		data.message = error.message;
-		data.code = error.code || UNKNOWN_ERROR;
+		data.code = error.code || status;
 	} else {
 		data = error;
 	}
