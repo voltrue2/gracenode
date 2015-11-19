@@ -167,17 +167,7 @@ function getIfConditions(tag) {
 		throw new Error('InvalidClose: ' + tag);
 	}
 
-	var list = tag.substring(openIndex + 3, closeIndex).split(REG.IFC);
-	for (var i = 0, len = list.length; i < len; i++) {
-		if (list[i] !== '&&' && list[i] !== '||') {
-			var cond = list[i].split(REG.IFE);		
-			list[i] = {
-				op: cond[1],
-				val1: cond[0].replace(REG.IFV, ''),
-				val2: cond[2].replace(REG.IFV, '')
-			};
-		}
-	}	
+	var list = parseIfConds(tag.substring(openIndex + 3, closeIndex).split(REG.IFC));
 
 	res[LOGICS.IF] = {
 		conditions: list,
@@ -191,17 +181,7 @@ function getIfConditions(tag) {
 			res.elseif = [];
 		}
 		closeIndex = tag.indexOf('):');
-		var conds = tag.substring(openIndex + 7, closeIndex).split(REG.IFC);
-		for (var j = 0, jen = conds.length; j < jen; j++) {
-			if (conds[j] !== '&&' && conds[j] !== '||') {
-				var sep = conds[j].split(REG.IFE);		
-				conds[j] = {
-					op: sep[1],
-					val1: sep[0].replace(REG.IFV, ''),
-					val2: sep[2].replace(REG.IFV, '')
-				};
-			}
-		}	
+		var conds = parseIfConds(tag.substring(openIndex + 7, closeIndex).split(REG.IFC));
 		tag = tag.replace('elseif', '');
 		closeIndex = tag.indexOf('):');
 		res.elseif[index] = {
@@ -235,6 +215,20 @@ function getIfConditions(tag) {
 	}
 	
 	return res;
+}
+
+function parseIfConds(list) {
+	for (var i = 0, len = list.length; i < len; i++) {
+		if (list[i] !== '&&' && list[i] !== '||') {
+			var cond = list[i].split(REG.IFE);		
+			list[i] = {
+				op: cond[1],
+				val1: cond[0].replace(REG.IFV, ''),
+				val2: cond[2].replace(REG.IFV, '')
+			};
+		}
+	}	
+	return list;
 }
 
 function getForConditions(tag) {

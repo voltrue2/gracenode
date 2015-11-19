@@ -10,6 +10,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
+### Render parser for if has been improved
+
 ### Router error for missing code will be status code
 
 ## Deprecated
