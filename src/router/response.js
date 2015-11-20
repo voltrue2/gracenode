@@ -230,7 +230,7 @@ Response.prototype._send = function (data, status) {
 
 function gzip(mustGzip, data, cb) {
 	if (!mustGzip) {
-		return cb(null, data, Buffer.byteLength(data), 'string');
+		return cb(null, data, Buffer.byteLength(data), 'UTF-8');
 	}
 	zlib.gzip(data, function (error, zipped) {
 		if (error) {

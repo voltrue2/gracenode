@@ -20,7 +20,7 @@ exports.getReqBody = function (req, cb) {
 				body.files.push(files[f][0]);
 			}
 			logger.verbose(
-				'Reuest body:',
+				'Request body:',
 				util.fmt('url', req.method + ' ' + req.url),
 				util.fmt('id', req.id),
 				'\n<body>', body
