@@ -24,7 +24,7 @@ var REG = {
 	HOOK: /\/{(.*?)}/g
 };
 
-exports.define = function (method, path, handler) {
+exports.define = function (method, path, handler, opt) {
 	if (typeof handler !== 'function') {
 		throw new Error(
 			'InvalidRouteHandler: ' +
@@ -32,11 +32,13 @@ exports.define = function (method, path, handler) {
 			' [' + (typeof handler) + ']'
 		);
 	}
+	opt = typeof opt === 'object' ? opt : {};
 	method = (method === 'HEAD') ? 'GET' : method;
 	var res = {
 		handler: null,
 		path: null,
 		pattern: null,
+		readBody: false,
 		paramNames: []
 	};
 	var headingSlash = path[0] === '/' ? '' : '/';
@@ -60,6 +62,10 @@ exports.define = function (method, path, handler) {
 	res.pattern = pattern.replace(REG.SLASH, '\\/');
 	res.path = headingSlash + path.replace(REG.PATH, '');
 	res.handler = handler;
+	res.readBody = method === 'GET' || method === 'HEAD' ? false : true;
+	if (opt.readBody) {
+		res.readBody = true;
+	}
 	routes[method].push(res);
 	// sort the order of routes long uri to short uri
 	routes[method].sort(function (a, b) {
@@ -134,6 +140,7 @@ exports.parse = function (method, fullPath) {
 	parsed.path = matched.path;
 	parsed.pattern = matched.pattern;
 	parsed.handler = matched.handler;
+	parsed.readBody = matched.readBody;
 	for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
 		var type = matched.paramNames[k].type;
 		var name = matched.paramNames[k].name;

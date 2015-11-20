@@ -1149,6 +1149,16 @@ gracenode.router.patch(url [string], handler [function]);
 gracenode.router.head(url [string], handler [function]);
 ```
 
+#### Read Request Body
+
+`GET` and `HEAD` requests will not read request body by default.
+
+In order to read request body of `GET` or/and `HEAD` add the following option:
+
+```javascript
+gracenode.router.get('/read/req/body', getReqHandler, { readBody: true });
+```
+
 #### req
 
 The handler functions of endpoints will be passed two arguments.

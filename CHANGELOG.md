@@ -10,6 +10,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
+### Router GET and HEAD request handlers no longer ready request body by default
+
 ### Router response bug fix for non-gzipped encoding
 
 ### dependency gracelog version updated to 0.6.0

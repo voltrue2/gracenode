@@ -26,28 +26,28 @@ exports.config = function (configIn) {
 	config = configIn;
 };
 
-exports.get = function (path, handler) {
-	parser.define('GET', path, handler);
+exports.get = function (path, handler, opt) {
+	parser.define('GET', path, handler, opt);
 };
 
-exports.post = function (path, handler) {
-	parser.define('POST', path, handler);
+exports.post = function (path, handler, opt) {
+	parser.define('POST', path, handler, opt);
 };
 
-exports.head = function (path, handler) {
-	parser.define('HEAD', path, handler);
+exports.head = function (path, handler, opt) {
+	parser.define('HEAD', path, handler, opt);
 };
 
-exports.put = function (path, handler) {
-	parser.define('PUT', path, handler);
+exports.put = function (path, handler, opt) {
+	parser.define('PUT', path, handler, opt);
 };
 
-exports.delete = function (path, handler) {
-	parser.define('DELETE', path, handler);
+exports.delete = function (path, handler, opt) {
+	parser.define('DELETE', path, handler, opt);
 };
 
-exports.patch = function (path, handler) {
-	parser.define('PATCH', path, handler);
+exports.patch = function (path, handler, opt) {
+	parser.define('PATCH', path, handler, opt);
 };
 
 exports.forceTrailingSlash = function () {
@@ -182,7 +182,7 @@ function requestHandler(req, res) {
 	// request URL parameters
 	req.params = parsed.params;
 	// extract request body
-	request.getReqBody(req, function (error, body) {
+	request.getReqBody(parsed.readBody, req, function (error, body) {
 		if (error) {
 			// 500
 			response.error(error, 500);

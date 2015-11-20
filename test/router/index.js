@@ -1,4 +1,4 @@
-var logEnabled = process.argv[process.argv.length - 1].replace('--log=', '') === 'true' ? true : false;
+var logEnabled = require('../arg')('--log');
 var port = 98052;
 var dummy = '';
 var pre = '../server/controller';
@@ -53,7 +53,8 @@ describe('gracenode.router', function () {
 		gn.config({
 			log: {
 				console: logEnabled,
-				color: true
+				color: true,
+				level: '>= verbose'
 			},
 			router: {
 				host: 'localhost',
@@ -123,7 +124,7 @@ describe('gracenode.router', function () {
 		gn.router.get('/error/internal', require(pre + '/error/internal').GET);
 		gn.router.get('/error/notFound', require(pre + '/error/notFound').GET);
 		gn.router.post('/error/unauthorized', require(pre + '/error/unauthorized').POST);
-		gn.router.get('/expected', require(pre + '/expected/index').GET);
+		gn.router.get('/expected', require(pre + '/expected/index').GET, { readBody: true });
 		gn.router.put('/file/upload', require(pre + '/file/upload').PUT);
 		gn.router.post('/hook/failed', require(pre + '/hook/failed').POST);
 		gn.router.post('/hook/success', require(pre + '/hook/success').POST);
@@ -141,8 +142,8 @@ describe('gracenode.router', function () {
 		gn.router.get('/test/double', require(pre + '/test/double').GET);
 		gn.router.get('/test/errorOut', require(pre + '/test/errorOut').GET);
 		gn.router.get('/test/get', require(pre + '/test/get').GET);
-		gn.router.get('/test/get2', require(pre + '/test/get2').GET);
-		gn.router.get('/test/get2/{one}/{two}/{three}', require(pre + '/test/get2').GET);
+		gn.router.get('/test/get2', require(pre + '/test/get2').GET, { readBody: true });
+		gn.router.get('/test/get2/{one}/{two}/{three}', require(pre + '/test/get2').GET, { readBody: true });
 		gn.router.get('/test/get3', require(pre + '/test/get3').GET);
 		gn.router.head('/test/head', require(pre + '/test/head').HEAD);
 		gn.router.get('/test', require(pre + '/test/index').GET);

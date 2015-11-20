@@ -7,27 +7,13 @@ var util = require('./util');
 var gn = require('../gracenode');
 var logger = gn.log.create('router.request');
 
-exports.getReqBody = function (req, cb) {
+exports.getReqBody = function (read, req, cb) {
+	if (!read) {
+		// we do not read request body of GET by default
+		return cb(null, {});
+	}
 	if (mime.is(req.headers, 'multipart')) {
-		var form = new multiparty.Form();
-		form.parse(req, function (error, fields, files) {
-			if (error) {
-				return cb(error);
-			}
-			var body = fields;
-			body.files = [];
-			for (var f in files) {
-				body.files.push(files[f][0]);
-			}
-			logger.verbose(
-				'Request body:',
-				util.fmt('url', req.method + ' ' + req.url),
-				util.fmt('id', req.id),
-				'\n<body>', body
-			);
-			cb(null, body);
-		});
-		return;
+		return readMultipartBody(req, cb);
 	}
 	var body = '';
 	req.on('data', function (data) {
@@ -52,6 +38,27 @@ exports.getReqBody = function (req, cb) {
 		cb(error);
 	});	
 };
+
+function readMultipartBody(req, cb) {
+	var form = new multiparty.Form();
+	form.parse(req, function (error, fields, files) {
+		if (error) {
+			return cb(error);
+		}
+		var body = fields;
+		body.files = [];
+		for (var f in files) {
+			body.files.push(files[f][0]);
+		}
+		logger.verbose(
+			'Request body:',
+			util.fmt('url', req.method + ' ' + req.url),
+			util.fmt('id', req.id),
+			'\n<body>', body
+		);
+		cb(null, body);
+	});
+}
 
 function readRequestBody(url, headers, body) {
 	var reqBody;
