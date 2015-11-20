@@ -28,6 +28,7 @@ var msg = [
 
 var host = process.argv[2];
 var args = {};
+var remember = {};
 
 if (!host) {
 	exit(new Error('HTTP command client needs host as the first argument: Example localhost:8000'));
@@ -37,6 +38,21 @@ console.log(msg[step]);
 
 process.stdin.on('data', function (input) {
 	input = input.toString().replace(/\n/, '');
+	if (input.indexOf('repeat:') === 0) {
+		var url = input.replace('repeat:', '');
+		var rem = remember[url];
+		if (!rem) {
+			console.log(remember);
+			return exit(new Error('Invalid request memory: ' + url));
+		}
+		args.gzip = rem.gzip;
+		args.method = rem.method;
+		args.url = 'http://' + host + url;
+		args.params = rem.params;
+		args.headers = rem.headers;
+		console.log('Repeating request [gzip:' + args.gzip + ']:', args.method, args.url, args.params, args.headers);
+		return sendRequest();
+	}
 	handleInputPerStep(input);
 });
 
@@ -97,6 +113,12 @@ function sendRequest() {
 	}
 
 	var opts = {
+		gzip: args.gzip,
+		headers: args.headers
+	};
+	remember[args.url.replace('http://' + host, '')] = {
+		method: args.method,
+		params: args.params || null,
 		gzip: args.gzip,
 		headers: args.headers
 	};
