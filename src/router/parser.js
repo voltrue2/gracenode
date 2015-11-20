@@ -56,7 +56,8 @@ exports.define = function (method, path, handler) {
 			name: name
 		});
 	}
-	res.pattern = headingSlash + path.replace(REG.PARAM, '(.*?)').replace(REG.SLASH, '\\/') + trailingSlash;
+	var pattern = headingSlash + path.replace(REG.PARAM, '(.*?)') + trailingSlash;
+	res.pattern = pattern.replace(REG.SLASH, '\\/');
 	res.path = headingSlash + path.replace(REG.PATH, '');
 	res.handler = handler;
 	routes[method].push(res);
@@ -104,8 +105,12 @@ exports.parse = function (method, fullPath) {
 		params: {}
 	};
 	var queryIndex = fullPath.indexOf('?');
-	var queryList = (queryIndex === -1) ? [] : fullPath.substring(queryIndex + 1).split('&');
-	var path = ((queryIndex === -1) ? fullPath : fullPath.substring(0, queryIndex));
+	var queryList = [];
+	var path = fullPath;
+	if (queryIndex !== -1) {
+		queryList = fullPath.substring(queryIndex + 1).split('&');
+		path = fullPath.substring(0, queryIndex);
+	}
 	path += (path[path.length - 1] === '/') ? '' : '/';
 	var list = routes[method] || [];
 	var matched;

@@ -1261,6 +1261,12 @@ gracenode.router.post('/example', function (req, res) {
 });
 ```
 
+##### res.gzip(enable [boolean])
+
+Enable/Disable gzip compression of response data.
+
+Default is `true`.
+
 ##### res.onClose(callback [function])
 
 Executes a given callback function on unexpected connection close such as client timeout etc
