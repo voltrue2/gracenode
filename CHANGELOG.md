@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.12
+
+## Added
+
+### Router response added .onClose(<callback>)
+
+## Changed
+
+### Render parser for if has been improved
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.11
 
 ## Added
@@ -9,8 +29,6 @@ This is a list of manually mantained changes and updates for each version.
 ### Router added a listener for unexpected connection termination
 
 ## Changed
-
-### Render parser for if has been improved
 
 ### Router error for missing code will be status code
 

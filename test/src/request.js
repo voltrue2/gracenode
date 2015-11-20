@@ -43,6 +43,10 @@ function send(url, method, args, options, cb) {
 		params.json = true;
 	}
 
+	if (options.timeout) {
+		params.timeout = options.timeout;
+	}
+
 	var sender = request[method] || null;
 	
 	if (!sender) {

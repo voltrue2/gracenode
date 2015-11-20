@@ -39,6 +39,10 @@ function Response(req, res, errorMap) {
 	}
 }
 
+Response.prototype.onClose = function (func) {
+	this._res.on('close', func);
+};
+
 Response.prototype.disableGzip = function () {
 	this._gzip = false;
 };

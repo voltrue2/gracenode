@@ -1261,6 +1261,10 @@ gracenode.router.post('/example', function (req, res) {
 });
 ```
 
+##### res.onClose(callback [function])
+
+Executes a given callback function on unexpected connection close such as client timeout etc
+
 ##### res.json(data [object], status [*number])
 
 Send response as JSON.

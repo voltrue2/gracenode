@@ -3,7 +3,7 @@ var port = 98052;
 var dummy = '';
 var pre = '../server/controller';
 var assert = require('assert');
-var request = require('../server/request');
+var request = require('../src/request');
 var gn = require('../../src/gracenode');
 var http = 'http://localhost:' + port + dummy; 
 var options = {
@@ -833,6 +833,23 @@ describe('gracenode.router', function () {
 			assert.strictEqual(res.float, 0.4);
 			assert.equal(st, 200);
 			done();
+		});
+	});
+
+	it('can listen on unexpected connection close', function (done) {
+		gn.router.get('/close', function (req, res) {
+			res.onClose(function () {
+				done();
+			});
+		});
+		var opt = {
+			timeout: 100
+		};
+		for (var i in options) {
+			opt[i] = options[i];
+		}
+		request.GET(http + '/close', null, opt, function () {
+			// do nothing here
 		});
 	});
 

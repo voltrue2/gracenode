@@ -158,7 +158,7 @@ function requestHandler(req, res) {
 			util.fmt('url', req.method + ' ' + req.url),
 			util.fmt('id', req.id),
 			util.fmt('time', Date.now() - req.startTime),
-			'<headers>\n',
+			'\n<headers>',
 			req.headers
 		);		
 	});

@@ -220,7 +220,13 @@ function getIfConditions(tag) {
 function parseIfConds(list) {
 	for (var i = 0, len = list.length; i < len; i++) {
 		if (list[i] !== '&&' && list[i] !== '||') {
-			var cond = list[i].split(REG.IFE);		
+			var cond = list[i].split(REG.IFE);
+			if (cond.length !== 3) {
+				throw new Error(
+					'InvalidIfConditions: ' + list[i] +
+					'\nformat must be variable1 === variable etc'
+				);
+			}	
 			list[i] = {
 				op: cond[1],
 				val1: cond[0].replace(REG.IFV, ''),
