@@ -24,6 +24,8 @@ var REG = {
 	HOOK: /\/{(.*?)}/g
 };
 
+var urlParseCache = {};
+
 exports.setup = function () {
 	logger = gn.log.create('router.parser');
 };
@@ -125,11 +127,19 @@ exports.parse = function (method, fullPath) {
 	var list = routes[method] || [];
 	var matched;
 	var res;
+	if (urlParseCache[path] !== undefined) {
+		matched = list[urlParseCache[path]];
+		if (matched) {
+			res = path.match(matched.regex);
+			list = [];
+		}
+	}
 	for (var h = 0, hen = list.length; h < hen; h++) {
 		var item = list[h];
 		res = path.match(item.regex);
 		if (res) {
 			matched = item;
+			urlParseCache[path] = h;
 			break;
 		}
 	}

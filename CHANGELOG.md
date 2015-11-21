@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.13
+
+## Added
+
+None
+
+## Changed
+
+### Router parser caches the route list position for better performance
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.12
 
 ## Added
