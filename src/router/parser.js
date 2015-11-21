@@ -123,9 +123,11 @@ exports.parse = function (method, fullPath) {
 	path += (path[path.length - 1] === '/') ? '' : '/';
 	var list = routes[method] || [];
 	var matched;
+	var res;
 	for (var h = 0, hen = list.length; h < hen; h++) {
 		var item = list[h];
-		if (path.search(item.pattern) === 0) {
+		res = path.match(item.pattern);
+		if (res) {
 			matched = item;
 			break;
 		}
@@ -135,7 +137,6 @@ exports.parse = function (method, fullPath) {
 		return null;
 	}
 	// get request handler
-	var res = path.match(matched.pattern);
 	// first element is the matched string
 	// discard it
 	res.shift();
