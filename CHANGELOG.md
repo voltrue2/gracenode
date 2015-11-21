@@ -10,6 +10,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
+### Router URL parser pre-compiles regex for better performance
+
 ### Logging bug fix for default logging
 
 ### Router GET and HEAD request handlers no longer ready request body by default
