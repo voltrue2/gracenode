@@ -124,6 +124,12 @@ function applyConfig() {
 		if (!logConf.hasOwnProperty('bufferSize')) {
 			logConf.bufferSize = 0;
 		}
+		if (!logConf.hasOwnProperty('level')) {
+			logConf.level = '>= error';
+		}
+		if (!logConf.hasOwnProperty('color')) {
+			logConf.color = false;
+		}
 		log.config(logConf);
 	}
 	// this seems redundant, but it is necesarry to do this AFTER log.config()

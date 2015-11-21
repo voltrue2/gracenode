@@ -5,7 +5,7 @@ var zlib = require('zlib');
 var mime = require('./mime');
 var util = require('./util');
 var gn = require('../gracenode');
-var logger = gn.log.create('router.response');
+var logger;
 
 var DEFAULT_HEADERS = {
 	'Cache-Control': 'no-cache, must-revalidate',
@@ -22,6 +22,10 @@ var REDIRECT_STATUS_LIST = [
 	307 // for 307 keeping the original request type
 ];
 var DEFAULT_ERROR_STATUS = 400;
+
+exports.setup = function () {
+	logger = gn.log.create('router.response');
+};
 
 function Response(req, res, errorMap) {
 	// public
@@ -290,4 +294,4 @@ function send(req, res, headers, data, type, status) {
 	res.end(data, type);
 }
 
-module.exports = Response;
+module.exports.Response = Response;

@@ -6,10 +6,11 @@ var http = require('http');
 var Cookies = require('cookies');
 var parser = require('./parser');
 var request = require('./request');
-var Response = require('./response');
+var response = require('./response');
+var Response = response.Response;
 var util = require('./util');
 var gn = require('../gracenode');
-var logger = gn.log.create('router');
+var logger;
 var config;
 var server;
 var trailingSlash = false;
@@ -23,7 +24,11 @@ var ERROR = {
 };
 
 exports.config = function (configIn) {
+	logger = gn.log.create('router');
 	config = configIn;
+	parser.setup();
+	request.setup();
+	response.setup();
 };
 
 exports.get = function (path, handler, opt) {
@@ -136,7 +141,7 @@ function requestHandler(req, res) {
 
 	var method = req.method;
 	var parsed = parser.parse(method, req.url);	
-	var response = new Response(req, res, errorMap);
+	var resp = new Response(req, res, errorMap);
 	logger.info(
 		'Request Resolved:',
 		util.fmt('url', req.method + ' ' + req.url),
@@ -146,7 +151,7 @@ function requestHandler(req, res) {
 
 	if (parsed === null) {
 		// 404
-		response.error(new Error(ERROR.NOT_FOUND), 404);
+		resp.error(new Error(ERROR.NOT_FOUND), 404);
 		return;	
 	}
 
@@ -169,7 +174,7 @@ function requestHandler(req, res) {
 			util.fmt('id', req.id),
 			util.fmt('hook name', (hook.name || 'anonymous'))
 		);
-		hook(req, response, next);
+		hook(req, resp, next);
 	};
 
 	// shared data for hooks and request handler
@@ -184,7 +189,7 @@ function requestHandler(req, res) {
 	request.getReqBody(parsed.readBody, req, function (error, body) {
 		if (error) {
 			// 500
-			response.error(error, 500);
+			resp.error(error, 500);
 			return;
 		}
 		// request body parameters
@@ -194,7 +199,7 @@ function requestHandler(req, res) {
 		// no hooks
 		if (!parsed.hooks.length) {
 			reqHandlerLog(req);
-			parsed.handler(req, response);
+			parsed.handler(req, resp);
 			return;
 		}
 
@@ -202,11 +207,11 @@ function requestHandler(req, res) {
 		async.eachSeries(parsed.hooks, handleHook, function (error) {
 			if (error) {
 				// error response 400
-				response.error(error, error.code || 400);
+				resp.error(error, error.code || 400);
 				return;
 			}
 			reqHandlerLog(req);
-			parsed.handler(req, response);
+			parsed.handler(req, resp);
 		});
 	});
 }

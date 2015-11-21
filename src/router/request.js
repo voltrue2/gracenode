@@ -5,7 +5,11 @@ var multiparty = require('multiparty');
 var mime = require('./mime');
 var util = require('./util');
 var gn = require('../gracenode');
-var logger = gn.log.create('router.request');
+var logger;
+
+exports.setup = function () {
+	logger = gn.log.create('router.request');
+};
 
 exports.getReqBody = function (read, req, cb) {
 	if (!read) {

@@ -33,7 +33,7 @@ if (process.argv[2] === 'express') {
 	};
 	gn.config({
 		log: {
-			console: false
+			console: false,
 		},
 		router: {
 			host: 'localhost',
@@ -51,7 +51,7 @@ if (process.argv[2] === 'express') {
 	});
 	var done = function () {
 		console.log('DONE', dur + 'ms', cnt, ecnt);
-		process.exit();
+		gn.stop();
 	};
 	setTimeout(done, dur);
 } else {

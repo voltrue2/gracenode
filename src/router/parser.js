@@ -1,7 +1,7 @@
 'use strict';
 
 var gn = require('../gracenode');
-var logger = gn.log.create('router.parser');
+var logger;
 var routes = {
 	GET: [],
 	POST: [],
@@ -22,6 +22,10 @@ var REG = {
 	PATH: /\/{(.*?)}/g,
 	SLASH: /\//g,
 	HOOK: /\/{(.*?)}/g
+};
+
+exports.setup = function () {
+	logger = gn.log.create('router.parser');
 };
 
 exports.define = function (method, path, handler, opt) {
@@ -71,7 +75,6 @@ exports.define = function (method, path, handler, opt) {
 	routes[method].sort(function (a, b) {
 		return b.pattern.length - a.pattern.length;
 	});
-	logger.verbose('HTTP endpoint route registered:', method, res.path, res);
 };
 
 exports.hook = function (path, func) {
