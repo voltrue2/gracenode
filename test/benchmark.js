@@ -44,7 +44,7 @@ if (process.argv[2] === 'express') {
 	for (var i = 0; i < 100; i++) {
 		gn.router.get('/' + i + 'xxxx', fnc);
 	}
-	gn.router.get('/test', ghandle);
+	gn.router.get('/test', ghandle, { readBody: false });
 	gn.start(function () {
 		spam(gport);
 		setTimeout(done, dur);

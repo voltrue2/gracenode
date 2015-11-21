@@ -129,15 +129,14 @@ function requestHandler(req, res) {
 		}
 	}
 
-	var method = req.method;
-	var parsed = parser.parse(method, req.url);	
-	var response = new Response(req, res, errorMap);
-
 	// assign request ID
 	req.id = uuid.v4();
 	// set start time
 	req.startTime = Date.now();
 
+	var method = req.method;
+	var parsed = parser.parse(method, req.url);	
+	var response = new Response(req, res, errorMap);
 	logger.info(
 		'Request Resolved:',
 		util.fmt('url', req.method + ' ' + req.url),
@@ -198,6 +197,7 @@ function requestHandler(req, res) {
 			parsed.handler(req, response);
 			return;
 		}
+
 		// execute hooks -> request handler
 		async.eachSeries(parsed.hooks, handleHook, function (error) {
 			if (error) {
