@@ -63,6 +63,7 @@ exports.define = function (method, path, handler, opt) {
 		});
 	}
 	var pattern = headingSlash + path.replace(REG.PARAM, '(.*?)') + trailingSlash;
+	res.regex = new RegExp(pattern.replace(REG.SLASH, '\\/'));
 	res.pattern = pattern.replace(REG.SLASH, '\\/');
 	res.path = headingSlash + path.replace(REG.PATH, '');
 	res.handler = handler;
@@ -126,7 +127,7 @@ exports.parse = function (method, fullPath) {
 	var res;
 	for (var h = 0, hen = list.length; h < hen; h++) {
 		var item = list[h];
-		res = path.match(item.pattern);
+		res = path.match(item.regex);
 		if (res) {
 			matched = item;
 			break;
@@ -157,6 +158,8 @@ exports.parse = function (method, fullPath) {
 	}
 	// find request hooks
 	parsed.hooks = findHooks(parsed.path);
+
+	// done
 	return parsed;
 };
 
