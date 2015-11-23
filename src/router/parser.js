@@ -78,6 +78,7 @@ exports.define = function (method, path, handler, opt) {
 	routes[method].sort(function (a, b) {
 		return b.pattern.length - a.pattern.length;
 	});
+	logger.verbose('Endpoint registered:', method, res);
 };
 
 exports.hook = function (path, func) {
