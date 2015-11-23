@@ -85,19 +85,6 @@ function readRequestBody(url, headers, body) {
 
 function typecast(data) {
 	if (isNaN(data)) {
-		switch (data.toLowerCase()) {
-			case 'undefined':
-				return undefined;
-			case 'null':
-				return null;
-			case 'true':
-				return true;
-			case 'false':
-				return false;
-			default:
-				// do nothing
-				break;
-		}
 		if (typeof data === 'object') {
 			for (var i in data) {
 				data[i] = typecast(data[i]);
@@ -108,6 +95,20 @@ function typecast(data) {
 		} catch (error) {
 			return data;
 		}
+		switch (data.toLowerCase()) {
+			case 'undefined':
+				return undefined;
+			case 'null':
+				return null;
+			case 'true':
+				return true;
+			case 'false':
+				return false;
+			default:
+				// string
+				break;
+		}
+		return data;
 	}
 	// numeric data
 	if (data.indexOf('.') !== -1) {

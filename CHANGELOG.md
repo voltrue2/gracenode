@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### Router reuqest parser fixed for object type
+
 ### Dependency gracelog version updated 0.6.2
 
 ### Router parser caches the route list position for better performance
