@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.14
+
+## Added
+
+None
+
+## Changed
+
+### Router corrected JSON request body parsing
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.13
 
 ## Added

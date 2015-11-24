@@ -89,10 +89,6 @@ function typecast(data) {
 			for (var i in data) {
 				data[i] = typecast(data[i]);
 			}
-		}
-		try {
-			return JSON.parse(data);
-		} catch (error) {
 			return data;
 		}
 		switch (data.toLowerCase()) {
@@ -105,10 +101,15 @@ function typecast(data) {
 			case 'false':
 				return false;
 			default:
-				// string
+				// do nothing
 				break;
 		}
-		return data;
+		try {
+			return JSON.parse(data);
+		} catch (error) {
+			// string
+			return data;
+		}
 	}
 	// numeric data
 	if (data.indexOf('.') !== -1) {
