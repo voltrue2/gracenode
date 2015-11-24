@@ -80,7 +80,7 @@ function readRequestBody(url, headers, body) {
 		}
 	}
 
-	return reqBody || {};
+	return reqBody;
 }
 
 function typecast(data) {

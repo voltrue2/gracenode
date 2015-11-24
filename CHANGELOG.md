@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.15
+
+## Added
+
+None
+
+## Changed
+
+### Dependency aeterno's version updated to 0.5.5
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.14
 
 ## Added
