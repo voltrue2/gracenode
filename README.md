@@ -1311,6 +1311,10 @@ Stream file.
 
 Useful for HTML5 video streaming etc.
 
+###### res.file(filePath [string], status [*number])
+
+Server a static file.
+
 ###### res.error(error [object], [*number])
 
 Send response as error (response data is JSON object).
