@@ -23,7 +23,7 @@ for (var i = 0, len = list.length; i < len; i++) {
 }
 </script>
 {{for (test = 0; test <= 100; test+= 10):
-	<div>Test&nbsp;{test}</div>
+	<div class="loop">Test {test}</div>
 endfor}}
 <pre>
 {

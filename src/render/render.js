@@ -21,6 +21,7 @@ var LBR = /\(_n_\)/g;
 var TB = '(_t_)';
 var TBR = /\(_t_\)/g;
 var ALLR = /(\ |\(_n_\)|\(_t_\))/g;
+var RNT = /(\(_n_\)|\(_t_\))/g;
 
 var REG = {
 	LB: /(\n|\r)/g,
@@ -119,11 +120,12 @@ function extract(content) {
 function extractLogic(tag) {
 	var logic = null;
 	var conditions = null;
+	var stag = tag.replace(RNT, '');
 	tag = tag.replace(ALLR, '');
 	for (var i = 0, len = LOGIC_TYPES.length; i < len; i++) {
 		if (tag.toLowerCase().indexOf(LOGIC_TYPES[i]) === 0) {
 			logic = LOGIC_TYPES[i];
-			conditions = extractLogicConditions(logic, tag);
+			conditions = extractLogicConditions(logic, tag, stag);
 			break;
 		}
 	}
@@ -136,12 +138,12 @@ function extractLogic(tag) {
 	};
 }
 
-function extractLogicConditions(logic, tag) {
+function extractLogicConditions(logic, tag, stag) {
 	switch (logic) {
 		case LOGICS.IF:
 			return getIfConditions(tag);		
 		case LOGICS.FOR:		
-			return getForConditions(tag);
+			return getForConditions(tag, stag);
 		case LOGICS.FOREACH:
 			return getForEachConditions(tag);
 		case LOGICS.REQ:
@@ -237,25 +239,26 @@ function parseIfConds(list) {
 	return list;
 }
 
-function getForConditions(tag) {
-	var open = LOGICS.FOR + '(';
-	var openIndex = tag.indexOf(open);
-	var closeIndex = tag.lastIndexOf('):');
-	var conditions = tag.substring(openIndex + open.length, closeIndex).split(';');
-	var endIndex = tag.lastIndexOf('end' + LOGICS.FOR);
-	var iterate = tag.substring(closeIndex + 2, endIndex);
+function getForConditions(tag, stag) {
 
-	if (openIndex === -1) {
-		throw new Error('InvalidOpen: ' + tag);
+	var oIndex = stag.indexOf('(');
+	var cIndex = stag.lastIndexOf('):');
+	var eIndex = stag.lastIndexOf('end' + LOGICS.FOR);
+
+	if (oIndex === -1) {
+		throw new Error('InvalidOpen: ' + stag);
 	}
 
-	if (closeIndex === -1) {
-		throw new Error('InvalidClose: ' + tag);
+	if (cIndex === -1) {
+		throw new Error('InvalidClose: ' + stag);
 	}
 
-	if (endIndex === -1) {
-		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.FOR + ' not found>');
+	if (eIndex === -1) {
+		throw new Error('InvalidEnd: ' + stag);
 	}
+
+	var conditions = stag.substring(oIndex + 1, cIndex).replace(REG.VARS, '').split(';');
+	var iterate = stag.substring(cIndex + 2, stag.lastIndexOf('end' + LOGICS.FOR));
 
 	var cond = {};
 	var startData = conditions[0].split('=');
