@@ -854,4 +854,31 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can ready request body w/ content-type: application/json header', function (done) {
+		gn.router.post('/postman', function (req, res) {
+			res.json(req.body.json);
+		});
+		var opt = {
+			gzip: true,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		};
+		var params = {
+			json: {
+				one: 1,
+				two: '2',
+				list: [1, 2, 3]
+			}
+		};
+		request.POST(http + '/postman/', params, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.one, 1);
+			assert.equal(res.two, '2');
+			assert.equal(res.list.length, 3);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 });

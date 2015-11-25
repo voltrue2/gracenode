@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.16
+
+## Added
+
+None
+
+## Changed
+
+### Router request body parser improved
+
+### Dependency aeterno's version updated to 0.5.5
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.15
 
 ## Added

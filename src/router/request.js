@@ -85,12 +85,6 @@ function readRequestBody(url, headers, body) {
 
 function typecast(data) {
 	if (isNaN(data)) {
-		if (typeof data === 'object') {
-			for (var i in data) {
-				data[i] = typecast(data[i]);
-			}
-			return data;
-		}
 		switch (data.toLowerCase()) {
 			case 'undefined':
 				return undefined;
