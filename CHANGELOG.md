@@ -10,9 +10,9 @@ None
 
 ## Changed
 
-### Router request body parser improved
+### Render if/for/foreach keep spaces when rendered
 
-### Dependency aeterno's version updated to 0.5.5
+### Router request body parser improved
 
 ## Deprecated
 
