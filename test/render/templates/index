@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<html>
 <head>
 <meta charset="utf8" />
 </head>
@@ -10,9 +9,8 @@
 endfor}}
 {{
 	foreach (i in {data}):
-		<div>{data.i.type}:{data.i.value}</div>
+		<div style="color: #f00;">{data.i.type} : {data.i.value}</div>
 	endforeach
 }}
 </body>
-</html>
 </html>

@@ -143,9 +143,9 @@ function extractLogicConditions(logic, tag, stag) {
 		case LOGICS.IF:
 			return getIfConditions(tag);		
 		case LOGICS.FOR:		
-			return getForConditions(tag, stag);
+			return getForConditions(stag);
 		case LOGICS.FOREACH:
-			return getForEachConditions(tag);
+			return getForEachConditions(tag, stag);
 		case LOGICS.REQ:
 			return getRequireConditions(tag);
 		default:
@@ -239,26 +239,15 @@ function parseIfConds(list) {
 	return list;
 }
 
-function getForConditions(tag, stag) {
-
-	var oIndex = stag.indexOf('(');
-	var cIndex = stag.lastIndexOf('):');
-	var eIndex = stag.lastIndexOf('end' + LOGICS.FOR);
-
-	if (oIndex === -1) {
-		throw new Error('InvalidOpen: ' + stag);
-	}
-
-	if (cIndex === -1) {
-		throw new Error('InvalidClose: ' + stag);
-	}
-
-	if (eIndex === -1) {
-		throw new Error('InvalidEnd: ' + stag);
-	}
+function getForConditions(stag) {
+	
+	var indexes = getOpenCloseEnd(LOGICS.FOR, stag);
+	var oIndex = indexes.open;
+	var cIndex = indexes.close;
+	var eIndex = indexes.end;
 
 	var conditions = stag.substring(oIndex + 1, cIndex).replace(REG.VARS, '').split(';');
-	var iterate = stag.substring(cIndex + 2, stag.lastIndexOf('end' + LOGICS.FOR));
+	var iterate = stag.substring(cIndex + 2, eIndex);
 
 	var cond = {};
 	var startData = conditions[0].split('=');
@@ -277,27 +266,15 @@ function getForConditions(tag, stag) {
 	};
 }
 
-function getForEachConditions(tag) {
-	var openIndex = tag.indexOf(LOGICS.FOREACH + '(') + LOGICS.FOREACH.length + 1;
-	var closeIndex = tag.lastIndexOf('):');
-
-	if (openIndex === -1) {
-		throw new Error('InvalidOpen: ' + tag);
-	}
-
-	if (closeIndex === -1) {
-		throw new Error('InvalidClose: ' + tag);
-	}
-
-	var sep = tag.substring(openIndex, closeIndex).split(REG.FOREACH);
+function getForEachConditions(tag, stag) {
+	var indexes = getOpenCloseEnd(LOGICS.FOREACH, stag);
+	var oIndex = indexes.open;
+	var cIndex = indexes.close;
+	var eIndex = indexes.end;
+	var sep = stag.substring(oIndex + 1, cIndex).replace(REG.VARS, '').split(REG.FOREACH);
 	var key = sep[0];
 	var obj = sep[1].replace('}', '');
-	var endIndex = tag.indexOf('end' + LOGICS.FOREACH);
-	var iterate = tag.substring(closeIndex + 2, endIndex);
-
-	if (endIndex === -1) {
-		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.FOREACH + ' not found>');
-	}
+	var iterate = stag.substring(cIndex + 2, eIndex);
 
 	return {
 		condition: {
@@ -305,6 +282,30 @@ function getForEachConditions(tag) {
 			obj: obj
 		},
 		iterate: iterate
+	};
+}
+
+function getOpenCloseEnd(type, stag) {
+	var oIndex = stag.indexOf('(');
+	var cIndex = stag.lastIndexOf('):');
+	var eIndex = stag.lastIndexOf('end' + type);
+
+	if (oIndex === -1) {
+		throw new Error('InvalidOpen: ' + stag);
+	}
+
+	if (cIndex === -1) {
+		throw new Error('InvalidClose: ' + stag);
+	}
+
+	if (eIndex === -1) {
+		throw new Error('InvalidEnd: ' + stag);
+	}
+
+	return {
+		open: oIndex,
+		close: cIndex,
+		end: eIndex
 	};
 }
 
