@@ -36,7 +36,6 @@ describe('gracenode.render', function () {
 		assert.equal(expected, rendered);
 	});
 
-	/*
 	it('can render a template and require css style and javascript', function () {
 		var data = {
 			title: 'ペットの名前一覧',
@@ -54,7 +53,6 @@ describe('gracenode.render', function () {
 		var expected = fs.readFileSync(__dirname + '/expected/2', 'utf8');
 		assert.equal(expected, rendered);
 	});
-	*/
 
 	it('can render complex object and array mix variables', function () {
 		var data = {
@@ -71,7 +69,6 @@ describe('gracenode.render', function () {
 		assert.equal(expected, rendered);
 	});
 
-	/*
 	it('can render a large template', function () {
 		var data = {
 			wiki: 'Wiki',
@@ -210,7 +207,7 @@ describe('gracenode.render', function () {
 			]
 		};
 		var rendered = gn.render('/large/1', data);
-		var expected = fs.readFileSync(__dirname + '/expected/4', 'utf8');
+		var expected = fs.readFileSync(__dirname + '/expected/large', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
@@ -355,7 +352,7 @@ describe('gracenode.render', function () {
 		var rendered = gn.render('/large/1', data, 0);
 		var e = Date.now();
 		var time1 = e - s;
-		var expected = fs.readFileSync(__dirname + '/expected/4', 'utf8');
+		var expected = fs.readFileSync(__dirname + '/expected/large', 'utf8');
 		assert.equal(expected, rendered);
 		s = Date.now();
 		rendered = gn.render('/large/1', data, 1000);
@@ -367,6 +364,5 @@ describe('gracenode.render', function () {
 		assert.equal(expected, rendered);
 		assert.equal(time1 > time2, true);	
 	});
-	*/
 
 });

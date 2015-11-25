@@ -141,11 +141,11 @@ function extractLogic(tag) {
 function extractLogicConditions(logic, tag, stag) {
 	switch (logic) {
 		case LOGICS.IF:
-			return getIfConditions(tag);		
+			return getIfConditions(tag, stag);		
 		case LOGICS.FOR:		
 			return getForConditions(stag);
 		case LOGICS.FOREACH:
-			return getForEachConditions(tag, stag);
+			return getForEachConditions(stag);
 		case LOGICS.REQ:
 			return getRequireConditions(tag);
 		default:
@@ -153,7 +153,8 @@ function extractLogicConditions(logic, tag, stag) {
 	}
 }
 
-function getIfConditions(tag) {
+function getIfConditions(tag, stag) {
+	/*
 	var res = {};
 	var tmp;
 	var index = 0;
@@ -215,8 +216,70 @@ function getIfConditions(tag) {
 	if (closeIndex === -1) {
 		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.IF + ' not found>');
 	}
+	*/
+	/******* New Logic Here *******/
+	// extract if conditions and its result
+	var map = {};
+	var oIndex = stag.indexOf('(');
+	var cIndex = stag.indexOf('):');
+
+	if (stag.replace(REG.VARS, '').indexOf(LOGICS.IF + '(') === -1) {
+		throw new Error('InvalidOpen: ' + stag);
+	}
 	
-	return res;
+	if (cIndex === -1) {
+		throw new Error('InvalidClose: ' + stag);
+	}
+
+	// extract if
+	var ext = stag.substring(oIndex + 1, cIndex);
+	var list = parseIfConds(ext.split(REG.IFC));
+	var result = stag.substring(cIndex + 2, stag.search(REG.IFS));
+	map[LOGICS.IF] = {
+		conditions: list,
+		result: result
+	};
+	// remove if from stag
+	var tmp = stag.substring(stag.indexOf(result) + result.length);
+	// extract else if
+	var elseIf = stag.replace(REG.VARS, '').indexOf('elseif(');
+	while (elseIf !== -1) {	
+		oIndex = tmp.indexOf('(');
+		cIndex = tmp.indexOf('):');
+		if (cIndex === -1) {
+			throw new Error('InvalidClose: ' + stag);
+		}
+		ext = tmp.substring(oIndex + 1, cIndex);
+		list = parseIfConds(ext.split(REG.IFC));
+		tmp = tmp.substring(cIndex + 2);
+		result = tmp.substring(0, tmp.search(REG.IFS));
+		if (!map.elseif) {
+			map.elseif = [];
+		}
+		map.elseif.push({
+			conditions: list,
+			result: result
+		});
+		tmp = tmp.substring(tmp.indexOf(result) + result.length);
+		elseIf = tmp.replace(REG.VARS, '').indexOf('elseif(');
+	}
+	// extract else
+	oIndex = tmp.indexOf('else:');
+	
+	if (oIndex !== -1) {
+		cIndex = tmp.indexOf('end' + LOGICS.IF);
+
+		if (cIndex === -1) {
+			throw new Error('InvalidClose: ' + stag);
+		}
+
+		map.else = {
+			conditions: null,
+			result: tmp.substring(oIndex + 5, cIndex)
+		};
+	}	
+
+	return map;
 }
 
 function parseIfConds(list) {
@@ -266,7 +329,7 @@ function getForConditions(stag) {
 	};
 }
 
-function getForEachConditions(tag, stag) {
+function getForEachConditions(stag) {
 	var indexes = getOpenCloseEnd(LOGICS.FOREACH, stag);
 	var oIndex = indexes.open;
 	var cIndex = indexes.close;
@@ -290,7 +353,7 @@ function getOpenCloseEnd(type, stag) {
 	var cIndex = stag.lastIndexOf('):');
 	var eIndex = stag.lastIndexOf('end' + type);
 
-	if (oIndex === -1) {
+	if (stag.replace(REG.VARS, '').indexOf(type + '(') === -1) {
 		throw new Error('InvalidOpen: ' + stag);
 	}
 

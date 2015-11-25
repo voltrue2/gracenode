@@ -11,17 +11,17 @@
 <div>Required!!</div>
 <h2>Variable&nbsp;b&nbsp;is&nbsp;B</h2>
 <div>0&nbsp;=&nbsp;/test/list/1</div><div>1&nbsp;=&nbsp;/test/list/2</div>
-<div>Yay!</div>
+ <div>Yay!</div> 
 <div>Yes&nbsp;it&nbsp;is&nbsp;else</div>
 <div>require 2</div>
         <div>0&nbsp;=&nbsp;/test/list/1</div>                <div>1&nbsp;=&nbsp;/test/list/2</div>        
 
 
-<h1>A&nbsp;is&nbsp;NOT&nbsp;B</h1>
+<h1>A is NOT B</h1>
 <div>Required!!</div>
 <h2>Variable&nbsp;b&nbsp;is&nbsp;B</h2>
 <div>0&nbsp;=&nbsp;/test/list/1</div><div>1&nbsp;=&nbsp;/test/list/2</div>
-<div>Yay!</div>
+ <div>Yay!</div> 
 <div>Yes&nbsp;it&nbsp;is&nbsp;else</div>
 <div>require 2</div>
         <div>0&nbsp;=&nbsp;/test/list/1</div>                <div>1&nbsp;=&nbsp;/test/list/2</div>        
