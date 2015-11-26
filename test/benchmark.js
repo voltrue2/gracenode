@@ -12,16 +12,18 @@ var loop = 0;
 var loopmax = 10;
 var ct = 0;
 var et = 0;
+var method = process.argv[3] || 'get';
+var METHOD = method.toUpperCase();
 
 if (process.argv[2] === 'express') {
 	console.log('Test express');
 	var app = express();
 	var router = express.Router();
-	router.get('/', fnc);
+	router[method]('/', fnc);
 	for (var i = 0; i < 100; i++) {
 		router.get('/' + i + 'xxxx', fnc);
 	}
-	router.get('/test', ehandle);
+	router[method]('/test', ehandle);
 	app.listen(eport);
 	spam(eport);
 	var done = function () {
@@ -64,11 +66,11 @@ if (process.argv[2] === 'express') {
 			port: gport
 		}
 	});
-	gn.router.get('/', fnc);
+	gn.router[method]('/', fnc);
 	for (var i = 0; i < 100; i++) {
 		gn.router.get('/' + i + 'xxxx', fnc);
 	}
-	gn.router.get('/test', ghandle, { readBody: false });
+	gn.router[method]('/test', ghandle, { readBody: false });
 	gn.start(function () {
 		spam(gport);
 		setTimeout(done, dur);
@@ -108,7 +110,7 @@ function ghandle(req, res) {
 }
 
 function spam(port) {
-	req.GET('http://localhost:' + port + '/test', {}, opt, function (error) {
+	req[METHOD]('http://localhost:' + port + '/test', {}, opt, function (error) {
 		if (error) {
 			ecnt += 1;
 		} else {
