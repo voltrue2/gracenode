@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.17
+
+## Added
+
+None
+
+## Changed
+
+### Router URL parse is case insensitive by default and option sensitiive (boolean) added
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.16
 
 ## Added

@@ -8,6 +8,10 @@ var cnt = 0;
 var ecnt = 0;
 var opt = { gzip: false };
 var fnc = function () {};
+var loop = 0;
+var loopmax = 10;
+var ct = 0;
+var et = 0;
 
 if (process.argv[2] === 'express') {
 	console.log('Test express');
@@ -21,15 +25,35 @@ if (process.argv[2] === 'express') {
 	app.listen(eport);
 	spam(eport);
 	var done = function () {
-		console.log('DONE', dur + 'ms', cnt, ecnt);
-		process.exit();
+		loop += 1;
+		ct += cnt;
+		et += ecnt;
+		console.log(loop, dur + 'ms', cnt, ecnt);
+		cnt = 0;
+		ecnt = 0;
+		if (loop === loopmax) {			
+			console.log('DONE', dur + 'ms: average = ', (ct / loopmax), et);
+			process.exit();
+		} else {
+			setTimeout(done, dur);
+		}
 	};
 	setTimeout(done, dur);
 } else if (process.argv[2] === 'gracenode') {
 	console.log('Test gracenode');
 	var done = function () {
-		console.log('DONE', dur + 'ms', cnt, ecnt);
-		gn.stop();
+		loop += 1;
+		ct += cnt;
+		et += ecnt;
+		console.log(loop, dur + 'ms', cnt, ecnt);
+		cnt = 0;
+		ecnt = 0;
+		if (loop === loopmax) {			
+			console.log('DONE', dur + 'ms: average = ', (ct / loopmax), et);
+			gn.stop();
+		} else {
+			setTimeout(done, dur);
+		}
 	};
 	gn.config({
 		log: {
@@ -49,11 +73,6 @@ if (process.argv[2] === 'express') {
 		spam(gport);
 		setTimeout(done, dur);
 	});
-	var done = function () {
-		console.log('DONE', dur + 'ms', cnt, ecnt);
-		gn.stop();
-	};
-	setTimeout(done, dur);
 } else {
 	console.log('Test raw http');
 	var http = require('http');
@@ -63,8 +82,18 @@ if (process.argv[2] === 'express') {
 	server.listen(eport);
 	spam(eport);
 	var done = function () {
-		console.log('DONE', dur + 'ms', cnt, ecnt);
-		process.exit();
+		loop += 1;
+		ct += cnt;
+		et += ecnt;
+		console.log(loop, dur + 'ms', cnt, ecnt);
+		cnt = 0;
+		ecnt = 0;
+		if (loop === loopmax) {			
+			console.log('DONE', dur + 'ms: average = ', (ct / loopmax), et);
+			process.exit();
+		} else {
+			setTimeout(done, dur);
+		}
 	};
 	setTimeout(done, dur);
 }

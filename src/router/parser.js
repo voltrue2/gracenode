@@ -63,7 +63,11 @@ exports.define = function (method, path, handler, opt) {
 		});
 	}
 	var pattern = headingSlash + path.replace(REG.PARAM, '(.*?)') + trailingSlash;
-	res.regex = new RegExp(pattern.replace(REG.SLASH, '\\/'));
+	if (opt.sensitive) {
+		res.regex = new RegExp(pattern.replace(REG.SLASH, '\\/'));
+	} else {
+		res.regex = new RegExp(pattern.replace(REG.SLASH, '\\/'), 'i');
+	}
 	res.pattern = pattern.replace(REG.SLASH, '\\/');
 	res.path = headingSlash + path.replace(REG.PATH, '');
 	res.handler = handler;
@@ -141,7 +145,6 @@ exports.parse = function (method, fullPath) {
 	// first element is the matched string
 	// discard it
 	res.shift();
-	parsed.origin = decodeURI(path);
 	parsed.path = matched.path;
 	parsed.pattern = matched.pattern;
 	parsed.handler = matched.handler;
