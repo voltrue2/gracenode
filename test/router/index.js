@@ -893,4 +893,31 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can handle requests at the same time', function (done) {
+		gn.router.get('/busy/{number:id}', function (req, res) {
+			res.json({ message: req.params.id });
+		});
+		var max = 3;
+		var counter = 0;
+		var total = 10;
+		var tcounter = 0;
+		var call = function () {
+			request.GET(http + '/busy/' + counter, {}, options, function (error, res, st) {
+				assert.equal(error, null);
+				assert.equal(st, 200);
+				tcounter += 1;
+				if (tcounter === total) {
+					done();
+				}
+			});
+		};
+		for (var i = 0; i < total; i++) {
+			call();
+			counter += 1;
+			if (counter === max) {
+				counter = 0;
+			}
+		}
+	});
+
 });

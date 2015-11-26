@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### Router bug fix for URL parameters when the value is 0
+
 ### Router request hooks are now assigned when you define the hooks and route instead of run-time
 
 ### Router URL parse is case insensitive by default and option sensitiive (boolean) added

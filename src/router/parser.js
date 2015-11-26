@@ -139,6 +139,7 @@ exports.parse = function (method, fullPath) {
 			break;
 		}
 	}
+
 	if (!matched) {
 		// failed to resolve
 		return null;
@@ -155,7 +156,7 @@ exports.parse = function (method, fullPath) {
 	for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
 		var type = matched.paramNames[k].type;
 		var name = matched.paramNames[k].name;
-		parsed.params[name] = castType(type, res[k]) || null;
+		parsed.params[name] = castType(type, res[k]);
 	}
 	// parse request query
 	for (var i = 0, len = queryList.length; i < len; i++) {
