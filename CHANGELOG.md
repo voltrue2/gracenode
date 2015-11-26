@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### Router request hooks are now assigned when you define the hooks and route instead of run-time
+
 ### Router URL parse is case insensitive by default and option sensitiive (boolean) added
 
 ## Deprecated

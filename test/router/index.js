@@ -881,4 +881,16 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can handle URL case insensitive', function (done) {
+		gn.router.get('/hello', function (req, res) {
+			res.json({ message: 'hello' });
+		});
+		request.GET(http + '/Hello', {}, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.message, 'hello');
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 });

@@ -75,6 +75,7 @@ exports.define = function (method, path, handler, opt) {
 	if (opt.readBody) {
 		res.readBody = true;
 	}
+	res.hooks = findHooks(res.path);
 	routes[method].push(res);
 	// sort the order of routes long uri to short uri
 	routes[method].sort(function (a, b) {
@@ -109,6 +110,7 @@ exports.hook = function (path, func) {
 	} else {
 		hooks[hookPath].push(func);
 	}
+	updateHooks();
 	logger.verbose('HTTP request hook registed:', hookPath, 'hooks #', hooks[hookPath].length);
 };
 
@@ -149,6 +151,7 @@ exports.parse = function (method, fullPath) {
 	parsed.pattern = matched.pattern;
 	parsed.handler = matched.handler;
 	parsed.readBody = matched.readBody;
+	parsed.hooks = matched.hooks;
 	for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
 		var type = matched.paramNames[k].type;
 		var name = matched.paramNames[k].name;
@@ -159,12 +162,19 @@ exports.parse = function (method, fullPath) {
 		var sep = queryList[i].split('=');
 		parsed.query[sep[0]] = cast(sep[1]);
 	}
-	// find request hooks
-	parsed.hooks = findHooks(parsed.path);
-
 	// done
 	return parsed;
 };
+
+function updateHooks() {
+	for (var method in routes) {
+		var list = routes[method];
+		for (var i = 0, len = list.length; i < len; i++) {
+			var route = list[i];
+			routes[method][i].hooks = findHooks(route.path);
+		}
+	}
+}
 
 function findHooks(reqPath) {
 	var matchedHooks = [];
