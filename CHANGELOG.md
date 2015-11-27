@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.18
+
+## Added
+
+None
+
+## Changed
+
+### Router parse URL performance has been improved (regex improvements)
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.17
 
 ## Added

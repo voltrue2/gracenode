@@ -1,6 +1,7 @@
 'use strict';
 
 var gn = require('../gracenode');
+var url = require('./url');
 var logger;
 var routes = {
 	GET: [],
@@ -62,12 +63,10 @@ exports.define = function (method, path, handler, opt) {
 			name: name
 		});
 	}
-	var pattern = headingSlash + path.replace(REG.PARAM, '(.*?)') + trailingSlash;
-	if (opt.sensitive) {
-		res.regex = new RegExp(pattern.replace(REG.SLASH, '\\/'));
-	} else {
-		res.regex = new RegExp(pattern.replace(REG.SLASH, '\\/'), 'i');
-	}
+	var converted = url.convert(headingSlash + path + trailingSlash);
+	var pattern = converted.pmatch;
+	res.regex = converted.match;
+	res.extract = converted.extract;
 	res.pattern = pattern.replace(REG.SLASH, '\\/');
 	res.path = headingSlash + path.replace(REG.PATH, '');
 	res.handler = handler;
@@ -130,11 +129,10 @@ exports.parse = function (method, fullPath) {
 	path += (path[path.length - 1] === '/') ? '' : '/';
 	var list = routes[method] || [];
 	var matched;
-	var res;
 	for (var h = 0, hen = list.length; h < hen; h++) {
 		var item = list[h];
-		res = path.match(item.regex);
-		if (res) {
+		var m = item.regex.exec(path);
+		if (m) {
 			matched = item;
 			break;
 		}
@@ -147,6 +145,7 @@ exports.parse = function (method, fullPath) {
 	// get request handler
 	// first element is the matched string
 	// discard it
+	var res = path.match(matched.extract);
 	res.shift();
 	parsed.path = matched.path;
 	parsed.pattern = matched.pattern;
