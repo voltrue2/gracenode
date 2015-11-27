@@ -6,17 +6,17 @@
 
 - Manages cluster process.
 
-- Handles daemonizing of the application and auto-restarting on file changes.
+- Handles daemonizing of the application and auto-restarting on file changes. Read <a href="https://github.com/voltrue2/gracenode#start-your-application-as-a-daemon">here</a>.
 
-- Bootstrap other modules to organize setting up of each module on starting of the application process.
+- Bootstrap other modules to organize setting up of each module on starting of the application process. Read <a href="https://github.com/voltrue2/gracenode#bootstrapping-other-modules">here</a>.
 
-- Provides a built-in logging module.
+- Provides a built-in logging module. Read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
 
-- Provides plethora of utility functions to aid development.
+- Provides plethora of utility functions to aid development. Read <a href="https://github.com/voltrue2/gracenode#gracenodelib">here</a>. 
 
-- Provides HTTP router for web applications.
+- Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode#router-1">here</a>.
 
-- Provides fast HTML template enigne.
+- Provides fast HTML template enigne. Read <a href="https://github.com/voltrue2/gracenode#render-1">here</a>.
 
 ## Installation via npm
 
