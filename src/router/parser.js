@@ -63,7 +63,7 @@ exports.define = function (method, path, handler, opt) {
 			name: name
 		});
 	}
-	var converted = url.convert(headingSlash + path + trailingSlash);
+	var converted = url.convert(headingSlash + path + trailingSlash, opt.sensitive);
 	var pattern = converted.pmatch;
 	res.regex = converted.match;
 	res.extract = converted.extract;

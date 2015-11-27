@@ -893,6 +893,23 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can handle URL case sensitive', function (done) {
+		gn.router.get('/hi', function (req, res) {
+			res.json({ message: 'hi' });
+		}, { sensitive: true });
+		request.GET(http + '/Hi', {}, options, function (err, r, s) {
+			assert(err);
+			assert.equal(r, 'not found');
+			assert.equal(s, 404);
+			request.GET(http + '/hi', {}, options, function (error, res, st) {
+				assert.equal(error, null);
+				assert.equal(res.message, 'hi');
+				assert.equal(st, 200);
+				done();
+			});
+		});
+	});
+
 	it('can handle requests at the same time', function (done) {
 		gn.router.get('/busy/{number:id}', function (req, res) {
 			res.json({ message: req.params.id });
