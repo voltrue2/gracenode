@@ -47,7 +47,7 @@ exports.define = function (method, path, handler, opt) {
 		paramNames: []
 	};
 	var headingSlash = path[0] === '/' ? '' : '/';
-	var trailingSlash = path[path.length - 1] === '/' ? '' : '/';
+	path = path[path.length - 1] === '/' ? path.substring(0, path.length - 1) : path;
 	var paramNames = path.match(REG.PARAM) || [];
 	for (var i = 0, len = paramNames.length; i < len; i++) {
 		var param = paramNames[i].substring(1, paramNames[i].length - 1);
@@ -63,7 +63,7 @@ exports.define = function (method, path, handler, opt) {
 			name: name
 		});
 	}
-	var converted = url.convert(headingSlash + path + trailingSlash, opt.sensitive);
+	var converted = url.convert(headingSlash + path, opt.sensitive);
 	var pattern = converted.pmatch;
 	res.regex = converted.match;
 	res.extract = converted.extract;
@@ -145,7 +145,7 @@ exports.parse = function (method, fullPath) {
 	// get request handler
 	// first element is the matched string
 	// discard it
-	var res = path.match(matched.extract);
+	var res = matched.extract.exec(path);
 	res.shift();
 	parsed.path = matched.path;
 	parsed.pattern = matched.pattern;
