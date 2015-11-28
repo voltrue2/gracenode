@@ -1373,6 +1373,16 @@ To change the status code, pass `error.code = <status code>` such as `500`.
 
 This is useful when you need to display uniform 404 page on every 404 response etc.
 
+**Example**:
+
+```javascript
+gracenode.router.error(404, function (req, res) {
+	res.json({ message: 'Not Found'}, 404);
+});
+```
+
+***
+
 ## gracenode.lib
 
 #### .padNumber(num [number], digit [*number])
