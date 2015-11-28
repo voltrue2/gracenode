@@ -11,6 +11,13 @@ var routes = {
 	PATCH: []
 };
 var hooks = {};
+var cache = {
+	GET: {},
+	POST: {},
+	PUT: {},
+	DELETE: {},
+	PATCH: {}
+};
 
 var TYPES = [
 	'string',
@@ -115,6 +122,7 @@ exports.hook = function (path, func) {
 
 exports.parse = function (method, fullPath) {
 	method = (method === 'HEAD') ? 'GET' : method;
+
 	var parsed = {
 		query: {},
 		params: {}
@@ -128,20 +136,24 @@ exports.parse = function (method, fullPath) {
 	}
 	path += (path[path.length - 1] === '/') ? '' : '/';
 	var list = routes[method] || [];
-	var matched;
-	for (var h = 0, hen = list.length; h < hen; h++) {
-		var item = list[h];
-		var m = item.regex.exec(path);
-		if (m) {
-			matched = item;
-			break;
+	var matched = cache[method] && cache[method][path] ? cache[method][path] : null;
+
+	if (!matched) {
+		for (var h = 0, hen = list.length; h < hen; h++) {
+			var item = list[h];
+			var good = item.regex.exec(path);
+			if (good) {
+				matched = item;
+				cache[method][path] = matched;
+				break;
+			}
+		}
+		if (!matched) {
+			// failed to resolve
+			return null;
 		}
 	}
 
-	if (!matched) {
-		// failed to resolve
-		return null;
-	}
 	// get request handler
 	// first element is the matched string
 	// discard it
