@@ -937,4 +937,42 @@ describe('gracenode.router', function () {
 		}
 	});
 
+	it('can define a route after gracenode.start()', function () {
+		gn.router.post('/test3/{number:one}/test3/{string:two}/{bool:three}', function (req, res) {
+			res.json({
+				one: req.params.one,
+				two: req.params.two,
+				three: req.params.three,
+				four: req.body.four,
+				five: req.query.five
+			});
+		});
+	});
+
+	it('can handle /test3/{number:one}/test3/{string:two}/{bool:three}', function (done) {
+		request.POST(http + '/test3/1/test3/2/true/?five=5', { four: 4 }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.one, 1);
+			assert.equal(res.two, '2');
+			assert.equal(res.three, true);
+			assert.equal(res.four, 4);
+			assert.equal(res.five, 5);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('can handle /test3/{number:one}/test3/{string:two}/{bool:three} w/ different values', function (done) {
+		request.POST(http + '/test3/10/test3/20/false/?five=50', { four: 40 }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.one, 10);
+			assert.equal(res.two, '20');
+			assert.equal(res.three, false);
+			assert.equal(res.four, 40);
+			assert.equal(res.five, 50);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 });

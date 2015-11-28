@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+### Router parse caches already parsed path
+
 ### Router parse URL performance has been improved (regex improvements)
 
 ## Deprecated
