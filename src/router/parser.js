@@ -136,39 +136,20 @@ exports.parse = function (method, fullPath) {
 	}
 	path += (path[path.length - 1] === '/') ? '' : '/';
 	var list = routes[method] || [];
-	var matched = cache[method] && cache[method][path] ? cache[method][path] : null;
-
-	if (!matched) {
-		for (var h = 0, hen = list.length; h < hen; h++) {
-			var item = list[h];
-			var good = item.regex.exec(path);
-			if (good) {
-				matched = item;
-				cache[method][path] = matched;
-				break;
-			}
-		}
-		if (!matched) {
-			// failed to resolve
-			return null;
-		}
+	var found = findPath(method, path, list);
+	
+	if (!found) {
+		// failed to resolve
+		return null;
 	}
 
-	// get request handler
-	// first element is the matched string
-	// discard it
-	var res = matched.extract.exec(path);
-	res.shift();
+	var matched = found.matched;
 	parsed.path = matched.path;
 	parsed.pattern = matched.pattern;
 	parsed.handler = matched.handler;
 	parsed.readBody = matched.readBody;
 	parsed.hooks = matched.hooks;
-	for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
-		var type = matched.paramNames[k].type;
-		var name = matched.paramNames[k].name;
-		parsed.params[name] = castType(type, res[k]);
-	}
+	parsed.params = found.params;
 	// parse request query
 	for (var i = 0, len = queryList.length; i < len; i++) {
 		var sep = queryList[i].split('=');
@@ -177,6 +158,43 @@ exports.parse = function (method, fullPath) {
 	// done
 	return parsed;
 };
+
+function findPath(method, path, list) {
+	var cached = cache[method] && cache[method][path] ? cache[method][path] : null;
+
+	if (!cached) {
+		var matched;
+		for (var h = 0, hen = list.length; h < hen; h++) {
+			var item = list[h];
+			var good = item.regex.exec(path);
+			if (good) {
+				matched = item;
+				cache[method][path] = { 
+					matched: matched
+				};
+				break;
+			}
+		}
+		if (!matched) {
+			// failed to resolve
+			return null;
+		}
+		// get request handler
+		// first element is the matched string
+		// discard it
+		var params = {};
+		var res = matched.extract.exec(path);
+		res.shift();
+		for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
+			var type = matched.paramNames[k].type;
+			var name = matched.paramNames[k].name;
+			params[name] = castType(type, res[k]);
+		}
+		cache[method][path].params = params;
+	}
+	
+	return cache[method][path];
+}
 
 function updateHooks() {
 	for (var method in routes) {
