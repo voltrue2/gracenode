@@ -10,7 +10,9 @@ None
 
 ## Changed
 
-### Router parse caches already parsed path
+### Router searchs fast routes for better performance.
+
+The URL routes without parameters are searched with different method for faster search.
 
 ### Router parse URL performance has been improved (regex improvements)
 

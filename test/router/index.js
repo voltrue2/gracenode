@@ -1008,4 +1008,40 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can handle fast route /fast', function (done) {
+		gn.router.post('/fast', function (req, res) {
+			res.json({ message: 'fast' });
+		});
+		request.POST(http + '/fast/', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.message, 'fast');
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('can handle fast route /fast/1', function (done) {
+		gn.router.get('/fast/1', function (req, res) {
+			res.json({ message: 'fast/1' });
+		});
+		request.GET(http + '/fast/1/', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.message, 'fast/1');
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('can handle fast route /fast/1/2', function (done) {
+		gn.router.put('/fast/1/2', function (req, res) {
+			res.json({ message: 'fast/1/2' });
+		});
+		request.PUT(http + '/fast/1/2/', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.message, 'fast/1/2');
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 });

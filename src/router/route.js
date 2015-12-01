@@ -15,7 +15,15 @@ var TYPES = [
 	'bool',
 	'object'
 ];
-
+// route without URL params
+var fastRoutes = {
+	GET: [],
+	POST: [],
+	PUT: [],
+	DELETE: [],
+	PATCH: []
+};
+// routes with URL params
 var routes = {
 	GET: [],
 	POST: [],
@@ -51,6 +59,20 @@ exports.define = function (method, path, handler, opt) {
 	}
 	// convert path to regex
 	var converted = url.convert(path, opt.sensitive || false);
+	// check for fast or not
+	if (converted.fast) {
+		if (!opt.sensitive) {
+			path = path.toLowerCase();
+		}
+		fastRoutes[method][path] = {
+			path: path,
+			paramNames: getParamNames(path),
+			handler: handler,
+			hooks: hooks.findHooks(path),
+			readBody: opt.readBody
+		};
+		return;
+	}
 	// create search regex
 	if (opt.sensitive) {
 		regex = new RegExp(converted.pmatch);
@@ -91,7 +113,19 @@ exports.find = function (method, fullpath) {
 		queryList = fullpath.substring(queryIndex + 1).split('&');
 		path = fullpath.substring(0, queryIndex);
 	}
-	// search
+	// search fast routes: no URL params
+	var fast = searchFastRoute(method, path);
+	if (fast) {
+		return {
+			path: path,
+			query: parseQuery(queryList),
+			params: {},
+			handler: fast.handler,
+			hooks: fast.hooks,
+			readBody: fast.readBody
+		};
+	}	
+	// search routes: with URL params
 	var res = searchRoute(method, path);
 	if (!res) {
 		return null;
@@ -110,6 +144,18 @@ exports.find = function (method, fullpath) {
 	// done and return
 	return found;
 };
+
+function searchFastRoute(method, path) {
+	var map = routes[method] || [];
+	var lpath = path.toLowerCase();
+	// try case sensitive
+	var match = map[path];
+	if (match) {
+		return match;
+	}
+	// try case insensitive
+	return map[lpath] || null;
+}
 
 function searchRoute(method, path) {
 	var list = routes[method] || [];

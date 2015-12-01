@@ -23,7 +23,7 @@ if (process.argv[2] === 'express') {
 	for (var i = 0; i < 100; i++) {
 		router.get('/' + i + 'xxxx', fnc);
 	}
-	router[method]('/test', ehandle);
+	router[method]('/test/:var', ehandle);
 	app.listen(eport);
 	spam(eport);
 	var done = function () {
@@ -70,7 +70,7 @@ if (process.argv[2] === 'express') {
 	for (var i = 0; i < 100; i++) {
 		gn.router.get('/' + i + 'xxxx', fnc);
 	}
-	gn.router[method]('/test', ghandle, { readBody: false });
+	gn.router[method]('/test/{var}', ghandle, { readBody: false });
 	gn.start(function () {
 		spam(gport);
 		setTimeout(done, dur);
@@ -110,7 +110,7 @@ function ghandle(req, res) {
 }
 
 function spam(port) {
-	req[METHOD]('http://localhost:' + port + '/test', {}, opt, function (error) {
+	req[METHOD]('http://localhost:' + port + '/test/BOO', {}, opt, function (error) {
 		if (error) {
 			ecnt += 1;
 		} else {
