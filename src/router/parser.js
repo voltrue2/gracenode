@@ -164,10 +164,11 @@ function findPath(method, path, list) {
 
 	if (!cached) {
 		var matched;
+		var res;
 		for (var h = 0, hen = list.length; h < hen; h++) {
 			var item = list[h];
-			var good = item.regex.exec(path);
-			if (good) {
+			res = item.extract.exec(path);
+			if (res) {
 				matched = item;
 				cache[method][path] = { 
 					matched: matched
@@ -183,12 +184,11 @@ function findPath(method, path, list) {
 		// first element is the matched string
 		// discard it
 		var params = {};
-		var res = matched.extract.exec(path);
-		res.shift();
+		//var res = matched.extract.exec(path);
 		for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {
 			var type = matched.paramNames[k].type;
 			var name = matched.paramNames[k].name;
-			params[name] = castType(type, res[k]);
+			params[name] = castType(type, res[k + 1]);
 		}
 		cache[method][path].params = params;
 	}

@@ -819,7 +819,7 @@ describe('gracenode.router', function () {
 
 	it('can handle a PATCH request', function (done) {
 		var data = 'pathDATA';
-		request.PATCH(http + '/patch/index/', { data: data }, options, function (error, body, status) {
+		request.PATCH(http + '/patch/', { data: data }, options, function (error, body, status) {
 			assert.equal(error, undefined);
 			assert.equal(body.data, data);
 			assert.equal(status, 200);
