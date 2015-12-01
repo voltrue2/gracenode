@@ -5,7 +5,7 @@ var async = require('async');
 var http = require('http');
 var Cookies = require('cookies');
 var parser = require('./parser');
-var route = require('./route');
+//var route = require('./route');
 var request = require('./request');
 var response = require('./response');
 var Response = response.Response;
@@ -81,7 +81,7 @@ exports.error = function (status, func) {
 };
 
 exports.setup = function (cb) {
-	route.setup();
+	//route.setup();
 	server = http.createServer(requestHandler);
 	server.on('listening', function () {
 		logger.info(
