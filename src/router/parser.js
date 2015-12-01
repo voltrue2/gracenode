@@ -182,7 +182,6 @@ function findPath(method, path, list) {
 		}
 		// get request handler
 		// first element is the matched string
-		// discard it
 		var params = {};
 		//var res = matched.extract.exec(path);
 		for (var k = 0, ken = matched.paramNames.length; k < ken; k++) {

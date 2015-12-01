@@ -975,4 +975,18 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can handle /test4/{middle}/boo', function (done) {
+		gn.router.post('/test4/{middle}/boo', function (req, res) {
+			res.json({
+				middle: req.params.middle
+			});
+		});
+		request.POST(http + '/test4/FOO/boo/', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(res.middle, 'FOO');
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 });

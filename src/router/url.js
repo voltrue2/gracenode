@@ -3,7 +3,6 @@
 var REP = /{(.*?)}/g;
 var PAT = '([^\\/]+?)';
 var LPAT = '(?:\/(?=$))?$';
-var PLEN = PAT.length;
 
 exports.convert = function (path, sensitive) {
 	path = path.replace('\/', '^\/'); 
@@ -11,7 +10,10 @@ exports.convert = function (path, sensitive) {
 	var ext = path.replace(REP, PAT);
 	var lindex = ext.lastIndexOf(PAT);
 	if (lindex !== -1) {
-		ext = ext.substring(0, lindex + PLEN) + LPAT + ext.substring(lindex + PLEN); 
+		if (ext[ext.length - 1] === '/') {
+			ext = ext.substring(0, ext.length - 1);
+		}
+		ext += LPAT; 
 	}
 	if (sensitive) {
 		return {
