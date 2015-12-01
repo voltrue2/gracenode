@@ -4,7 +4,6 @@ var uuid = require('node-uuid');
 var async = require('async');
 var http = require('http');
 var Cookies = require('cookies');
-//var parser = require('./parser');
 var route = require('./route');
 var request = require('./request');
 var response = require('./response');
@@ -28,39 +27,32 @@ exports.config = function (configIn) {
 	logger = gn.log.create('router');
 	config = configIn;
 	route.setup();
-	//parser.setup();
 	request.setup();
 	response.setup();
 };
 
 exports.get = function (path, handler, opt) {
 	route.define('GET', path, handler, opt);
-	//parser.define('GET', path, handler, opt);
 };
 
 exports.post = function (path, handler, opt) {
 	route.define('POST', path, handler, opt);
-	//parser.define('POST', path, handler, opt);
 };
 
 exports.head = function (path, handler, opt) {
 	route.define('HEAD', path, handler, opt);
-	//parser.define('HEAD', path, handler, opt);
 };
 
 exports.put = function (path, handler, opt) {
 	route.define('PUT', path, handler, opt);
-	//parser.define('PUT', path, handler, opt);
 };
 
 exports.delete = function (path, handler, opt) {
 	route.define('DELETE', path, handler, opt);
-	//parser.define('DELETE', path, handler, opt);
 };
 
 exports.patch = function (path, handler, opt) {
 	route.define('PATCH', path, handler, opt);
-	//parser.define('PATCH', path, handler, opt);
 };
 
 exports.forceTrailingSlash = function () {
@@ -68,7 +60,6 @@ exports.forceTrailingSlash = function () {
 };
 
 exports.hook = function (path, func) {
-	//parser.hook(path, func);
 	route.hook(path, func);
 };
 
@@ -150,7 +141,6 @@ function requestHandler(req, res) {
 	req.startTime = Date.now();
 
 	var method = req.method;
-	//var parsed = parser.parse(method, req.url);
 	var parsed = route.find(method, req.url);
 	var resp = new Response(req, res, errorMap);
 	logger.info(

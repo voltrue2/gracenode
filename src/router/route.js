@@ -132,9 +132,11 @@ function searchRoute(method, path) {
 
 function getParamList(matched) {
 	var list = [];
+	var j = 0;
 	for (var i = 1, len = matched.length; i < len; i++) {
 		if (matched[i] !== undefined) {
-			list.push(matched[i]);
+			list[j] = matched[i];
+			j++;
 		}
 	}
 	return list;

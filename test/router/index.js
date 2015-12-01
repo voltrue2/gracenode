@@ -989,4 +989,23 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can handle object param /test5/{object:obj}/foo', function (done) {
+		gn.router.post('/test5/{object:obj}/foo', function (req, res) {
+			res.json({
+				obj: req.params.obj
+			});
+		});
+		request.POST(http + '/test5/{"one":1,"two":"2","three":[1,2,3]}/foo/', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(typeof res.obj, 'object');
+			assert.equal(res.obj.one, 1);
+			assert.equal(res.obj.two, 2);
+			assert.equal(res.obj.three[0], 1);
+			assert.equal(res.obj.three[1], 2);
+			assert.equal(res.obj.three[2], 3);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 });
