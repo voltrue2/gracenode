@@ -470,8 +470,8 @@ describe('gracenode.router', function () {
 		});
 	});
 
-	it('can handle sub directories from the request /test/sub/call', function (done) {
-		request.GET(http + '/test/sub/call/', null, options, function (error, body, status) {
+	it('can handle sub directories from the request /test/sub/call/var1/var2', function (done) {
+		request.GET(http + '/test/sub/call/var1/var2', null, options, function (error, body, status) {
 			assert.equal(allRequestHookCalled, true);
 			allRequestHookCalled = false;
 			assert.equal(error, undefined);
@@ -1040,6 +1040,14 @@ describe('gracenode.router', function () {
 			assert.equal(error, null);
 			assert.equal(res.message, 'fast/1/2');
 			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('cannot handle fast route /fast/1/2/3', function (done) {
+		request.PUT(http + '/fast/1/2/3/', { }, options, function (error, res, st) {
+			assert(error);
+			assert.equal(st, 404);
 			done();
 		});
 	});

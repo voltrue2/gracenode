@@ -5,17 +5,19 @@ var PAT = '([^\\/]+?)';
 var LPAT = '(?:\/(?=$))?$';
 
 exports.convert = function (path, sensitive) {
-	var origin = path;
-	path = path.replace('\/', '^\/'); 
-	if (origin === path) {
+	if (!path.match(REP)) {
 		// fast routing: no URL parameters
 		path = sensitive ? path.toLowerCase() : path;
+		if (path[path.length - 1] === '/') {
+			path = path.substring(0, path.length - 1);
+		}
 		return {
 			fast: true,
 			path: path,
 			sensitive: sensitive
 		};
 	}
+	path = path.replace('\/', '^\/'); 
 	var match = path.replace(REP, '[^\/]*[^\/]');
 	var ext = path.replace(REP, PAT);
 	var lindex = ext.lastIndexOf(PAT);
