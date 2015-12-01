@@ -53,16 +53,17 @@ exports.define = function (method, path, handler, opt) {
 	var converted = url.convert(path, opt.sensitive || false);
 	// create search regex
 	if (opt.sensitive) {
-		regex = new RegExp(converted.pextract);
+		regex = new RegExp(converted.pmatch);
 	} else {
-		regex = new RegExp(converted.pextract, 'i');
+		regex = new RegExp(converted.pmatch, 'i');
 	}
 	var regex;
 	// add it to routes
 	routes[method].push({
 		path: path.replace(PARAM_REGEX, ''),
-		pattern: converted.pextract,
+		pattern: converted.pmatch,
 		regex: regex,
+		extract: converted.extract,
 		paramNames: getParamNames(path),
 		handler: handler,
 		hooks: hooks.findHooks(path),
@@ -111,18 +112,13 @@ exports.find = function (method, fullpath) {
 };
 
 function searchRoute(method, path) {
-	var item;
-	var regex;
-	var matched;
 	var list = routes[method] || [];
 	for (var i = 0, len = list.length; i < len; i++) {
-		item = list[i];
-		regex = item.regex;
-		matched = regex.exec(path);
-		if (matched) {
-			logger.verbose('Route found:', method, path, item);
+		var item = list[i];
+		var found = item.regex.test(path);
+		if (found) {
 			return {
-				matched: matched,
+				matched: item.extract.exec(path),
 				route: item
 			};
 		} 
