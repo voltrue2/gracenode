@@ -41,8 +41,14 @@ exports.hook = function (path, func) {
 	logger.verbose('HTTP request hook registed:', hookPath, 'hooks #', hooks[hookPath].length);
 };
 
-exports.updateHooks = function (routes) {
+exports.updateHooks = function (fastRoutes, routes) {
 	for (var method in routes) {
+		// fast routes
+		var map = fastRoutes[method];
+		for (var path in map) {
+			fastRoutes[method][path].hooks = exports.findHooks(map[path].path);
+		}
+		// regular routes
 		var list = routes[method];
 		for (var i = 0, len = list.length; i < len; i++) {
 			var route = list[i];

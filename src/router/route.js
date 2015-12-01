@@ -101,7 +101,7 @@ exports.define = function (method, path, handler, opt) {
 
 exports.hook = function (path, handler) {
 	hooks.hook(path, handler);
-	hooks.updateHooks(routes);
+	hooks.updateHooks(fastRoutes, routes);
 };
 
 exports.find = function (method, fullpath) {
