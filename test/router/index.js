@@ -172,6 +172,13 @@ describe('gracenode.router', function () {
 		gn.router.error(403, require(pre + '/error/unauthorized').POST);
 	});
 
+	it('can add more hooks', function () {
+		gn.router.hook('/test', function testRouteHook(req, res, next) {
+			req.args.testRoute = true;
+			next();
+		});
+	});
+
 	it('can handle a GET request /car', function (done) {
 		request.GET(http + '/car', {}, options, function (error, body, status) {
 			assert.equal(error, undefined);
@@ -1052,4 +1059,18 @@ describe('gracenode.router', function () {
 		});
 	});
 
+	it('can go through /test route hook (fast routing)', function (done) {
+		gn.router.get('/test/fast', function (req, res) {
+			if (!req.args.testRoute) {
+				return res.error(new Error('NotGoingThroughTestRouteHook'), 500);
+			}
+			res.json({ message: 'OK' });
+		});
+		request.GET(http + '/test/fast', {}, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			done();
+		});
+	});
 });

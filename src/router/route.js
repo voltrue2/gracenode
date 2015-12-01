@@ -61,10 +61,11 @@ exports.define = function (method, path, handler, opt) {
 	var converted = url.convert(path, opt.sensitive || false);
 	// check for fast or not
 	if (converted.fast) {
+		var key = path;
 		if (!opt.sensitive) {
-			path = path.toLowerCase();
+			key = path.toLowerCase();
 		}
-		fastRoutes[method][path] = {
+		fastRoutes[method][key] = {
 			path: path,
 			paramNames: getParamNames(path),
 			handler: handler,
