@@ -156,13 +156,13 @@ function searchFastRoute(method, path) {
 		path = path.substring(0, path.length - 1);
 	}
 	var map = fastRoutes[method] || [];
-	var lpath = path.toLowerCase();
 	// try case sensitive
 	var match = map[path];
 	if (match) {
 		return match;
 	}
 	// try case insensitive
+	var lpath = path.toLowerCase();
 	match = map[lpath] || null;
 	if (!match || match.sensitive) {
 		return null;
