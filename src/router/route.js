@@ -149,6 +149,9 @@ exports.find = function (method, fullpath) {
 };
 
 function searchFastRoute(method, path) {
+	if (path === '/' && fastRoutes[method]) {
+		return fastRoutes[method][path] || null;
+	}
 	if (path[path.length - 1] === '/') {
 		path = path.substring(0, path.length - 1);
 	}

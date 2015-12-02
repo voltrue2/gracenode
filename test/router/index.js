@@ -114,6 +114,9 @@ describe('gracenode.router', function () {
 	});
 
 	it('can register all endpoints', function () {
+		gn.router.get('/', function (req, res) {
+			res.json({ message: '/' });
+		});
 		gn.router.get('/ignore/me', function (req, res) {
 			res.error({}, 404);
 		});
@@ -1085,6 +1088,15 @@ describe('gracenode.router', function () {
 		request.GET(http + '/static/test/router/static/spinner.gif', {}, opt, function (error, res, st) {
 			assert.equal(error, null);
 			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('can handle /', function (done) {
+		request.GET(http + '/', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, '/');
 			done();
 		});
 	});
