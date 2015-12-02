@@ -130,7 +130,7 @@ exports.find = function (method, fullpath) {
 	}	
 	// search routes: with URL params
 	var res = searchRoute(method, path);
-	if (!res) {
+	if (!res || !res.matched) {
 		return null;
 	}
 	// parameters

@@ -124,6 +124,8 @@ Response.prototype.file = function (path, status) {
 			return;
 		}
 		that._sent = true;
+		that.headers['Accepct-Ranges'] = 'bytes';
+		that.headers['Content-Encoding'] = null; 
 		that.headers['Content-Length'] = data.length;
 		that.headers['Content-Type'] = mime.getFromPath(path);
 		send(that._req, that._res, that.headers, data, 'binary', status);
