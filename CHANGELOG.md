@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.20
+
+## Added
+
+None
+
+## Changed
+
+#### Router fixed routing /
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.19
 
 ## Added
@@ -23,7 +43,6 @@ This is a list of manually mantained changes and updates for each version.
 None
 
 ***
-
 
 ## Version 2.0.18
 
