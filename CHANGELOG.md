@@ -2,6 +2,27 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.19
+
+## Added
+
+None
+
+## Changed
+
+### Render cache added extra check for race condition on get/discard
+
+## Deprecated
+
+### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
+
 ## Version 2.0.18
 
 ## Added

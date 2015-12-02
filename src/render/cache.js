@@ -40,7 +40,7 @@ exports.get = function (data) {
 	var index = cacheMap[key];
 	if (index !== undefined) {
 		var res = cache[index];
-		if (Date.now() <= res.ttl) {
+		if (res && Date.now() <= res.ttl) {
 			return res.rendered;
 		}
 		cacheMap[key] = null;
