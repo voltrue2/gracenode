@@ -1,5 +1,6 @@
 'use strict';
 
+var crypto = require('crypto');
 var fs = require('fs');
 var zlib = require('zlib');
 var mime = require('./mime');
@@ -117,18 +118,28 @@ Response.prototype.file = function (path, status) {
 		return;
 	}
 	var that = this;
-	fs.readFile(path, function (error, data) {
+	fs.stat(path, function (error, stats) {
 		if (error) {
 			// forced 404 error
 			that.error(error, 404);
 			return;
 		}
-		that._sent = true;
-		that.headers['Accepct-Ranges'] = 'bytes';
-		that.headers['Content-Encoding'] = null; 
-		that.headers['Content-Length'] = data.length;
-		that.headers['Content-Type'] = mime.getFromPath(path);
-		send(that._req, that._res, that.headers, data, 'binary', status);
+		that.headers['Last-Modified'] = new Date(stats.mtime);
+		that.headers.Date = new Date();
+		fs.readFile(path, function (error, data) {
+			if (error) {
+				// forced 404 error
+				that.error(error, 404);
+				return;
+			}
+			that._sent = true;
+			that.headers.ETag = crypto.createHash('md5').update(data).digest('hex');
+			that.headers['Accepct-Ranges'] = 'bytes';
+			that.headers['Content-Encoding'] = null; 
+			that.headers['Content-Length'] = data.length;
+			that.headers['Content-Type'] = mime.getFromPath(path);
+			send(that._req, that._res, that.headers, data, 'binary', status);
+		});
 	});
 };
 
