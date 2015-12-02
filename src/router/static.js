@@ -1,6 +1,6 @@
 'use strict';
 
-var gn = require('gracenode');
+var gn = require('../gracenode');
 
 module.exports.handle = function (dir) {
 	var handler = new Handler(dir);
