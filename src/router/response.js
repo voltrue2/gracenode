@@ -117,8 +117,6 @@ Response.prototype.file = function (path, status) {
 		);
 		return;
 	}
-	// check for if-modified-since
-	console.log(this._req.headers);
 	var that = this;
 	fs.stat(path, function (error, stats) {
 		if (error) {
@@ -128,6 +126,7 @@ Response.prototype.file = function (path, status) {
 		}
 		that.headers.ETag = '"' + crypto.createHash('md5').update(new Buffer(stats.mtime.toString())).digest('hex') + '"';
 		that.headers.Date = new Date().toUTCString();
+		// check for if-modified-since
 		if (new Date(that._req.headers['if-modified-since']).getTime() === new Date(stats.mtime).getTime()) {
 			return  send(that._req, that._res, that.headers, 'Not Modified', 'utf8', 304);
 		}
