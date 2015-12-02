@@ -117,6 +117,8 @@ Response.prototype.file = function (path, status) {
 		);
 		return;
 	}
+	// check for if-modified-since
+	console.log(this._req.headers);
 	var that = this;
 	fs.stat(path, function (error, stats) {
 		if (error) {
@@ -124,8 +126,12 @@ Response.prototype.file = function (path, status) {
 			that.error(error, 404);
 			return;
 		}
-		that.headers['Last-Modified'] = new Date(stats.mtime);
-		that.headers.Date = new Date();
+		that.headers.ETag = '"' + crypto.createHash('md5').update(new Buffer(stats.mtime.toString())).digest('hex') + '"';
+		that.headers.Date = new Date().toUTCString();
+		if (new Date(that._req.headers['if-modified-since']).getTime() === new Date(stats.mtime).getTime()) {
+			return  send(that._req, that._res, that.headers, 'Not Modified', 'utf8', 304);
+		}
+		that.headers['Last-Modified'] = new Date(stats.mtime).toUTCString();
 		fs.readFile(path, function (error, data) {
 			if (error) {
 				// forced 404 error
@@ -133,9 +139,11 @@ Response.prototype.file = function (path, status) {
 				return;
 			}
 			that._sent = true;
-			that.headers.ETag = crypto.createHash('md5').update(data).digest('hex');
-			that.headers['Accepct-Ranges'] = 'bytes';
-			that.headers['Content-Encoding'] = null; 
+			that.headers['Accept-Ranges'] = 'bytes';
+			delete that.headers.Pragma;
+			delete that.headers.Vary;
+			delete that.headers['Cache-Control'];
+			delete that.headers['Content-Encoding'];
 			that.headers['Content-Length'] = data.length;
 			that.headers['Content-Type'] = mime.getFromPath(path);
 			send(that._req, that._res, that.headers, data, 'binary', status);
