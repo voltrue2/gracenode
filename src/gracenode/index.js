@@ -10,7 +10,8 @@ var config = require('./config');
 var mod = require('./mod');
 var render = require('../render');
 
-var logger;
+// this will be overridden by logger in setupLog()
+var logger = console;
 var renderConf;
 var clusterConfig;
 var onExceptions = [];
@@ -19,6 +20,7 @@ var ready = false;
 var ER = {
 	NOT_WRITABLE: '<NOT_WRITABLE>',
 	INVALID_LOG_PATH: '<INVALID_LOG_PATH>',
+	LOG_DIR_NOT_FOUND: '<LOG_DIR_NOT_FOUND>'
 };
 
 // a map of bootstrapped modules
@@ -194,30 +196,35 @@ function canWrite(conf, cb) {
 		cb();
 		return;
 	}
-	fs.open(conf.file, 'w', function (error, fd) {
-		if (error) {
-			var err = null;
-			switch (error.code) {
-				case 'EISDIR':
-					// if we can write a file here, it is good to go
-					try {
-						fs.writeFileSync(conf.file + '/.__');
-						fs.unlinkSync(conf.file + '/.__');
-					} catch (e) {
-						err = e;
-					}
-					break;
-				default:
-					err = error; 
-					break;
-			}
-			return cb(err);
+	fs.exists(conf.file, function (exists) {
+		if (!exists) {
+			return cb(new Error(ER.LOG_DIR_NOT_FOUND + ' ' + conf.file));
 		}
-		fs.close(fd, function (error) {
+		fs.open(conf.file, 'w', function (error, fd) {
 			if (error) {
-				return cb(error);
+				var err = null;
+				switch (error.code) {
+					case 'EISDIR':
+						// if we can write a file here, it is good to go
+						try {
+							fs.writeFileSync(conf.file + '/.__');
+							fs.unlinkSync(conf.file + '/.__');
+						} catch (e) {
+							err = e;
+						}
+						break;
+					default:
+						err = error; 
+						break;
+				}
+				return cb(err);
 			}
-			cb();
+			fs.close(fd, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				cb();
+			});
 		});
 	});
 }

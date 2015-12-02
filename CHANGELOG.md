@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.21
+
+## Added
+
+None
+
+## Changed
+
+#### gracenode improved logging directory check on start 
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.20
 
 ## Added
