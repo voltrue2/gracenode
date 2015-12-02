@@ -7,6 +7,7 @@ var Cookies = require('cookies');
 var route = require('./route');
 var request = require('./request');
 var response = require('./response');
+var staticRouter = require('./static');
 var Response = response.Response;
 var util = require('./util');
 var gn = require('../gracenode');
@@ -53,6 +54,30 @@ exports.delete = function (path, handler, opt) {
 
 exports.patch = function (path, handler, opt) {
 	route.define('PATCH', path, handler, opt);
+};
+
+exports.static = function (path, dirList, opt) {
+	if (path[path.length - 1] !== '/') {
+		path += '/';
+	}
+	if (!Array.isArray(dirList)) {
+		throw new Error('StaicDirectoryListMustBeArray: ' + dirList);
+	}
+	for (var i = 0, len = dirList.length; i < len; i++) {
+		var item = dirList[i];
+		if (item[0] === '/') {
+			item = item.substring(1);
+		}
+		if (item[item.length - 1] !== '/') {
+			item += '/';
+		}
+		var lstIndex = item.lastIndexOf('../');
+		if (lstIndex !== -1) {
+			item = item.substring(lstIndex + 3);
+		}
+		var filepath = path + item + '{string:filename}';
+		exports.get(filepath, staticRouter.handle(dirList[i]), opt);
+	}
 };
 
 exports.forceTrailingSlash = function () {

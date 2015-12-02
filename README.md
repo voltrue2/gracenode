@@ -1381,6 +1381,33 @@ gracenode.router.error(404, function (req, res) {
 });
 ```
 
+#### Serving Static Files
+
+**gracenode** router can serve static files such as images etc.
+
+**Example**:
+
+```javascript
+var staticFileDirectoryList = [
+	'/public/css/',
+	'/public/js/',
+	'/public/img/'
+];
+gracenode.router.static('/static', staticFileDirectoryList);
+``` 
+
+The above example will create routes to:
+
+```
+GET /static/public/css/{file name}
+GET /static/public/js/{file name}
+GET /static/public/img/{file name} 
+```
+
+**NOTE**: When service static files from your application, you must consider the file I/O load.
+
+Each request will instruct the server to read from a file.
+
 ***
 
 ## gracenode.lib

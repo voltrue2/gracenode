@@ -116,7 +116,6 @@ Response.prototype.file = function (path, status) {
 		);
 		return;
 	}
-	this._sent = true;
 	var that = this;
 	fs.readFile(path, function (error, data) {
 		if (error) {
@@ -124,6 +123,7 @@ Response.prototype.file = function (path, status) {
 			that.error(error, 404);
 			return;
 		}
+		that._sent = true;
 		that.headers['Content-Length'] = data.length;
 		that.headers['Content-Type'] = mime.getFromPath(path);
 		send(that._req, that._res, that.headers, data, 'binary', status);

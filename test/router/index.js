@@ -1073,4 +1073,19 @@ describe('gracenode.router', function () {
 			done();
 		});
 	});
+
+	it('can define static file route', function () {
+		gn.router.static('/static', [ '../../../test/router/static/' ]);
+	});
+
+	it('can handle static file route', function (done) {
+		var opt = {
+			gzip: false
+		};
+		request.GET(http + '/static/test/router/static/spinner.gif', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			done();
+		});
+	});
 });
