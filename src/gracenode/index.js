@@ -127,7 +127,11 @@ function applyConfig() {
 			logConf.bufferSize = 0;
 		}
 		if (!logConf.hasOwnProperty('level')) {
-			logConf.level = '>= error';
+			if (!logConf.console && !logConf.file) {
+				logConf.level = '> error';
+			} else {
+				logConf.level = '>= verbose';
+			}
 		}
 		if (!logConf.hasOwnProperty('color')) {
 			logConf.color = false;

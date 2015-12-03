@@ -12,6 +12,8 @@ None
 
 #### Added debugging logs in router
 
+#### Default logging configuration improved
+
 #### gracenode improved logging directory check on start 
 
 ## Deprecated
