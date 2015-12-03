@@ -182,6 +182,7 @@ function searchRoute(method, path) {
 			};
 		} 
 	}
+	logger.table(list);
 	return null;
 }
 
