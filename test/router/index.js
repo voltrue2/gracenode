@@ -1100,4 +1100,13 @@ describe('gracenode.router', function () {
 			done();
 		});
 	});
+
+	it('can handle /Test (case insensitive)', function (done) {
+		request.GET(http + '/Test', { }, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res, 'index');
+			done();
+		});
+	});
 });

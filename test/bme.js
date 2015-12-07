@@ -5,10 +5,18 @@ var maxcalls = 600;
 var loopmax = 10;
 var loop = 0;
 var total = 0;
+var len = 100;
 
 var app = express();
 var router = express.Router();
 
+var nothing = function (req, res) {
+	res.json(msg);
+};
+
+for (var i = 0; i < len; i++) {
+	router.get('/dummy/:xxx' + i, nothing);
+}
 router.get('/test', function (req, res) {
 	res.json(msg);
 }); 

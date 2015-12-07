@@ -1,11 +1,13 @@
 'use strict';
 
 var gn = require('../gracenode');
-var url = require('./url');
+//var url = require('./url');
 var hooks = require('./hooks');
+var mapping = require('./mapping');
 
 var logger;
 
+/*
 var PARAM_NAME_REGEX = /{(.*?)}/g;
 var PARAM_REGEX = /\/{(.*?)}/g;
 var BRACE_REGEX = /({|})/g;
@@ -31,9 +33,11 @@ var routes = {
 	DELETE: [],
 	PATCH: []
 };
+*/
 
 exports.setup = function () {
 	logger = gn.log.create('router.route');
+	mapping.setup();
 	hooks.setup();
 };
 
@@ -45,6 +49,8 @@ exports.define = function (method, path, handler, opt) {
 			' [' + (typeof handler) + ']'
 		);		
 	}
+	mapping.add(method, path, handler, opt);
+	/*
 	// head is treated as get
 	method = method === 'HEAD' ? 'GET' : method;
 	// options
@@ -97,11 +103,13 @@ exports.define = function (method, path, handler, opt) {
 	routes[method].sort(function (a, b) {
 		return b.pattern.length - a.pattern.length;
 	});
+	*/
 };
 
 exports.hook = function (path, handler) {
-	hooks.hook(path, handler);
-	hooks.updateHooks(fastRoutes, routes);
+	//hooks.hook(path, handler);
+	//hooks.updateHooks(fastRoutes, routes);
+	mapping.hook(path, handler);
 };
 
 exports.find = function (method, fullpath) {
@@ -115,6 +123,22 @@ exports.find = function (method, fullpath) {
 		queryList = fullpath.substring(queryIndex + 1).split('&');
 		path = fullpath.substring(0, queryIndex);
 	}
+	var res = mapping.getRoute(method, path);
+	if (!res) {
+		return null;
+	}
+	// parameters
+	var paramList = getParamList(res.matched);
+	// create found object
+	return {
+		path: res.route.path,
+		query: parseQuery(queryList),
+		params: parseParams(paramList, res.route.paramNames),
+		handler: res.route.handler,
+		hooks: res.route.hooks,
+		readBody: res.route.readBody
+	};
+	/*
 	// search fast routes: no URL params
 	var fast = searchFastRoute(method, path);
 	if (fast) {
@@ -146,8 +170,10 @@ exports.find = function (method, fullpath) {
 	};
 	// done and return
 	return found;
+	*/
 };
 
+/*
 function searchFastRoute(method, path) {
 	if (path === '/' && fastRoutes[method]) {
 		return fastRoutes[method][path] || null;
@@ -185,6 +211,7 @@ function searchRoute(method, path) {
 	logger.table(list);
 	return null;
 }
+*/
 
 function getParamList(matched) {
 	var list = [];
@@ -217,6 +244,7 @@ function parseParams(list, names) {
 	return params;
 }
 
+/*
 function getParamNames(path) {
 	var list = path.match(PARAM_NAME_REGEX);
 	if (list) {
@@ -244,6 +272,7 @@ function getParamNames(path) {
 	}
 	return [];
 }
+*/
 
 function typecast(value) {
 	var val = decodeURI(value);

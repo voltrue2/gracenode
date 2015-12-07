@@ -5,6 +5,11 @@ var maxcalls = 600;
 var loopmax = 10;
 var loop = 0;
 var total = 0;
+var len = 100;
+
+var nothing = function (req, res) {
+	res.json(msg);
+};
 
 gn.config({
 	log: {
@@ -17,7 +22,10 @@ gn.config({
 });
 
 gn.start(function () {
-	gn.router.get('/test', function (req, res) {
+	for (var i = 0; i < len; i++) {
+		gn.router.get('/dummy/{xxx' + i + '}', nothing);
+	}
+	gn.router.get('/test/{what}', function (req, res) {
 		res.gzip(false);
 		res.json(msg);
 	});
@@ -33,7 +41,7 @@ function caller() {
 }
 
 function call(start, count, ecount) {
-	req.GET('http://localhost:9900/test', {}, { gzip: false }, function (error, res, st) {
+	req.GET('http://localhost:9900/test/{what}', {}, { gzip: false }, function (error, res, st) {
 		if (error || st >= 400) {
 			ecount++;
 		} else {
