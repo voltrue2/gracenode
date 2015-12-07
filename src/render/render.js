@@ -85,10 +85,6 @@ exports.render = function (path, vars) {
 	// bring back line breaks and tabs
 	content = content.replace(LBR, '\n');
 	content = content.replace(TBR, '\t');
-	// restore literals
-	for (var i = 0, len = loaded.literals.length; i < len; i++) {
-		content = content.replace(LIT_TAG, loaded.literals[i]);
-	}
 	// done
 	return content;
 };
@@ -129,13 +125,14 @@ function extract(content) {
 	var literals = content.match(LITG) || [];
 	// remove literals
 	content = content.replace(LITG, LIT_TAG);
-	// format literal list
+	// restore literal values
 	for (var i = 0, len = literals.length; i < len; i++) {
 		var match = literals[i].match(LIT);
-		literals[i] = match[1];
+		var litVal = match[1];
+		content = content.replace(LIT_TAG, litVal);
 	}
 	//done
-	return { content: content, list: list, vars: vars, literals: literals };
+	return { content: content, list: list, vars: vars };
 }
 
 function extractLogic(tag) {

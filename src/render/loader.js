@@ -48,8 +48,7 @@ function load(path, cb) {
 			loaded[pathName] = {
 				source: prerenderedData.content,
 				tags: prerenderedData.list,
-				vars: prerenderedData.vars,
-				literals: prerenderedData.literals
+				vars: prerenderedData.vars
 			};
 			logger.verbose('Pre-rendered:', '[' + pathName + ']', 'from', path);
 			cb();
