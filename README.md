@@ -923,7 +923,7 @@ Render allows you define `literals` so that render does not attempt to render ce
 **Example**:
 
 ```
-{{literal if (A === B): Example endif}}
+{{literal if (A === B): Example endif literal}}
 ```
 
 The above example will not render as `if` statement but rendered literally instead.

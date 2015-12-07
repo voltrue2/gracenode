@@ -19,8 +19,8 @@ var LOGIC_TYPES = [
 	LOGICS.FOR,
 	LOGICS.REQ
 ];
-var LITG = /{{literal(.*?)}}/g;
-var LIT = /{{literal(.*?)}}/;
+var LITG = /{{literal(.*?)literal}}/g;
+var LIT = /{{literal(.*?)literal}}/;
 var LIT_TAG = '{{littag}}';
 var LB = '(_n_)';
 var LBR = /\(_n_\)/g;
@@ -103,7 +103,19 @@ function extract(content) {
 	if (!matched) {
 		return { content: content, list: [], vars: null, literals: [] };
 	}
+	
+	// extract literals
+	var literals = content.match(LITG) || [];
+	// remove literals
+	content = content.replace(LITG, LIT_TAG);
+	// format literal list
+	for (var i = 0, len = literals.length; i < len; i++) {
+		var match = literals[i].match(LIT);
+		var litVal = match[1];
+		literals[i] = litVal;
+	}
 
+	// extract the rest of the logics
 	while (matched) {
 		var tag = matched[0];
 		tmp = tmp.replace(tag, '');
@@ -125,16 +137,6 @@ function extract(content) {
 		matched = tmp.match(COND_TAG); 
 	}
 
-	// extract literals
-	var literals = content.match(LITG) || [];
-	// remove literals
-	content = content.replace(LITG, LIT_TAG);
-	// restore literal values
-	for (var i = 0, len = literals.length; i < len; i++) {
-		var match = literals[i].match(LIT);
-		var litVal = match[1];
-		literals[i] = litVal;
-	}
 	//done
 	return { content: content, list: list, vars: vars, literals: literals };
 }
