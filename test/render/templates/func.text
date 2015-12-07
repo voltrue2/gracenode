@@ -1,0 +1,2 @@
+Today is {{ getDate(today) }};
+{{one}} + {{one}} = {{ onePlusOne(one)}}
