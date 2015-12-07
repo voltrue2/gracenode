@@ -100,7 +100,6 @@ function extract(content) {
 		return { content: content, list: [], vars: null, literals: [] };
 	}
 	
-	var tmp = content;
 	var index = 0;
 	var list = [];
 	var vars = {};
@@ -115,6 +114,8 @@ function extract(content) {
 		var litVal = match[1];
 		literals[i] = litVal;
 	}
+	
+	var tmp = content;
 
 	// extract the rest of the logics
 	while (matched) {
