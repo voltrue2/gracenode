@@ -1109,4 +1109,16 @@ describe('gracenode.router', function () {
 			done();
 		});
 	});
+
+	it('can handle /{param}/wow', function (done) {
+		gn.router.get('/{param}/wow', function (req, res) {
+			res.json({ message: req.params.param });
+		});
+		request.GET(http + '/BOO/wow', {}, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'BOO');
+			done();
+		});
+	});
 });

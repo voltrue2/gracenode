@@ -162,7 +162,7 @@ function searchRoute(method, path) {
 	var key = getRouteKey(path);
 	var list = routes[method][key];
 	if (!list) {
-		return null;
+		return searchAllRoutes(path, routes[method]);
 	}
 	for (var i = 0, len = list.length; i < len; i++) {
 		var item = list[i];
@@ -175,6 +175,31 @@ function searchRoute(method, path) {
 		}
 	}
 	logger.table(list);
+	return null;
+}
+
+function searchRouteShortcut(path, list) {
+	for (var i = 0, len = list.length; i < len; i++) {
+		var item = list[i];
+		var found = item.regex.test(path);
+		if (found) {
+			return {
+				matched: item.extract.exec(path),
+				route: item
+			};
+		}
+	}
+	return null;
+}
+
+function searchAllRoutes(path, map) {
+	for (var key in map) {
+		var list = map[key];
+		var found = searchRouteShortcut(path, list);
+		if (found) {
+			return found;
+		}
+	}
 	return null;
 }
 
