@@ -416,6 +416,7 @@ function handleRequire(content, tag, conditions, vars, varTags) {
 }
 
 function handleIf(content, tag, conditions, vars) {
+	var hit = false;
 	for (var action in conditions) {
 		var pass = false;
 		// evaluate multiple or single else if
@@ -426,6 +427,7 @@ function handleIf(content, tag, conditions, vars) {
 				pass = evalIf(dataList, vars);
 				// one of the else-ifs was true
 				if (pass) {
+					hit = true;
 					content = content.replace(tag, elseifList[j].result);
 					break;
 				}
@@ -442,30 +444,38 @@ function handleIf(content, tag, conditions, vars) {
 		// else	
 		if (!list && action === 'else') {
 			content = content.replace(tag, conditions[action].result);	
+			hit = true;
 			break;
 		}	
 
 		// evaluate if conditions
 		pass = evalIf(list, vars);
-
 		// if was true		
 		if (pass) {
 			content = content.replace(tag, conditions[action].result);
+			hit = true;
 			break;
 		}
+	}
+
+	// no conditions met > remove if entirely
+	if (!hit) {
+		content = content.replace(tag, '');
 	}
 
 	return content;
 }
 
-function evalIf(list) {
+function evalIf(list, vars) {
 	var andOr;
 	var pass = false;
 	for (var i = 0, len = list.length; i < len; i++) {
 		if (list[i] !== '&&' && list[i] !== '||') {
 			var prevPass = pass;
-			var val1 = list[i].val1;
-			var val2 = list[i].val2;
+			var val1 = list[i].val1.replace(REG.VARS, '');
+			var val2 = list[i].val2.replace(REG.VARS, '');
+			val1 = vars[val1] || val1;
+			val2 = vars[val2] || val2;
 			switch (list[i].op) {
 				case '===':
 				case '==':

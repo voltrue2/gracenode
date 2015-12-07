@@ -1,2 +1,10 @@
 Today is {{ getDate(today) }};
 {{one}} + {{one}} = {{ onePlusOne(one)}}
+
+<div class="menu-item {{ if ({title} === General): selected endif }}"><a href="/"><span class="icon fa fa-book"></span>General</a></div>
+<div class="menu-item {{ if ({title} === Logger): selected endif }}"><a href="/logger"><span class="icon fa fa-file-text-o"></span>Logger</a></div>
+<div class="menu-item {{ if ({title} === Router): selected endif }}"><a href="/router"><span class="icon fa fa-cloud"></span>Router</a></div>
+<div class="menu-item {{ if ({title} === Render): selected endif }}"><a href="/render"><span class="icon fa fa-code"></span>Render</a></div>
+<div class="menu-item {{ if ({title} === Cluster): selected endif }}"><a href="/cluster"><span class="icon fa fa-clone"></span>Cluster</a></div>
+<div class="menu-item {{ if ({title} === Daemon): selected endif }}"><a href="/daemon"><span class="icon fa fa-heartbeat"></span>Daemon</a></div>
+<div class="menu-item {{ if ({title} === Bootstrapping): selected endif }}"><a href="/bootstrap"><span class="icon fa fa-cube"></span>Bootsrapping Modules</a></div>

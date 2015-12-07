@@ -10,6 +10,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
+#### Render bug fix: if confition rendering was inaccurate if no conditions were met
+
 #### Router improved route search performance
 
 ## Deprecated

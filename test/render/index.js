@@ -367,6 +367,7 @@ describe('gracenode.render', function () {
 
 	it('can use registered functions on variables', function () {
 		var data = {
+			title: 'Daemon',
 			one: 1,
 			today: 1449470110863
 		};

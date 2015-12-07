@@ -1,2 +1,10 @@
 Today is Mon Dec 07 2015 15:35:10 GMT+0900 (JST);
 1 + 1 = 2
+
+<div class="menu-item "><a href="/"><span class="icon fa fa-book"></span>General</a></div>
+<div class="menu-item "><a href="/logger"><span class="icon fa fa-file-text-o"></span>Logger</a></div>
+<div class="menu-item "><a href="/router"><span class="icon fa fa-cloud"></span>Router</a></div>
+<div class="menu-item "><a href="/render"><span class="icon fa fa-code"></span>Render</a></div>
+<div class="menu-item "><a href="/cluster"><span class="icon fa fa-clone"></span>Cluster</a></div>
+<div class="menu-item  selected "><a href="/daemon"><span class="icon fa fa-heartbeat"></span>Daemon</a></div>
+<div class="menu-item "><a href="/bootstrap"><span class="icon fa fa-cube"></span>Bootsrapping Modules</a></div>
