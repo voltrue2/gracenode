@@ -6,6 +6,7 @@ var DEFAULT_TTL = 1000 * 60 * 60;
 var loader = require('./loader');
 var render = require('./render');
 var cache = require('./cache');
+var func = require('./func');
 
 var pathPrefix = '';
 
@@ -37,4 +38,8 @@ exports.render = function (path, vars, cacheTtl) {
 		return rendered;
 	}
 	return render.render(path, vars);
+};
+
+exports.render.func = function (name, handler) {
+	func.add(name, handler);
 };

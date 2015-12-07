@@ -365,4 +365,20 @@ describe('gracenode.render', function () {
 		assert.equal(time1 > time2, true);	
 	});
 
+	it('can use registered functions on variables', function () {
+		var data = {
+			one: 1,
+			today: 1449470110863
+		};
+		gn.render.func('getDate', function (val) {
+			return new Date(val);
+		});
+		gn.render.func('onePlusOne', function (val) {
+			return val + val;
+		});
+		var rendered = gn.render('/func.text', data);
+		var expected = fs.readFileSync(__dirname + '/expected/func', 'utf8');
+		assert.equal(expected, rendered);
+	});
+
 });

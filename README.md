@@ -883,6 +883,31 @@ The above examples will result in `{{myCar}}` being replaced by `{ myCar: 'BMW' 
 <div>BMW</div>
 ```
 
+#### Custom Registered Functions
+
+Render allows user custom functions to be registered and used in render templates.
+
+**Example**:
+
+```javascript
+gracenode.render.func('myFunction', function (variableValue) {
+	// do somethig here
+	return variableValue * 2; 
+});
+var data = {
+	myValue: 4
+};
+var rendered = gracenode.render('/path/to/my/template', data);
+```
+
+```
+This is my template. {{ myValue }} x 2 = {{ myFunction(myValue) }}.
+```
+
+```
+This is my template. 4 x 2 = 8.
+```
+
 #### Handle Require Statement
 
 Render can combine multiple pre-rendered template files into one file and render it as one render data.

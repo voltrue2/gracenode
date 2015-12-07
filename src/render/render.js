@@ -1,7 +1,10 @@
 'use strict';
 
 var loader = require('./loader');
+var func = require('./func');
 
+var FUNC_OPEN_TAG = /\(/g;
+var FUNC_CLOSE_TAG = /\)/g;
 var COND_TAG = /{{(.*?)}}/;
 var VAR_TAG = /({{(.*?)}}|{(.*?)})/g;
 var LOGICS = {
@@ -154,69 +157,6 @@ function extractLogicConditions(logic, tag, stag) {
 }
 
 function getIfConditions(tag, stag) {
-	/*
-	var res = {};
-	var tmp;
-	var index = 0;
-	// look for if
-	var openIndex = tag.indexOf(LOGICS.IF + '(');
-	var closeIndex = tag.indexOf('):');
-
-	if (openIndex === -1) {
-		throw new Error('InvalidOpen: ' + tag);
-	}
-
-	if (closeIndex === -1) {
-		throw new Error('InvalidClose: ' + tag);
-	}
-
-	var list = parseIfConds(tag.substring(openIndex + 3, closeIndex).split(REG.IFC));
-
-	res[LOGICS.IF] = {
-		conditions: list,
-		result: tag.substring(closeIndex + 2, tag.search(REG.IFS))
-	};
-	// look for else if
-	tag = tag.substring(tag.indexOf(res[LOGICS.IF].result) + res[LOGICS.IF].result.length, tag.length);
-	openIndex = tag.indexOf('elseif(');
-	while (openIndex !== -1) {
-		if (!res.elseif) {
-			res.elseif = [];
-		}
-		closeIndex = tag.indexOf('):');
-		var conds = parseIfConds(tag.substring(openIndex + 7, closeIndex).split(REG.IFC));
-		tag = tag.replace('elseif', '');
-		closeIndex = tag.indexOf('):');
-		res.elseif[index] = {
-			conditions: conds,
-			result: tag.substring(closeIndex + 2, tag.search(REG.IFS)) 
-		};
-		tmp = tag.substring(tag.indexOf(res.elseif[index].result) + res.elseif[index].result.length);
-		if (tmp === tag) {
-			throw new Error(
-				'InvalidIfConditions: ' + tag +
-				'\nconditions: ' + res.elseif[index].conditions +
-				'\nresult: ' + res.elseif[index].result
-			);
-		}
-		tag = tmp;
-		index += 1;
-		openIndex = tag.indexOf('elseif(');
-	}
-	// look for else
-	openIndex = tag.indexOf('else:');
-	closeIndex = tag.lastIndexOf('end' + LOGICS.IF);
-	if (openIndex !== -1) {
-		res['else'] = {
-			conditions: null,
-			result: tag.substring(openIndex + 5, closeIndex)
-		};
-	}
-
-	if (closeIndex === -1) {
-		throw new Error('InvalidEnd: ' + tag + ' <end' + LOGICS.IF + ' not found>');
-	}
-	*/
 	/******* New Logic Here *******/
 	// extract if conditions and its result
 	var map = {};
@@ -396,6 +336,12 @@ function applyVars(content, vars, varTags) {
 	for (var varTag in varTags) {
 		var varName = varTag.replace(REG.VARS, '').replace(REG.IFV, '');
 		var value;
+		// find func if being used
+		var funcUsed = func.getFunc(varName);
+		if (funcUsed) {
+			varTag = varTag.replace(FUNC_OPEN_TAG, '\\(').replace(FUNC_CLOSE_TAG, '\\)');
+			varName = funcUsed.value;
+		}
 		if (varName.indexOf('.') !== -1) {
 			// variable must be either an array or an object
 			var sep = varName.split('.');
@@ -405,11 +351,19 @@ function applyVars(content, vars, varTags) {
 					value = value[sep[i]];
 				}
 			}
+			// execute function
+			if (funcUsed) {
+				value = funcUsed.func(value);
+			}
 			if (typeof value === 'object') {
 				value = JSON.stringify(value);
 			}
 		} else {
 			value = vars[varName];
+			// execute function
+			if (funcUsed) {
+				value = funcUsed.func(value);
+			}
 		}
 		if (value === undefined) {
 			// there is no value
