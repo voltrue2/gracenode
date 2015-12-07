@@ -64,21 +64,27 @@ var gn = require('gracenode');
 // Here the configurations are given as an object
 gn.configure({
 	log: {
-		console: true,
-		color: true,
+		// default is false
+		console: false,
+		// default is false
+		color: false,
+		// default is undefined
 		file: '/path/to/my/logging/dir/'
 	},
 	cluster: {
-		// Maximum number of workers
+		// Maximum number of workers. default is 0
 		max: 0
 	},
 	router: {
+		// you must have this value if you need to use gracenode.router
 		port: 8888,
+		// you must have this value if you need to use gracenode.router
 		host: 'localhost'
 	},
 	render: {
+		// in order to use gracenode.render, you must provide this vakue
 		path: '/path/to/templates/',
-		// custom cache size for render engine
+		// custom cache size for render engine. it is an option
 		cacheSize: 5000000
 	}
 });
