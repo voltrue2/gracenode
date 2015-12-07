@@ -15,6 +15,9 @@ exports.getFunc = function (value) {
 	var match = value.match(FUNC);
 	if (match) {
 		var name = value.replace(match[0], '');
+		if (!map[name]) {
+			return null;
+		}
 		return { func: map[name], value: match[1] } || null;
 	}
 	// function is being used

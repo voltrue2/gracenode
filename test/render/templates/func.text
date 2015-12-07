@@ -1,6 +1,6 @@
 Today is {{ getDate(today) }};
 {{one}} + {{one}} = {{ onePlusOne(one)}}
-
+{{literal if(A&gt;B): FOOOO endif }}
 <div class="menu-item {{ if ({title} === General): selected endif }}"><a href="/"><span class="icon fa fa-book"></span>General</a></div>
 <div class="menu-item {{ if ({title} === Logger): selected endif }}"><a href="/logger"><span class="icon fa fa-file-text-o"></span>Logger</a></div>
 <div class="menu-item {{ if ({title} === Router): selected endif }}"><a href="/router"><span class="icon fa fa-cloud"></span>Router</a></div>

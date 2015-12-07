@@ -19,6 +19,9 @@ var LOGIC_TYPES = [
 	LOGICS.FOR,
 	LOGICS.REQ
 ];
+var LITG = /{{literal(.*?)}}/g;
+var LIT = /{{literal(.*?)}}/;
+var LIT_TAG = '{{littag}}';
 var LB = '(_n_)';
 var LBR = /\(_n_\)/g;
 var TB = '(_t_)';
@@ -82,7 +85,11 @@ exports.render = function (path, vars) {
 	// bring back line breaks and tabs
 	content = content.replace(LBR, '\n');
 	content = content.replace(TBR, '\t');
-
+	// restore literals
+	for (var i = 0, len = loaded.literals.length; i < len; i++) {
+		content = content.replace(LIT_TAG, loaded.literals[i]);
+	}
+	// done
 	return content;
 };
 
@@ -94,7 +101,7 @@ function extract(content) {
 	var vars = {};
 
 	if (!matched) {
-		return { content: content, list: [], vars: null };
+		return { content: content, list: [], vars: null, literals: [] };
 	}
 
 	while (matched) {
@@ -117,7 +124,18 @@ function extract(content) {
 		// next
 		matched = tmp.match(COND_TAG); 
 	}
-	return { content: content, list: list, vars: vars };
+
+	// extract literals
+	var literals = content.match(LITG) || [];
+	// remove literals
+	content = content.replace(LITG, LIT_TAG);
+	// format literal list
+	for (var i = 0, len = literals.length; i < len; i++) {
+		var match = literals[i].match(LIT);
+		literals[i] = match[1];
+	}
+	//done
+	return { content: content, list: list, vars: vars, literals: literals };
 }
 
 function extractLogic(tag) {

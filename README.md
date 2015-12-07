@@ -916,6 +916,18 @@ This is my template. {{ myValue }} x 2 = {{ myFunction(myValue) }}.
 This is my template. 4 x 2 = 8.
 ```
 
+#### Literals
+
+Render allows you define `literals` so that render does not attempt to render certain section of your templates.
+
+**Example**:
+
+```
+{{literal if (A === B): Example endif}}
+```
+
+The above example will not render as `if` statement but rendered literally instead.
+
 #### Handle Require Statement
 
 Render can combine multiple pre-rendered template files into one file and render it as one render data.
