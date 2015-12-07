@@ -64,6 +64,8 @@ var gn = require('gracenode');
 // Here the configurations are given as an object
 gn.configure({
 	log: {
+		console: true,
+		color: true,
 		file: '/path/to/my/logging/dir/'
 	},
 	cluster: {
