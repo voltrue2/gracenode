@@ -8,16 +8,15 @@ var total = 0;
 var len = 100;
 
 var app = express();
-var router = express.Router();
 
 var nothing = function (req, res) {
 	res.json(msg);
 };
 
 for (var i = 0; i < len; i++) {
-	router.get('/dummy/:xxx' + i, nothing);
+	app.get('/dummy/:xxx' + i, nothing);
 }
-router.get('/test', function (req, res) {
+app.get('/test/:what', function (req, res) {
 	res.json(msg);
 }); 
 
@@ -34,7 +33,7 @@ function caller() {
 }
 
 function call(start, count, ecount) {
-	req.GET('http://localhost:9900/test', {}, { gzip: false }, function (error, res, st) {
+	req.GET('http://localhost:9900/test/BOO', {}, { gzip: false }, function (error, res, st) {
 		if (error || st >= 400) {
 			ecount++;
 		} else {

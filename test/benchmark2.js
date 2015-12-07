@@ -18,12 +18,11 @@ var METHOD = method.toUpperCase();
 if (process.argv[2] === 'express') {
 	console.log('Test express');
 	var app = express();
-	var router = express.Router();
-	router[method]('/', fnc);
+	app[method]('/', fnc);
 	for (var i = 0; i < 100; i++) {
-		router.get('/' + i + 'xxxx', fnc);
+		app.get('/' + i + 'xxxx', fnc);
 	}
-	router[method]('/test/:var1/:var2/:var3/test', ehandle);
+	app[method]('/test/:var1/:var2/:var3/test', ehandle);
 	app.listen(eport);
 	spam(eport);
 	var done = function () {
@@ -101,7 +100,7 @@ if (process.argv[2] === 'express') {
 }
 
 function ehandle(req, res) {
-	res.render({ time: Date.now() });
+	res.json({ time: Date.now() });
 }
 
 function ghandle(req, res) {
