@@ -94,15 +94,16 @@ exports.render = function (path, vars) {
 };
 
 function extract(content) {
-	var tmp = content;
 	var matched = content.match(COND_TAG);
-	var index = 0;
-	var list = [];
-	var vars = {};
 
 	if (!matched) {
 		return { content: content, list: [], vars: null, literals: [] };
 	}
+	
+	var tmp = content;
+	var index = 0;
+	var list = [];
+	var vars = {};
 	
 	// extract literals
 	var literals = content.match(LITG) || [];
