@@ -1,39 +1,10 @@
 'use strict';
 
 var gn = require('../gracenode');
-//var url = require('./url');
 var hooks = require('./hooks');
 var mapping = require('./mapping');
 
 var logger;
-
-/*
-var PARAM_NAME_REGEX = /{(.*?)}/g;
-var PARAM_REGEX = /\/{(.*?)}/g;
-var BRACE_REGEX = /({|})/g;
-var TYPES = [
-	'string',
-	'number',
-	'bool',
-	'object'
-];
-// route without URL params
-var fastRoutes = {
-	GET: {},
-	POST: {},
-	PUT: {},
-	DELETE: {},
-	PATCH: {}
-};
-// routes with URL params
-var routes = {
-	GET: [],
-	POST: [],
-	PUT: [],
-	DELETE: [],
-	PATCH: []
-};
-*/
 
 exports.setup = function () {
 	logger = gn.log.create('router.route');
@@ -50,65 +21,9 @@ exports.define = function (method, path, handler, opt) {
 		);		
 	}
 	mapping.add(method, path, handler, opt);
-	/*
-	// head is treated as get
-	method = method === 'HEAD' ? 'GET' : method;
-	// options
-	opt = opt || { readBody: false, sensitive: false };
-	// read request body option
-	if (method !== 'GET' && !opt.readBody) {
-		opt.readBody = true;
-	}
-	// case sensitivity option: default is insensitive
-	if (opt.sensitive) {
-		opt.sensitive = true;
-	}
-	// convert path to regex
-	var converted = url.convert(path, opt.sensitive || false);
-	// check for fast or not
-	if (converted.fast) {
-		var key = path;
-		if (!opt.sensitive) {
-			key = path.toLowerCase();
-		}
-		fastRoutes[method][key] = {
-			path: path,
-			paramNames: getParamNames(path),
-			handler: handler,
-			hooks: hooks.findHooks(path),
-			readBody: opt.readBody,
-			sensitive: opt.sensitive
-		};
-		return;
-	}
-	// create search regex
-	if (opt.sensitive) {
-		regex = new RegExp(converted.pmatch);
-	} else {
-		regex = new RegExp(converted.pmatch, 'i');
-	}
-	var regex;
-	// add it to routes
-	routes[method].push({
-		path: path.replace(PARAM_REGEX, ''),
-		pattern: converted.pmatch,
-		regex: regex,
-		extract: converted.extract,
-		paramNames: getParamNames(path),
-		handler: handler,
-		hooks: hooks.findHooks(path),
-		readBody: opt.readBody
-	});	
-	// sort the order of routes long uri to short uri
-	routes[method].sort(function (a, b) {
-		return b.pattern.length - a.pattern.length;
-	});
-	*/
 };
 
 exports.hook = function (path, handler) {
-	//hooks.hook(path, handler);
-	//hooks.updateHooks(fastRoutes, routes);
 	mapping.hook(path, handler);
 };
 
@@ -138,80 +53,7 @@ exports.find = function (method, fullpath) {
 		hooks: res.route.hooks,
 		readBody: res.route.readBody
 	};
-	/*
-	// search fast routes: no URL params
-	var fast = searchFastRoute(method, path);
-	if (fast) {
-		return {
-			path: path,
-			query: parseQuery(queryList),
-			params: {},
-			handler: fast.handler,
-			hooks: fast.hooks,
-			readBody: fast.readBody,
-			fast: true
-		};
-	}	
-	// search routes: with URL params
-	var res = searchRoute(method, path);
-	if (!res || !res.matched) {
-		return null;
-	}
-	// parameters
-	var paramList = getParamList(res.matched);
-	// create found object
-	var found = {
-		path: res.route.path,
-		query: parseQuery(queryList),
-		params: parseParams(paramList, res.route.paramNames),
-		handler: res.route.handler,
-		hooks: res.route.hooks,
-		readBody: res.route.readBody
-	};
-	// done and return
-	return found;
-	*/
 };
-
-/*
-function searchFastRoute(method, path) {
-	if (path === '/' && fastRoutes[method]) {
-		return fastRoutes[method][path] || null;
-	}
-	if (path[path.length - 1] === '/') {
-		path = path.substring(0, path.length - 1);
-	}
-	var map = fastRoutes[method] || [];
-	// try case sensitive
-	var match = map[path];
-	if (match) {
-		return match;
-	}
-	// try case insensitive
-	var lpath = path.toLowerCase();
-	match = map[lpath] || null;
-	if (!match || match.sensitive) {
-		return null;
-	}
-	return match;
-}
-
-function searchRoute(method, path) {
-	var list = routes[method] || [];
-	for (var i = 0, len = list.length; i < len; i++) {
-		var item = list[i];
-		var found = item.regex.test(path);
-		if (found) {
-			return {
-				matched: item.extract.exec(path),
-				route: item
-			};
-		} 
-	}
-	logger.table(list);
-	return null;
-}
-*/
 
 function getParamList(matched) {
 	var list = [];
@@ -243,36 +85,6 @@ function parseParams(list, names) {
 	}
 	return params;
 }
-
-/*
-function getParamNames(path) {
-	var list = path.match(PARAM_NAME_REGEX);
-	if (list) {
-		var res = [];
-		for (var i = 0, len = list.length; i < len; i++) {
-			var sep = list[i].replace(BRACE_REGEX, '').split(':');
-			var type;
-			var name;
-			if (sep.length === 2) {
-				type = sep[0];
-				if (TYPES.indexOf(type) === -1) {
-					throw new Error('InvalidType: ' + type);
-				}
-				name = sep[1];
-			} else {
-				type = null;
-				name = sep[0];
-			}
-			res.push({
-				type: type,
-				name: name
-			});
-		}
-		return res;
-	}
-	return [];
-}
-*/
 
 function typecast(value) {
 	var val = decodeURI(value);
