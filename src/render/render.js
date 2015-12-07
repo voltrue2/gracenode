@@ -82,13 +82,13 @@ exports.render = function (path, vars) {
 	var js = '<script type="text/javascript">' +
 		'window.gracenode=' + JSON.stringify(vars) + ';</script>';
 	content = content.replace('</head>', js + '\n</head>');
-	// bring back line breaks and tabs
-	content = content.replace(LBR, '\n');
-	content = content.replace(TBR, '\t');
 	// restore literals
 	for (var i = 0, len = loaded.literals.length; i < len; i++) {
 		content = content.replace(LIT_TAG, loaded.literals[i]);
 	}
+	// bring back line breaks and tabs
+	content = content.replace(LBR, '\n');
+	content = content.replace(TBR, '\t');
 	// done
 	return content;
 };
