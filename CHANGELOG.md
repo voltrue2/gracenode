@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.24
+
+## Added
+
+None
+
+## Changed
+
+#### Router no longer timesout w/ invalid named param type request
+
+The errored requets are responded with 400.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.23
 
 ## Added

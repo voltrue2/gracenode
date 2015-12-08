@@ -165,9 +165,16 @@ function requestHandler(req, res) {
 	// set start time
 	req.startTime = Date.now();
 
+	var parsed;
 	var method = req.method;
-	var parsed = route.find(method, req.url);
 	var resp = new Response(req, res, errorMap);
+	try {
+		parsed = route.find(method, req.url);
+	} catch (error) {
+		// request error
+		resp.error(error, 400);
+		return;
+	}
 	logger.info(
 		'Request Resolved:',
 		util.fmt('url', req.method + ' ' + req.url),

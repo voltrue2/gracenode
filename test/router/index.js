@@ -1121,4 +1121,16 @@ describe('gracenode.router', function () {
 			done();
 		});
 	});
+
+	it('can handle invalid named param type /test100/{number:num}', function (done) {
+		gn.router.get('/test100/{number:num}', function (req, res) {
+			res.json({ message: req.params.param });
+		});
+		request.GET(http + '/test100/AAA', {}, options, function (error, res, st) {
+			assert(error);
+			assert.equal(st, 400);
+			assert.equal(res.message, 'InvalidNumber: AAA');
+			done();
+		});
+	});
 });
