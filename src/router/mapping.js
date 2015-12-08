@@ -48,7 +48,7 @@ exports.setup = function () {
 
 exports.hook = function (path, handler) {
 	hooks.hook(path, handler);
-	hooks.updateHooks(fastroutes, routes);
+	hooks.updateHooks(fastroutes, routes, allroutes);
 };
 
 exports.add = function (method, path, handler, opt) {

@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.23
+
+## Added
+
+None
+
+## Changed
+
+#### Router hook update fixed for all routes
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.22
 
 ## Added

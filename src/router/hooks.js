@@ -41,18 +41,24 @@ exports.hook = function (path, func) {
 	logger.verbose('HTTP request hook registed:', hookPath, 'hooks #', hooks[hookPath].length);
 };
 
-exports.updateHooks = function (fastRoutes, routes) {
+exports.updateHooks = function (fastRoutes, routes, allroutes) {
 	for (var method in routes) {
 		// fast routes
 		var map = fastRoutes[method];
 		for (var path in map) {
 			fastRoutes[method][path].hooks = exports.findHooks(map[path].path);
 		}
-		// regular routes
-		var list = routes[method];
+		// shortcut routes
+		for (var key in routes[method]) {
+			for (var j = 0, jen = routes[method][key].length; j < jen; j++) {
+				routes[method][key][j].hooks = exports.findHooks(routes[method][key][j].path);
+			}
+		}
+		// all routes
+		var list = allroutes[method];
 		for (var i = 0, len = list.length; i < len; i++) {
 			var route = list[i];
-			routes[method][i].hooks = exports.findHooks(route.path);
+			allroutes[method][i].hooks = exports.findHooks(route.path);
 		}
 	}
 };
