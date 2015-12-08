@@ -2,6 +2,52 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.25
+
+## Added
+
+None
+
+## Changed
+
+#### Boilerplate improved
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
+## Version 2.0.24
+
+## Added
+
+#### Boilerplate for setting up an application added
+
+## Changed
+
+#### Router request object has args object for errors as well
+
+`req.args` used to be not avialable for errors, but now it is.
+
+#### Router no longer timesout w/ invalid named param type request
+
+The errored requets are responded with 400.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.24
 
 ## Added

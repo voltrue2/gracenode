@@ -7,4 +7,10 @@ echo "Creating a bolierplate...";
  
 /bin/cp -rv "$PATH/"* "$PWD";
 
+/bin/ln -sf "$PWD"/configs/my.json "$PWD"/configs/config.json
+
+/bin/mkdir "$PWD"/logs
+
+/bin/mkdir "$PWD"/daemonlogs
+
 echo "Your application is ready. Execute node index.js -l daemonlogs/ to start your application...";
