@@ -3,6 +3,8 @@
 PWD=`pwd`;
 PATH="$PWD/node_modules/gracenode/boilerplate";
 
-echo "Creating a bolierplate";
+echo "Creating a bolierplate...";
  
 /bin/cp -rv "$PATH/"* "$PWD";
+
+echo "Your application is ready. Execute node index.js -l daemonlogs/ to start your application...";

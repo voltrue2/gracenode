@@ -54,7 +54,7 @@ To install **gracenode** you can either add it to your package.json like so:
 
 In order to use **gracenode**, you need to properly set it up in your application root file (The file that starts your application).
 
-## Create Bolierplate To Get Started
+## Create Boilerplate To Get Started
 
 To create a basic setup for your application, execute the following command from the root of your application directory:
 
