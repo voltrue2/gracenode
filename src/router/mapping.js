@@ -15,13 +15,22 @@ var TYPES = [
 	'object'
 ];
 
-// routes with named parameters
+// routes (shortcuts) with named parameters
 var routes = {
 	GET: {},
 	POST: {},
 	PUT: {},
 	DELETE: {},
 	PATCH: {}
+};
+
+// all routes with named parameters
+var allroutes = {
+	GET: [],
+	POST: [],
+	PUT: [],
+	DELETE: [],
+	PATCH: []
 };
 
 // routes without named parameters
@@ -131,6 +140,12 @@ function addToRoutes(method, path, handler, opt, conv) {
 		return b.pattern.length - a.pattern.length;
 	});
 	routes[method][lkey] = routes[method][key];
+	// add the route to all routes also
+	allroutes[method].push(route);
+	// re-order all routes
+	allroutes[method].sort(function (a, b) {
+		return b.pattern.length - a.pattern.length;
+	});
 }
 
 function searchFastRoute(method, path) {
@@ -162,20 +177,14 @@ function searchRoute(method, path) {
 	var key = getRouteKey(path);
 	var list = routes[method][key];
 	if (!list) {
-		return searchAllRoutes(path, routes[method]);
+		return searchAllRoutes(method, path);
 	}
-	for (var i = 0, len = list.length; i < len; i++) {
-		var item = list[i];
-		var found = item.regex.test(path);
-		if (found) {
-			return {
-				matched: item.extract.exec(path),
-				route: item
-			};
-		}
+	var found = searchRouteShortcut(path, list);
+	if (!found) {
+		logger.debug('Route not found for:', path, 'in', list);
+		return null;
 	}
-	logger.table(list);
-	return null;
+	return found;
 }
 
 function searchRouteShortcut(path, list) {
@@ -192,12 +201,16 @@ function searchRouteShortcut(path, list) {
 	return null;
 }
 
-function searchAllRoutes(path, map) {
-	for (var key in map) {
-		var list = map[key];
-		var found = searchRouteShortcut(path, list);
+function searchAllRoutes(method, path) {
+	var list = allroutes[method];
+	for (var i = 0, len = list.length; i < len; i++) {
+		var item = list[i];
+		var found = item.regex.test(path);
 		if (found) {
-			return found;
+			return {
+				matched: item.extract.exec(path),
+				route: item
+			};
 		}
 	}
 	return null;
