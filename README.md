@@ -54,6 +54,20 @@ To install **gracenode** you can either add it to your package.json like so:
 
 In order to use **gracenode**, you need to properly set it up in your application root file (The file that starts your application).
 
+## Create Bolierplate To Get Started
+
+To create a basic setup for your application, execute the following command from the root of your application directory:
+
+`./node_modules/gracenode/bin/boilerplate`
+
+The above command will create a very basic setup for you. 
+
+To start your own HTTP server from here on, execute `node index.js start`.
+
+The above command will daemonize your appliction.
+
+**NOTE**: By default, your HTTP server will be listening to port `http://localhost:8888`.
+
 ### Configure Logging and Cluster Management
 
 These are optional configurations, but you will want to know what they do.

@@ -1,0 +1,38 @@
+{
+	"name": "YourApp",
+	"description": "Description of your app here.",
+	"version": "0.0.1",
+	"author": "",
+	"repositiory": {},
+	"dependencies": {
+		"gracenode": ""
+	},
+	"jshintConfig": {
+                "node": true,
+                "bitwise": false,
+                "camelcase": true,
+                "curly": true,
+                "eqeqeq": true,
+                "forin": false,
+                "immed": true,
+                "latedef": false,
+                "newcap": true,
+                "noarg": true,
+                "noempty": true,
+                "undef": true,
+                "unused": true,
+                "nonew": true,
+                "white": true,
+                "maxdepth": 5,
+                "quotmark": "single",
+                "globals": {
+                        "mocha": false,
+                        "describe": false,
+                        "it": false,
+                        "before": false,
+                        "beforeEach": false,
+                        "after": false,
+                        "afterEach": false
+                }
+        }
+}

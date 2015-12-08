@@ -59,7 +59,11 @@ exports.onException = function (func) {
 };
 
 // deprecated backward compatibility alias
-exports.registerShutdownTask = exports.onExit;
+exports.registerShutdownTask = function (name, func) {
+	var e = new Error('WARNING');
+	logger.warn('.registerShutdownTask() has been deprecated and should not be used', e.stack);	
+	exports.onExit(func);
+};
 
 // add module name and path to be bootstrapped by .start()
 exports.use = function (name, path, options) { 

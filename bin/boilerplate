@@ -1,0 +1,8 @@
+#!/bin/bash
+
+PWD=`pwd`;
+PATH="$PWD/node_modules/gracenode/boilerplate";
+
+echo "Creating a bolierplate";
+ 
+/bin/cp -rv "$PATH/"* "$PWD";

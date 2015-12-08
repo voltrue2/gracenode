@@ -1,0 +1,18 @@
+{
+	"log": {
+		"console": true,
+		"color": true,
+		"file": "logs/",
+		"remote": null
+	},
+	"cluster": {
+		"max": 0
+	},
+	"router": {
+		"host": "localhost",
+		"port": 8888
+	},
+	"render": {
+		"path": "templates/"
+	}
+}

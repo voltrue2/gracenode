@@ -14,7 +14,7 @@ var runApp = function (execPath, cb) {
 	exec(process.execPath + ' ' + execPath, cb);
 };
 
-describe('gracenode', function () {
+describe('start gracenode', function () {
 
 	var run = path + 'start/run.js';	
 	var custom = path + 'start/custom.js';
