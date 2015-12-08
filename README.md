@@ -68,6 +68,49 @@ The above command will daemonize your appliction.
 
 **NOTE**: By default, your HTTP server will be listening to port `http://localhost:8888`.
 
+#### Where is the configurations?
+
+The configuration file(s) are located in `configs/`.
+
+There is a symbolic link that points to `configs/config.json`.
+
+This is the file that the application is reading from.
+
+#### How To Add More Endpoints
+
+To add more HTTP REST endpoints, add more routes to `api/index.js`.
+
+You also need to create a route handler for the route(s) that you are adding.
+
+**Example**:
+
+```javascript
+gn.router.get('/hello2', require(gn.getRootPath() + 'controllers/hello2'));
+```
+
+#### How To Add More Views
+
+To add more views, you must add new views to `api/views/index.js`.
+
+You also need to add a view handler for your new view.
+
+**Example**:
+
+```javascript
+modules.exports = {
+	hello: require('./hello'),
+	hello2: require('./hello2')
+};
+```
+
+#### How To Add More Templates
+
+In order to add more templates, you need to add template files to `templates/`.
+
+The added template files must be read in your new view handlers.
+
+See the example in `api/views/hello/index.js`.
+
 ### Configure Logging and Cluster Management
 
 These are optional configurations, but you will want to know what they do.
