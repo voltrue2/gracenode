@@ -10,6 +10,10 @@ None
 
 ## Changed
 
+#### Router request object has args object for errors as well
+
+`req.args` used to be not avialable for errors, but now it is.
+
 #### Router no longer timesout w/ invalid named param type request
 
 The errored requets are responded with 400.

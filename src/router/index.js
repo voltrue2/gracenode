@@ -160,6 +160,8 @@ function requestHandler(req, res) {
 		}
 	}
 
+	// shared data for hooks and request handler
+	req.args = {};
 	// assign request ID
 	req.id = uuid.v4();
 	// set start time
@@ -210,8 +212,6 @@ function requestHandler(req, res) {
 		hook(req, resp, next);
 	};
 
-	// shared data for hooks and request handler
-	req.args = {};
 	// parsed url path
 	req.path = parsed.path;
 	// request GET parameters
