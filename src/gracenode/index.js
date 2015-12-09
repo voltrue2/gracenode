@@ -88,10 +88,10 @@ exports.start = function (cb) {
 	applyConfig();
 	aeterno.run(function () {
 		var tasks = [
-			execLint,
 			setup,
 			startCluster,
 			setupLog,
+			execLint,
 			startMod,
 			setupLogCleaner,
 			setupRender,
@@ -158,10 +158,6 @@ function applyConfig() {
 	}
 }
 
-function execLint(cb) {
-	lint(exports.getRootPath(), cb);
-}
-
 function setup(cb) {
 	process.chdir(rootPath);
 	process.on('uncaughtException', function (error) {
@@ -173,6 +169,10 @@ function setup(cb) {
 		execOnExceptions(error);
 	});
 	cb();
+}
+
+function execLint(cb) {
+	lint(exports.getRootPath(), cb);
 }
 
 function execOnExceptions(error) {

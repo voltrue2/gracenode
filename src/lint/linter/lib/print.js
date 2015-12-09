@@ -11,11 +11,16 @@ var COLORS = {
 
 var useColor = false;
 
+var gn = require('../../../gracenode');
+
 exports.useColor = function () {
 	useColor = true;
 };
 
 exports.out = function () {
+	if (!gn.log.isEnabled('verbose')) {
+		return;
+	}
 	var str = '';
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		str += prep(arguments[i]);
@@ -37,6 +42,9 @@ exports.error = function () {
 };
 
 exports.verbose = function () {
+	if (!gn.log.isEnabled('verbose')) {
+		return;
+	}
 	var str = '';
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		str += prep(arguments[i]);

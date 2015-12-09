@@ -2,6 +2,22 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.0.26
+
+## Added
+
+#### Added source code lintting on gracenode.start()
+
+## Changed
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 2.0.25
 
 ## Added
