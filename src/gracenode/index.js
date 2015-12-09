@@ -24,6 +24,9 @@ var ER = {
 	LOG_DIR_NOT_FOUND: '<LOG_DIR_NOT_FOUND>'
 };
 
+// internal use only (src/lint)
+exports._isLogging = false;
+
 // a map of bootstrapped modules
 exports.mod = {};
 
@@ -142,6 +145,7 @@ function applyConfig() {
 		if (!logConf.hasOwnProperty('color')) {
 			logConf.color = false;
 		}
+		exports._isLogging = logConf.console || logConf.file || logConf.remote ? true : false;
 		log.config(logConf);
 	}
 	// this seems redundant, but it is necesarry to do this AFTER log.config()

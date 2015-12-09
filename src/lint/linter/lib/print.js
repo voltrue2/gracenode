@@ -18,7 +18,7 @@ exports.useColor = function () {
 };
 
 exports.out = function () {
-	if (!gn.log.isEnabled('verbose')) {
+	if (!gn._isLogging || !gn.log.isEnabled('verbose')) {
 		return;
 	}
 	var str = '';
@@ -42,7 +42,7 @@ exports.error = function () {
 };
 
 exports.verbose = function () {
-	if (!gn.log.isEnabled('verbose')) {
+	if (!gn._isLogging || !gn.log.isEnabled('verbose')) {
 		return;
 	}
 	var str = '';
