@@ -91,7 +91,9 @@ Lint.prototype._validate = function (cb) {
 	async.forEach(this._files, function (item, next) {
 		that._opt.args = [item];
 		jshintcli.run(that._opt);
-		that._pb.update();
+		if (gn.log.isEnabled('verbose')) {
+			that._pb.update();
+		}
 		next();
 	}, cb);
 };
