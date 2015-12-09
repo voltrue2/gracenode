@@ -12,9 +12,9 @@ indexOf() {
 index=`indexOf "$CWD" "$NAME"`;
 
 if [ "$index" -ne -1 ]; then
-	path=`expr substr $CWD 1 $index`"$NAME/scripts/lint/";
+	path=`expr substr $CWD 1 $index`"$NAME/src/lint/";
 else
-	path="./scripts/lint/";
+	path="./src/lint/";
 fi
 
 "$path"lint.sh -a index.js src/ lib/
