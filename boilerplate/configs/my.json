@@ -1,4 +1,5 @@
 {
+	"lint": true,
 	"log": {
 		"console": true,
 		"color": true,

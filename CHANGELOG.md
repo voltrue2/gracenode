@@ -8,6 +8,8 @@ This is a list of manually mantained changes and updates for each version.
 
 #### Added source code lintting on gracenode.start()
 
+gracenode will lint all javascript files in your application when starting.
+
 ## Changed
 
 None

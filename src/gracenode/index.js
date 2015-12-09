@@ -12,6 +12,7 @@ var render = require('../render');
 var lint = require('../lint');
 
 // this will be overridden by logger in setupLog()
+var ignoreLint = false;
 var logger = console;
 var renderConf;
 var clusterConfig;
@@ -128,6 +129,7 @@ function applyConfig() {
 	var routerPort = config.get('router.port');
 	var routerHost = config.get('router.host');
 	var isLogging = false;
+	ignoreLint = config.get('lint') ? false : true;
 	renderConf = config.get('render');
 	if (logConf) {
 		isLogging = true;
@@ -176,6 +178,10 @@ function setup(cb) {
 }
 
 function execLint(cb) {
+	if (ignoreLint) {
+		logger.info('Ignoring lint');
+		return cb();
+	}
 	lint(exports.getRootPath(), cb);
 }
 

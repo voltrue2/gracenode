@@ -120,6 +120,7 @@ var gn = require('gracenode');
 
 // Here the configurations are given as an object
 gn.configure({
+	lint: true, // lint all application js files when starting. default is true
 	log: {
 		// default is false
 		console: false,
