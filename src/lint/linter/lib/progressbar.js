@@ -1,3 +1,5 @@
+
+var gn = require('../../../gracenode');
 /*
 options {
 	bar
@@ -22,6 +24,9 @@ function Progressbar(len, options) {
 }
 
 Progressbar.prototype.start = function () {
+	if (!gn.log.isEnabled('verbose')) {
+		return;
+	}	
 	var spaces = '';
 	for (var j = 0; j < this.barLen; j++) {
 		spaces += ' ';
@@ -31,6 +36,9 @@ Progressbar.prototype.start = function () {
 };
 
 Progressbar.prototype.update = function () {
+	if (!gn.log.isEnabled('verbose')) {
+		return;
+	}	
 	this.it += 1;
 	var clear = '';
 	var progress = '';
@@ -65,6 +73,9 @@ Progressbar.prototype.update = function () {
 };
 
 Progressbar.prototype.end = function () {
+	if (!gn.log.isEnabled('verbose')) {
+		return;
+	}	
 	process.stdout.write('\033[0m\n\n');
 };
 

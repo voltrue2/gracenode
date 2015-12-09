@@ -1,6 +1,5 @@
 'use strict';
 
-var gn = require('../../../gracenode');
 var async = require('async');
 var jshintcli = require('jshint/src/cli');
 var progressbar = require('./progressbar');
@@ -59,9 +58,6 @@ Lint.prototype._prepare = function (cb) {
 	
 		print.out('\nFiles to lint:\n' + print.b(that._files.join('\n')));
 
-		if (!gn.log.isEnabled('verbose')) {
-			return cb();
-		}			
 		var options = {
 			color: progressbar.COLORS.GRAY,
 			label: 'Linting JavaScript:'
@@ -91,9 +87,7 @@ Lint.prototype._validate = function (cb) {
 	async.forEach(this._files, function (item, next) {
 		that._opt.args = [item];
 		jshintcli.run(that._opt);
-		if (gn.log.isEnabled('verbose')) {
-			that._pb.update();
-		}
+		that._pb.update();
 		next();
 	}, cb);
 };
