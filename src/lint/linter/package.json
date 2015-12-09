@@ -1,0 +1,42 @@
+{
+	"name": "node-lint",
+        "description": "A linting tool for javascript and git commit hook.",
+        "version": "0.0.1",
+        "author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
+        "repository": {
+                "type": "git",
+                "url": "https://github.com/voltrue2/node-lint.git"
+        },
+        "dependencies": {
+                "async": "0.9.0",
+                "jshint": "2.5.1"
+        },
+	"jshintConfig": {
+                "node": true,
+                "bitwise": false,
+                "camelcase": true,
+                "curly": true,
+                "eqeqeq": true,
+                "forin": false,
+                "immed": true,
+                "latedef": false,
+                "newcap": true,
+                "noarg": true,
+                "noempty": true,
+                "undef": true,
+                "unused": true,
+                "nonew": true,
+                "white": true,
+                "maxdepth": 5,
+                "quotmark": "single",
+                "globals": {
+                        "mocha": false,
+                        "describe": false,
+                        "it": false,
+                        "before": false,
+                        "beforeEach": false,
+                        "after": false,
+                        "afterEach": false
+                }
+        }
+}

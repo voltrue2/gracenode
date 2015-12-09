@@ -16,7 +16,6 @@ exports.getParent = function () {
 
 function findTopmostParent() {
 	var nextParent = parent;
-
 	while (nextParent && nextParent.id !== IGNORE) {
 		topmostParent = nextParent;
 		nextParent = topmostParent.parent;

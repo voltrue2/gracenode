@@ -497,8 +497,8 @@ function evalIf(list, vars) {
 			var prevPass = pass;
 			var val1 = list[i].val1.replace(REG.VARS, '');
 			var val2 = list[i].val2.replace(REG.VARS, '');
-			val1 = vars[val1] || val1;
-			val2 = vars[val2] || val2;
+			val1 = cast(vars[val1] || val1);
+			val2 = cast(vars[val2] || val2);
 			switch (list[i].op) {
 				case '===':
 				case '==':
@@ -531,6 +531,32 @@ function evalIf(list, vars) {
 		}
 	}
 	return pass;
+}
+
+function cast(val) {
+	if (val[0] === '\'' || val[0] === '"') {
+		var len = val.length - 1;
+		if (val[len] === '\'' || val[0] === '"') {
+			// string
+			return val;
+		}
+	}
+	if (!isNaN(val)) {
+		// numeric
+		return parseFloat(val);
+	}
+	switch (val.toLowerCase()) {
+		case 'true':
+			return true;
+		case 'false':
+			return false;
+		case 'null':
+			return null;
+		case 'undefined':
+			return undefined;
+		default:
+			return val;
+	}
 }
 
 function handleFor(content, tag, conditions, vars, varTags) {

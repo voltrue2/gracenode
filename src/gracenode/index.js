@@ -9,6 +9,7 @@ var rootPath = getRootPath(require('./parent').getTopmostParent());
 var config = require('./config');
 var mod = require('./mod');
 var render = require('../render');
+var lint = require('../lint');
 
 // this will be overridden by logger in setupLog()
 var logger = console;
@@ -87,6 +88,7 @@ exports.start = function (cb) {
 	applyConfig();
 	aeterno.run(function () {
 		var tasks = [
+			execLint,
 			setup,
 			startCluster,
 			setupLog,
@@ -154,6 +156,10 @@ function applyConfig() {
 	if (routerPort && routerHost) {
 		exports.router.config({ port: routerPort, host: routerHost });
 	}
+}
+
+function execLint(cb) {
+	lint(exports.getRootPath(), cb);
 }
 
 function setup(cb) {
