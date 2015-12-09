@@ -17,9 +17,6 @@ module.exports.walkDir = function (path, cb) {
 			return cb(null, res);
 		}
 	};
-
-	console.log(path);
-
 	if (path.indexOf(NODE_MODULES) !== -1) {
 		// ignore node_modules dir
 		return cb(null, []);
