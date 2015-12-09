@@ -3,7 +3,8 @@
 		"console": true,
 		"color": true,
 		"file": "logs/",
-		"remote": null
+		"remote": null,
+		"level": ">= verbose"
 	},
 	"cluster": {
 		"max": 0
