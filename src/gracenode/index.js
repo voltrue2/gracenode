@@ -129,7 +129,9 @@ function applyConfig() {
 	var routerPort = config.get('router.port');
 	var routerHost = config.get('router.host');
 	var isLogging = false;
-	ignoreLint = config.get('lint.enable') ? config.get('lint.enable') : false;
+	if (config.get('lint.enable') === false) {
+		ignoreLint = true;
+	}
 	renderConf = config.get('render');
 	if (logConf) {
 		isLogging = true;
