@@ -1,5 +1,8 @@
 {
-	"lint": true,
+	"lint": {
+		"enable": true,
+		"ignore": []
+	},
 	"log": {
 		"console": true,
 		"color": true,

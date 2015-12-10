@@ -2,7 +2,7 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 2.0.26
+## Version 2.1.0
 
 ## Added
 
@@ -12,7 +12,7 @@ gracenode will lint all javascript files in your application when starting.
 
 ## Changed
 
-None
+#### Default logging configurations added for not giving any configs for logging
 
 ## Removed
 

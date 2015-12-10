@@ -1,3 +1,4 @@
+var logEnabled = require('../arg')('--log');
 var fs = require('fs');
 var assert = require('assert');
 var gn = require('../../src/gracenode');
@@ -6,6 +7,9 @@ describe('gracenode.render', function () {
 	
 	it('can set up gracenode.render', function (done) {
 		gn.config({
+			log: {
+				console: logEnabled
+			},
 			render: {
 				path: __dirname + '/templates',
 				cacheSize: 3989000

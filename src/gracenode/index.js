@@ -129,7 +129,7 @@ function applyConfig() {
 	var routerPort = config.get('router.port');
 	var routerHost = config.get('router.host');
 	var isLogging = false;
-	ignoreLint = config.get('lint') ? false : true;
+	ignoreLint = config.get('lint.enable') ? config.get('lint.enable') : false;
 	renderConf = config.get('render');
 	if (logConf) {
 		isLogging = true;
@@ -182,7 +182,7 @@ function execLint(cb) {
 		logger.info('Ignoring lint');
 		return cb();
 	}
-	lint(exports.getRootPath(), cb);
+	lint(exports.getRootPath(), config.get('lint.ignore'), cb);
 }
 
 function execOnExceptions(error) {
@@ -254,6 +254,7 @@ function canWrite(conf, cb) {
 }
 
 function setupLogCleaner(cb) {
+	logger.info('Setting up logging cleaner on exit');
 	cluster.onExit(function (next) {
 		logger.verbose('Cleaning up logging before exit');
 		log.forceFlush(function () {

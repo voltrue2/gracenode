@@ -6,11 +6,12 @@ var progressbar = require('./progressbar');
 var print = require('./print');
 var files = require('./files');
 
-function Lint(files) {
+function Lint(files, ignorelist) {
 	var that = this;
 	this._pb = null;
 	this._list = Array.isArray(files) ? files : [files];
 	this._files = [];
+	this._ignorelist = ignorelist || [];
 	this._errors = [];
 	this._opt = {};
 	this._opt.reporter = function (results) {
@@ -52,6 +53,14 @@ Lint.prototype._prepare = function (cb) {
 			return cb(error);
 		}
 		that._files = that._files.filter(function (item) {
+			for (var i = 0, len = that._ignorelist.length; i < len; i++) {
+				var ignore = that._ignorelist[i];
+				if (item.indexOf(ignore) !== -1) {
+					// ignore
+					print.verbose('Ignore to lint:' + item);
+					return false;
+				}
+			}
 			var ext = item.substring(item.lastIndexOf('.') + 1);
 			return ext === 'js';
 		});
@@ -137,7 +146,8 @@ Lint.prototype._reportResults = function (cb) {
 				' [Total: ' + errorFiles.length +
 				' error ' + ef +  ' out of ' + this._files.length +
 				' ' + ef + ']' +
-				'\n'
+				'\n' +
+				'If you need to disable linting on gracenode.start(), add the following to your configurations: { lint: { enable: false } }'
 			)
 		);
 		return cb(new Error('LintError'));
