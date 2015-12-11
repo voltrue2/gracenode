@@ -158,6 +158,102 @@ gn.start(function () {
 
 ```
 
+#### Linting
+
+gracenode lints your application code when `gracenode.start()` is called.
+
+If **gracenode** detects a lint error, **gracenode** terminates the application process immediately.
+
+**NOTE**: Uses `jshint` with the configurations below:
+
+```
+"jshintConfig": {
+                "node": true,
+                "bitwise": false,
+                "camelcase": true,
+                "curly": true,
+                "eqeqeq": true,
+                "forin": false,
+                "immed": true,
+                "latedef": false,
+                "newcap": true,
+                "noarg": true,
+                "noempty": true,
+                "undef": true,
+                "unused": true,
+                "nonew": true,
+                "white": true,
+                "maxdepth": 5,
+                "quotmark": "single",
+                "globals": {
+                        "mocha": false,
+                        "describe": false,
+                        "it": false,
+                        "before": false,
+                        "beforeEach": false,
+                        "after": false,
+                        "afterEach": false
+                }
+        }
+```
+
+##### How To Disable Lint
+
+To disable **gracenode** liniting, add the following configuration to your application config.
+
+```
+lint: {
+	enable: false
+}
+```
+
+##### How To Ignore Certain Files/Directories For Lint
+
+You may have **gracenode** ignore certain files/directories for liniting by adding the following in your application configuration:
+
+```
+lint: {
+	ignore: [
+		''
+	]
+}
+```
+
+##### How To Change Lint Configurations
+
+In order to change lint configurations, add/change the following in your `package.json`:
+
+```
+"jshintConfig": {
+                "node": true,
+                "bitwise": false,
+                "camelcase": true,
+                "curly": true,
+                "eqeqeq": true,
+                "forin": false,
+                "immed": true,
+                "latedef": false,
+                "newcap": true,
+                "noarg": true,
+                "noempty": true,
+                "undef": true,
+                "unused": true,
+                "nonew": true,
+                "white": true,
+                "maxdepth": 5,
+                "quotmark": "single",
+                "globals": {
+                        "mocha": false,
+                        "describe": false,
+                        "it": false,
+                        "before": false,
+                        "beforeEach": false,
+                        "after": false,
+                        "afterEach": false
+                }
+        }
+```
+
 **NOTE 1:** You may give the configurations as a JSON file also:
 
 ```javascript
