@@ -192,7 +192,7 @@ function execLint(cb) {
 			logger.warn(
 				'Lint is in non-strict mode.',
 				'To enable strict mode, add the following to your configurations:',
-				'{ strict: true }'
+				'{ lint: { strict: true } }'
 			);
 		}
 		cb();

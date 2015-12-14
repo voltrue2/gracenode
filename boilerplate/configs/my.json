@@ -1,7 +1,8 @@
 {
 	"lint": {
 		"enable": true,
-		"ignore": []
+		"ignore": [],
+		"strict": true
 	},
 	"log": {
 		"console": true,
