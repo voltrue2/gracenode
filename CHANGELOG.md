@@ -6,9 +6,23 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-#### Added source code lintting on gracenode.start()
+#### Added source code linting on gracenode.start()
 
 gracenode will lint all javascript files in your application when starting.
+
+**WARNING**:
+
+This addition may cause your application to not start. Please read the error instruction carefully.
+
+You may also **disable** `lint` by adding the following to your configurations:
+
+```
+{
+	lint: {
+		enable: false
+	}
+}
+```
 
 ## Changed
 
