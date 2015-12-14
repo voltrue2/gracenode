@@ -6,7 +6,8 @@ var COLORS = {
 	DARK_BLUE: '0;34',
 	BLUE: '0;36',
 	BROWN: '0;33',
-	PURPLE: '0;35'
+	PURPLE: '0;35',
+	GREY: '0;90'
 };
 
 var logger;
@@ -55,6 +56,10 @@ exports.verbose = function () {
 		str += prep(arguments[i]);
 	}
 	logger.verbose(color(str, COLORS.BROWN));
+};
+
+exports.n = function (msg) {
+	return color(msg, COLORS.GREY);
 };
 
 exports.r = function (msg) {

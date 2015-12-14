@@ -114,7 +114,7 @@ Lint.prototype._reportResults = function (cb) {
 		msg += ' <Line ' + eitem.error.line + '>';
 		msg += ' [Character ' + eitem.error.character + ']';
 		msg += ' ' + eitem.error.reason;
-		print.error('[ ' + print.r('!') + ' ] ' + print.r(msg));
+		print.error('[ ! ] ' + msg);
 
 		errorCount += 1;
 
@@ -126,7 +126,7 @@ Lint.prototype._reportResults = function (cb) {
 	var linted = [];
 	for (var j = 0, jen = this._files.length; j < jen; j++) {
 		if (errorFiles.indexOf(this._files[j]) === -1) {
-			linted.push('[ ' + print.g('✓') + ' ] ' + print.g(this._files[j]));
+			linted.push(print.n('[ ') + print.g('✓') + print.n(' ] ') + print.g(this._files[j]));
 		}
 	}
 	print.out('Linted Files:\n' + linted.join('\n'));
@@ -148,10 +148,10 @@ Lint.prototype._reportResults = function (cb) {
 				' [Total: ' + errorFiles.length +
 				' error ' + ef +  ' out of ' + this._files.length +
 				' ' + ef + ']' +
-				'\n\n' + '[Hint] **************' + '\n' +
+				'\n\n' + '********** [Hint] **********' + '\n' +
 				'If you need to disable linting on gracenode.start(), ' + '\n' +
 				'add the following to your configurations: { lint: { enable: false } }' +
-				'\n' + '*********************' + '\n'
+				'\n' + '****************************' + '\n'
 			)
 		);
 		return cb(new Error('LintError'));
