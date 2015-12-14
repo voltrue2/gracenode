@@ -158,11 +158,32 @@ gn.start(function () {
 
 ```
 
+**NOTE 1:** You may give the configurations as a JSON file also:
+
+```javascript
+gn.config(require('/path/to/my/config.json'));
+```
+
+**NOTE 2:** You may call `.config()` as many times a syou need to merge the configuration objects.
+
+This is useful when you have shared common configurtions with other developers and your custom configrations for each.
+
+#### Example:
+
+```javascript
+gn.config(require('/path/to/my/shared/config.json'));
+gn.config(require('/path/to/my/custom/config.json'));
+```
+
+**NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="https://github.com/voltrue2/gracenode#default-configurations">README</a>.
+
 #### Linting
 
 gracenode lints your application code when `gracenode.start()` is called.
 
-If **gracenode** detects a lint error, **gracenode** terminates the application process immediately.
+If **gracenode** detects a lint error, **gracenode** does not terminate immediately.
+
+If, however, `lint: { strict: true }` is set, **gracenode** will terminate its process immediately on lint error(s).
 
 **NOTE**: Uses `jshint` with the configurations below:
 
@@ -195,6 +216,23 @@ If **gracenode** detects a lint error, **gracenode** terminates the application 
                         "afterEach": false
                 }
         }
+```
+
+##### Strict Mode
+
+If strict mode is set to `true`, your application process will terminates on start if lint error(s) is detected.
+
+This is set to `false` by default.
+
+**Example**:
+
+```
+{
+	lint: {
+		enable: true,
+		strict: true
+	}
+}
 ```
 
 ##### How To Disable Lint
@@ -253,25 +291,6 @@ In order to change lint configurations, add/change the following in your `packag
                 }
         }
 ```
-
-**NOTE 1:** You may give the configurations as a JSON file also:
-
-```javascript
-gn.config(require('/path/to/my/config.json'));
-```
-
-**NOTE 2:** You may call `.config()` as many times a syou need to merge the configuration objects.
-
-This is useful when you have shared common configurtions with other developers and your custom configrations for each.
-
-#### Example:
-
-```javascript
-gn.config(require('/path/to/my/shared/config.json'));
-gn.config(require('/path/to/my/custom/config.json'));
-```
-
-**NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="https://github.com/voltrue2/gracenode#default-configurations">README</a>.
 
 ## Start Your Application As A Daemon
 

@@ -184,7 +184,15 @@ function execLint(cb) {
 		logger.info('Ignoring lint');
 		return cb();
 	}
-	lint(exports.getRootPath(), config.get('lint.ignore'), cb);
+	lint(exports.getRootPath(), config.get('lint.ignore'), function (error) {
+		if (error && config.get('lint.strict')) {
+			return cb(error);
+		}
+		if (error) {
+			logger.warn('Lint is in non-strict mode');
+		}
+		cb();
+	});
 }
 
 function execOnExceptions(error) {
