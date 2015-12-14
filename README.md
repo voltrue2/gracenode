@@ -124,7 +124,9 @@ gn.configure({
 		// lint all application js files when starting. default is true
 		enable: true,
 		// a list of file names or file paths to ignore linting. default is empty
-		ignore: []
+		ignore: [],
+		// if this is set to true, lint error(s) will cause your application to terminate immediately. default is false
+		strict: false
 	log: {
 		// default is false
 		console: false,
@@ -177,7 +179,7 @@ gn.config(require('/path/to/my/custom/config.json'));
 
 **NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="https://github.com/voltrue2/gracenode#default-configurations">README</a>.
 
-#### Linting
+### Linting
 
 gracenode lints your application code when `gracenode.start()` is called.
 
