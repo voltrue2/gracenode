@@ -189,7 +189,11 @@ function execLint(cb) {
 			return cb(error);
 		}
 		if (error) {
-			logger.warn('Lint is in non-strict mode');
+			logger.warn(
+				'Lint is in non-strict mode.',
+				'To enable strict mode, add the following to your configurations:',
+				'{ strict: true }'
+			);
 		}
 		cb();
 	});
