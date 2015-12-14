@@ -2,13 +2,13 @@
 
 var async = require('async');
 var jshintcli = require('jshint/src/cli');
-var progressbar = require('./progressbar');
+//var progressbar = require('./progressbar');
 var print = require('./print');
 var files = require('./files');
 
 function Lint(files, ignorelist) {
 	var that = this;
-	this._pb = null;
+	//this._pb = null;
 	this._list = Array.isArray(files) ? files : [files];
 	this._files = [];
 	this._ignorelist = ignorelist || [];
@@ -67,12 +67,14 @@ Lint.prototype._prepare = function (cb) {
 	
 		print.out('Files to lint:\n' + print.b(that._files.join('\n')));
 
+		/*
 		var options = {
 			color: progressbar.COLORS.GRAY,
 			label: 'Linting JavaScript:'
 		};
 		that._pb = new progressbar.Progressbar(that._files.length, options);
 		that._pb.start();
+		*/
 		cb();
 	};
 	
@@ -96,7 +98,7 @@ Lint.prototype._validate = function (cb) {
 	async.forEach(this._files, function (item, next) {
 		that._opt.args = [item];
 		jshintcli.run(that._opt);
-		that._pb.update();
+		//that._pb.update();
 		next();
 	}, cb);
 };
@@ -106,7 +108,7 @@ Lint.prototype._reportResults = function (cb) {
 	var errorCount = 0;
 	var errorFiles = [];
 
-	this._pb.end();
+	//this._pb.end();
 	
 	for (var i = 0, len = this._errors.length; i < len; i++) {
 		var eitem = this._errors[i];
