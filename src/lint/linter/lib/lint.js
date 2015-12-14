@@ -146,8 +146,9 @@ Lint.prototype._reportResults = function (cb) {
 				' [Total: ' + errorFiles.length +
 				' error ' + ef +  ' out of ' + this._files.length +
 				' ' + ef + ']' +
-				'\n' +
-				'If you need to disable linting on gracenode.start(), add the following to your configurations: { lint: { enable: false } }'
+				'\n' + '[Hint] ***********' + '\n' +
+				'If you need to disable linting on gracenode.start(), ' +
+				'add the following to your configurations: { lint: { enable: false } }'
 			)
 		);
 		return cb(new Error('LintError'));
