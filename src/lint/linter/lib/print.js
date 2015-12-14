@@ -9,9 +9,14 @@ var COLORS = {
 	PURPLE: '0;35'
 };
 
+var logger;
 var useColor = false;
 
 var gn = require('../../../gracenode');
+
+exports.setup = function () {
+	logger = gn.log.create('lint');
+};
 
 exports.useColor = function () {
 	useColor = true;
@@ -25,7 +30,7 @@ exports.out = function () {
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		str += prep(arguments[i]);
 	}
-	console.log(str);
+	logger.verbose(str);
 };
 
 exports.error = function () {
@@ -38,7 +43,7 @@ exports.error = function () {
 		}
 		str += prep(arguments[i]);
 	}
-	console.error(str);
+	logger.error(str);
 };
 
 exports.verbose = function () {
@@ -49,7 +54,7 @@ exports.verbose = function () {
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		str += prep(arguments[i]);
 	}
-	console.log(color('[verbose]' + str, COLORS.BROWN));
+	logger.verbose(color(str, COLORS.BROWN));
 };
 
 exports.r = function (msg) {

@@ -17,7 +17,7 @@ function Lint(files, ignorelist) {
 	this._opt.reporter = function (results) {
 		that._reporter(results);
 	};
-
+	print.setup();
 	print.useColor();
 }
 
@@ -65,7 +65,7 @@ Lint.prototype._prepare = function (cb) {
 			return ext === 'js';
 		});
 	
-		print.out('\nFiles to lint:\n' + print.b(that._files.join('\n')));
+		print.out('Files to lint:\n' + print.b(that._files.join('\n')));
 
 		var options = {
 			color: progressbar.COLORS.GRAY,
@@ -123,11 +123,13 @@ Lint.prototype._reportResults = function (cb) {
 		}
 	}
 
+	var linted = [];
 	for (var j = 0, jen = this._files.length; j < jen; j++) {
 		if (errorFiles.indexOf(this._files[j]) === -1) {
-			print.out('[ ' + print.g('✓') + ' ] ' + print.g(this._files[j]));
+			linted.push('[ ' + print.g('✓') + ' ] ' + print.g(this._files[j]));
 		}
 	}
+	print.out('Linted Files:\n' + linted.join('\n'));
 	
 	if (this._errors.length) {
 		var ef = 'file';
@@ -146,15 +148,16 @@ Lint.prototype._reportResults = function (cb) {
 				' [Total: ' + errorFiles.length +
 				' error ' + ef +  ' out of ' + this._files.length +
 				' ' + ef + ']' +
-				'\n' + '[Hint] ***********' + '\n' +
-				'If you need to disable linting on gracenode.start(), ' +
-				'add the following to your configurations: { lint: { enable: false } }'
+				'\n\n' + '[Hint] **************' + '\n' +
+				'If you need to disable linting on gracenode.start(), ' + '\n' +
+				'add the following to your configurations: { lint: { enable: false } }' +
+				'\n' + '*********************' + '\n'
 			)
 		);
 		return cb(new Error('LintError'));
 	}
 
-	print.out('\nLint [' + print.g(' DONE ') + ']\n');
+	print.out('Lint [' + print.g(' DONE ') + ']');
 	cb();
 };
 
