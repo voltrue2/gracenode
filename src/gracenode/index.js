@@ -107,7 +107,9 @@ exports.start = function (cb) {
 			}
 			var time = Date.now() - start;
 			logger.info('gracenode is ready:', '[time:' + time + 'ms]');
-			cb();
+			if (typeof cb === 'function') {
+				cb();
+			}
 			ready = true;
 		};
 		async.series(tasks, done);

@@ -2,6 +2,27 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.1.1
+
+## Added
+
+None
+
+## Changed
+
+#### The callback of gracenode.start() is now an option
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
+
 ## Version 2.1.0
 
 ## Added
@@ -27,6 +48,10 @@ You may also **disable** `lint` by adding the following to your configurations:
 ## Changed
 
 #### Default logging configurations added for not giving any configs for logging
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
 
 ## Removed
 
