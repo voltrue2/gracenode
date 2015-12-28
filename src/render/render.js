@@ -42,6 +42,8 @@ var REG = {
 	VARS: /\ /g
 };
 
+var varMap = {};
+
 /*
  if syntax
 {{ if (conditions)
@@ -345,10 +347,11 @@ function extractVars(vars, tag) {
 	if (found) {
 		// remove open and close { and } + spaces
 		for (var i = 0, len = found.length; i < len; i++) {
-			if (!vars[found[i]]) {
+			var key = found[i];
+			if (!vars[key]) {
 				// for {{variable}}, remove { and }
-				var v = found[i].substring(1, found[i].length - 1).replace(REG.VARS, '').replace(REG.IFV, '');
-				vars[found[i]] = v;
+				vars[key] = key.replace(REG.VARS, '').replace(REG.IFV, '');
+				varMap[key] = new RegExp(key, 'g');
 			}
 		}
 	}
@@ -357,7 +360,7 @@ function extractVars(vars, tag) {
 
 function applyVars(content, vars, varTags) {
 	for (var varTag in varTags) {
-		var varName = varTag.replace(REG.VARS, '').replace(REG.IFV, '');
+		var varName = varTags[varTag];
 		var value;
 		// find func if being used
 		var funcUsed = func.getFunc(varName);
@@ -392,7 +395,9 @@ function applyVars(content, vars, varTags) {
 			// there is no value
 			continue;
 		}
-		content = content.replace(new RegExp(varTag, 'g'), value);
+
+		var replacer = varMap[varTag] || new RegExp(varTag, 'g');
+		content = content.replace(replacer, value);
 	}
 	return content;
 }
@@ -577,7 +582,7 @@ function handleFor(content, tag, conditions, vars, varTags) {
 	var iterated = '';
 	var replacer = function (str) {
 		var replaced = str.replace('.' + startVar, '.' + start);
-		varTags[replaced] = replaced.replace(REG.IFV, '');
+		varTags[replaced] = replaced.replace(REG.VARS, '').replace(REG.IFV, '');
 		return replaced;
 	};
 	while (loop) {
@@ -626,7 +631,7 @@ function handleForEach(content, tag, data, vars, varTags) {
 	var iterated = '';
 	var replacer = function (str) {
 		var replaced = str.replace('.' + keyName, '.' + key);
-		varTags[replaced] = replaced.replace(REG.IFV, '');
+		varTags[replaced] = replaced.replace(REG.VARS, '').replace(REG.IFV, '');
 		return replaced;
 	};
 	var key;
