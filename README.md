@@ -101,7 +101,7 @@ You also need to create a route handler for the route(s) that you are adding.
 **Example**:
 
 ```javascript
-gn.router.get('/hello2', require(gn.getRootPath() + 'controllers/hello2'));
+gn.router.get('/hello2', require('./controllers/hello2'));
 ```
 
 #### How To Add More Views
