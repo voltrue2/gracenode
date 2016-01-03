@@ -41,7 +41,7 @@ To install **gracenode** you can either add it to your package.json like so:
 ```json
 {
     "dependeicies": {
-        "gracenode": "2.0.0"
+        "gracenode": "2.1.1"
     }
 }
 ```
@@ -67,6 +67,22 @@ To start your own HTTP server from here on, execute `node index.js start`.
 The above command will daemonize your appliction.
 
 **NOTE**: By default, your HTTP server will be listening to port `http://localhost:8888`.
+
+#### How To Start Your Application
+
+If you executed `./node_modules/gracenode/bin/boilerplate`, you now have `Makefile` in your application directory.
+
+The following commands are now available:
+
+- **Start Application**: `make start`
+
+- **Stop Application**: `make stop`
+
+- **Restart Application**: `make restart`
+
+- **Check Process Status**: `make status`
+
+- **Reload Application**: `make reload`
 
 #### Where is the configurations?
 

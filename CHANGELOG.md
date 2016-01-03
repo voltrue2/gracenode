@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.1.2
+
+## Added
+
+None
+
+## Changed
+
+#### Boilerplating now creates a makefile to aid managing your application process.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.1.1
 
 ## Added
