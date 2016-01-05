@@ -41,7 +41,7 @@ To install **gracenode** you can either add it to your package.json like so:
 ```json
 {
     "dependeicies": {
-        "gracenode": "2.1.1"
+        "gracenode": "2.1.2"
     }
 }
 ```
@@ -62,9 +62,9 @@ To create a basic setup for your application, execute the following command from
 
 The above command will create a very basic setup for you. 
 
-To start your own HTTP server from here on, execute `node index.js start`.
+To start your own HTTP server from here on, execute `make start`.
 
-The above command will daemonize your appliction.
+The above command will daemonize your appliction and the daemon process will automatically restart if you change the application code or/and configurations.
 
 **NOTE**: By default, your HTTP server will be listening to port `http://localhost:8888`.
 
