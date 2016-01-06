@@ -576,6 +576,10 @@ function handleFor(content, tag, conditions, vars, varTags) {
 	if (isNaN(changeVal)) {
 		changeVal = 1;
 	}
+	// skip if invalid array is given
+	if (!maxVal) {
+		return content;
+	}
 	// iterate
 	var iterateContent = conditions.iterate;
 	var loop = true;

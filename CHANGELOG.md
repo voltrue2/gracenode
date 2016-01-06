@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.1.3
+
+## Added
+
+None
+
+## Changed
+
+#### Render ignores for loop if invalid array is given
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.1.2
 
 ## Added
