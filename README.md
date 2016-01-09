@@ -1061,6 +1061,24 @@ gn.config({
 
 Render can insert dynamically define values to rendered template file data.
 
+#### Access Variables
+
+**gracenode** allows access to the dynamically defined variables from the client-side javascript.
+
+**Example** 
+
+To access the variable named `example`:
+
+```
+<script type="text/javascript">
+
+	console.log(window.gracenode.example);
+
+</script>
+```
+
+All dynamically defined variables for rendered data can be accessed under `window.gracenode`.
+
 #### Embed Variables
 
 **Syntax**
