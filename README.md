@@ -16,7 +16,7 @@
 
 - Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode#router-1">here</a>.
 
-- Provides fast HTML template enigne. Read <a href="https://github.com/voltrue2/gracenode#render-1">here</a>.
+- Provides fast template enigne. Read <a href="https://github.com/voltrue2/gracenode#render-1">here</a>.
 
 ## Installation via npm
 
