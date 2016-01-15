@@ -1,7 +1,9 @@
 {
 	"lint": {
 		"enable": true,
-		"ignore": [],
+		"ignore": [
+			"asset/"
+		],
 		"strict": true
 	},
 	"log": {

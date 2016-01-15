@@ -3,7 +3,7 @@
 var gn = require('gracenode');
 
 // Static file routes
-gn.router.get('/static', [
+gn.router.static('/static', [
 	'asset/'
 ]);
 
