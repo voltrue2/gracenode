@@ -10,6 +10,24 @@ None
 
 ## Changed
 
+#### Router static routing now automatically registeres sub directories
+
+Example:
+
+```javascript
+gracenode.router.static('/static', [
+	'asset/'
+]);
+```
+
+The above code will register the following routes assuming that there are `asset/css`, 'asset/js' are there:
+
+```
+/static/asset/{string:filename}
+/static/asset/css/{string:filename}
+/static/asset/js/{string:filename}
+```
+
 #### Render ignores for loop if invalid array is given
 
 ## Deprecated

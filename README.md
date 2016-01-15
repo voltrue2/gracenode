@@ -1654,7 +1654,16 @@ var staticFileDirectoryList = [
 gracenode.router.static('/static', staticFileDirectoryList);
 ``` 
 
-The above example will create routes to:
+**OR**
+
+```javascript
+var staticFileDirectoryList = [
+	'/public/',
+];
+gracenode.router.static('/static', staticFileDirectoryList);
+```
+
+Both examples above will create routes to:
 
 ```
 GET /static/public/css/{file name}

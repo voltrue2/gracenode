@@ -63,20 +63,11 @@ exports.static = function (path, dirList, opt) {
 	if (!Array.isArray(dirList)) {
 		throw new Error('StaicDirectoryListMustBeArray: ' + dirList);
 	}
-	for (var i = 0, len = dirList.length; i < len; i++) {
-		var item = dirList[i];
-		if (item[0] === '/') {
-			item = item.substring(1);
-		}
-		if (item[item.length - 1] !== '/') {
-			item += '/';
-		}
-		var lstIndex = item.lastIndexOf('../');
-		if (lstIndex !== -1) {
-			item = item.substring(lstIndex + 3);
-		}
-		var filepath = path + item + '{string:filename}';
-		exports.get(filepath, staticRouter.handle(dirList[i]), opt);
+	var list = staticRouter.findRoutes(dirList);
+	for (var i = 0, len = list.length; i < len; i++) {
+		var item = list[i];
+		var filepath = path + item.route + '{string:filename}';
+		exports.get(filepath, staticRouter.handle(item.path), opt);
 	}
 };
 
