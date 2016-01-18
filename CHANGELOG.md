@@ -20,7 +20,7 @@ gracenode.router.static('/static', [
 ]);
 ```
 
-The above code will register the following routes assuming that there are `asset/css`, 'asset/js' are there:
+The above code will register the following routes assuming that there are `asset/css`, `asset/js` are there:
 
 ```
 /static/asset/{string:filename}
