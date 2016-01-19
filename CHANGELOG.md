@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.1.4
+
+## Added
+
+None
+
+## Changed
+
+#### Render will now remove and will not render loops (for and foreach) with empty array/object or invalid array/object
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.1.3
 
 ## Added

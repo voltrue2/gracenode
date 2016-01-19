@@ -1247,7 +1247,7 @@ Render handles a simple for loop for object as `foreach`.
 **Syntax**
 
 ```
-{{foreach (key in {map})
+{{foreach (key in {map}):
 	<div>{key}:{map.key}</div>
 endforeach}}
 ```
@@ -1259,7 +1259,7 @@ endforeach}}
 **Example**
 
 ```html
-{{foreach (key in {map})
+{{foreach (key in {map}):
 	<div>{key}:{map.key}</div>
 endforeach}}
 ```

@@ -31,5 +31,11 @@ endfor}}
 	b: B
 }
 </pre>
+{{for (i = 0; i < {nothing.length}; i++):
+<p>Should not show</p>
+endfor}}
+{{foreach (key in {empty}):
+<p>Should not show</p>
+endforeach}}
 </body>
 </html>

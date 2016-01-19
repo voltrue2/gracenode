@@ -576,9 +576,9 @@ function handleFor(content, tag, conditions, vars, varTags) {
 	if (isNaN(changeVal)) {
 		changeVal = 1;
 	}
-	// skip if invalid array is given
+	// skip and remove the loop tag if invalid array is given
 	if (!maxVal) {
-		return content;
+		return content.replace(tag, '');
 	}
 	// iterate
 	var iterateContent = conditions.iterate;
@@ -631,6 +631,10 @@ function handleForEach(content, tag, data, vars, varTags) {
 	var obj = vars[objName];
 	if (!obj) {
 		return content;
+	}
+	// if the object is empty skip and remove tag
+	if (!Object.keys(obj).length) {
+		return content.replace(tag, '');
 	}
 	var iterated = '';
 	var replacer = function (str) {

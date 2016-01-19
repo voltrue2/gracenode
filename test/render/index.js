@@ -33,7 +33,9 @@ describe('gracenode.render', function () {
 			b: 'B',
 			c: '/two',
 			d: '日本語',
-			e: '"quoted"'
+			e: '"quoted"',
+			nothing: [],
+			empty: {}
 		};
 		var rendered = gn.render('/one/index', data);
 		var expected = fs.readFileSync(__dirname + '/expected/one.index', 'utf8');
