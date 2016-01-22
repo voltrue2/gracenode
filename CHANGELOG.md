@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.1.5
+
+## Added
+
+#### make lint added
+
+#### Boilerplate Makefile added make lint command
+
+## Changed
+
+#### Git pre commit script now uses javascript linting instead of shell
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.1.4
 
 ## Added

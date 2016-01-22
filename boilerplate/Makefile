@@ -1,3 +1,7 @@
+PHONY: lint
+lint:
+	./node_modules/gracenode/bin/lint api/ templates/
+
 PHONY: start
 start:
 	node index.js start -l daemonlogs/ -w index.js api/ templates/ configs/
