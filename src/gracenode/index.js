@@ -186,6 +186,7 @@ function execLint(cb) {
 		logger.info('Ignoring lint');
 		return cb();
 	}
+	logger.info('Lint application code');
 	lint(exports.getRootPath(), config.get('lint.ignore'), function (error) {
 		if (error && config.get('lint.strict')) {
 			return cb(error);
@@ -197,6 +198,7 @@ function execLint(cb) {
 				'{ lint: { strict: true } }'
 			);
 		}
+		logger.info('Lint completed');
 		cb();
 	});
 }
