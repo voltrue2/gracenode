@@ -1,5 +1,5 @@
 #!/bin/sh
 
-echo "`make lint`";
+`echo make lint`;
 
-echo "`make test`";
+`echo make test`;
