@@ -96,6 +96,7 @@ Lint.prototype._reportResults = function (cb) {
 
 	var errorCount = 0;
 	var errorFiles = [];
+	var errorMsgList = [];
 	
 	for (var i = 0, len = this._errors.length; i < len; i++) {
 		var eitem = this._errors[i];
@@ -103,7 +104,7 @@ Lint.prototype._reportResults = function (cb) {
 		msg += ' <Line ' + eitem.error.line + '>';
 		msg += ' [Character ' + eitem.error.character + ']';
 		msg += ' ' + eitem.error.reason;
-		print.error('[ ! ] ' + msg);
+		errorMsgList.push('[ ! ] ' + msg);
 
 		errorCount += 1;
 
@@ -129,6 +130,7 @@ Lint.prototype._reportResults = function (cb) {
 		if (errorCount > 1) {
 			ne += 's';
 		}
+		print.error(print.r('\n' + errorMsgList.join('\n')));
 		print.error(
 			print.r(
 				'\nLint Error(s):' +
