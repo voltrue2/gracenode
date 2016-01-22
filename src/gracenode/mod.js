@@ -31,7 +31,7 @@ exports.use = function (name, pathOrMod, options) {
 		throw er.create(
 			ER.DUP_PATH, name +
 			': ' +
-			((typeof pathOrMod !== 'stirng') ? '[module object]' : pathOrMod)
+			((typeof pathOrMod !== 'string') ? '[module object]' : pathOrMod)
 		);
 	}
 	if (!options) {

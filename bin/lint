@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+
+var gn = require('../src/gracenode');
+
+var lint;
+var logger;
+var root = process.cwd();
+var targetList = [];
+
+/****************
+* Process	*
+****************/
+setup(function () {
+	getTargetList();
+	execLint();
+});
+
+/************************
+*	Functions	*
+************************/
+function setup(cb) {
+	gn.config({
+		log: {
+			color: true,
+			console: true,
+			level: [
+				'verbose',
+				'error',
+				'fatal'
+			]
+		}
+	});
+	gn.start(function () {
+		lint = require('../src/lint/');
+		logger = gn.log.create('bin/lint');
+		cb();
+	});
+}
+
+function getTargetList() {
+	for (var i = 2, len = process.argv.length; i < len; i++) {
+		targetList.push(root + '/' + process.argv[i]);
+	}
+	if (!targetList.length) {
+		gn.stop(new Error('Missing target directory list'));
+	}
+}
+
+function execLint() {
+	var done = function (error) {
+		if (error) {
+			return gn.stop(error);
+		}
+		logger.verbose('Lint Completed');
+		gn.stop();
+	};
+	lint(targetList, null, done);
+}

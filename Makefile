@@ -8,6 +8,10 @@ init:
 	chmod +x .git/hooks/pre-commit
 	@echo 'done'
 
+.PHONY: lint
+lint:
+	./bin/lint index.js src/ lib/
+
 .PHONY: test
 ifndef log
   log=false
