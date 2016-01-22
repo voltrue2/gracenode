@@ -74,6 +74,10 @@ If you executed `./node_modules/gracenode/bin/boilerplate`, you now have `Makefi
 
 The following commands are now available:
 
+- **Lint Your Javascript Files**: `make lint`
+
+You may add more direcotries to lint in Makefile to lint additional files.
+
 - **Start Application**: `make start`
 
 - **Stop Application**: `make stop`
