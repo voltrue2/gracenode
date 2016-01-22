@@ -10,7 +10,7 @@ init:
 
 .PHONY: lint
 lint:
-	./bin/lint index.js src/ lib/
+	./bin/lint index.js src/ lib/ boilerplate/
 
 .PHONY: test
 ifndef log
