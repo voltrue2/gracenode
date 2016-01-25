@@ -48,7 +48,7 @@ function call(start, count, ecount) {
 		total += time;
 		loop++;
 		if (loop === loopmax) {
-			console.log('>>>> agerage', (total / loopmax), 'ms for', maxcalls, 'requests');
+			console.log('>>>> express agerage', (total / loopmax), 'ms for', maxcalls, 'requests');
 			process.exit();
 		}
 		// next loop

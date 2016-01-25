@@ -62,8 +62,6 @@ Lint.prototype._prepare = function (cb) {
 			var ext = item.substring(item.lastIndexOf('.') + 1);
 			return ext === 'js';
 		});
-	
-		print.out('Files to lint:\n' + print.b(that._files.join('\n')));
 
 		cb();
 	};
@@ -117,6 +115,8 @@ Lint.prototype._reportResults = function (cb) {
 	for (var j = 0, jen = this._files.length; j < jen; j++) {
 		if (errorFiles.indexOf(this._files[j]) === -1) {
 			linted.push(print.n('[ ') + print.g('✓') + print.n(' ] ') + print.g(this._files[j]));
+		} else {
+			linted.push(print.n('[ ') + print.r('×') + print.n(' ] ') + print.r(this._files[j]));
 		}
 	}
 	print.out('Linted Files:\n' + linted.join('\n'));

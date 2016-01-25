@@ -56,7 +56,7 @@ function call(start, count, ecount) {
 		total += time;
 		loop++;
 		if (loop === loopmax) {
-			console.log('>>>> agerage', (total / loopmax), 'ms for', maxcalls, 'requests');
+			console.log('>>>> gracenode agerage', (total / loopmax), 'ms for', maxcalls, 'requests');
 			gn.stop();
 		}
 		// next loop
