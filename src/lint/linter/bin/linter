@@ -3,8 +3,8 @@
 var linter = require('../index.js');
 
 linter.start(process.argv.splice(2), function (error) {
-        if (error) {
-                return process.exit(1);
-        }
-        process.exit(0);
+	if (error) {
+		return process.exit(1);
+	}
+	process.exit(0);
 });

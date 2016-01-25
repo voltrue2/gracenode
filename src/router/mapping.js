@@ -12,7 +12,8 @@ var TYPES = [
 	'string',
 	'number',
 	'bool',
-	'object'
+	'object',
+	'static'
 ];
 
 // routes (shortcuts) with named parameters

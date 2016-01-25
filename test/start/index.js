@@ -61,7 +61,7 @@ describe('start gracenode', function () {
 
 	it('can fail to start for missing config', function (done) {
 		runApp(run + ' withConfig ../modules/withConf', function (error, out, err) {
-			test('equal', error, null);
+			test('notEqual', error, null);
 			test('notEqual', err, '');
 			done();
 		});
@@ -69,7 +69,7 @@ describe('start gracenode', function () {
 
 	it('can fail to start', function (done) {
 		runApp(run + ' foo /boo/', function (error, out, err) {
-			test('equal', error, null);
+			test('notEqual', error, null);
 			test('notEqual', err, '');
 			done();
 		});

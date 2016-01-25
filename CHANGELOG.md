@@ -2,6 +2,30 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.1.6
+
+## Added
+
+None
+
+## Changed
+
+#### Corrected unit test
+
+#### Dependency cluster-mode version updated to 0.2.0
+
+#### Router for static file improved on .start()
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.1.5
 
 ## Added

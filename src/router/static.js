@@ -1,15 +1,6 @@
 'use strict';
 
-var fs = require('fs');
 var gn = require('../gracenode');
-
-module.exports.findRoutes = function (dirList) {
-	var list = [];
-	for (var i = 0, len = dirList.length; i < len; i++) {
-		list = list.concat(findFiles(dirList[i]));
-	}
-	return list;
-};
 
 module.exports.handle = function (dir) {
 	var handler = new Handler(dir);
@@ -19,52 +10,24 @@ module.exports.handle = function (dir) {
 	return func;
 };
 
-function findFiles(path) {
-	var root = gn.getRootPath();
-	var list = [];
-	var files = fs.readdirSync(root + path);
-	var slash = path[path.length - 1] === '/' ? '' : '/';
-	for (var i = 0, len = files.length; i < len; i++) {
-		var file = path + slash + files[i];
-		var stats = fs.statSync(root + file);
-		if (stats.isDirectory()) {
-			list = list.concat(findFiles(file));
-			continue;	
-		}
-		// we do not need the file name as it will be the parameter
-		var route = path;
-		if (route[0] === '/') {
-			route = route.substring(1);
-		}
-		if (route[route.length - 1] !== '/') {
-			route += '/';
-		}
-		var lstIndex = route.lastIndexOf('../');
-		if (lstIndex !== -1) {
-			route = route.substring(lstIndex + 3);
-		}
-		if (path[path.length - 1] !== '/') {
-			path += '/';
-		}
-		// avoid same path to be added more than once
-		if (list.indexOf(route) !== -1) {
-			continue;
-		}
-		// add the path
-		list.push({
-			route: route,
-			path: path
-		});
-	}
-	return list;
-}
-
 function Handler(dir) {
+	this._logger = gn.log.create('static: ' + dir);
 	this._dir = gn.getRootPath() + dir;
+	this._tailSlash = this._dir[this._dir.length - 1];
 }
 
 Handler.prototype.handle = function (req, res) {
-	var filename = req.params.filename;
+	var filename = req.params.staticfile;
+	var len = filename.length - 1;
+	if (filename[len] === '/') {
+		filename = filename.substring(0, len);
+	}
+	if (this._tailSlash === '/' && filename[0] === '/') {
+		filename = filename.substring(1);
+	} else if (this._tailSlash !== '/' && filename[0] !== '/') {
+		filename = '/' + filename;
+	}
 	var path = this._dir + filename;
+	this._logger.verbose(path);
 	res.file(path);
 };

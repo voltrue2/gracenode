@@ -20,6 +20,9 @@ setup(function () {
 ************************/
 function setup(cb) {
 	gn.config({
+		lint: {
+			strict: true
+		},
 		log: {
 			color: true,
 			console: true,

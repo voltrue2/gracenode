@@ -1,11 +1,13 @@
 'use strict';
 
 var REP = /{(.*?)}/g;
+var STAT = '/{static:staticfile}';
 var PAT = '([^\\/]+?)';
 var LPAT = '(?:\/(?=$))?$';
 
 exports.convert = function (path, sensitive) {
-	if (!path.match(REP)) {
+	var staticPath = path.indexOf(STAT);
+	if (!path.match(REP) && staticPath === -1) {
 		// fast routing: no URL parameters
 		path = sensitive ? path.toLowerCase() : path;
 		if (path[path.length - 1] === '/') {
@@ -18,8 +20,17 @@ exports.convert = function (path, sensitive) {
 		};
 	}
 	path = path.replace('\/', '^\/'); 
-	var match = path.replace(REP, '[^\/]*[^\/]');
-	var ext = path.replace(REP, PAT);
+	var match;
+	var ext;
+	if (staticPath !== -1) {
+		// static route or regex route
+		match = path.replace(STAT, '(.*?)');
+		ext = path.replace(STAT, '(.*)$');
+	} else {
+		// URL with parameters
+		match = path.replace(REP, '[^\/]*[^\/]');
+		ext = path.replace(REP, PAT);
+	}
 	var lindex = ext.lastIndexOf(PAT);
 	if (lindex !== -1) {
 		if (ext[ext.length - 1] === '/') {
