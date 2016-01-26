@@ -2,7 +2,7 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 2.1.6
+## Version 2.2.0
 
 ## Added
 
@@ -14,7 +14,15 @@ None
 
 #### Dependency cluster-mode version updated to 0.2.0
 
+This version update fixes the issue with gracenode process exit code.
+
+With the older version of cluster-mode module, even when you `gracenode.stop(error)`, the process exit with code 0 (no error).
+
+This update fixes this issue.
+
 #### Router for static file improved on .start()
+
+The improvement makes it so that there is no additional file I/O on `gracenode.start()`.
 
 ## Deprecated
 
