@@ -17,6 +17,8 @@ var server;
 var trailingSlash = false;
 var errorMap = {};
 
+var STATIC_PARAM = '{static:staticfile}';
+
 var ERROR = {
 	NOT_FOUND: 'NOT_FOUND',
 	INTERNAL: 'INTERNAL_ERROR',
@@ -71,8 +73,14 @@ exports.static = function (path, dirList, opt) {
 		if (item[item.length - 1] !== '/') {
 			item += '/';
 		}
-		var filepath = path + item + '{static:staticfile}';
+		// exact same path as defined
+		var filepath = path + item + STATIC_PARAM;
 		exports.get(filepath, staticRouter.handle(dirList[i]), opt);
+		// treat the given path as document root
+		if (len === 1) {
+			// if there are more than 1 file paths, we do not do this
+			exports.get(path + STATIC_PARAM, staticRouter.handle(dirList[i], opt));
+		}
 	}
 };
 

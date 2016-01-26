@@ -2,6 +2,26 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.3.0
+
+## Added
+
+None
+
+## Changed
+
+#### Router static can now route static files like using document root also
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.2.0
 
 ## Added

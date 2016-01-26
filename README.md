@@ -1651,28 +1651,44 @@ gracenode.router.error(404, function (req, res) {
 
 ```javascript
 var staticFileDirectoryList = [
-	'/public/css/',
-	'/public/js/',
-	'/public/img/'
-];
-gracenode.router.static('/static', staticFileDirectoryList);
-``` 
-
-**OR**
-
-```javascript
-var staticFileDirectoryList = [
 	'/public/',
 ];
 gracenode.router.static('/static', staticFileDirectoryList);
 ```
 
-Both examples above will create routes to:
+The above example will create routes as:
+
+NOTE: `/public/` directory is treated as the document root directory and **IS NOT** present in routed URL.
 
 ```
-GET /static/public/css/{file name}
-GET /static/public/js/{file name}
-GET /static/public/img/{file name} 
+GET /static/{file path}
+GET /static/css/{file path}
+GET /static/js/moredir/{file}
+// All subdirectories under /public will be routed
+```
+
+**Example**:
+
+```javascript
+var staticFileDirectoryList = [
+	'/public/',
+	'/asset/'
+];
+gracenode.router.static('/static', staticFileDirectoryList);
+``` 
+
+The above example will create routes as:
+
+NOTE: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
+
+```
+GET /static/public/{file path}
+GET /static/public/css/{file path}
+GET /static/public/js/moredir/{file path}
+GET /static/public/asset/{file path}
+GET /static/public/asset/img/{file path}
+GET /static/public/asset/video/{file path}
+// All subdirectories under /public will be routed
 ```
 
 **NOTE**: When service static files from your application, you must consider the file I/O load.

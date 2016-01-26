@@ -1081,6 +1081,28 @@ describe('gracenode.router', function () {
 		gn.router.static('/static', [ '../../../test/router/static/' ]);
 	});
 
+	it('can handle static file route /static/spinner.gif', function (done) {
+		var opt = {
+			gzip: false
+		};
+		request.GET(http + '/static/spinner.gif', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('can handle static file route /static/more/spinner.gif', function (done) {
+		var opt = {
+			gzip: false
+		};
+		request.GET(http + '/static/more/spinner.gif', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 	it('can handle static file route /static/test/router/static/spinner.gif', function (done) {
 		var opt = {
 			gzip: false
