@@ -1629,11 +1629,13 @@ Each hook function will have `req`, `res`, and `next` as arguments.
 
 To change the status code, pass `error.code = <status code>` such as `500`.
 
-##### gracenode.router.error(status [number], handler [function])
+### Create Generic Error Handling
 
 `gracenode.router` can optionally execute an error handler for specific error status such as 404.
 
 This is useful when you need to display uniform 404 page on every 404 response etc.
+
+##### gracenode.router.error(status [number], handler [function])
 
 **Example**:
 
