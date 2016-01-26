@@ -1561,7 +1561,7 @@ Send response as plain text.
 
 The default status is 200
 
-###### res.download(filePath [string], status [*number])
+##### res.download(filePath [string], status [*number])
 
 File download response.
 
@@ -1573,11 +1573,11 @@ Stream file.
 
 Useful for HTML5 video streaming etc.
 
-###### res.file(filePath [string], status [*number])
+##### res.file(filePath [string], status [*number])
 
 Server a static file.
 
-###### res.error(error [object], [*number])
+##### res.error(error [object], [*number])
 
 Send response as error (response data is JSON object).
 
