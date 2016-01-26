@@ -1645,7 +1645,7 @@ gracenode.router.error(404, function (req, res) {
 });
 ```
 
-#### Serving Static Files
+### Serving Static Files
 
 **gracenode** router can serve static files such as images etc.
 
