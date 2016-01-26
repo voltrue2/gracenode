@@ -1660,12 +1660,12 @@ gracenode.router.static('/static', staticFileDirectoryList);
 
 The above example will create routes as:
 
-NOTE: `/public/` directory is treated as the document root directory and **IS NOT** present in routed URL.
+**NOTE**: `/public/` directory is treated as the document root directory and **IS NOT** present in routed URL.
 
 ```
 GET /static/{file path}
 GET /static/css/{file path}
-GET /static/js/moredir/{file}
+GET /static/js/moredir/{file path}
 // All subdirectories under /public will be routed
 ```
 
@@ -1681,7 +1681,9 @@ gracenode.router.static('/static', staticFileDirectoryList);
 
 The above example will create routes as:
 
-NOTE: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
+**NOTE***: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
+
+When passing more than 1 static file directory paths, **gracenode** router will be routing static files as shown below:
 
 ```
 GET /static/public/{file path}
