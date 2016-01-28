@@ -6,11 +6,27 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### Added gracenode.require()
+
+`gracenode.require()` requires a module from application root path.
+
+Example:
+
+```javascript
+// application root: /var/www/myapp/
+// module path: /var/www/my/myapp/mystuff/
+// required location: /var/www/myapp/look/here/index.js
+// without gracenode.require()
+var mystuff = require('../../mystuff');
+// with gracenode.require()
+var mystuff = gracenode.require('mystuff');
+```
 
 ## Changed
 
 #### Router static can now route static files like using document root also
+
+#### Improved a warn log for using .registerShutdownTask()
 
 ## Deprecated
 

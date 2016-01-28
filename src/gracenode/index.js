@@ -44,6 +44,10 @@ exports.getRootPath = function () {
 	return rootPath;
 };
 
+exports.require = function (path) {
+	return require(exports.getRootPath() + path);
+};
+
 exports.config = function (obj) {
 	config.load(obj);
 };
@@ -66,7 +70,7 @@ exports.onException = function (func) {
 // deprecated backward compatibility alias
 exports.registerShutdownTask = function (name, func) {
 	var e = new Error('WARNING');
-	logger.warn('.registerShutdownTask() has been deprecated and should not be used', e.stack);	
+	logger.warn('.registerShutdownTask() has been deprecated and should not be used. Use .onExit(taskFunction, *runOnMaster) instead', e.stack);	
 	exports.onExit(func);
 };
 

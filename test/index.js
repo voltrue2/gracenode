@@ -2,6 +2,8 @@ var singleRun = process.argv[process.argv.length - 1].replace('--single=', '');
 if (singleRun !== 'false') {
 	require('./' + singleRun);
 } else {
+	// test dev gracenode
+	require('./dev');
 	// test starting up of gracenode
 	require('./start');
 	// test with gracenode-server

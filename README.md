@@ -535,6 +535,22 @@ gracenode.onExit(function (callback) {
 });
 ```
 
+### .require(path [string])
+
+`gracenode.require()` requires a module from application root path.
+
+Example:
+
+```javascript
+// application root: /var/www/myapp/
+// module path: /var/www/my/myapp/mystuff/
+// required location: /var/www/myapp/look/here/index.js
+// without gracenode.require()
+var mystuff = require('../../mystuff');
+// with gracenode.require()
+var mystuff = gracenode.require('mystuff');
+```
+
 #### Default Configurations
 
 **gracenode** can be configured with the following properties by default:
@@ -1681,7 +1697,7 @@ gracenode.router.static('/static', staticFileDirectoryList);
 
 The above example will create routes as:
 
-**NOTE***: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
+**NOTE**: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
 
 When passing more than 1 static file directory paths, **gracenode** router will be routing static files as shown below:
 
