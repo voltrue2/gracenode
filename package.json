@@ -8,6 +8,7 @@
 		"url": "https://github.com/voltrue2/gracenode.git"
 	},
 	"scripts": {
+		"test": "make lint && make test",
 		"preinstall": "rm -f ../../gracenode",
 		"install": "ln -fs node_modules/gracenode/aeterno ../../gracenode"
 	},
