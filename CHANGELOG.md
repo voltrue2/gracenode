@@ -26,6 +26,8 @@ var mystuff = gracenode.require('mystuff');
 
 #### Router static can now route static files like using document root also
 
+#### Less info level logging in router
+
 #### Improved a warn log for using .registerShutdownTask()
 
 ## Deprecated

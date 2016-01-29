@@ -270,47 +270,29 @@ function send(req, res, headers, data, type, status) {
 	res.writeHead(status || DEFAULT_STATUS, headers);
 	// request execution time
 	var time = Date.now() - req.startTime;
+	var furl = util.fmt('url', req.method + ' ' + req.url);
+	var fid = util.fmt('id', req.id);
+	var fstatus = util.fmt('status', status);
+	var ftime = util.fmt('time', time + 'ms');
 	// respond
 	if (req.method === 'HEAD') {
 		// HEAD does not send content
 		if (status < 400) {
-			logger.info(
-				util.fmt('url', req.method + ' ' + req.url),
-				util.fmt('id', req.id),
-				util.fmt('status', status),
-				util.fmt('time', time + 'ms'),
-				headers
-			);
+			logger.info(furl, fid, fstatus, ftime);
 		} else {
-			logger.error(
-				util.fmt('url', req.method + ' ' + req.url),
-				util.fmt('id', req.id),
-				util.fmt('status', status),
-				util.fmt('time', time + 'ms'),
-				headers
-			);
+			logger.error(furl, fid, fstatus, ftime);
 		}
+		logger.verbose(furl, fid, fstatus, headers);
 		res.end('', 'binary');
 		return;
 	}
 	// log here and change the level based on status
 	if (status < 400) {
-		logger.info(
-			util.fmt('url', req.method + ' ' + req.url),
-			util.fmt('id', req.id),
-			util.fmt('status', status),
-			util.fmt('time', time + 'ms'),
-			headers
-		);
+		logger.info(furl, fid, fstatus, ftime);
 	} else {
-		logger.error(
-			util.fmt('url', req.method + ' ' + req.url),
-			util.fmt('id', req.id),
-			util.fmt('status', status),
-			util.fmt('time', time + 'ms'),
-			headers
-		);
+		logger.error(furl, fid, fstatus, ftime);
 	}
+	logger.verbose(furl, fid, fstatus, headers);
 	res.end(data, type);
 }
 

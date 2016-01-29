@@ -185,12 +185,10 @@ function requestHandler(req, res) {
 		resp.error(error, 400);
 		return;
 	}
-	logger.info(
-		'Request Resolved:',
-		util.fmt('url', req.method + ' ' + req.url),
-		util.fmt('id', req.id),
-		'\n<resolved>', parsed
-	);
+	var furl = util.fmt('url', req.method + ' ' + req.url);
+	var fid = util.fmt('id', req.id);
+	logger.info('Request Resolved:', furl, fid);
+	logger.verbose('Resolved Request:', furl, fid, parsed);
 
 	if (parsed === null) {
 		// 404
