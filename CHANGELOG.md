@@ -70,7 +70,7 @@ GET /static/public/asset/{file path}
 GET /static/public/asset/img/{file path}
 GET /static/public/asset/video/{file path}
 // All subdirectories under /public will be routed
-
+```
 
 #### Less info level logging in router
 
