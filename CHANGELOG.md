@@ -26,6 +26,52 @@ var mystuff = gracenode.require('mystuff');
 
 #### Router static can now route static files like using document root also
 
+**Example**:
+
+```javascript
+var staticFileDirectoryList = [
+        '/public/',
+];
+gracenode.router.static('/static', staticFileDirectoryList);
+```
+
+The above example will create routes as:
+
+**NOTE**: `/public/` directory is treated as the document root directory and **IS NOT** present in routed URL.
+
+```
+GET /static/{file path}
+GET /static/css/{file path}
+GET /static/js/moredir/{file path}
+// All subdirectories under /public will be routed
+```
+
+**Example**:
+
+```javascript
+var staticFileDirectoryList = [
+        '/public/',
+        '/asset/'
+];
+gracenode.router.static('/static', staticFileDirectoryList);
+```
+
+The above example will create routes as:
+
+**NOTE**: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
+
+When passing more than 1 static file directory paths, **gracenode** router will be routing static files as shown below:
+
+```
+GET /static/public/{file path}
+GET /static/public/css/{file path}
+GET /static/public/js/moredir/{file path}
+GET /static/public/asset/{file path}
+GET /static/public/asset/img/{file path}
+GET /static/public/asset/video/{file path}
+// All subdirectories under /public will be routed
+
+
 #### Less info level logging in router
 
 #### Improved a warn log for using .registerShutdownTask()
