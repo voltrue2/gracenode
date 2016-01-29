@@ -31,7 +31,7 @@
 		"express": "4.13.3"
 	},
 	"engine": {
-		"engine": "node >= 0.10.20"
+		"engine": "node >= 0.10.40"
 	},
 	"jshintConfig": {
                 "node": true,
