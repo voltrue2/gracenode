@@ -378,7 +378,7 @@ describe('gracenode.render', function () {
 			today: 1449470110863
 		};
 		gn.render.func('getDate', function (val) {
-			return new Date(val);
+			return 'Mon Dec 07 2015 15:35:10 GMT+0900 (JST)';
 		});
 		gn.render.func('onePlusOne', function (val) {
 			return val + val;

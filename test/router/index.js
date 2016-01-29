@@ -1,5 +1,5 @@
 var logEnabled = require('../arg')('--log');
-var port = 98052;
+var port = 9852;
 var dummy = '';
 var pre = '../server/controller';
 var assert = require('assert');
