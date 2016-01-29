@@ -41,6 +41,11 @@ describe('gracenode with  gracenode-server/', function () {
 	var allRequestHookCalled = false;
 	var root = gn.getRootPath() + '../../../';
 
+	it('creates a symbolic link for test', function (done) {
+		var exec = require('child_process').exec;
+		exec('ln -sf ../src/gracenode ../../gracenode', done);
+	});
+
 	it('can start HTTP server', function (done) {
 		gn.config({
 			log: {
