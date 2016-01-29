@@ -2,6 +2,8 @@
 
 ©Nobuyori Takahashi < voltrue2@yahoo.com >
 
+[![Build Status](https://travis-ci.org/voltrue2/gracenode.svg?branch=master)](https://travis-ci.org/voltrue2/gracenode)
+
 ## What gracenode does
 
 - Manages cluster process.
