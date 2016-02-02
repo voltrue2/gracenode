@@ -1555,7 +1555,9 @@ gracenode.router.post('/example', function (req, res) {
 
 Enable/Disable gzip compression of response data.
 
-Default is `true`.
+By default, the server responds with gzipped data only if requested by request header `Accept-Encoding: gzip`.
+
+**NOTE**: This function will override the request header.
 
 ##### res.onClose(callback [function])
 
