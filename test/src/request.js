@@ -54,6 +54,9 @@ function send(url, method, args, options, cb) {
 	}
 
 	var gzip = options.gzip || false;
+	if (gzip) {
+		params.headers['accept-encoding'] = 'gzip';
+	}
 	sender(params, function (error, res, body) {
 		if (error) {
 			return cb(error, body, res ? res.statusCode : null);

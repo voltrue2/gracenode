@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.4.0
+
+## Added
+
+None
+
+## Changed
+
+#### Router responds as gzip only when requested with accept-enoding
+
+`accept-encoding: gzip` must be sent with the request to have gzipped response.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.3.0
 
 ## Added

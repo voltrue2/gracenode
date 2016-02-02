@@ -34,7 +34,8 @@ function Response(req, res, errorMap) {
 	// private
 	this._req = req;
 	this._res = res;
-	this._gzip = true;
+	this._gzip = this._isAcceptedEncoding('gzip');
+	//this._gzip = true;
 	this._sent = false;
 	this._errorHandled = false;
 	this._errorMap = errorMap;
@@ -236,6 +237,7 @@ Response.prototype._send = function (data, status) {
 		'Response data:',
 		util.fmt('url', this._req.method + ' ' + this._req.url),
 		util.fmt('id', this._req.id),
+		'<gzip>', this._gzip,
 		'<data>', data
 	);
 	gzip(this._gzip, data, function (error, zipped, size, dataType) {
@@ -250,6 +252,21 @@ Response.prototype._send = function (data, status) {
 		}
 		send(that._req, that._res, that.headers, zipped, dataType, status);
 	});
+};
+
+Response.prototype._isAcceptedEncoding = function (enc) {
+	var hd = this._req.headers;
+	var list = hd['accept-encoding'] || hd['Accept-Encoding'];
+	if (!list) {
+		return false;
+	}
+	list = list.split(',');
+	for (var i = 0, len = list.length; i < len; i++) {
+		if (list[i].trim() === enc) {
+			return true;
+		}
+	}
+	return false;
 };
 
 function gzip(mustGzip, data, cb) {
