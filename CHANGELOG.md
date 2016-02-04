@@ -14,6 +14,8 @@ None
 
 `accept-encoding: gzip` must be sent with the request to have gzipped response.
 
+#### Added gracenode version in the logging (only when starting)
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
