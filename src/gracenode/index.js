@@ -10,6 +10,7 @@ var config = require('./config');
 var mod = require('./mod');
 var render = require('../render');
 var lint = require('../lint');
+var pkg = require('../../package.json');
 
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
@@ -110,7 +111,10 @@ exports.start = function (cb) {
 				return exports.stop(error);
 			}
 			var time = Date.now() - start;
-			logger.info('gracenode is ready:', '[time:' + time + 'ms]');
+			logger.info(
+				'gracenode <v' + pkg.version + '> is ready:',
+				'[time:' + time + 'ms]'
+			);
 			if (typeof cb === 'function') {
 				cb();
 			}
