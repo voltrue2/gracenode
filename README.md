@@ -1308,6 +1308,32 @@ The above example will result in:
 <div>veggi:beans</div>
 ```
 
+### Client-Side Automatic HTML Rendering
+
+`gracenode.render()` supports client-side automatic rendering based on data.
+
+#### Auto-Render From Remotely Fetched Data
+
+In order to auto-render HTML by remotely fetched data, add the following to the target HTML element:
+
+```
+<div data-gn-src="http://mywebapp.com/get/some/data"></div>
+```
+
+The above will get data from `http://mywebapp.com/get/some/data`, and render it to HTML.
+
+#### Auto-Render From Local Data
+
+Cient-side auto-rendering can also render HTML element from locally available javascript value(s).
+
+```
+<div data-gn-local="myLocalData.listData"></div>
+```
+
+The above example will try to read data from `window.myLocalData.listData` and render it to HTML.
+
+***
+
 ## Router
 
 Router lets you build HTTP server and REST endpoints easily.

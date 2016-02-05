@@ -14,6 +14,8 @@ None
 
 `accept-encoding: gzip` must be sent with the request to have gzipped response.
 
+#### Render added client-side auto-renderer
+
 #### Added gracenode version in the logging (only when starting)
 
 ## Deprecated

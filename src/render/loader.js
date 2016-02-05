@@ -8,11 +8,34 @@ var gn = require('../gracenode');
 var logger;
 var dirpath;
 var loaded = {};
+var client = '';
+
+var CLIENT_PATHS = [
+	'/../../client/js/html/request.js',
+	'/../../client/js/html/render.js'
+];
+
+exports.getClient = function () {
+	return client;
+};
 
 exports.load = function (path, cb) {
 	logger = gn.log.create('render.loader');
 	dirpath = path;
-	load(path, cb);
+	load(path, exports.loadClient(cb));
+};
+
+exports.loadClient = function (cb) {
+	var root = getClientPath();
+	async.eachSeries(CLIENT_PATHS, function (path, next) {
+		fs.readFile(root + path, 'utf8', function (error, data) {
+			if (error) {
+				return next(error);
+			}
+			client += data.replace(/(\ |\n|\r|\t)/g, '');
+			next();
+		});
+	}, cb);
 };
 
 exports.getLoadedByPath = function (path) {
@@ -21,6 +44,10 @@ exports.getLoadedByPath = function (path) {
 	}
 	return null;
 };
+
+function getClientPath() {
+	return __dirname;
+}
 
 function load(path, cb) {
 	fs.stat(path, function (error, stats) {

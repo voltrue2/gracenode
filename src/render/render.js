@@ -82,7 +82,8 @@ exports.render = function (path, vars) {
 	content = applyVars(content, vars, varTags);
 	// embed variables as javascript object
 	var js = '<script type="text/javascript">' +
-		'window.gracenode=' + JSON.stringify(vars) + ';</script>';
+		'window.gracenode=' + JSON.stringify(vars) +
+		';' + loader.getClient() + '</script>';
 	content = content.replace('</head>', js + '\n</head>');
 	// restore literals
 	for (var i = 0, len = loaded.literals.length; i < len; i++) {
