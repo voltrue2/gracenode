@@ -41,7 +41,7 @@
 		});		
 	}
 
-	// example: gracenode.myData
+	/* example: gracenode.myData */
 	function getLocalData(elm, str) {
 		var list = str.split('.');
 		var data = window;
@@ -71,13 +71,13 @@
 		var container;
 		var i;
 		var len;
-		// a list of map = table
+		/* a list of map = table */
 		if (typeof data[0] === 'object') {
 			var row;
 			var labels = [];
 			container = document.createElement('table');
 			container.className = 'list-table';
-			// table labels
+			/* table labels */
 			row = document.createElement('tr');
 			for (i = 0, len = data.length; i < len; i++) {
 				for (var name in data[i]) {
@@ -90,7 +90,7 @@
 				}
 			}
 			container.appendChild(row);
-			// table rows
+			/* table rows */
 			for (i = 0, len = data.length; i < len; i++) {
 				row = document.createElement('tr');
 				var td = document.createElement('td');
@@ -99,10 +99,10 @@
 				row.appendChild(td);
 				container.appendChild(row);
 			}
-			// done
+			/* done */
 			return container;
 		}
-		// a list of text = list
+		/* a list of text = list */
 		container = document.createElement('ul');
 		container.className = 'list-container';
 		for (i = 0, len = data.length; i < len; i++) {
@@ -110,7 +110,7 @@
 			item.appendChild(buildDOM(data[i]));
 			container.appendChild(item);
 		}
-		// done
+		/* done */
 		return container;
 	}
 
