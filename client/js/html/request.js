@@ -92,7 +92,7 @@
 			var res = null;
 			/* evaluate response status code */
 			if (req.status > 399) {
-				// error
+				/* error */
 				error = new Error(req.status);
 			}
 			/* deal with response body */
