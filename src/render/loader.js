@@ -32,7 +32,7 @@ exports.loadClient = function (cb) {
 			if (error) {
 				return next(error);
 			}
-			client += data.replace(/(\ |\n|\r|\t)/g, '');
+			client += data.replace(/(\n|\r|\t)/g, '');
 			next();
 		});
 	}, cb);
