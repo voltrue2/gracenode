@@ -9,7 +9,7 @@
 	TAG_EXEC_MAP[TAGS.SRC] = getRemoteData;
 	TAG_EXEC_MAP[TAGS.LOCAL] = getLocalData;
 
-	document.EventListener('DOMContentLoaded', parse, false);
+	document.addEventListener('DOMContentLoaded', parse, false);
 
 	window.render = function (target) {
 		parse(null, target);
