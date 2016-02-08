@@ -26,7 +26,7 @@
 		var list = target.querySelectorAll('[' + tagName + ']') || [];
 		var exec = TAG_EXEC_MAP[tagName];
 		for (var i = 0, len = list.length; i < len; i++) {
-			exec(list[i], tagName);
+			exec(list[i], list[i].getAttribute(tagName));
 		}
 	}
 
