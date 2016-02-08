@@ -129,6 +129,7 @@
 			var value = document.createElement('td');
 			value.appendChild(buildDOM(data[name]));
 			row.appendChild(value);
+			container.appendChild(row);
 		}
 		return container;
 	}
