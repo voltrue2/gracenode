@@ -2,7 +2,8 @@
 
 	var TAGS = {
 		SRC: 'data-gn-src',
-		LOCAL: 'data-gn-local'		
+		LOCAL: 'data-gn-local',
+		DONE: 'data-gn-rendered'
 	};
 
 	var TAG_EXEC_MAP = {};
@@ -12,7 +13,7 @@
 	document.addEventListener('DOMContentLoaded', parse, false);
 
 	window.render = function (target) {
-		parse(null, target);
+		parse(null, target.parentNode);
 	};
 
 	function parse(event, target) {
@@ -26,6 +27,9 @@
 		var list = target.querySelectorAll('[' + tagName + ']') || [];
 		var exec = TAG_EXEC_MAP[tagName];
 		for (var i = 0, len = list.length; i < len; i++) {
+			if (list[i].getAttribute(TAGS.DONE)) {
+				continue;
+			}
 			exec(list[i], list[i].getAttribute(tagName));
 		}
 	}
@@ -38,6 +42,7 @@
 			}
 			var dom = buildDOM(data);
 			elm.appendChild(dom);
+			elm.setAttribute(TAGS.DONE, true);
 		});		
 	}
 
@@ -53,6 +58,7 @@
 		}
 		var dom = buildDOM(data);
 		elm.appendChild(dom);
+		elm.setAttribute(TAGS.DONE, true);
 	}
 
 	function buildDOM(data) {
