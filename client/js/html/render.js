@@ -95,7 +95,7 @@
 				row = document.createElement('tr');
 				var td = document.createElement('td');
 				content = buildDOM(data[i]);
-				td.appendChild(td);
+				td.appendChild(content);
 				row.appendChild(td);
 				container.appendChild(row);
 			}
