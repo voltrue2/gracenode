@@ -81,22 +81,26 @@
 			row = document.createElement('tr');
 			for (i = 0, len = data.length; i < len; i++) {
 				for (var name in data[i]) {
-					if (labels.indexOf(data[i][name]) !== -1) {
+					if (labels.indexOf(name) !== -1) {
 						continue;
 					}
+					labels.push(name);
 					var th = document.createElement('th');
-					th.textContent = data[i][name];
+					th.textContent = name;
 					row.appendChild(th);
 				}
 			}
 			container.appendChild(row);
 			/* table rows */
+			var jen = labels.length;
 			for (i = 0, len = data.length; i < len; i++) {
 				row = document.createElement('tr');
-				var td = document.createElement('td');
-				content = buildDOM(data[i]);
-				td.appendChild(content);
-				row.appendChild(td);
+				for (var j = 0; j < jen; j++) {
+					var td = document.createElement('td');
+					content = buildDOM(data[i][labels[j]] || '');
+					td.appendChild(content);
+					row.appendChild(td);
+				}
 				container.appendChild(row);
 			}
 			/* done */
