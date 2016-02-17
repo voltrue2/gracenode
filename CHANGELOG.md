@@ -10,6 +10,18 @@ None
 
 ## Changed
 
+#### Router added URL parameter data type as regular expression
+
+Exmaple:
+
+Defining a route with paramter data type as regular expression
+
+```javascript
+router.get('/my/api/{/^[a-zA-Z]*$/g:regexValue}');
+```
+
+The above example defines the URL parameter to be `regexValue` and it must be alphabest only.
+
 #### Router responds as gzip only when requested with accept-enoding
 
 `accept-encoding: gzip` must be sent with the request to have gzipped response.

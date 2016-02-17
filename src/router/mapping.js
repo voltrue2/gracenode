@@ -233,7 +233,18 @@ function getParamNames(path) {
 			if (sep.length === 2) {
 				type = sep[0];
 				if (TYPES.indexOf(type) === -1) {
-					throw new Error('InvalidType: ' + type);
+					try {
+						// parameter data type is a regex
+						// this string MUST BE a complete javascript regular expression
+						// exmaple: /^[a-zA-Z]*$/g
+						var reg = sep[0];
+						var arg = reg.substring(reg.lastIndexOf('/') + 1) || null;
+						var regStr = reg.replace(arg, '').replace(/\//g, '');
+						type = new RegExp(regStr, arg);
+					} catch (e) {
+						logger.error(e);
+						throw new Error('InvalidType: ' + type);
+					}
 				}
 				name = sep[1];
 			} else {

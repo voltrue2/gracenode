@@ -137,6 +137,13 @@ function cast(type, value) {
 		case 'object':
 			return JSON.parse(val);
 		default:
+			if (type instanceof RegExp) {
+				// data type is regex
+				var pass = type.test(val);
+				if (!pass) {
+					throw Error('InvalidParameterTypeByRegExp: ' + val);
+				}
+			}
 			// string
 			return val;
 	}

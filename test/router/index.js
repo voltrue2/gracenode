@@ -1178,4 +1178,28 @@ describe('gracenode.router', function () {
 			done();
 		});
 	});
+
+	it('can define and validate parameter type as a RegExp', function (done) {
+		gn.router.get('/param/is/regex/{/^[a-zA-Z]*$/g:value}', function (req, res) {
+			res.json({ message: req.params.value });
+		});
+		request.GET(http + '/param/is/regex/ABC', {}, options, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'ABC');
+			done();
+		});
+	});
+
+	it('can return 400 error for param type that is not matched by regex', function (done) {
+		gn.router.get('/param/is/regex/{/^[a-zA-Z]*$/g:value}', function (req, res) {
+			res.json({ message: req.params.value });
+		});
+		request.GET(http + '/param/is/regex/123A', {}, options, function (error, res, st) {
+			assert(error);
+			assert.equal(st, 400);
+			assert.equal(res.message, 'InvalidParameterTypeByRegExp: 123A');
+			done();
+		});
+	});
 });

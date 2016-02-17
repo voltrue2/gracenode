@@ -1427,6 +1427,8 @@ exports.exampleHandler = function (req, res) {
 
 - object
 
+- regex *NOTE 1
+
 **Syntax**
 
 ```
@@ -1437,6 +1439,18 @@ exports.exampleHandler = function (req, res) {
 
 ```
 gracenode.router.get('/example/{number:id}/{string:name}');
+```
+
+**NOTE 1**: Date type as regular expression
+
+`router` allows you to define the parameter data type as regular expression.
+
+If the given parameter does not match the regular expression, the router will return with an error.
+
+**Syntax**
+
+```
+{/^[a-zA-Z]*$/g:paramName}
 ```
 
 #### POST, PUT, DELETE, PATCH, and HEAD
