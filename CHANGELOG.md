@@ -2,6 +2,28 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.4.1
+
+## Added
+
+None
+
+## Changed
+
+#### Router regular expression data type fix when there is no g or i in the regex
+
+The router returned and error of invalid data type if the given regular expression had no 'g' or 'i'.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.4.0
 
 ## Added
