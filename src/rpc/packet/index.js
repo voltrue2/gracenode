@@ -1,0 +1,100 @@
+'use strict';
+
+var protocol = require('./protocol');
+var STATUS = require('./status');
+
+module.exports = Parser;
+
+function Parser() {
+	this.chunckBuff = null;
+	this.rxProxyPacket = false;
+	// TODO: decide what to do with it
+	this.proxyPacket = null;
+}
+
+Parser.prototype.parse = function (incomingChunk) {
+
+	if (this.chunkBuff) {
+		this.chunkBuff = Buffer.concat([this.chunckBuff, incomingChunk]);
+	} else {
+		this.chunkBuff = incomingChunk;
+	}
+
+	// list of packet to be routed to packet controllers
+	var packetList = [];
+	var packet = this._parse();
+
+	// kill connection immediately
+	if (packet instanceof Error) {
+		return packet;
+	}
+
+	packetList.push(packet);
+
+	while (packet) {
+		packet = this._parse();
+		
+		// kill connection immediately
+		if (packet instanceof Error) {
+			return packet;
+		}
+		
+		packetList.push(packet);
+	}
+
+	return packetList;
+};
+
+Parser.prototype.createReply = function (status, seq, ack) {
+	return protocol.createNormalReplyPacket(status, seq, ack);
+};
+
+Parser.prototype.createPush = function (payload) {
+	return protocol.createPushPacket(payload);
+};
+
+Parser.prototype.STATUS_CODE = STATUS;
+
+Parser.prototype.status = function (error) {
+	if (error) {
+		if (STATUS[error.message]) {
+			return STATUS[error.messge];
+		}
+		if (STATUS[error.code]) {
+			return STATUS[error.code];
+		}
+		return STATUS.UNKNOWN;
+	}
+	return STATUS.OK;
+};
+
+Parser.prototype._parse = function () {
+	var packet;
+	
+	try {
+		packet = protocol.parseData(this.chunkBuff);
+	} catch (err) {
+		return err;
+	}
+	
+	if (!packet) {
+		return null;
+	}
+	
+	// free the amount of buffer consumed for this packet
+	this.chunkBuff = this.chunkBuff.slice(packet.consumedLength);
+
+	switch (packet.type) {
+		case protocol.TYPES.PROXY_V1:
+			if (this.rxProxyPacket) {
+				return new Error('<OUT_OF_ORDER_DATA>');
+			}
+			this.rxProxyPacket = true;
+			this.proxyPacket = packet;
+			break;
+		case protocol.RPC:
+			return packet;
+		default:
+			return new Error('<UNKNOWN_PACKET_TYPE>');
+	}
+};

@@ -1,0 +1,19 @@
+'use strict';
+
+module.exports = {
+	OK: 1,
+	// HTTP 400
+	BAD_REQ: 2,
+	// HTTP 401
+	FORBIDDEN: 3,
+	// HTTP 404
+	NOT_FOUND: 4,
+	CONFLICT: 5,
+	// HTTP 500
+	ERROR: 6,
+	INVALID_TOKEN: 7,
+	// HTTP 503
+	UNAVAILABLE: 8,
+	// UNKNOWN
+	UNKNOWN: 99
+};
