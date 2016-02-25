@@ -3,10 +3,10 @@
 var gn = require('gracenode');
 
 // Static file routes
-gn.router.static('/static', [
+gn.http.static('/static', [
 	'asset/'
 ]);
 
 // GET routes
-gn.router.get('/', require('./controllers/hello'));
-gn.router.get('/hello/{string:message}', require('./controllers/hello'));
+gn.http.get('/', require('./controllers/hello'));
+gn.http.get('/hello/{string:message}', require('./controllers/hello'));

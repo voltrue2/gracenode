@@ -14,7 +14,7 @@ describe('gracenode.render', function () {
 				path: __dirname + '/templates',
 				cacheSize: 3989000
 			},
-			router: {
+			http: {
 				host: 'localhost',
 				port: 4444
 			}

@@ -107,7 +107,7 @@ You also need to create a route handler for the route(s) that you are adding.
 **Example**:
 
 ```javascript
-gn.router.get('/hello2', require('./controllers/hello2'));
+gn.http.get('/hello2', require('./controllers/hello2'));
 ```
 
 #### How To Add More Views
@@ -161,10 +161,10 @@ gn.configure({
 		// Maximum number of workers. default is 0
 		max: 0
 	},
-	router: {
-		// you must have this value if you need to use gracenode.router
+	http: {
+		// you must have this value if you need to use gracenode.http
 		port: 8888,
-		// you must have this value if you need to use gracenode.router
+		// you must have this value if you need to use gracenode.http
 		host: 'localhost'
 	},
 	render: {
@@ -438,7 +438,7 @@ For more details, please read <a href="https://github.com/voltrue2/gracenode#ren
 **Example**:
 
 ```javascript
-gracenode.router.get('/', function (req, res) {
+gracenode.http.get('/', function (req, res) {
 	var data = {
 		title: 'Hello World'
 	};
@@ -447,7 +447,7 @@ gracenode.router.get('/', function (req, res) {
 });
 ```
 
-### .router
+### .http
 
 An HTTP server router to help you build HTTP rest server.
 
@@ -461,14 +461,14 @@ To register HTTP endpoints, call the following functions.
 
 ```
 gracenode.config({
-	router: {
+	http: {
 		port: <number>,
 		host: <string>
 	}
 });
 ```
 
-#### gracenode.router.get(url [string], handler [function])
+#### gracenode.http.get(url [string], handler [function])
 
 Registers a routing for GET requests.
 
@@ -477,15 +477,15 @@ Registers a routing for GET requests.
 ```javascript
 var gn = require('gracenode');
 gn.config({
-	router: {
+	http: {
 		port: 8888,
 		host: 'localhost'
 	}
 });
-gn.router.get('/example', function (req, res) {
+gn.http.get('/example', function (req, res) {
 	res.json({ title: 'Hello World' });
 });
-gn.router.get('/mypage', require('/path/to/mypage/handler'));
+gn.http.get('/mypage', require('/path/to/mypage/handler'));
 ```
 
 <a href="https://github.com/voltrue2/gracenode#router-1">More Details Here</a>
@@ -1334,17 +1334,32 @@ The above example will try to read data from `window.myLocalData.listData` and r
 
 ***
 
-## Router
+## HTTP Router
 
 Router lets you build HTTP server and REST endpoints easily.
 
 ### Access
 
-`gracenode.router`
+`gracenode.http`
+
+**Deprecated Notice**
+
+`gracenode.router` is now deprecated. Please use `gracenode.http` instead
 
 ### Configure Port and Host
 
-`gracenode.router` needs a port number and a host name to start the HTTP server.
+`gracenode.http` needs a port number and a host name to start the HTTP server.
+
+```
+http: {
+	port: <number>,
+	host: <string>
+}
+```
+
+**Deprecated Notice**
+
+Configuration `router` is now deprecated. Please use `http` instead.
 
 ```
 router: {
@@ -1359,7 +1374,7 @@ router: {
 var gn = require('gracenode');
 
 gn.config({
-	router: {
+	http: {
 		port: 8888,
 		host: 'localhost'
 	}
@@ -1375,12 +1390,12 @@ gn.start(function () {
 
 ### Register endpoints
 
-You must register endpoint routes in order to setup your REST server with `gracenode.router`.
+You must register endpoint routes in order to setup your REST server with `gracenode.http`.
 
 #### GET
 
 ```javascript
-gracenode.router.get('/example', function (req, res) {
+gracenode.http.get('/example', function (req, res) {
 	// respond as JSON
 	res.json({ say: 'hello' });
 });
@@ -1388,7 +1403,7 @@ gracenode.router.get('/example', function (req, res) {
 
 ##### Define URL parameters
 
-`gracenode.router` allows you to define parameters in the request URLs.
+`gracenode.http` allows you to define parameters in the request URLs.
 
 **Example**:
 
@@ -1415,7 +1430,7 @@ exports.exampleHandler = function (req, res) {
 
 ##### Define URL parameters with types
 
-`granode.router` allows you to define typed parameters.
+`granode.http` allows you to define typed parameters.
 
 **Valid Types**:
 
@@ -1438,14 +1453,14 @@ exports.exampleHandler = function (req, res) {
 **Example**:
 
 ```
-gracenode.router.get('/example/{number:id}/{string:name}');
+gracenode.http.get('/example/{number:id}/{string:name}');
 ```
 
 **NOTE 1**: Date type as regular expression
 
-`router` allows you to define the parameter data type as regular expression.
+`http` allows you to define the parameter data type as regular expression.
 
-If the given parameter does not match the regular expression, the router will return with an error.
+If the given parameter does not match the regular expression, the HTTP router will return with an error.
 
 **Syntax**
 
@@ -1458,15 +1473,15 @@ If the given parameter does not match the regular expression, the router will re
 To register endpoints for request method other than `GET`, use the following:
 
 ```
-gracenode.router.post(url [string], handler [function]);
+gracenode.http.post(url [string], handler [function]);
 
-gracenode.router.put(url [string], handler [function]);
+gracenode.http.put(url [string], handler [function]);
 
-gracenode.router.delete(url [string], handler [function]);
+gracenode.http.delete(url [string], handler [function]);
 
-gracenode.router.patch(url [string], handler [function]);
+gracenode.http.patch(url [string], handler [function]);
 
-gracenode.router.head(url [string], handler [function]);
+gracenode.http.head(url [string], handler [function]);
 ```
 
 #### Read Request Body
@@ -1476,7 +1491,7 @@ gracenode.router.head(url [string], handler [function]);
 In order to read request body of `GET` or/and `HEAD` add the following option:
 
 ```javascript
-gracenode.router.get('/read/req/body', getReqHandler, { readBody: true });
+gracenode.http.get('/read/req/body', getReqHandler, { readBody: true });
 ```
 
 #### req
@@ -1533,7 +1548,7 @@ Object that holds URL parameters.
 Example Request: `GET /example/animal/info/cat`.
 
 ```javascript
-gracenode.router.get('/example/{category}/info/{name}', function (req, res) {
+gracenode.http.get('/example/{category}/info/{name}', function (req, res) {
 	// animal
 	var category = req.params.category;
 	// cat
@@ -1555,7 +1570,7 @@ Returns a cookie object.
 How to set a cookie data
 
 ```javascript
-gracenode.router.login('/login', function (req, res) {
+gracenode.http.login('/login', function (req, res) {
 	// do some loging operations here
 	var cookies = req.cookies();
 	cookies.set('sessionId', sessionId);
@@ -1566,7 +1581,7 @@ gracenode.router.login('/login', function (req, res) {
 How to get a cookie data
 
 ```javascript
-gracenode.router.get('/example', function (req, res) {
+gracenode.http.get('/example', function (req, res) {
 	var cookies = req.cookies();
 	var sessionId = cookies.get('session');
 });
@@ -1583,7 +1598,7 @@ Object that holds response headers.
 **To Set Response Headers**:
 
 ```javascript
-gracenode.router.post('/example', function (req, res) {
+gracenode.http.post('/example', function (req, res) {
 	// set a custom header
 	res.headers.sessionId = 'xxxx';
 	// respond
@@ -1645,23 +1660,23 @@ The default status is 400.
 
 #### Register Request Hooks
 
-`gracenode.router` allows you to setup request hook functions for your endpoints.
+`gracenode.http` allows you to setup request hook functions for your endpoints.
 
 Useful for session varification etc.
 
-##### gracenode.router.hook(url [string], hook [function])
+##### gracenode.http.hook(url [string], hook [function])
 
 Registered hook functions are executed on every match request.
 
 **Example**:
 
 ```javascript
-gracenode.router.hook('/', hookForAllRequest);
-gracenode.router.hook('/exmaple', hookForExampleRequest);
-gracenode.router.hook('/example/one', hookForExampleOneReuqest);
+gracenode.http.hook('/', hookForAllRequest);
+gracenode.http.hook('/exmaple', hookForExampleRequest);
+gracenode.http.hook('/example/one', hookForExampleOneReuqest);
 
-gracenode.router.get('/example', exampleHandler);
-gracenode.router.get('/example/one', exampleOneHandler);
+gracenode.http.get('/example', exampleHandler);
+gracenode.http.get('/example/one', exampleOneHandler);
 ```
 
 - `GET /example` will have `hookForAllRequest`, `hookForExampleRequest` as request hooks and they will be executed BEFORE `exmapleHandler`.
@@ -1691,23 +1706,23 @@ To change the status code, pass `error.code = <status code>` such as `500`.
 
 ### Create Generic Error Handling
 
-`gracenode.router` can optionally execute an error handler for specific error status such as 404.
+`gracenode.http` can optionally execute an error handler for specific error status such as 404.
 
 This is useful when you need to display uniform 404 page on every 404 response etc.
 
-##### gracenode.router.error(status [number], handler [function])
+##### gracenode.http.error(status [number], handler [function])
 
 **Example**:
 
 ```javascript
-gracenode.router.error(404, function (req, res) {
+gracenode.http.error(404, function (req, res) {
 	res.json({ message: 'Not Found'}, 404);
 });
 ```
 
 ### Serving Static Files
 
-**gracenode** router can serve static files such as images etc.
+**gracenode** HTTP router can serve static files such as images etc.
 
 **Example**:
 
@@ -1715,7 +1730,7 @@ gracenode.router.error(404, function (req, res) {
 var staticFileDirectoryList = [
 	'/public/',
 ];
-gracenode.router.static('/static', staticFileDirectoryList);
+gracenode.http.static('/static', staticFileDirectoryList);
 ```
 
 The above example will create routes as:
@@ -1736,14 +1751,14 @@ var staticFileDirectoryList = [
 	'/public/',
 	'/asset/'
 ];
-gracenode.router.static('/static', staticFileDirectoryList);
+gracenode.http.static('/static', staticFileDirectoryList);
 ``` 
 
 The above example will create routes as:
 
 **NOTE**: `/public/` directory is **NOT** treated as the document root directory and **IS** present in routed URL.
 
-When passing more than 1 static file directory paths, **gracenode** router will be routing static files as shown below:
+When passing more than 1 static file directory paths, **gracenode** HTTP router will be routing static files as shown below:
 
 ```
 GET /static/public/{file path}

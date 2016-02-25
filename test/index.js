@@ -12,8 +12,8 @@ if (singleRun !== 'false') {
 	require('./express');
 	// test daemon of gracenode
 	require('./daemon');
-	// test gracenode.router
-	require('./router');
+	// test gracenode.http
+	require('./http');
 	// test gracenode.render
 	require('./render');
 }

@@ -16,7 +16,7 @@
 	"cluster": {
 		"max": 0
 	},
-	"router": {
+	"http": {
 		"host": "localhost",
 		"port": 8888
 	},

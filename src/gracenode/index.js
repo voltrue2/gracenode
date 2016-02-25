@@ -39,7 +39,10 @@ exports.log = log;
 
 exports.render = render.render;
 
-exports.router = require('../router');
+// deprecated
+exports.router = require('../http');
+
+exports.http = exports.router;
 
 exports.getRootPath = function () {
 	return rootPath;
@@ -104,7 +107,7 @@ exports.start = function (cb) {
 			startMod,
 			setupLogCleaner,
 			setupRender,
-			startRouter
+			startHTTP
 		];
 		var done = function (error) {
 			if (error) {
@@ -136,8 +139,8 @@ exports.stop = function (error) {
 function applyConfig() {
 	var logConf = config.get('log');
 	var clusterConf = config.get('cluster');
-	var routerPort = config.get('router.port');
-	var routerHost = config.get('router.host');
+	var httpPort = config.get('http.port') || config.get('router.port');
+	var httpHost = config.get('http.host') || config.get('router.host');
 	var isLogging = false;
 	if (config.get('lint.enable') === false) {
 		ignoreLint = true;
@@ -171,8 +174,8 @@ function applyConfig() {
 	if (clusterConf) {
 		clusterConfig = setOption(clusterConfig, clusterConf);
 	}
-	if (routerPort && routerHost) {
-		exports.router.config({ port: routerPort, host: routerHost });
+	if (httpPort && httpHost) {
+		exports.http.config({ port: httpPort, host: httpHost });
 	}
 }
 
@@ -316,12 +319,14 @@ function setupRender(cb) {
 	cb();
 }
 
-function startRouter(cb) {
-	if (!cluster.isMaster() && config.get('router.port') && config.get('router.host')) {
-		exports.router.setup(cb);
+function startHTTP(cb) {
+	var host = config.get('http.host') || config.get('router.host');
+	var port = config.get('http.port') || config.get('router.port');
+	if (!cluster.isMaster() && host && port) {
+		exports.http.setup(cb);
 		return;
 	}
-	logger.verbose('Master process does not start HTTP server router');
+	logger.verbose('Master process does not start HTTP server');
 	cb();
 }
 

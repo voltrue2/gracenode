@@ -56,6 +56,10 @@ describe('gracenode with  gracenode-server/', function () {
 			cluster: {
 				max: 0
 			},
+			http: {
+				host: null,
+				port: null
+			},
 			server: {
 				protocol: 'http',
 				host: 'localhost',
