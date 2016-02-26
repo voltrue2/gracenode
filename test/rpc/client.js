@@ -26,8 +26,16 @@ client.connect(port, host, function () {
 		var cmdId = 1;
 		var seq = 0;
 		var payload = JSON.stringify({ a: 'AAA', b: 'BBB', c: 10000, d: 53.632 });
+		// regular TCP
 		var packetParser = new PacketParser();
 		packet = packetParser.createReq(cmdId, seq, payload);
+		// web socket
+		packet = JSON.stringify({
+			command: 1,
+			seq: 0,
+			payload: payload
+		});
+		// send
 		client.write(packet);
 		setTimeout(call, interval);
 	};
