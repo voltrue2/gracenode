@@ -11,6 +11,7 @@ var mod = require('./mod');
 var render = require('../render');
 var lint = require('../lint');
 var pkg = require('../../package.json');
+var rpc = require('../rpc');
 
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
@@ -44,6 +45,11 @@ exports.router = require('../http');
 
 exports.http = exports.router;
 
+// not officially released nor documented
+exports.rpc = {
+	command: rpc.command
+};
+
 exports.getRootPath = function () {
 	return rootPath;
 };
@@ -74,7 +80,11 @@ exports.onException = function (func) {
 // deprecated backward compatibility alias
 exports.registerShutdownTask = function (name, func) {
 	var e = new Error('WARNING');
-	logger.warn('.registerShutdownTask() has been deprecated and should not be used. Use .onExit(taskFunction, *runOnMaster) instead', e.stack);	
+	logger.warn(
+		'.registerShutdownTask() has been deprecated and should not be used.',
+		'Use .onExit(taskFunction, *runOnMaster) instead',
+		e.stack
+	);	
 	exports.onExit(func);
 };
 
@@ -107,7 +117,8 @@ exports.start = function (cb) {
 			startMod,
 			setupLogCleaner,
 			setupRender,
-			startHTTP
+			startHTTP,
+			startRPC
 		];
 		var done = function (error) {
 			if (error) {
@@ -326,7 +337,20 @@ function startHTTP(cb) {
 		exports.http.setup(cb);
 		return;
 	}
-	logger.verbose('Master process does not start HTTP server');
+	if (cluster.isMaster() && host && port) {
+		logger.verbose('Master process does not start HTTP server');
+	}
+	cb();
+}
+
+function startRPC(cb) {
+	if (!cluster.isMaster() && config.get('rpc')) {
+		rpc.setup(cb);
+		return;
+	}
+	if (cluster.isMaster() &&  config.get('rpc')) {
+		logger.verbose('Master process does not start RPC server');
+	}
 	cb();
 }
 

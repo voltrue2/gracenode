@@ -16,7 +16,7 @@ var SOCK_TIMEOUT = 30000;
 var AUTH_TIMEOUT = 3000;
 var PORT_IN_USE = 'EADDRINUSE';
 
-module.exports.setup = function () {
+module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
@@ -66,7 +66,9 @@ module.exports.setup = function () {
 			server.close(next);
 		});
 
-		logger.info('RPC server started at', config.host + ':' + boundPort); 
+		logger.info('RPC server started at', config.host + ':' + boundPort);
+
+		cb();
 	};	
 	var listen = function () {
 		var port = ports[portIndex];
@@ -121,24 +123,3 @@ function handleConn(sock) {
 
 	conns[connId] = conn;
 }
-
-// test code
-gn.config({
-	cluster: {
-		max: 2
-	},
-	rpc: {
-		host: 'localhost',
-		portRange: [9876, 9880]
-	}
-});
-gn.start(function () {
-	if (!gn.isMaster()) {
-		module.exports.setup();
-		module.exports.command(1, 'testCommand', function (state, cb) {
-			console.log('i see data:', state.payload);
-			state.push('Hello');
-			cb('OK');
-		});
-	}
-});
