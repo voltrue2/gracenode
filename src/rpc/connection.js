@@ -12,10 +12,13 @@ module.exports = Connection;
 
 function Connection(connId, sock) {
 	EventEmitter.call(this);
-	this.logger = gn.log.create('RPC.connection');
 	this.connId = connId;
 	this.sock = sock;
+	this.self = (this.sock) ? this.sock.localAddress + ':' + this.sock.localPort : 'UNKNOWN';
 	this.from = (this.sock) ? this.sock.remoteAddress + ':' + this.sock.remotePort : 'UNKNOWN';
+	this.logger = gn.log.create(
+		'RPC.connection(ID:' + connId + ')<local:' + this.self + '><remote:' + this.from + '>'
+	);
 	
 	//this.sockTimeout = options.sockTimeout;
 	//this.authTimeout = options.authTimeout;
@@ -43,17 +46,10 @@ util.inherits(Connection, EventEmitter);
 // public
 Connection.prototype.close = function () {
 	
-	this.logger.info(
-		'RPC connection close:',
-		'(connection ID:' + this.connId + ')',
-		'from:', this.from
-	);
+	this.logger.info('RPC connection close');
 
 	if (!this.sock) {
-		this.logger.warn(
-			'RPC socket has already been gone:',
-			'(connection ID:' + this.connId + ')'
-		);
+		this.logger.warn('RPC socket has already been gone:');
 		return;
 	}
 
@@ -64,18 +60,10 @@ Connection.prototype.close = function () {
 // public
 Connection.prototype.kill = function (error) {
 	if (error) {
-		this.logger.error(
-			'RPC connection kill',
-			'(connection ID:' + this.connId + ')',
-			'from:', this.from,
-			error
-		);
+		this.logger.error('RPC connection kill', error);
 	}
 	if (!this.sock) {
-		this.logger.warn(
-			'RPC socket has already been gone before .kill:',
-			'(connection ID:' + this.connId + ')'
-		);
+		this.logger.warn('RPC socket has already been gone before .kill');
 		return;
 	}
 	// this is a hard kill connection
@@ -86,10 +74,7 @@ Connection.prototype.kill = function (error) {
 
 // private
 Connection.prototype._handleData = function (packet) {
-	this.logger.verbose(
-		'packet received: (connection ID:' + this.connId + '):',
-		'from:', this.from
-	);
+	this.logger.verbose('packet received');
 	var parsed = this.packetParser.parse(packet);
 
 	if (parsed instanceof Error) {
@@ -102,51 +87,34 @@ Connection.prototype._handleData = function (packet) {
 		var list = parsed.map(function (item) {
 			return item.command;
 		});
-		that.logger.info(
-			'commands handled and responded:',
-			'(connection ID:' + that.connId + ')',
-			'from:', that.from,
-			'commands:', list.join(',')
-		);
+		that.logger.info('commands handled and responded:', 'commands:', list.join(','));
 	};
 
 	// route to commands and execute each command handler
-	async.series(parsed, function (parsedData, next) {
+	async.eachSeries(parsed, function (parsedData, next) {
 		var cmd = router.route(parsedData);
 		
 		if (!cmd) {
 			that.logger.error(
-				'command not found:',
-				'(connection ID:' + that.connId + ')',
-				'from:', that.from,
-				parsedData
+				'command not found:', parsedData,
+				'payload:', JSON.parse(parsedData.payload)
 			);
-			var notFound = parser.createReply(parser.STAUTS_CODE.NOT_FOUND, parsedData.seq, '');
+			var notFound = parser.createReply(parser.STATUS_CODE.NOT_FOUND, parsedData.seq, '');
 			return that._write(notFound);
 		}
 
-		that.logger.info(
-			'command routing resolved:',
-			'(connection ID:' + that.connId + ')',
-			'from:', that.from,
-			'command:', cmd.id, cmd.name
-		);
+		that.logger.info('command routing resolved:', 'command:', cmd.id, cmd.name);
 		
-		var cmdParams = {
+		var state = {
 			STATUS: parser.STATUS_CODE,
 			push: that._push,
-			payload: parsedData.payload
+			payload: JSON.parse(parsedData.payload)
 		};
 	
 		// execute command handler
-		cmd.handler(cmdParams, function (error, data, options) {
+		cmd.handler(state, function (error, data, options) {
 			if (error) {
-				that.logger.error(
-					'command:', cmd.id, cmd.name,
-					'(connection ID:' + that.connId + ')',
-					'from:', that.from,
-					error
-				);
+				that.logger.error('command:', cmd.id, cmd.name);
 			}
 			var replyPacket = parser.createReply(parser.status(error), parsedData.seq, data);
 			that._write(replyPacket);
@@ -170,19 +138,10 @@ Connection.prototype._handleData = function (packet) {
 Connection.prototype._write = function (data, cb) {
 	if (this.sock) {
 		this.sock.write(data, 'UTF-8', cb);
-		this.logger.info(
-			'command response sent:',
-			'(connection ID:' + this.connId + ')',
-			'to:', this.from,
-			'size:', this.sock.bufferSize + 'bytes'
-		);
+		this.logger.info('command response sent:', 'size:', this.sock.bufferSize + 'bytes');
 		return;
 	}
-	this.logger.warn(
-		'TCP socket is gone:',
-		'(connection ID:' + this.conndId + ')',
-		'from:', this.from
-	);
+	this.logger.warn('TCP socket is gone');
 };
 
 // private/public: this will be called from command handlers 
@@ -193,11 +152,11 @@ Connection.prototype._push = function (payload, cb) {
 
 // private
 Connection.prototype._handleEnd = function () {
-	this.logger.info('connection ended: (connection ID:' + this.connId + ')');
+	this.logger.info('TCP connection ended');
 };
 
 // private
 Connection.prototype._handleError = function (error) {
-	this.logger.error('from:', this.from, error);
+	this.logger.error(error);
 		
 };

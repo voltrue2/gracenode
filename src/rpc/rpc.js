@@ -5,6 +5,7 @@ var net = require('net');
 var gn = require('../gracenode');
 
 var Connection = require('./connection');
+var router = require('./router');
 
 var logger;
 var config;
@@ -31,6 +32,9 @@ module.exports.setup = function () {
 		);
 		throw new Error('<PORT_RANGE_FOR_RPC_SERVER_INCORRECT>');
 	}
+
+	// set up RPC command controller router
+	router.setup();
 	
 	var ports = [];
 	var portIndex = 0;
@@ -96,6 +100,10 @@ module.exports.setup = function () {
 	listen();
 };
 
+module.exports.command = function (cmdId, commandName, handler) {
+	router.define(cmdId, commandName, handler);	
+};
+
 function handleConn(sock) {
 	var opt = {
 		sockTimeout: config.socketTimeout || SOCK_TIMEOUT,
@@ -127,5 +135,9 @@ gn.config({
 gn.start(function () {
 	if (!gn.isMaster()) {
 		module.exports.setup();
+		module.exports.command(1, 'testCommand', function (state, cb) {
+			console.log('i see data:', state.payload);
+			cb(null, 'OK');
+		});
 	}
 });

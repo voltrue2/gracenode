@@ -3,6 +3,8 @@ var host = process.argv[2] || 'localhost';
 var port = process.argv[3] || 8889;
 var interval = process.argv[4] ? process.argv[4] * 1000 : 1000;
 
+var PacketParser = require('../../lib/packet');
+
 var MAX = 10;
 var counter = 0;
 
@@ -20,10 +22,13 @@ client.connect(port, host, function () {
 
 		console.log('send packet #' + counter);
 
-		client.write(JSON.stringify({
-			endPoint: process.argv[2],
-			data: { time: Date.now(), input: process.argv[3] || null } 
-		}));
+		var packet;
+		var cmdId = 1;
+		var seq = 0;
+		var payload = JSON.stringify({ a: 'AAA', b: 'BBB', c: 10000, d: 53.632 });
+		var packetParser = new PacketParser();
+		packet = packetParser.createReq(cmdId, seq, payload);
+		client.write(packet);
 		setTimeout(call, interval);
 	};
 	console.log('send packet every', (interval / 1000), 'seconds');
@@ -31,7 +36,7 @@ client.connect(port, host, function () {
 });
 
 client.on('data', function (data) {
-	console.log('response from the server:', data.toString());
+	console.log('response from the server:', data);
 });
 
 client.on('close', function () {
@@ -39,7 +44,7 @@ client.on('close', function () {
 });
 
 client.on('error', function (data) {
-	console.log('error:', data.toString());
+	console.log('error:', data);
 	process.exit();
 });
 
