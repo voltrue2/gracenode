@@ -18,4 +18,4 @@ ifndef log
   single=false
 endif
 test:
-	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 30000 --log=$(log) --single=$(single)
+	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 50000 --log=$(log) --single=$(single)

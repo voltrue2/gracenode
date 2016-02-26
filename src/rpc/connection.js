@@ -107,16 +107,24 @@ Connection.prototype._handleData = function (packet) {
 		
 		var state = {
 			STATUS: parser.STATUS_CODE,
-			push: that._push,
+			push: function (payload, cb) {
+				that._push.apply(that, [payload, cb]);
+			},
 			payload: JSON.parse(parsedData.payload)
 		};
 	
 		// execute command handler
-		cmd.handler(state, function (error, data, options) {
-			if (error) {
-				that.logger.error('command:', cmd.id, cmd.name);
+		cmd.handler(state, function (res, options) {
+			var error;
+			if (res instanceof Error) {
+				that.logger.error('command:', cmd.id, cmd.name, res);
+				error = res;
+				res = {
+					message: res.message,
+					code: res.code || null
+				};
 			}
-			var replyPacket = parser.createReply(parser.status(error), parsedData.seq, data);
+			var replyPacket = parser.createReply(parser.status(error), parsedData.seq, res);
 			that._write(replyPacket);
 			// check options
 			if (options) {
@@ -147,6 +155,7 @@ Connection.prototype._write = function (data, cb) {
 // private/public: this will be called from command handlers 
 Connection.prototype._push = function (payload, cb) {
 	var pushPacket = this.packetParser.createPush(payload);
+	this.logger.info('push from server:', payload);
 	this._write(pushPacket, cb);
 };
 

@@ -137,7 +137,8 @@ gn.start(function () {
 		module.exports.setup();
 		module.exports.command(1, 'testCommand', function (state, cb) {
 			console.log('i see data:', state.payload);
-			cb(null, 'OK');
+			state.push('Hello');
+			cb('OK');
 		});
 	}
 });
