@@ -13,37 +13,87 @@ var connId = 0;
 
 var SOCK_TIMEOUT = 30000;
 var AUTH_TIMEOUT = 3000;
+var PORT_IN_USE = 'EADDRINUSE';
 
 module.exports.setup = function () {
+	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
-	if (!config || !config.host || !config.port) {
+	if (!config || !config.host || !config.portRange) {
 		return;
 	}
 	
-	logger = gn.log.create('RPC');
-	
-	var server = net.createServer(handleConn);
-	server.listen(config.port, config.host);
-
-	// gracenode shutdown task
-	gn.onExit(function RPCShutdown(next) {
-		logger.info(
-			'RPC server closing',
-			config.host + ':' + config.port,
-			'waiting for all open connections to close...'
+	if (!Array.isArray(config.portRange) || config.portRange.length < 2) {
+		logger.error(
+			'incorrect port range',
+			'(must be an array of 2 elements from smallest to biggest):',
+			config.portRange
 		);
+		throw new Error('<PORT_RANGE_FOR_RPC_SERVER_INCORRECT>');
+	}
+	
+	var ports = [];
+	var portIndex = 0;
+	var boundPort;
 
-		// instruct all connections to close
-		for (var id in conns) {
-			conns[id].close();
+	for (var p = config.portRange[0]; p <= config.portRange[1]; p++) {
+		ports.push(p);
+	}
+
+	logger.verbose('port range is', config.portRange[0], 'to', config.portRange[1]);
+
+	var done = function () {
+		// RPC server is now successfully bound and listening
+		boundPort = ports[portIndex];
+		// gracenode shutdown task
+		gn.onExit(function RPCShutdown(next) {
+			logger.info(
+				'RPC server closing',
+				config.host + ':' + boundPort,
+				'waiting for all open connections to close...'
+			);
+
+			// instruct all connections to close
+			for (var id in conns) {
+				conns[id].close();
+			}
+
+			// stop accepting new connections and shutdown when all connections are closed
+			server.close(next);
+		});
+
+		logger.info('RPC server started at', config.host + ':' + boundPort); 
+	};	
+	var listen = function () {
+		var port = ports[portIndex];
+		logger.verbose('binding to:', config.host + ':' + port);
+		server.listen({
+			port: port,
+			host: config.host,
+			// make sure all workers do NOT share the same port
+			exclusive: true
+		});
+	};
+	var server = net.createServer(handleConn);
+	server.on('listening', done);
+	server.on('error', function (error) {
+		if (error.code === PORT_IN_USE) {
+			// try next port in range
+			var badPort = ports[portIndex];
+			logger.verbose('port is in use:', badPort);
+			portIndex += 1;
+			if (!ports[portIndex]) {
+				// there's no more port in range
+				error.message += ' (port:' + badPort + ')';
+				return gn.stop(error);
+			}
+			return listen();
 		}
-
-		// stop accepting new connections and shutdown when all connections are closed
-		server.close(next);
+		// different error, stop gracenode
+		gn.stop(error);
 	});
-
-	logger.info('RPC server started at', config.host + ':' + config.port); 
+	// start listening
+	listen();
 };
 
 function handleConn(sock) {
@@ -66,11 +116,16 @@ function handleConn(sock) {
 
 // test code
 gn.config({
+	cluster: {
+		max: 2
+	},
 	rpc: {
 		host: 'localhost',
-		port: 8889
+		portRange: [9876, 9880]
 	}
 });
 gn.start(function () {
-	module.exports.setup();
+	if (!gn.isMaster()) {
+		module.exports.setup();
+	}
 });

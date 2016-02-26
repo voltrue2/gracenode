@@ -4,6 +4,10 @@
 
 [![Build Status](https://travis-ci.org/voltrue2/gracenode.svg?branch=master)](https://travis-ci.org/voltrue2/gracenode)
 
+## Node.js Version
+
+Version `0.12.10` or above.
+
 ## What gracenode does
 
 - Manages cluster process.
@@ -16,7 +20,7 @@
 
 - Provides plethora of utility functions to aid development. Read <a href="https://github.com/voltrue2/gracenode#gracenodelib">here</a>. 
 
-- Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode#router-1">here</a>.
+- Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode#http-router">here</a>.
 
 - Provides fast template enigne. Read <a href="https://github.com/voltrue2/gracenode#render-1">here</a>.
 

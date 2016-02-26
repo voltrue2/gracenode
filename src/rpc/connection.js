@@ -4,7 +4,8 @@ var async = require('async');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var gn = require('../gracenode');
-var Packet = require('./packet');
+var Packet = require('../../lib/packet');
+// this is not HTTP router
 var router = require('./router');
 
 module.exports = Connection;
