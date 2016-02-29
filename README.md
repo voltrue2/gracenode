@@ -1469,6 +1469,12 @@ If the given parameter does not match the regular expression, the HTTP router wi
 **Syntax**
 
 ```
+{<regular expression>:paramName}
+```
+
+**Example**
+
+```
 {/^[a-zA-Z]*$/g:paramName}
 ```
 

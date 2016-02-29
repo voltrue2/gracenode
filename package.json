@@ -17,11 +17,12 @@
 		"jshint": "2.8.0",
 		"gracelog": "0.6.2",
 		"aeterno": "0.5.5",
-		"cluster-mode": "0.2.0",
+		"cluster-mode": "0.2.1",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
 		"cookies": "0.5.1",
-		"node-uuid": "1.4.3"	
+		"node-uuid": "1.4.3",
+		"bitwise-xor": "0.0.0"	
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",

@@ -1,5 +1,8 @@
 'use strict';
 
+// TODO: there is no security here yet
+// need to use .lib/pakcet/cryptoengine.js
+
 var async = require('async');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
@@ -12,6 +15,9 @@ module.exports = Connection;
 
 function Connection(connId, sock) {
 	EventEmitter.call(this);
+	// this.data is accessible from command controller functions
+	// can also be used to identify the connection from outside
+	this.data = {};
 	this.connId = connId;
 	this.sock = sock;
 	this.self = (this.sock) ? this.sock.localAddress + ':' + this.sock.localPort : 'UNKNOWN';
@@ -107,6 +113,12 @@ Connection.prototype._handleData = function (packet) {
 		
 		var state = {
 			STATUS: parser.STATUS_CODE,
+			set: function (key, val) {
+				that.data[key] = val;
+			},
+			get: function (key) {
+				return (that.data.hasOwnProperty(key)) ? that.data[key] : null;
+			},
 			push: function (payload, cb) {
 				that._push.apply(that, [payload, cb]);
 			},

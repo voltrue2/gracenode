@@ -102,8 +102,40 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
+// assign a handler function to a command
 module.exports.command = function (cmdId, commandName, handler) {
 	router.define(cmdId, commandName, handler);	
+};
+
+// get the connection map of this process
+module.exports.getAllConnections = function () {
+	var map = {};
+	for (var id in conns) {
+		map[id] = conns[id];
+	}
+	return map;
+};
+
+// get a connection by connection.data object
+// values of data object is to be controlled by command controller functions
+// valList can be an array
+// TODO: probably not too smart with the loop of all connections...
+module.exports.getConnectionsByData = function (key, valList) {
+	if (!Array.isArray(valList)) {
+		valList = [valList];
+	}
+	var list = [];
+	for (var id in conns) {
+		if (valList.indexOf(conns[id].data[key]) !== -1) {
+			list.push(list);
+		}
+	}
+	return list;
+};
+
+// get a connection by connection ID
+module.exports.getConnectionById = function (id) {
+	return conns[id] || null;
 };
 
 function handleConn(sock) {
