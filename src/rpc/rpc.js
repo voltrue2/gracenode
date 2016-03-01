@@ -6,6 +6,7 @@ var gn = require('../gracenode');
 
 var Connection = require('./connection');
 var router = require('./router');
+var hooks = require('./hooks');
 
 var logger;
 var config;
@@ -105,6 +106,11 @@ module.exports.setup = function (cb) {
 // assign a handler function to a command
 module.exports.command = function (cmdId, commandName, handler) {
 	router.define(cmdId, commandName, handler);	
+};
+
+// assign a command hook function
+module.exports.hook = function (cmdIdList, handler) {
+	hooks.add(cmdIdList, handler);
 };
 
 // get the connection map of this process

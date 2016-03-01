@@ -46,9 +46,7 @@ exports.router = require('../http');
 exports.http = exports.router;
 
 // not officially released nor documented
-exports.rpc = {
-	command: rpc.command
-};
+exports.rpc = rpc;
 
 exports.getRootPath = function () {
 	return rootPath;

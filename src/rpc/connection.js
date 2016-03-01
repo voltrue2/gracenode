@@ -111,45 +111,7 @@ Connection.prototype._handleData = function (packet) {
 
 		that.logger.info('command routing resolved:', 'command:', cmd.id, cmd.name);
 		
-		var state = {
-			STATUS: parser.STATUS_CODE,
-			set: function (key, val) {
-				that.data[key] = val;
-			},
-			get: function (key) {
-				return (that.data.hasOwnProperty(key)) ? that.data[key] : null;
-			},
-			push: function (payload, cb) {
-				that._push.apply(that, [payload, cb]);
-			},
-			payload: JSON.parse(parsedData.payload)
-		};
-	
-		// execute command handler
-		cmd.handler(state, function (res, options) {
-			var error;
-			if (res instanceof Error) {
-				that.logger.error('command:', cmd.id, cmd.name, res);
-				error = res;
-				res = {
-					message: res.message,
-					code: res.code || null
-				};
-			}
-			var replyPacket = parser.createReply(parser.status(error), parsedData.seq, res);
-			that._write(replyPacket);
-			// check options
-			if (options) {
-				if (options.closeAfterReply) {
-					return that.close();
-				}
-				if (options.killAfterReply) {
-					return that.kill();
-				}
-			}
-			// move on: we do not pass error as we want to handle the res of the commands
-			next();
-		});
+		executeCmd(that, cmd, parsedData, next);	
 	
 	}, done);
 };
@@ -181,3 +143,64 @@ Connection.prototype._handleError = function (error) {
 	this.logger.error(error);
 		
 };
+
+
+
+function executeCmd(that, cmd, parsedData, cb) {
+	var parser = that.packetParser; 
+	var write = function (error, res, options, cb) {
+		if (error) {
+			that.logger.error('command:', cmd.id, cmd.name, error);
+			res = {
+				message: error.message,
+				code: error.code || null
+			};
+		}
+		var replyPacket = parser.createReply(parser.status(error), parsedData.seq, res);
+		that._write(replyPacket);
+		// check options
+		if (options) {
+			if (options.closeAfterReply) {
+				return that.close();
+			}
+			if (options.killAfterReply) {
+				return that.kill();
+			}
+		}
+		if (typeof cb === 'function') {
+			cb();
+		}
+	};
+	var state = {
+		STATUS: parser.STATUS_CODE,
+		set: function (key, val) {
+			that.data[key] = val;
+		},
+		get: function (key) {
+			return (that.data.hasOwnProperty(key)) ? that.data[key] : null;
+		},
+		push: function (payload, cb) {
+			that._push.apply(that, [payload, cb]);
+		},
+		payload: JSON.parse(parsedData.payload)
+	};
+
+	// execute command hooks
+	cmd.hooks(state, function (error) {
+		if (error) {
+			that.logger.error('command hook:', cmd.id, cmd.name, error);
+			var msg = {
+				message: error.message,
+				code: error.code || null
+			};
+			var epacket = parser.createReply(parser.status(error), parsedData.seq, msg);
+			that._write(epacket);
+			return;
+		}	
+		// execute command handler
+		cmd.handler(state, function (error, res, options) {
+			// move on: we do not pass error as we want to handle the res of the commands
+			write(error, res, cmd, options, cb);
+		});
+	});
+}
