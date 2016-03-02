@@ -23,6 +23,19 @@ describe('gracenode boilerplate', function () {
 		exec('cp -rv ' + boilerplatePath + '* ' + testPath, done);
 	});
 
+	it('can set up node_modules directory and symolic link to gracenode for tests', function (done) {
+		exec('mkdir ' + testPath + '/node_modules', function (error) {
+			
+			if (error) {
+				console.error(error);
+			}
+
+			assert.equal(error, null);
+
+			exec('ln -fs ' + process.cwd() + ' ' + testPath + '/node_modules/gracenode', done);
+		});
+	});
+
 	it('can set up configurations', function (done) {
 		exec('ln -fs ' + testPath + '/configs/my.json ' + testPath + '/configs/config.json', done);
 	});
