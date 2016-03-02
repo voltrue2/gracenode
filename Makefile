@@ -1,4 +1,11 @@
-init:
+PHONY: help
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+## Set default command of make to help, so that running make will output help texts
+.DEFAULT_GOAL := help
+
+install: ## Initial installation
 	@echo 'install dependencies'
 	npm install
 	@echo 'create git pre-commit hook'
@@ -8,8 +15,7 @@ init:
 	chmod +x .git/hooks/pre-commit
 	@echo 'done'
 
-.PHONY: lint
-lint:
+lint: ## Execute lint against the source code
 	./bin/lint index.js src/ lib/ boilerplate/
 
 .PHONY: test
@@ -17,5 +23,5 @@ ifndef log
   log=false
   single=false
 endif
-test:
+test: ## Execute all unit tests. Optionally you can run "make test single=[test name]" to execute individual test
 	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 50000 --log=$(log) --single=$(single)

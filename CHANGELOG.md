@@ -6,6 +6,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### Unit tests added for boilerplating
+
 #### gracenode.http add to replace gracenode.router
 
 ## Changed

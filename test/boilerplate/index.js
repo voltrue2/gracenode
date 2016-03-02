@@ -44,4 +44,8 @@ describe('gracenode boilerplate', function () {
 		exec('rm -rvf ' + testPath + '/*', done);
 	});
 
+	it('can make sure .placeholder file is in app directory', function (done) {
+		exec('touch ' + testPath + '/.placeholder', done);
+	});
+
 });
