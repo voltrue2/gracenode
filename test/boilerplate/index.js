@@ -1,3 +1,4 @@
+var fs = require('fs');
 var exec = require('child_process').exec;
 var assert = require('assert');
 var request = require('../src/request');
@@ -10,6 +11,13 @@ describe('gracenode boilerplate', function () {
 	it('can clean up before tests', function (done) {
 		exec('rm -rvf ' + testPath + '/*', done);
 	});
+
+	it('can make sure that default HTTP server is not running', function (done) {
+		exec('make -C ' + testPath + ' stop', function () {
+			// we ignore error
+			done();
+		});
+	});
 	
 	it('can create boilerplate for an application', function (done) {
 		exec('cp -rv ' + boilerplatePath + '* ' + testPath, done);
@@ -21,6 +29,11 @@ describe('gracenode boilerplate', function () {
 
 	it('can start the default HTTP server', function (done) {
 		exec('make -C ' + testPath + ' start', function (error, out) {
+			
+			if (error) {
+				console.error(error);
+			}
+
 			assert.equal(error, null);
 			done();
 		});
@@ -28,6 +41,11 @@ describe('gracenode boilerplate', function () {
 
 	it('can check status of the default HTTP server', function (done) {
 		exec('make -C ' + testPath + ' status', function (error, out) {
+			
+			if (error) {
+				console.error(error);
+			}
+
 			assert.equal(error, null);
 			done();
 		});
@@ -35,6 +53,11 @@ describe('gracenode boilerplate', function () {
 
 	it('the default HTTP server can handle a request GET /', function (done) {
 		request.GET('http://localhost:8888/', {}, null, function (error, res, st, headers) {
+			
+			if (error) {
+				console.error(error);
+			}
+
 			assert.equal(error, null);
 			assert.equal(st, 200);
 			done();
@@ -43,6 +66,11 @@ describe('gracenode boilerplate', function () {
 
 	it('the default HTTP server can handle a request GET /hello/{message}', function (done) {
 		request.GET('http://localhost:8888/hello/foo', {}, null, function (error, res, st, headers) {
+			
+			if (error) {
+				console.error(error);
+			}
+
 			assert.equal(error, null);
 			assert.equal(st, 200);
 			done();
@@ -51,6 +79,11 @@ describe('gracenode boilerplate', function () {
 
 	it('can stop the default HTTP server', function (done) {
 		exec('make -C ' + testPath + ' stop', function (error, out) {
+			
+			if (error) {
+				console.error(error);
+			}
+
 			assert.equal(error, null);
 			done();
 		});
