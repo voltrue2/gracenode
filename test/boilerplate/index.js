@@ -33,6 +33,22 @@ describe('gracenode boilerplate', function () {
 		});
 	});
 
+	it('the default HTTP server can handle a request GET /', function (done) {
+		request.GET('http://localhost:8888/', {}, null, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
+	it('the default HTTP server can handle a request GET /hello/{message}', function (done) {
+		request.GET('http://localhost:8888/hello/foo', {}, null, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			done();
+		});
+	});
+
 	it('can stop the default HTTP server', function (done) {
 		exec('make -C ' + testPath + ' stop', function (error, out) {
 			assert.equal(error, null);
