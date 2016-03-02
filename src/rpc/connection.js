@@ -109,7 +109,11 @@ Connection.prototype._handleData = function (packet) {
 			return that._write(notFound);
 		}
 
-		that.logger.info('command routing resolved:', 'command:', cmd.id, cmd.name);
+		that.logger.info(
+			'command routing resolved:',
+			'command:', cmd.id, cmd.name,
+			'seq:', parsedData.seq
+		);
 		
 		executeCmd(that, cmd, parsedData, next);	
 	
@@ -120,7 +124,7 @@ Connection.prototype._handleData = function (packet) {
 Connection.prototype._write = function (data, cb) {
 	if (this.sock) {
 		this.sock.write(data, 'UTF-8', cb);
-		this.logger.info('command response sent:', 'size:', this.sock.bufferSize + 'bytes');
+		this.logger.info('command response sent:', 'size:', this.sock.bufferSize + ' bytes');
 		return;
 	}
 	this.logger.warn('TCP socket is gone');

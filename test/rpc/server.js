@@ -18,7 +18,7 @@ gn.config({
 });
 
 gn.rpc.command(1, 'test1', function (state, cb) {
-	console.log('data', state.payload);
+	console.log('we have data');
 	cb(null, { message: 'OK' });
 });
 

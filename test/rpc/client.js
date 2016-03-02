@@ -22,10 +22,15 @@ client.connect(port, host, function () {
 
 		console.log('send packet #' + counter);
 
+		var list = [];
+		for (var i = 0; i < 1000; i++) {
+			list.push(counter * i);
+		}
+
 		var packet;
 		var cmdId = 1;
 		var seq = 0;
-		var payload = JSON.stringify({ a: 'AAA', b: 'BBB', c: 10000, d: 53.632 });
+		var payload = JSON.stringify({ a: 'AAA', b: 'BBB', c: 10000, d: 53.632, list: list });
 		// regular TCP
 		var packetParser = new PacketParser();
 		packet = packetParser.createReq(cmdId, seq, payload);
