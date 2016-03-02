@@ -10,7 +10,13 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
-None
+#### Boilerplate Makefile now has help texts
+
+When you start your new project after installing **gracenode**, you can fun `./node_modules/gracenode/bin/boilerplate` to create the basic structure of your project
+
+to help jump start. This also creates a `make` for your project. Now when you execute `make`, it will output help texts of all avialble make commands.
+
+#### Dependency version updated for cluster-mode
 
 ## Deprecated
 
