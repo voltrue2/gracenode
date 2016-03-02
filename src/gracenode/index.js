@@ -43,10 +43,7 @@ exports.render = render.render;
 exports.http = require('../http');
 
 // deprecated
-exports.router = function () {
-	logger.warn('.router has been deprecated and should not be used. Use .http instead');
-	return module.exports.http;
-};
+exports.router = module.exports.http;
 
 // not officially released nor documented
 exports.rpc = rpc;
