@@ -6,6 +6,10 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### Boilerplate make command added make setup
+
+`make setup` will create initial setup of your application using **gracenode** boilerplate
+
 #### Unit tests added for boilerplating
 
 #### gracenode.http add to replace gracenode.router

@@ -5,6 +5,9 @@ help:
 ## Set default command of make to help, so that running make will output help texts
 .DEFAULT_GOAL := help
 
+setup: ## Creates initial setup of your application using gracenode boilerplate
+	./node_modules/gracenode/bin/boilerplate
+
 start: ## Start daemonized application process
 	node index.js start -l daemonlogs/ -w index.js api/ templates/ configs/
 
