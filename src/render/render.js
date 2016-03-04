@@ -161,6 +161,10 @@ function extractLogic(tag) {
 	if (!logic && !conditions) {
 		return null;
 	}
+	// if, for, foreach must have conditions
+	if (logic !== LOGIC_TYPES.REQ && !conditions) {
+		return null;
+	}
 	return {
 		logic: logic,
 		conditions: conditions

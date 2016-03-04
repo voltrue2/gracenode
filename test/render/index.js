@@ -388,4 +388,10 @@ describe('gracenode.render', function () {
 		assert.equal(expected, rendered);
 	});
 
+	it('can render w/ invalid logics', function () {
+		var rendered = gn.render('/bad.html');
+		var expected = fs.readFileSync(__dirname + '/expected/bad.html', 'utf8');
+		assert.equal(expected, rendered);
+	});
+
 });
