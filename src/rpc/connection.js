@@ -17,6 +17,7 @@ function Connection(connId, sock) {
 	EventEmitter.call(this);
 	// this.data is accessible from command controller functions
 	// can also be used to identify the connection from outside
+	this.cryptoEngine = null;
 	this.data = {};
 	this.connId = connId;
 	this.sock = sock;
@@ -48,6 +49,11 @@ function Connection(connId, sock) {
 }
 
 util.inherits(Connection, EventEmitter);
+
+// TODO: implement using cryptoEngine case
+Connection.prototype.useCryptoEngine = function (engine) {
+	this.cryptoEngine = engine;
+};
 
 // public
 Connection.prototype.close = function () {
@@ -81,7 +87,8 @@ Connection.prototype.kill = function (error) {
 // private
 Connection.prototype._handleData = function (packet) {
 	this.logger.verbose('packet received');
-	var parsed = this.packetParser.parse(packet);
+
+	var parsed = this.packetParser.parse(packet, this.cryptoEngine);
 
 	if (parsed instanceof Error) {
 		return this.kill(parsed);

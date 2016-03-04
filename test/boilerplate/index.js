@@ -39,9 +39,6 @@ describe('gracenode boilerplate', function () {
 	it('make sure that we have logs/ and daemonlogs dir', function (done) {
 		exec('mkdir ' + testPath + '/logs', function () {
 			// we ignore the error
-
-			console.log(arguments);
-
 			exec('mkdir ' + testPath + '/daemonlogs', function () {
 				// we ignore the error
 				done();

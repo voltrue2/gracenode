@@ -1,16 +1,17 @@
 'use strict';
 
 var net = require('net');
-//var crypto = require('crypto');
 var gn = require('../gracenode');
 
 var Connection = require('./connection');
 var router = require('./router');
 var hooks = require('./hooks');
+var DefaultCryptoEngine = require('../../lib/packet/cryptoengine');
 
 var logger;
 var config;
 var conns = {};
+var cryptoEngine = null;
 var connId = 0;
 
 var SOCK_TIMEOUT = 30000;
@@ -103,6 +104,21 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
+// assign a crypto engine for encryption and decryption of packets
+module.exports.cryptoEngine = function (engine) {
+	if (!engine) {
+		// use gracenode default crypto engine
+		engine = new DefaultCryptoEngine();
+	}
+	if (!engine.encryption || !engine.decryption) {
+		throw new Error(
+			'InvalidCryptoEngine: ' + 
+			'{ encrypt: <function>, decrypt: <function>, getSessionId: <function> }'
+		);
+	}
+	cryptoEngine = engine;	
+};
+
 // assign a handler function to a command
 module.exports.command = function (cmdId, commandName, handler) {
 	router.define(cmdId, commandName, handler);	
@@ -151,6 +167,11 @@ function handleConn(sock) {
 	};
 
 	var conn = new Connection(connId, sock, opt);
+	
+	if (cryptoEngine) {
+		conn.useCryptoEngine(cryptoEngine);
+	}
+
 	conn.on('kill', function () {
 		delete conns[connId];
 	});
