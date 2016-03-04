@@ -384,9 +384,13 @@ function extractVars(vars, tag) {
 		for (var i = 0, len = found.length; i < len; i++) {
 			var key = found[i];
 			if (!vars[key]) {
-				// for {{variable}}, remove { and }
-				vars[key] = key.replace(REG.VARS, '').replace(REG.IFV, '');
-				varMap[key] = new RegExp(key, 'g');
+				try {
+					// for {{variable}}, remove { and }
+					vars[key] = key.replace(REG.VARS, '').replace(REG.IFV, '');
+					varMap[key] = new RegExp(key, 'g');
+				} catch (e) {
+					continue;
+				}
 			}
 		}
 	}
