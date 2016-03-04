@@ -190,16 +190,23 @@ function getIfConditions(tag, stag) {
 	var cIndex = stag.indexOf('):');
 
 	if (stag.replace(REG.VARS, '').indexOf(LOGICS.IF + '(') === -1) {
-		throw new Error('InvalidOpen: ' + stag);
+		//throw new Error('InvalidOpen: ' + stag);
+		return null;
 	}
 	
 	if (cIndex === -1) {
-		throw new Error('InvalidClose: ' + stag);
+		//throw new Error('InvalidClose: ' + stag);
+		return null;
 	}
 
 	// extract if
 	var ext = stag.substring(oIndex + 1, cIndex);
 	var list = parseIfConds(ext.split(REG.IFC));
+	
+	if (!list) {
+		return null;
+	}
+
 	var result = stag.substring(cIndex + 2, stag.search(REG.IFS));
 	map[LOGICS.IF] = {
 		conditions: list,
@@ -213,10 +220,16 @@ function getIfConditions(tag, stag) {
 		oIndex = tmp.indexOf('(');
 		cIndex = tmp.indexOf('):');
 		if (cIndex === -1) {
-			throw new Error('InvalidClose: ' + stag);
+			//throw new Error('InvalidClose: ' + stag);
+			continue;
 		}
 		ext = tmp.substring(oIndex + 1, cIndex);
 		list = parseIfConds(ext.split(REG.IFC));
+
+		if (!list) {
+			continue;
+		}
+
 		tmp = tmp.substring(cIndex + 2);
 		result = tmp.substring(0, tmp.search(REG.IFS));
 		if (!map.elseif) {
@@ -236,7 +249,8 @@ function getIfConditions(tag, stag) {
 		cIndex = tmp.indexOf('end' + LOGICS.IF);
 
 		if (cIndex === -1) {
-			throw new Error('InvalidClose: ' + stag);
+			//throw new Error('InvalidClose: ' + stag);
+			return null;
 		}
 
 		map.else = {
@@ -253,10 +267,13 @@ function parseIfConds(list) {
 		if (list[i] !== '&&' && list[i] !== '||') {
 			var cond = list[i].split(REG.IFE);
 			if (cond.length !== 3) {
+				/*
 				throw new Error(
 					'InvalidIfConditions: ' + list[i] +
 					'\nformat must be variable1 === variable etc'
 				);
+				*/
+				return null;
 			}	
 			list[i] = {
 				op: cond[1],
@@ -271,6 +288,11 @@ function parseIfConds(list) {
 function getForConditions(stag) {
 	
 	var indexes = getOpenCloseEnd(LOGICS.FOR, stag);
+
+	if (!indexes) {
+		return null;
+	}
+
 	var oIndex = indexes.open;
 	var cIndex = indexes.close;
 	var eIndex = indexes.end;
@@ -297,6 +319,11 @@ function getForConditions(stag) {
 
 function getForEachConditions(stag) {
 	var indexes = getOpenCloseEnd(LOGICS.FOREACH, stag);
+
+	if (!indexes) {
+		return null;
+	}
+
 	var oIndex = indexes.open;
 	var cIndex = indexes.close;
 	var eIndex = indexes.end;
@@ -320,15 +347,18 @@ function getOpenCloseEnd(type, stag) {
 	var eIndex = stag.lastIndexOf('end' + type);
 
 	if (stag.replace(REG.VARS, '').indexOf(type + '(') === -1) {
-		throw new Error('InvalidOpen: ' + stag);
+		//throw new Error('InvalidOpen: ' + stag);
+		return null;
 	}
 
 	if (cIndex === -1) {
-		throw new Error('InvalidClose: ' + stag);
+		//throw new Error('InvalidClose: ' + stag);
+		return null;
 	}
 
 	if (eIndex === -1) {
-		throw new Error('InvalidEnd: ' + stag);
+		//throw new Error('InvalidEnd: ' + stag);
+		return null;
 	}
 
 	return {

@@ -2,6 +2,30 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.5.1
+
+## Added
+
+None
+
+## Changed
+
+#### Render does not throw errors when detecting invalid logics when pre-rendering
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+## Removed
+
+None
+
+***
+
 ## Version 2.5.0
 
 ## Added
@@ -35,6 +59,8 @@ Please use `gracenode.http` instead.
 ## Removed
 
 None
+
+***
 
 ## Version 2.4.1
 

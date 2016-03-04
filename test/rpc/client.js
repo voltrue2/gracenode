@@ -34,7 +34,7 @@ client.connect(port, host, function () {
 		// regular TCP
 		var packetParser = new PacketParser();
 		packet = packetParser.createReq(cmdId, seq, payload);
-		// web socket
+		// raw text
 		packet = JSON.stringify({
 			command: 1,
 			seq: 0,
