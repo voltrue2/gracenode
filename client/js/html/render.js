@@ -12,6 +12,16 @@
 
 	document.addEventListener('DOMContentLoaded', parse, false);
 
+	window.setRemoteData = function (dom, value) {
+		dom.setAttribute(TAGS.SRC, value);
+		getRemoteData(dom, value);
+	};
+
+	window.setLocalData = function (dom, value) {
+		dom.setAttribute(TAGS.LOCAL, value);
+		getLocalData(dom, value);
+	};
+
 	window.render = function (target) {
 		parse(null, target.parentNode);
 	};
