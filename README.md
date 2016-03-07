@@ -817,7 +817,7 @@ gracenode.use('myMod', '/path/to/my/mod/', {
 
 Starts the **gracenode** process.
 
-**NOTE**: If there is an error while starting the process, it will crush with an exception.
+**NOTE**: If there is an error while starting the process, it will crash with an exception.
 
 ### .stop(error [*error object])
 
