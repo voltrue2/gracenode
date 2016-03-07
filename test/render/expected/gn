@@ -1,0 +1,1431 @@
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"><title>Untitled Document.md</title><style>@import 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.2.0/katex.min.css';code{color:#c7254e;background-color:#f9f2f4;border-radius:4px}code,kbd{padding:2px 4px}kbd{color:#fff;background-color:#333;border-radius:3px;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}kbd kbd{padding:0;font-size:100%;box-shadow:none}pre{display:block;margin:0 0 10px;word-break:break-all;word-wrap:break-word;color:#333;background-color:#f5f5f5;border:1px solid #ccc;border-radius:4px}pre code{padding:0;font-size:inherit;color:inherit;white-space:pre-wrap;background-color:transparent;border-radius:0}.pre-scrollable{max-height:340px;overflow-y:scroll}fieldset{border:0;min-width:0}legend{display:block;width:100%;margin-bottom:20px;font-size:21px;line-height:inherit;color:#333;border-bottom:1px solid #e5e5e5}label{display:inline-block;max-width:100%;margin-bottom:5px;font-weight:700}input[type="radio"],input[type="checkbox"]{margin:1px 0 0;line-height:normal}input[type="file"]{display:block}input[type="range"]{display:block;width:100%}select[multiple],select[size]{height:auto}input[type="file"]:focus,input[type="radio"]:focus,input[type="checkbox"]:focus{outline:thin dotted;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px}output{padding-top:7px}output,.form-control{display:block;font-size:14px;line-height:1.4285714;color:#555}.form-control{width:100%;height:34px;padding:6px 12px;background-color:#fff;background-image:none;border:1px solid #ccc;border-radius:4px;box-shadow:inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s}.form-control:focus{border-color:#66afe9;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)}.form-control::-moz-placeholder{color:#777;opacity:1}.form-control:-ms-input-placeholder{color:#777}.form-control::-webkit-input-placeholder{color:#777}.form-control[disabled],.form-control[readonly],fieldset[disabled] .form-control{cursor:not-allowed;background-color:#eee;opacity:1}textarea.form-control{height:auto}input[type="date"],input[type="time"],input[type="datetime-local"],input[type="month"]{line-height:34px;line-height:1.4285714 \0}input[type="date"].input-sm,.form-horizontal .form-group-sm input[type="date"].form-control,.input-group-sm>input[type="date"].form-control,.input-group-sm>input[type="date"].input-group-addon,.input-group-sm>.input-group-btn>input[type="date"].btn,input[type="time"].input-sm,.form-horizontal .form-group-sm input[type="time"].form-control,.input-group-sm>input[type="time"].form-control,.input-group-sm>input[type="time"].input-group-addon,.input-group-sm>.input-group-btn>input[type="time"].btn,input[type="datetime-local"].input-sm,.form-horizontal .form-group-sm input[type="datetime-local"].form-control,.input-group-sm>input[type="datetime-local"].form-control,.input-group-sm>input[type="datetime-local"].input-group-addon,.input-group-sm>.input-group-btn>input[type="datetime-local"].btn,input[type="month"].input-sm,.form-horizontal .form-group-sm input[type="month"].form-control,.input-group-sm>input[type="month"].form-control,.input-group-sm>input[type="month"].input-group-addon,.input-group-sm>.input-group-btn>input[type="month"].btn{line-height:30px}input[type="date"].input-lg,.form-horizontal .form-group-lg input[type="date"].form-control,.input-group-lg>input[type="date"].form-control,.input-group-lg>input[type="date"].input-group-addon,.input-group-lg>.input-group-btn>input[type="date"].btn,input[type="time"].input-lg,.form-horizontal .form-group-lg input[type="time"].form-control,.input-group-lg>input[type="time"].form-control,.input-group-lg>input[type="time"].input-group-addon,.input-group-lg>.input-group-btn>input[type="time"].btn,input[type="datetime-local"].input-lg,.form-horizontal .form-group-lg input[type="datetime-local"].form-control,.input-group-lg>input[type="datetime-local"].form-control,.input-group-lg>input[type="datetime-local"].input-group-addon,.input-group-lg>.input-group-btn>input[type="datetime-local"].btn,input[type="month"].input-lg,.form-horizontal .form-group-lg input[type="month"].form-control,.input-group-lg>input[type="month"].form-control,.input-group-lg>input[type="month"].input-group-addon,.input-group-lg>.input-group-btn>input[type="month"].btn{line-height:46px}.form-group{margin-bottom:15px}.radio,.checkbox{position:relative;display:block;min-height:20px;margin-top:10px;margin-bottom:10px}.radio label,.checkbox label{padding-left:20px;margin-bottom:0;font-weight:400;cursor:pointer}.radio input[type="radio"],.radio-inline input[type="radio"],.checkbox input[type="checkbox"],.checkbox-inline input[type="checkbox"]{position:absolute;margin-left:-20px;margin-top:4px \9}.radio+.radio,.checkbox+.checkbox{margin-top:-5px}.radio-inline,.checkbox-inline{display:inline-block;padding-left:20px;margin-bottom:0;vertical-align:middle;font-weight:400;cursor:pointer}.radio-inline+.radio-inline,.checkbox-inline+.checkbox-inline{margin-top:0;margin-left:10px}input[type="radio"][disabled],input[type="radio"].disabled,fieldset[disabled] input[type="radio"],input[type="checkbox"][disabled],input[type="checkbox"].disabled,fieldset[disabled] input[type="checkbox"],.radio-inline.disabled,fieldset[disabled] .radio-inline,.checkbox-inline.disabled,fieldset[disabled] .checkbox-inline,.radio.disabled label,fieldset[disabled] .radio label,.checkbox.disabled label,fieldset[disabled] .checkbox label{cursor:not-allowed}.form-control-static{padding-top:7px;padding-bottom:7px;margin-bottom:0}.form-control-static.input-lg,.form-horizontal .form-group-lg .form-control-static.form-control,.input-group-lg>.form-control-static.form-control,.input-group-lg>.form-control-static.input-group-addon,.input-group-lg>.input-group-btn>.form-control-static.btn,.form-control-static.input-sm,.form-horizontal .form-group-sm .form-control-static.form-control,.input-group-sm>.form-control-static.form-control,.input-group-sm>.form-control-static.input-group-addon,.input-group-sm>.input-group-btn>.form-control-static.btn{padding-left:0;padding-right:0}.input-sm,.form-horizontal .form-group-sm .form-control,.input-group-sm>.form-control{height:30px;padding:5px 10px;font-size:12px;line-height:1.5;border-radius:3px}.input-group-sm>.input-group-addon{height:30px;line-height:1.5}.input-group-sm>.input-group-btn>.btn{height:30px;padding:5px 10px;font-size:12px;line-height:1.5;border-radius:3px}select.input-sm,.form-horizontal .form-group-sm select.form-control,.input-group-sm>select.form-control,.input-group-sm>select.input-group-addon,.input-group-sm>.input-group-btn>select.btn{height:30px;line-height:30px}textarea.input-sm,.form-horizontal .form-group-sm textarea.form-control,.input-group-sm>textarea.form-control,.input-group-sm>textarea.input-group-addon,.input-group-sm>.input-group-btn>textarea.btn,select[multiple].input-sm,.form-horizontal .form-group-sm select[multiple].form-control,.input-group-sm>select[multiple].form-control,.input-group-sm>select[multiple].input-group-addon,.input-group-sm>.input-group-btn>select[multiple].btn{height:auto}.input-lg,.form-horizontal .form-group-lg .form-control,.input-group-lg>.form-control{height:46px;padding:10px 16px;font-size:18px;line-height:1.33;border-radius:6px}.input-group-lg>.input-group-addon{height:46px;line-height:1.33}.input-group-lg>.input-group-btn>.btn{height:46px;padding:10px 16px;font-size:18px;line-height:1.33;border-radius:6px}select.input-lg,.form-horizontal .form-group-lg select.form-control,.input-group-lg>select.form-control,.input-group-lg>select.input-group-addon,.input-group-lg>.input-group-btn>select.btn{height:46px;line-height:46px}textarea.input-lg,.form-horizontal .form-group-lg textarea.form-control,.input-group-lg>textarea.form-control,.input-group-lg>textarea.input-group-addon,.input-group-lg>.input-group-btn>textarea.btn,select[multiple].input-lg,.form-horizontal .form-group-lg select[multiple].form-control,.input-group-lg>select[multiple].form-control,.input-group-lg>select[multiple].input-group-addon,.input-group-lg>.input-group-btn>select[multiple].btn{height:auto}.has-feedback{position:relative}.has-feedback .form-control{padding-right:42.5px}.form-control-feedback{position:absolute;top:25px;right:0;z-index:2;display:block;width:34px;height:34px;line-height:34px;text-align:center}.input-lg+.form-control-feedback,.form-horizontal .form-group-lg .form-control+.form-control-feedback,.input-group-lg>.form-control+.form-control-feedback,.input-group-lg>.input-group-addon+.form-control-feedback,.input-group-lg>.input-group-btn>.btn+.form-control-feedback{width:46px;height:46px;line-height:46px}.input-sm+.form-control-feedback,.form-horizontal .form-group-sm .form-control+.form-control-feedback,.input-group-sm>.form-control+.form-control-feedback,.input-group-sm>.input-group-addon+.form-control-feedback,.input-group-sm>.input-group-btn>.btn+.form-control-feedback{width:30px;height:30px;line-height:30px}.has-success .help-block,.has-success .control-label,.has-success .radio,.has-success .checkbox,.has-success .radio-inline,.has-success .checkbox-inline{color:#3c763d}.has-success .form-control{border-color:#3c763d;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.has-success .form-control:focus{border-color:#2b542c;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #67b168}.has-success .input-group-addon{color:#3c763d;border-color:#3c763d;background-color:#dff0d8}.has-success .form-control-feedback{color:#3c763d}.has-warning .help-block,.has-warning .control-label,.has-warning .radio,.has-warning .checkbox,.has-warning .radio-inline,.has-warning .checkbox-inline{color:#8a6d3b}.has-warning .form-control{border-color:#8a6d3b;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.has-warning .form-control:focus{border-color:#66512c;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #c0a16b}.has-warning .input-group-addon{color:#8a6d3b;border-color:#8a6d3b;background-color:#fcf8e3}.has-warning .form-control-feedback{color:#8a6d3b}.has-error .help-block,.has-error .control-label,.has-error .radio,.has-error .checkbox,.has-error .radio-inline,.has-error .checkbox-inline{color:#a94442}.has-error .form-control{border-color:#a94442;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.has-error .form-control:focus{border-color:#843534;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #ce8483}.has-error .input-group-addon{color:#a94442;border-color:#a94442;background-color:#f2dede}.has-error .form-control-feedback{color:#a94442}.has-feedback label.sr-only~.form-control-feedback{top:0}.help-block{display:block;margin-top:5px;margin-bottom:10px;color:#737373}.form-horizontal .radio,.form-horizontal .checkbox,.form-horizontal .radio-inline,.form-horizontal .checkbox-inline{margin-top:0;margin-bottom:0;padding-top:7px}.form-horizontal .radio,.form-horizontal .checkbox{min-height:27px}.form-horizontal .form-group{margin-left:-15px;margin-right:-15px}.form-horizontal .form-group:before{content:" ";display:table}.form-horizontal .form-group:after{content:" ";display:table;clear:both}.form-horizontal .has-feedback .form-control-feedback{top:0;right:15px}.btn{display:inline-block;vertical-align:middle;cursor:pointer;background-image:none;border:1px solid transparent;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.btn:focus,.btn:active:focus,.btn.active:focus{outline:thin dotted;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px}.btn:hover,.btn:focus{color:#333;text-decoration:none}.btn:active,.btn.active{outline:0;background-image:none;box-shadow:inset 0 3px 5px rgba(0,0,0,.125)}.btn.disabled,.btn[disabled],fieldset[disabled] .btn{cursor:not-allowed;pointer-events:none;opacity:.65;filter:alpha(opacity=65);box-shadow:none}.btn-default{color:#333;background-color:#fff;border-color:#ccc}.btn-default:hover,.btn-default:focus,.btn-default:active,.btn-default.active,.open>.btn-default.dropdown-toggle{color:#333;background-color:#e6e6e6;border-color:#adadad}.btn-default:active,.btn-default.active,.open>.btn-default.dropdown-toggle{background-image:none}.btn-default.disabled,.btn-default.disabled:hover,.btn-default.disabled:focus,.btn-default.disabled:active,.btn-default.disabled.active,.btn-default[disabled],.btn-default[disabled]:hover,.btn-default[disabled]:focus,.btn-default[disabled]:active,.btn-default[disabled].active,fieldset[disabled] .btn-default,fieldset[disabled] .btn-default:hover,fieldset[disabled] .btn-default:focus,fieldset[disabled] .btn-default:active,fieldset[disabled] .btn-default.active{background-color:#fff;border-color:#ccc}.btn-default .badge{color:#fff;background-color:#333}.btn-primary{color:#fff;background-color:#428bca;border-color:#357ebd}.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,.open>.btn-primary.dropdown-toggle{color:#fff;background-color:#3071a9;border-color:#285e8e}.btn-primary:active,.btn-primary.active,.open>.btn-primary.dropdown-toggle{background-image:none}.btn-primary.disabled,.btn-primary.disabled:hover,.btn-primary.disabled:focus,.btn-primary.disabled:active,.btn-primary.disabled.active,.btn-primary[disabled],.btn-primary[disabled]:hover,.btn-primary[disabled]:focus,.btn-primary[disabled]:active,.btn-primary[disabled].active,fieldset[disabled] .btn-primary,fieldset[disabled] .btn-primary:hover,fieldset[disabled] .btn-primary:focus,fieldset[disabled] .btn-primary:active,fieldset[disabled] .btn-primary.active{background-color:#428bca;border-color:#357ebd}.btn-primary .badge{color:#428bca;background-color:#fff}.btn-success{color:#fff;background-color:#5cb85c;border-color:#4cae4c}.btn-success:hover,.btn-success:focus,.btn-success:active,.btn-success.active,.open>.btn-success.dropdown-toggle{color:#fff;background-color:#449d44;border-color:#398439}.btn-success:active,.btn-success.active,.open>.btn-success.dropdown-toggle{background-image:none}.btn-success.disabled,.btn-success.disabled:hover,.btn-success.disabled:focus,.btn-success.disabled:active,.btn-success.disabled.active,.btn-success[disabled],.btn-success[disabled]:hover,.btn-success[disabled]:focus,.btn-success[disabled]:active,.btn-success[disabled].active,fieldset[disabled] .btn-success,fieldset[disabled] .btn-success:hover,fieldset[disabled] .btn-success:focus,fieldset[disabled] .btn-success:active,fieldset[disabled] .btn-success.active{background-color:#5cb85c;border-color:#4cae4c}.btn-success .badge{color:#5cb85c;background-color:#fff}.btn-info{color:#fff;background-color:#5bc0de;border-color:#46b8da}.btn-info:hover,.btn-info:focus,.btn-info:active,.btn-info.active,.open>.btn-info.dropdown-toggle{color:#fff;background-color:#31b0d5;border-color:#269abc}.btn-info:active,.btn-info.active,.open>.btn-info.dropdown-toggle{background-image:none}.btn-info.disabled,.btn-info.disabled:hover,.btn-info.disabled:focus,.btn-info.disabled:active,.btn-info.disabled.active,.btn-info[disabled],.btn-info[disabled]:hover,.btn-info[disabled]:focus,.btn-info[disabled]:active,.btn-info[disabled].active,fieldset[disabled] .btn-info,fieldset[disabled] .btn-info:hover,fieldset[disabled] .btn-info:focus,fieldset[disabled] .btn-info:active,fieldset[disabled] .btn-info.active{background-color:#5bc0de;border-color:#46b8da}.btn-info .badge{color:#5bc0de;background-color:#fff}.btn-warning{color:#fff;background-color:#f0ad4e;border-color:#eea236}.btn-warning:hover,.btn-warning:focus,.btn-warning:active,.btn-warning.active,.open>.btn-warning.dropdown-toggle{color:#fff;background-color:#ec971f;border-color:#d58512}.btn-warning:active,.btn-warning.active,.open>.btn-warning.dropdown-toggle{background-image:none}.btn-warning.disabled,.btn-warning.disabled:hover,.btn-warning.disabled:focus,.btn-warning.disabled:active,.btn-warning.disabled.active,.btn-warning[disabled],.btn-warning[disabled]:hover,.btn-warning[disabled]:focus,.btn-warning[disabled]:active,.btn-warning[disabled].active,fieldset[disabled] .btn-warning,fieldset[disabled] .btn-warning:hover,fieldset[disabled] .btn-warning:focus,fieldset[disabled] .btn-warning:active,fieldset[disabled] .btn-warning.active{background-color:#f0ad4e;border-color:#eea236}.btn-warning .badge{color:#f0ad4e;background-color:#fff}.btn-danger{color:#fff;background-color:#d9534f;border-color:#d43f3a}.btn-danger:hover,.btn-danger:focus,.btn-danger:active,.btn-danger.active,.open>.btn-danger.dropdown-toggle{color:#fff;background-color:#c9302c;border-color:#ac2925}.btn-danger:active,.btn-danger.active,.open>.btn-danger.dropdown-toggle{background-image:none}.btn-danger.disabled,.btn-danger.disabled:hover,.btn-danger.disabled:focus,.btn-danger.disabled:active,.btn-danger.disabled.active,.btn-danger[disabled],.btn-danger[disabled]:hover,.btn-danger[disabled]:focus,.btn-danger[disabled]:active,.btn-danger[disabled].active,fieldset[disabled] .btn-danger,fieldset[disabled] .btn-danger:hover,fieldset[disabled] .btn-danger:focus,fieldset[disabled] .btn-danger:active,fieldset[disabled] .btn-danger.active{background-color:#d9534f;border-color:#d43f3a}.btn-danger .badge{color:#d9534f;background-color:#fff}.btn-link{color:#428bca;font-weight:400;cursor:pointer;border-radius:0}.btn-link,.btn-link:active,.btn-link[disabled],fieldset[disabled] .btn-link{background-color:transparent;box-shadow:none}.btn-link,.btn-link:hover,.btn-link:focus,.btn-link:active{border-color:transparent}.btn-link:hover,.btn-link:focus{color:#2a6496;text-decoration:underline;background-color:transparent}.btn-link[disabled]:hover,.btn-link[disabled]:focus,fieldset[disabled] .btn-link:hover,fieldset[disabled] .btn-link:focus{color:#777;text-decoration:none}.btn-lg{padding:10px 16px;font-size:18px;line-height:1.33;border-radius:6px}.btn-sm{padding:5px 10px}.btn-sm,.btn-xs{font-size:12px;line-height:1.5;border-radius:3px}.btn-xs{padding:1px 5px}.btn-block{display:block;width:100%}.btn-block+.btn-block{margin-top:5px}input[type="submit"].btn-block,input[type="reset"].btn-block,input[type="button"].btn-block{width:100%}.fade{opacity:0;-webkit-transition:opacity .15s linear;transition:opacity .15s linear}.fade.in{opacity:1}.collapse{display:none}.collapse.in{display:block}tr.collapse.in{display:table-row}tbody.collapse.in{display:table-row-group}.collapsing{position:relative;height:0;overflow:hidden;-webkit-transition:height .35s ease;transition:height .35s ease}.input-group{position:relative;display:table;border-collapse:separate}.input-group[class*="col-"]{float:none;padding-left:0;padding-right:0}.input-group .form-control{position:relative;z-index:2;float:left;width:100%;margin-bottom:0}.input-group-addon,.input-group-btn,.input-group .form-control{display:table-cell}.input-group-addon:not(:first-child):not(:last-child),.input-group-btn:not(:first-child):not(:last-child),.input-group .form-control:not(:first-child):not(:last-child){border-radius:0}.input-group-addon{white-space:nowrap}.input-group-addon,.input-group-btn{width:1%;vertical-align:middle}.input-group-addon{padding:6px 12px;font-size:14px;font-weight:400;line-height:1;color:#555;text-align:center;background-color:#eee;border:1px solid #ccc;border-radius:4px}.input-group-addon.input-sm,.form-horizontal .form-group-sm .input-group-addon.form-control,.input-group-sm>.input-group-addon,.input-group-sm>.input-group-btn>.input-group-addon.btn{padding:5px 10px;font-size:12px;border-radius:3px}.input-group-addon.input-lg,.form-horizontal .form-group-lg .input-group-addon.form-control,.input-group-lg>.input-group-addon,.input-group-lg>.input-group-btn>.input-group-addon.btn{padding:10px 16px;font-size:18px;border-radius:6px}.input-group-addon input[type="radio"],.input-group-addon input[type="checkbox"]{margin-top:0}.input-group .form-control:first-child,.input-group-addon:first-child,.input-group-btn:first-child>.btn,.input-group-btn:first-child>.btn-group>.btn,.input-group-btn:first-child>.dropdown-toggle,.input-group-btn:last-child>.btn:not(:last-child):not(.dropdown-toggle),.input-group-btn:last-child>.btn-group:not(:last-child)>.btn{border-bottom-right-radius:0;border-top-right-radius:0}.input-group-addon:first-child{border-right:0}.input-group .form-control:last-child,.input-group-addon:last-child,.input-group-btn:last-child>.btn,.input-group-btn:last-child>.btn-group>.btn,.input-group-btn:last-child>.dropdown-toggle,.input-group-btn:first-child>.btn:not(:first-child),.input-group-btn:first-child>.btn-group:not(:first-child)>.btn{border-bottom-left-radius:0;border-top-left-radius:0}.input-group-addon:last-child{border-left:0}.input-group-btn{font-size:0;white-space:nowrap}.input-group-btn,.input-group-btn>.btn{position:relative}.input-group-btn>.btn+.btn{margin-left:-1px}.input-group-btn>.btn:hover,.input-group-btn>.btn:focus,.input-group-btn>.btn:active{z-index:2}.input-group-btn:first-child>.btn,.input-group-btn:first-child>.btn-group{margin-right:-1px}.input-group-btn:last-child>.btn,.input-group-btn:last-child>.btn-group{margin-left:-1px}.pagination{display:inline-block;padding-left:0;margin:20px 0;border-radius:4px}.pagination>li{display:inline}.pagination>li>a,.pagination>li>span{position:relative;float:left;padding:6px 12px;line-height:1.4285714;text-decoration:none;color:#428bca;background-color:#fff;border:1px solid #ddd;margin-left:-1px}.pagination>li:first-child>a,.pagination>li:first-child>span{margin-left:0;border-bottom-left-radius:4px;border-top-left-radius:4px}.pagination>li:last-child>a,.pagination>li:last-child>span{border-bottom-right-radius:4px;border-top-right-radius:4px}.pagination>li>a:hover,.pagination>li>a:focus,.pagination>li>span:hover,.pagination>li>span:focus{color:#2a6496;background-color:#eee;border-color:#ddd}.pagination>.active>a,.pagination>.active>a:hover,.pagination>.active>a:focus,.pagination>.active>span,.pagination>.active>span:hover,.pagination>.active>span:focus{z-index:2;color:#fff;background-color:#428bca;border-color:#428bca;cursor:default}.pagination>.disabled>span,.pagination>.disabled>span:hover,.pagination>.disabled>span:focus,.pagination>.disabled>a,.pagination>.disabled>a:hover,.pagination>.disabled>a:focus{color:#777;background-color:#fff;border-color:#ddd;cursor:not-allowed}.pagination-lg>li>a,.pagination-lg>li>span{padding:10px 16px;font-size:18px}.pagination-lg>li:first-child>a,.pagination-lg>li:first-child>span{border-bottom-left-radius:6px;border-top-left-radius:6px}.pagination-lg>li:last-child>a,.pagination-lg>li:last-child>span{border-bottom-right-radius:6px;border-top-right-radius:6px}.pagination-sm>li>a,.pagination-sm>li>span{padding:5px 10px;font-size:12px}.pagination-sm>li:first-child>a,.pagination-sm>li:first-child>span{border-bottom-left-radius:3px;border-top-left-radius:3px}.pagination-sm>li:last-child>a,.pagination-sm>li:last-child>span{border-bottom-right-radius:3px;border-top-right-radius:3px}.close{float:right;font-size:21px;font-weight:700;line-height:1;color:#000;text-shadow:0 1px 0 #fff;opacity:.2;filter:alpha(opacity=20)}.close:hover,.close:focus{color:#000;text-decoration:none;cursor:pointer;opacity:.5;filter:alpha(opacity=50)}button.close{padding:0;cursor:pointer;background:0 0;border:0;-webkit-appearance:none}.modal-open,.modal{overflow:hidden}.modal{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:1050;-webkit-overflow-scrolling:touch;outline:0}.modal.fade .modal-dialog{-webkit-transform:translate3d(0,-25%,0);transform:translate3d(0,-25%,0);-webkit-transition:-webkit-transform .3s ease-out;transition:transform .3s ease-out}.modal.in .modal-dialog{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.modal-open .modal{overflow-x:hidden;overflow-y:auto}.modal-dialog{position:relative;width:auto;margin:10px}.modal-content{position:relative;background-color:#fff;border:1px solid #999;border:1px solid rgba(0,0,0,.2);border-radius:6px;box-shadow:0 3px 9px rgba(0,0,0,.5);background-clip:padding-box;outline:0}.modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background-color:#000}.modal-backdrop.fade{opacity:0;filter:alpha(opacity=0)}.modal-backdrop.in{opacity:.5;filter:alpha(opacity=50)}.modal-header{padding:15px;border-bottom:1px solid #e5e5e5;min-height:16.4285714px}.modal-header .close{margin-top:-2px}.modal-title{margin:0;line-height:1.4285714}.modal-body{position:relative;padding:15px}.modal-footer{padding:15px;text-align:right;border-top:1px solid #e5e5e5}.modal-footer:before,.modal-footer:after{content:" ";display:table}.modal-footer:after{clear:both}.modal-footer .btn+.btn{margin-left:5px;margin-bottom:0}.modal-footer .btn-group .btn+.btn{margin-left:-1px}.modal-footer .btn-block+.btn-block{margin-left:0}.modal-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.clearfix:before,.clearfix:after{content:" ";display:table}.clearfix:after{clear:both}.center-block{display:block;margin-left:auto;margin-right:auto}.pull-right{float:right!important}.pull-left{float:left!important}.hide{display:none!important}.show{display:block!important}.invisible{visibility:hidden}.text-hide{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0}.hidden{display:none!important;visibility:hidden!important}.affix{position:fixed;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.hljs{display:block;overflow-x:auto;padding:.5em;background:#002b36;color:#839496;-webkit-text-size-adjust:none}.hljs-comment,.hljs-template_comment,.diff .hljs-header,.hljs-doctype,.hljs-pi,.lisp .hljs-string,.hljs-javadoc{color:#586e75}.hljs-keyword,.hljs-winutils,.method,.hljs-addition,.css .hljs-tag,.hljs-request,.hljs-status,.nginx .hljs-title{color:#859900}.hljs-number,.hljs-command,.hljs-string,.hljs-tag .hljs-value,.hljs-rules .hljs-value,.hljs-phpdoc,.hljs-dartdoc,.tex .hljs-formula,.hljs-regexp,.hljs-hexcolor,.hljs-link_url{color:#2aa198}.hljs-title,.hljs-localvars,.hljs-chunk,.hljs-decorator,.hljs-built_in,.hljs-identifier,.vhdl .hljs-literal,.hljs-id,.css .hljs-function{color:#268bd2}.hljs-attribute,.hljs-variable,.lisp .hljs-body,.smalltalk .hljs-number,.hljs-constant,.hljs-class .hljs-title,.hljs-parent,.hljs-type,.hljs-link_reference{color:#b58900}.hljs-preprocessor,.hljs-preprocessor .hljs-keyword,.hljs-pragma,.hljs-shebang,.hljs-symbol,.hljs-symbol .hljs-string,.diff .hljs-change,.hljs-special,.hljs-attr_selector,.hljs-subst,.hljs-cdata,.css .hljs-pseudo,.hljs-header{color:#cb4b16}.hljs-deletion,.hljs-important{color:#dc322f}.hljs-link_label{color:#6c71c4}.tex .hljs-formula{background:#073642}*,*:before,*:after{box-sizing:border-box}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background:0 0}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:700}dfn{font-style:italic}h1{margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}images{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre{overflow:auto}code,kbd{font-size:1em}code,kbd,pre,samp{font-family:monospace,monospace}samp{font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:700}table{border-collapse:collapse;border-spacing:0}.debug{background-color:#ffc0cb!important}.ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ir{background-color:transparent;border:0;overflow:hidden}.ir::before{content:'';display:block;height:150%;width:0}html{font-size:.875em;background:#fafafa;color:#373D49}html,body{font-family:Georgia,Cambria,serif;height:100%}body{font-size:1rem;font-weight:400;line-height:2rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}li{-webkit-font-feature-settings:'kern' 1,'onum' 1,'liga' 1;-moz-font-feature-settings:'kern' 1,'onum' 1,'liga' 1;font-feature-settings:'kern' 1,'onum' 1,'liga' 1;margin-left:1rem}li>ul,li>ol{margin-bottom:0}p{padding-top:.66001rem;-webkit-font-feature-settings:'kern' 1,'onum' 1,'liga' 1;-moz-font-feature-settings:'kern' 1,'onum' 1,'liga' 1;font-feature-settings:'kern' 1,'onum' 1,'liga' 1;margin-top:0}p,pre{margin-bottom:1.33999rem}pre{font-size:1rem;padding:.66001rem 9.5px 9.5px;line-height:2rem;background:-webkit-linear-gradient(top,#fff 0,#fff .75rem,#f5f7fa .75rem,#f5f7fa 2.75rem,#fff 2.75rem,#fff 4rem);background:linear-gradient(to bottom,#fff 0,#fff .75rem,#f5f7fa .75rem,#f5f7fa 2.75rem,#fff 2.75rem,#fff 4rem);background-size:100% 4rem;border-color:#D3DAEA}blockquote{margin:0}blockquote p{font-size:1rem;margin-bottom:.33999rem;font-style:italic;padding:.66001rem 1rem 1rem;border-left:3px solid #A0AABF}th,td{padding:12px}h1,h2,h3,h4,h5,h6{font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-feature-settings:'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;-moz-font-feature-settings:'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;font-feature-settings:'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;font-style:normal;font-weight:600;margin-top:0}h1{line-height:3rem;font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h2,h3{line-height:3rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}a{cursor:pointer;color:#35D7BB;text-decoration:none}a:hover,a:focus{border-bottom-color:#35D7BB;color:#dff9f4}img{height:auto;max-width:100%}.g{display:block}.g:after{clear:both;content:'';display:table}.g-b{float:left;margin:0;width:100%}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--center{display:block;float:none;margin:0 auto}.g-b--right{float:right}.g-b--1of1{width:100%}.g-b--1of2,.g-b--2of4,.g-b--3of6,.g-b--4of8,.g-b--5of10,.g-b--6of12{width:50%}.g-b--1of3,.g-b--2of6,.g-b--4of12{width:33.333%}.g-b--2of3,.g-b--4of6,.g-b--8of12{width:66.666%}.g-b--1of4,.g-b--2of8,.g-b--3of12{width:25%}.g-b--3of4,.g-b--6of8,.g-b--9of12{width:75%}.g-b--1of5,.g-b--2of10{width:20%}.g-b--2of5,.g-b--4of10{width:40%}.g-b--3of5,.g-b--6of10{width:60%}.g-b--4of5,.g-b--8of10{width:80%}.g-b--1of6,.g-b--2of12{width:16.666%}.g-b--5of6,.g-b--10of12{width:83.333%}.g-b--1of8{width:12.5%}.g-b--3of8{width:37.5%}.g-b--5of8{width:62.5%}.g-b--7of8{width:87.5%}.g-b--1of10{width:10%}.g-b--3of10{width:30%}.g-b--7of10{width:70%}.g-b--9of10{width:90%}.g-b--1of12{width:8.333%}.g-b--5of12{width:41.666%}.g-b--7of12{width:58.333%}.g-b--11of12{width:91.666%}.g-b--push--1of1{margin-left:100%}.g-b--push--1of2,.g-b--push--2of4,.g-b--push--3of6,.g-b--push--4of8,.g-b--push--5of10,.g-b--push--6of12{margin-left:50%}.g-b--push--1of3,.g-b--push--2of6,.g-b--push--4of12{margin-left:33.333%}.g-b--push--2of3,.g-b--push--4of6,.g-b--push--8of12{margin-left:66.666%}.g-b--push--1of4,.g-b--push--2of8,.g-b--push--3of12{margin-left:25%}.g-b--push--3of4,.g-b--push--6of8,.g-b--push--9of12{margin-left:75%}.g-b--push--1of5,.g-b--push--2of10{margin-left:20%}.g-b--push--2of5,.g-b--push--4of10{margin-left:40%}.g-b--push--3of5,.g-b--push--6of10{margin-left:60%}.g-b--push--4of5,.g-b--push--8of10{margin-left:80%}.g-b--push--1of6,.g-b--push--2of12{margin-left:16.666%}.g-b--push--5of6,.g-b--push--10of12{margin-left:83.333%}.g-b--push--1of8{margin-left:12.5%}.g-b--push--3of8{margin-left:37.5%}.g-b--push--5of8{margin-left:62.5%}.g-b--push--7of8{margin-left:87.5%}.g-b--push--1of10{margin-left:10%}.g-b--push--3of10{margin-left:30%}.g-b--push--7of10{margin-left:70%}.g-b--push--9of10{margin-left:90%}.g-b--push--1of12{margin-left:8.333%}.g-b--push--5of12{margin-left:41.666%}.g-b--push--7of12{margin-left:58.333%}.g-b--push--11of12{margin-left:91.666%}.g-b--pull--1of1{margin-right:100%}.g-b--pull--1of2,.g-b--pull--2of4,.g-b--pull--3of6,.g-b--pull--4of8,.g-b--pull--5of10,.g-b--pull--6of12{margin-right:50%}.g-b--pull--1of3,.g-b--pull--2of6,.g-b--pull--4of12{margin-right:33.333%}.g-b--pull--2of3,.g-b--pull--4of6,.g-b--pull--8of12{margin-right:66.666%}.g-b--pull--1of4,.g-b--pull--2of8,.g-b--pull--3of12{margin-right:25%}.g-b--pull--3of4,.g-b--pull--6of8,.g-b--pull--9of12{margin-right:75%}.g-b--pull--1of5,.g-b--pull--2of10{margin-right:20%}.g-b--pull--2of5,.g-b--pull--4of10{margin-right:40%}.g-b--pull--3of5,.g-b--pull--6of10{margin-right:60%}.g-b--pull--4of5,.g-b--pull--8of10{margin-right:80%}.g-b--pull--1of6,.g-b--pull--2of12{margin-right:16.666%}.g-b--pull--5of6,.g-b--pull--10of12{margin-right:83.333%}.g-b--pull--1of8{margin-right:12.5%}.g-b--pull--3of8{margin-right:37.5%}.g-b--pull--5of8{margin-right:62.5%}.g-b--pull--7of8{margin-right:87.5%}.g-b--pull--1of10{margin-right:10%}.g-b--pull--3of10{margin-right:30%}.g-b--pull--7of10{margin-right:70%}.g-b--pull--9of10{margin-right:90%}.g-b--pull--1of12{margin-right:8.333%}.g-b--pull--5of12{margin-right:41.666%}.g-b--pull--7of12{margin-right:58.333%}.g-b--pull--11of12{margin-right:91.666%}.splashscreen{position:fixed;top:0;left:0;width:100%;height:100%;background-color:#373D49;z-index:22}.splashscreen-dillinger{width:260px;height:auto;display:block;margin:0 auto;padding-bottom:3rem}.splashscreen p{font-size:1.25rem;padding-top:.56251rem;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;text-align:center;max-width:500px;margin:0 auto;color:#FFF}.sp-center{position:relative;-webkit-transform:translateY(-50%);-ms-transform:translateY(-50%);transform:translateY(-50%);top:50%}.open-menu>.wrapper{overflow-x:hidden}.page{margin:0 auto;position:relative;top:0;left:0;width:100%;height:100%;z-index:2;-webkit-transition:all .25s ease-in-out;transition:all .25s ease-in-out;background-color:#fff;padding-top:51px;will-change:left}.open-menu .page{left:270px}.title{line-height:1rem;font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem;font-weight:500;color:#A0AABF;letter-spacing:1px;text-transform:uppercase;padding-left:16px;padding-right:16px;margin-top:1rem}.split-preview .title{padding-left:0}.title-document{line-height:1rem;font-size:1.25rem;margin-bottom:.89999rem;padding-top:.10001rem;font-weight:400;font-family:"Ubuntu Mono",Monaco;color:#373D49;padding-left:16px;padding-right:16px;width:80%;min-width:300px;outline:0;border:none}.icon{display:block;margin:0 auto;width:36px;height:36px;border-radius:3px;text-align:center}.icon svg{display:inline-block;margin-left:auto;margin-right:auto}.icon-preview{background-color:#373D49;line-height:40px}.icon-preview svg{width:19px;height:12px}.icon-settings{background-color:#373D49;line-height:44px}.icon-settings svg{width:18px;height:18px}.icon-link{width:16px;height:16px;line-height:1;margin-right:24px;text-align:right}.navbar{background-color:#373D49;height:51px;width:100%;position:fixed;top:0;left:0;z-index:6;-webkit-transition:all .25s ease-in-out;transition:all .25s ease-in-out;will-change:left}.navbar:after{content:"";display:table;clear:both}.open-menu .navbar{left:270px}.navbar-brand{float:left;margin:0 0 0 24px;padding:0;line-height:42px}.navbar-brand svg{width:85px;height:11px}.nav-left{float:left}.nav-right{float:right}.nav-sidebar{width:100%}.menu{list-style:none;margin:0;padding:0}.menu a{border:0;color:#A0AABF;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;outline:none;text-transform:uppercase}.menu a:hover{color:#35D7BB}.menu .menu-item{border:0;display:none;float:left;margin:0;position:relative}.menu .menu-item>a{display:block;font-size:12px;height:51px;letter-spacing:1px;line-height:51px;padding:0 24px}.menu .menu-item--settings,.menu .menu-item--preview,.menu .menu-item--save-to.in-sidebar,.menu .menu-item--import-from.in-sidebar,.menu .menu-item--link-unlink.in-sidebar,.menu .menu-item--documents.in-sidebar{display:block}.menu .menu-item--documents{padding-bottom:1rem}.menu .menu-item.open>a{background-color:#1D212A}.menu .menu-item-icon>a{height:auto;padding:0}.menu .menu-item-icon:hover>a{background-color:transparent}.menu .menu-link.open i{background-color:#1D212A}.menu .menu-link.open g{fill:#35D7BB}.menu .menu-link-preview,.menu .menu-link-settings{margin-top:8px;width:51px}.menu-sidebar{width:100%}.menu-sidebar .menu-item{float:none;margin-bottom:1px;width:100%}.menu-sidebar .menu-item.open>a{background-color:#373D49}.menu-sidebar .open .caret{-webkit-transform:rotate(180deg);-ms-transform:rotate(180deg);transform:rotate(180deg)}.menu-sidebar>.menu-item:hover .dropdown a,.menu-sidebar>.menu-item:hover .settings a{background-color:transparent}.menu-sidebar .menu-link{background-color:#373D49;font-weight:600}.menu-sidebar .menu-link:after{content:"";display:table;clear:both}.menu-sidebar .menu-link>span{float:left}.menu-sidebar .menu-link>.caret{float:right;text-align:right;top:22px}.menu-sidebar .dropdown,.menu-sidebar .settings{background-color:transparent;position:static;width:100%}.dropdown{position:absolute;right:0;top:51px;width:188px}.dropdown,.settings{display:none;background-color:#1D212A}.dropdown{padding:0}.dropdown,.settings,.sidebar-list{list-style:none;margin:0}.sidebar-list{padding:0}.dropdown li{margin:32px 0;padding:0 0 0 32px}.dropdown li,.settings li{line-height:1}.sidebar-list li{line-height:1;margin:32px 0;padding:0 0 0 32px}.dropdown a{color:#D0D6E2}.dropdown a,.settings a,.sidebar-list a{display:block;text-transform:none}.sidebar-list a{color:#D0D6E2}.dropdown a:after,.settings a:after,.sidebar-list a:after{content:"";display:table;clear:both}.dropdown .icon,.settings .icon,.sidebar-list .icon{float:right}.open .dropdown,.open .settings,.open .sidebar-list{display:block}.open .dropdown.collapse,.open .collapse.settings,.open .sidebar-list.collapse{display:none}.open .dropdown.collapse.in,.open .collapse.in.settings,.open .sidebar-list.collapse.in{display:block}.dropdown .unlinked .icon,.settings .unlinked .icon,.sidebar-list .unlinked .icon{opacity:.3}.dropdown.documents li,.documents.settings li,.sidebar-list.documents li{background-image:url("../img/icons/file.svg");background-position:240px center;background-repeat:no-repeat;background-size:14px 16px;padding:3px 32px}.dropdown.documents li.octocat,.documents.settings li.octocat,.sidebar-list.documents li.octocat{background-image:url("../img/icons/octocat.svg");background-position:234px center;background-size:24px 24px}.dropdown.documents li:last-child,.documents.settings li:last-child,.sidebar-list.documents li:last-child{margin-bottom:1rem}.dropdown.documents li.active a,.documents.settings li.active a,.sidebar-list.documents li.active a{color:#35D7BB}.settings{position:fixed;top:67px;right:16px;border-radius:3px;width:288px;background-color:#373D49;padding:16px;z-index:7}.show-settings .settings{display:block}.settings .has-checkbox{float:left}.settings a{font-size:1.25rem;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;line-height:28px;color:#D0D6E2}.settings a:after{content:"";display:table;clear:both}.settings a:hover{color:#35D7BB}.settings li{border-bottom:1px solid #4F535B;margin:0;padding:16px 0}.settings li:last-child{border-bottom:none}.brand{border:none;display:block}.brand:hover g{fill:#35D7BB}.toggle{display:block;float:left;height:16px;padding:25px 16px 26px;width:40px}.toggle span:after,.toggle span:before{content:'';left:0;position:absolute;top:-6px}.toggle span:after{top:6px}.toggle span{display:block;position:relative}.toggle span,.toggle span:after,.toggle span:before{-webkit-backface-visibility:hidden;backface-visibility:hidden;background-color:#D3DAEA;height:2px;-webkit-transition:all .3s;transition:all .3s;width:20px}.open-menu .toggle span{background-color:transparent}.open-menu .toggle span:before{-webkit-transform:rotate(45deg)translate(3px,3px);-ms-transform:rotate(45deg)translate(3px,3px);transform:rotate(45deg)translate(3px,3px)}.open-menu .toggle span:after{-webkit-transform:rotate(-45deg)translate(5px,-6px);-ms-transform:rotate(-45deg)translate(5px,-6px);transform:rotate(-45deg)translate(5px,-6px)}.caret{display:inline-block;width:0;height:0;margin-left:6px;vertical-align:middle;position:relative;top:-1px;border-top:4px solid;border-right:4px solid transparent;border-left:4px solid transparent}.sidebar{overflow:auto;height:100%;padding-right:15px;padding-bottom:15px;width:285px}.sidebar-wrapper{-webkit-overflow-scrolling:touch;background-color:#2B2F36;left:0;height:100%;overflow-y:hidden;position:fixed;top:0;width:285px;z-index:1}.sidebar-branding{width:160px;padding:0;margin:16px auto}.header{border-bottom:1px solid #E8E8E8;position:relative}.words{line-height:1rem;font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem;font-weight:500;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;color:#A0AABF;letter-spacing:1px;text-transform:uppercase;z-index:5;position:absolute;right:16px;top:0}.words span{color:#000}.btn{text-align:center;display:inline-block;width:100%;text-transform:uppercase;font-weight:600;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;text-shadow:0 1px 0 #1b8b77;padding:16px 24px;background-color:#35D7BB;border-radius:3px;margin:0 auto 16px;line-height:1;color:#fff;-webkit-transition:all .15s linear;transition:all .15s linear;-webkit-font-smoothing:antialiased}.btn--new,.btn--save{display:block;width:238px}.btn--new:hover,.btn--new:focus,.btn--save:hover,.btn--save:focus{color:#fff;border-bottom-color:transparent;box-shadow:0 1px 3px #24b59c;text-shadow:0 1px 0 #24b59c}.btn--save{background-color:#4A5261;text-shadow:0 1px 1px #1e2127}.btn--save:hover,.btn--save:focus{color:#fff;border-bottom-color:transparent;box-shadow:0 1px 5px #08090a;text-shadow:none}.btn--delete{display:block;width:238px;background-color:transparent;font-size:12px;text-shadow:none}.btn--delete:hover,.btn--delete:focus{color:#fff;border-bottom-color:transparent;text-shadow:0 1px 0 #08090a;opacity:.8}.btn--ok,.btn--close{border-top:0;background-color:#4A5261;text-shadow:0 1px 0 #08090a;margin:0}.btn--ok:hover,.btn--ok:focus,.btn--close:hover,.btn--close:focus{color:#fff;background-color:#292d36;text-shadow:none}.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background-color:rgba(55,61,73,.8);-webkit-transition:all .25s ease-in-out;transition:all .25s ease-in-out;-webkit-transition-timing-function:ease-out;transition-timing-function:ease-out;will-change:left,opacity,visibility;z-index:5;opacity:0;visibility:hidden}.show-settings .overlay{visibility:visible;opacity:1}.switch{float:right;line-height:1}.switch input{display:none}.switch small{display:inline-block;cursor:pointer;padding:0 24px 0 0;-webkit-transition:all ease .2s;transition:all ease .2s;background-color:#2B2F36;border-color:#2B2F36}.switch small,.switch small:before{border-radius:30px;box-shadow:inset 0 0 2px 0 #14171F}.switch small:before{display:block;content:'';width:28px;height:28px;background:#fff}.switch.checked small{padding-right:0;padding-left:24px;background-color:#35D7BB;box-shadow:none}.modal--dillinger.about .modal-dialog{font-size:1.25rem;max-width:500px}.modal--dillinger.scope .modal-dialog{max-width:300px;margin:5rem auto}.modal--dillinger .modal-dialog{max-width:600px;width:auto;margin:5rem auto}.modal--dillinger .modal-content{background:#373D49;border-radius:3px;box-shadow:0 2px 5px 0 #2C3B59;color:#fff;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;padding:2rem}.modal--dillinger ul{list-style-type:disc;margin:1rem 0;padding:0 0 0 1rem}.modal--dillinger li{padding:0;margin:0}.modal--dillinger .modal-header{border:0;padding:0}.modal--dillinger .modal-body{padding:0}.modal--dillinger .modal-footer{border:0;padding:0}.modal--dillinger .close{color:#fff;opacity:1}.modal-backdrop{background-color:#373D49}.pagination--dillinger{padding:0!important;margin:1.5rem 0!important;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-align-content:stretch;-ms-flex-line-pack:stretch;align-content:stretch}.pagination--dillinger,.pagination--dillinger li{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex}.pagination--dillinger li{-webkit-box-flex:1;-webkit-flex-grow:1;-ms-flex-positive:1;flex-grow:1;text-align:center}.pagination--dillinger li:first-child>a,.pagination--dillinger li.disabled>a,.pagination--dillinger li.disabled>a:hover,.pagination--dillinger li.disabled>a:focus,.pagination--dillinger li>a{background-color:transparent;border-color:#4F535B;border-right-color:transparent}.pagination--dillinger li.active>a,.pagination--dillinger li.active>a:hover,.pagination--dillinger li.active>a:focus{border-color:#4A5261;background-color:#4A5261;color:#fff}.pagination--dillinger li>a{float:none;color:#fff;width:100%;display:block;text-align:center;margin:0;border-right-color:transparent;padding:6px}.pagination--dillinger li>a:hover,.pagination--dillinger li>a:focus{border-color:#35D7BB;background-color:#35D7BB;color:#fff}.pagination--dillinger li:last-child a{border-color:#4F535B}.pagination--dillinger li:first-child a{border-right-color:transparent}.diNotify{position:absolute;z-index:9999;left:0;right:0;top:0;margin:0 auto;max-width:400px;text-align:center;-webkit-transition:top .5s ease-in-out,opacity .5s ease-in-out;transition:top .5s ease-in-out,opacity .5s ease-in-out;visibility:hidden}.diNotify-body{-webkit-font-smoothing:antialiased;background-color:#35D7BB;background:#666E7F;border-radius:3px;color:#fff;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;overflow:hidden;padding:1rem 2rem .5rem;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:baseline;-webkit-align-items:baseline;-ms-flex-align:baseline;align-items:baseline;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center}.diNotify-icon{display:block;width:16px;height:16px;line-height:16px;position:relative;top:3px}.diNotify-message{padding-left:1rem}.zen-wrapper{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:10;background-color:#FFF;opacity:0;-webkit-transition:opacity .25s ease-in-out;transition:opacity .25s ease-in-out}.zen-wrapper.on{opacity:1}.enter-zen-mode{background-image:url("../img/icons/enter-zen.svg");right:.5rem;top:.313rem;display:none}.enter-zen-mode,.close-zen-mode{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0;background-repeat:no-repeat;width:32px;height:32px;display:block;position:absolute}.close-zen-mode{background-image:url("../img/icons/exit-zen.svg");right:1rem;top:1rem}.zen-page{position:relative;top:0;bottom:0;z-index:11;height:100%;width:100%}#zen{font-size:1.25rem;width:300px;height:80%;margin:0 auto;position:relative;top:10%}#zen:before,#zen:after{content:"";position:absolute;height:10%;width:100%;z-index:12;pointer-events:none}.split{overflow:scroll;padding:0!important}.split-editor{padding-left:0;padding-right:0;position:relative}.show-preview .split-editor{display:none}.split-preview{background-color:#fff;display:none;top:0;position:relative;z-index:4}.show-preview .split-preview{display:block}#editor{font-size:1rem;font-family:"Ubuntu Mono",Monaco;font-weight:400;line-height:2rem;width:100%;height:100%}#editor .ace_gutter{-webkit-font-smoothing:antialiased}.editor-header{width:50%;float:left;border-bottom:1px solid #E8E8E8;position:relative}.editor-header--first{border-right:1px solid #E8E8E8}.editor-header .title{display:inline-block}#preview{padding:10px}#preview a{color:#A0AABF;text-decoration:underline}.sr-only{visibility:hidden;text-overflow:110%;overflow:hidden;top:-100px;position:absolute}.mnone{margin:0!important}@media (min-width:768px){.form-inline .form-group{display:inline-block;margin-bottom:0;vertical-align:middle}.form-inline .form-control{display:inline-block;width:auto;vertical-align:middle}.form-inline .input-group{display:inline-table;vertical-align:middle}.form-inline .input-group .input-group-addon,.form-inline .input-group .input-group-btn,.form-inline .input-group .form-control{width:auto}.form-inline .input-group>.form-control{width:100%}.form-inline .control-label{margin-bottom:0;vertical-align:middle}.form-inline .radio,.form-inline .checkbox{display:inline-block;margin-top:0;margin-bottom:0;vertical-align:middle}.form-inline .radio label,.form-inline .checkbox label{padding-left:0}.form-inline .radio input[type="radio"],.form-inline .checkbox input[type="checkbox"]{position:relative;margin-left:0}.form-inline .has-feedback .form-control-feedback{top:0}.form-horizontal .control-label{text-align:right;margin-bottom:0;padding-top:7px}.form-horizontal .form-group-lg .control-label{padding-top:14.3px}.form-horizontal .form-group-sm .control-label{padding-top:6px}.modal-dialog{width:600px;margin:30px auto}.modal-content{box-shadow:0 5px 15px rgba(0,0,0,.5)}.modal-sm{width:300px}}@media (min-width:992px){.modal-lg{width:900px}}@media screen and (min-width:27.5em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--m1of1{width:100%}.g-b--m1of2,.g-b--m2of4,.g-b--m3of6,.g-b--m4of8,.g-b--m5of10,.g-b--m6of12{width:50%}.g-b--m1of3,.g-b--m2of6,.g-b--m4of12{width:33.333%}.g-b--m2of3,.g-b--m4of6,.g-b--m8of12{width:66.666%}.g-b--m1of4,.g-b--m2of8,.g-b--m3of12{width:25%}.g-b--m3of4,.g-b--m6of8,.g-b--m9of12{width:75%}.g-b--m1of5,.g-b--m2of10{width:20%}.g-b--m2of5,.g-b--m4of10{width:40%}.g-b--m3of5,.g-b--m6of10{width:60%}.g-b--m4of5,.g-b--m8of10{width:80%}.g-b--m1of6,.g-b--m2of12{width:16.666%}.g-b--m5of6,.g-b--m10of12{width:83.333%}.g-b--m1of8{width:12.5%}.g-b--m3of8{width:37.5%}.g-b--m5of8{width:62.5%}.g-b--m7of8{width:87.5%}.g-b--m1of10{width:10%}.g-b--m3of10{width:30%}.g-b--m7of10{width:70%}.g-b--m9of10{width:90%}.g-b--m1of12{width:8.333%}.g-b--m5of12{width:41.666%}.g-b--m7of12{width:58.333%}.g-b--m11of12{width:91.666%}.g-b--push--m1of1{margin-left:100%}.g-b--push--m1of2,.g-b--push--m2of4,.g-b--push--m3of6,.g-b--push--m4of8,.g-b--push--m5of10,.g-b--push--m6of12{margin-left:50%}.g-b--push--m1of3,.g-b--push--m2of6,.g-b--push--m4of12{margin-left:33.333%}.g-b--push--m2of3,.g-b--push--m4of6,.g-b--push--m8of12{margin-left:66.666%}.g-b--push--m1of4,.g-b--push--m2of8,.g-b--push--m3of12{margin-left:25%}.g-b--push--m3of4,.g-b--push--m6of8,.g-b--push--m9of12{margin-left:75%}.g-b--push--m1of5,.g-b--push--m2of10{margin-left:20%}.g-b--push--m2of5,.g-b--push--m4of10{margin-left:40%}.g-b--push--m3of5,.g-b--push--m6of10{margin-left:60%}.g-b--push--m4of5,.g-b--push--m8of10{margin-left:80%}.g-b--push--m1of6,.g-b--push--m2of12{margin-left:16.666%}.g-b--push--m5of6,.g-b--push--m10of12{margin-left:83.333%}.g-b--push--m1of8{margin-left:12.5%}.g-b--push--m3of8{margin-left:37.5%}.g-b--push--m5of8{margin-left:62.5%}.g-b--push--m7of8{margin-left:87.5%}.g-b--push--m1of10{margin-left:10%}.g-b--push--m3of10{margin-left:30%}.g-b--push--m7of10{margin-left:70%}.g-b--push--m9of10{margin-left:90%}.g-b--push--m1of12{margin-left:8.333%}.g-b--push--m5of12{margin-left:41.666%}.g-b--push--m7of12{margin-left:58.333%}.g-b--push--m11of12{margin-left:91.666%}.g-b--pull--m1of1{margin-right:100%}.g-b--pull--m1of2,.g-b--pull--m2of4,.g-b--pull--m3of6,.g-b--pull--m4of8,.g-b--pull--m5of10,.g-b--pull--m6of12{margin-right:50%}.g-b--pull--m1of3,.g-b--pull--m2of6,.g-b--pull--m4of12{margin-right:33.333%}.g-b--pull--m2of3,.g-b--pull--m4of6,.g-b--pull--m8of12{margin-right:66.666%}.g-b--pull--m1of4,.g-b--pull--m2of8,.g-b--pull--m3of12{margin-right:25%}.g-b--pull--m3of4,.g-b--pull--m6of8,.g-b--pull--m9of12{margin-right:75%}.g-b--pull--m1of5,.g-b--pull--m2of10{margin-right:20%}.g-b--pull--m2of5,.g-b--pull--m4of10{margin-right:40%}.g-b--pull--m3of5,.g-b--pull--m6of10{margin-right:60%}.g-b--pull--m4of5,.g-b--pull--m8of10{margin-right:80%}.g-b--pull--m1of6,.g-b--pull--m2of12{margin-right:16.666%}.g-b--pull--m5of6,.g-b--pull--m10of12{margin-right:83.333%}.g-b--pull--m1of8{margin-right:12.5%}.g-b--pull--m3of8{margin-right:37.5%}.g-b--pull--m5of8{margin-right:62.5%}.g-b--pull--m7of8{margin-right:87.5%}.g-b--pull--m1of10{margin-right:10%}.g-b--pull--m3of10{margin-right:30%}.g-b--pull--m7of10{margin-right:70%}.g-b--pull--m9of10{margin-right:90%}.g-b--pull--m1of12{margin-right:8.333%}.g-b--pull--m5of12{margin-right:41.666%}.g-b--pull--m7of12{margin-right:58.333%}.g-b--pull--m11of12{margin-right:91.666%}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{margin-bottom:.89999rem;padding-top:.10001rem}.title-document,.settings a{font-size:1.25rem}.words{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog,#zen{font-size:1.25rem}#zen{width:400px}#editor{font-size:1rem}}@media screen and (min-width:46.25em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--t1of1{width:100%}.g-b--t1of2,.g-b--t2of4,.g-b--t3of6,.g-b--t4of8,.g-b--t5of10,.g-b--t6of12{width:50%}.g-b--t1of3,.g-b--t2of6,.g-b--t4of12{width:33.333%}.g-b--t2of3,.g-b--t4of6,.g-b--t8of12{width:66.666%}.g-b--t1of4,.g-b--t2of8,.g-b--t3of12{width:25%}.g-b--t3of4,.g-b--t6of8,.g-b--t9of12{width:75%}.g-b--t1of5,.g-b--t2of10{width:20%}.g-b--t2of5,.g-b--t4of10{width:40%}.g-b--t3of5,.g-b--t6of10{width:60%}.g-b--t4of5,.g-b--t8of10{width:80%}.g-b--t1of6,.g-b--t2of12{width:16.666%}.g-b--t5of6,.g-b--t10of12{width:83.333%}.g-b--t1of8{width:12.5%}.g-b--t3of8{width:37.5%}.g-b--t5of8{width:62.5%}.g-b--t7of8{width:87.5%}.g-b--t1of10{width:10%}.g-b--t3of10{width:30%}.g-b--t7of10{width:70%}.g-b--t9of10{width:90%}.g-b--t1of12{width:8.333%}.g-b--t5of12{width:41.666%}.g-b--t7of12{width:58.333%}.g-b--t11of12{width:91.666%}.g-b--push--t1of1{margin-left:100%}.g-b--push--t1of2,.g-b--push--t2of4,.g-b--push--t3of6,.g-b--push--t4of8,.g-b--push--t5of10,.g-b--push--t6of12{margin-left:50%}.g-b--push--t1of3,.g-b--push--t2of6,.g-b--push--t4of12{margin-left:33.333%}.g-b--push--t2of3,.g-b--push--t4of6,.g-b--push--t8of12{margin-left:66.666%}.g-b--push--t1of4,.g-b--push--t2of8,.g-b--push--t3of12{margin-left:25%}.g-b--push--t3of4,.g-b--push--t6of8,.g-b--push--t9of12{margin-left:75%}.g-b--push--t1of5,.g-b--push--t2of10{margin-left:20%}.g-b--push--t2of5,.g-b--push--t4of10{margin-left:40%}.g-b--push--t3of5,.g-b--push--t6of10{margin-left:60%}.g-b--push--t4of5,.g-b--push--t8of10{margin-left:80%}.g-b--push--t1of6,.g-b--push--t2of12{margin-left:16.666%}.g-b--push--t5of6,.g-b--push--t10of12{margin-left:83.333%}.g-b--push--t1of8{margin-left:12.5%}.g-b--push--t3of8{margin-left:37.5%}.g-b--push--t5of8{margin-left:62.5%}.g-b--push--t7of8{margin-left:87.5%}.g-b--push--t1of10{margin-left:10%}.g-b--push--t3of10{margin-left:30%}.g-b--push--t7of10{margin-left:70%}.g-b--push--t9of10{margin-left:90%}.g-b--push--t1of12{margin-left:8.333%}.g-b--push--t5of12{margin-left:41.666%}.g-b--push--t7of12{margin-left:58.333%}.g-b--push--t11of12{margin-left:91.666%}.g-b--pull--t1of1{margin-right:100%}.g-b--pull--t1of2,.g-b--pull--t2of4,.g-b--pull--t3of6,.g-b--pull--t4of8,.g-b--pull--t5of10,.g-b--pull--t6of12{margin-right:50%}.g-b--pull--t1of3,.g-b--pull--t2of6,.g-b--pull--t4of12{margin-right:33.333%}.g-b--pull--t2of3,.g-b--pull--t4of6,.g-b--pull--t8of12{margin-right:66.666%}.g-b--pull--t1of4,.g-b--pull--t2of8,.g-b--pull--t3of12{margin-right:25%}.g-b--pull--t3of4,.g-b--pull--t6of8,.g-b--pull--t9of12{margin-right:75%}.g-b--pull--t1of5,.g-b--pull--t2of10{margin-right:20%}.g-b--pull--t2of5,.g-b--pull--t4of10{margin-right:40%}.g-b--pull--t3of5,.g-b--pull--t6of10{margin-right:60%}.g-b--pull--t4of5,.g-b--pull--t8of10{margin-right:80%}.g-b--pull--t1of6,.g-b--pull--t2of12{margin-right:16.666%}.g-b--pull--t5of6,.g-b--pull--t10of12{margin-right:83.333%}.g-b--pull--t1of8{margin-right:12.5%}.g-b--pull--t3of8{margin-right:37.5%}.g-b--pull--t5of8{margin-right:62.5%}.g-b--pull--t7of8{margin-right:87.5%}.g-b--pull--t1of10{margin-right:10%}.g-b--pull--t3of10{margin-right:30%}.g-b--pull--t7of10{margin-right:70%}.g-b--pull--t9of10{margin-right:90%}.g-b--pull--t1of12{margin-right:8.333%}.g-b--pull--t5of12{margin-right:41.666%}.g-b--pull--t7of12{margin-right:58.333%}.g-b--pull--t11of12{margin-right:91.666%}.splashscreen-dillinger{width:500px}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{font-size:1.25rem;margin-bottom:.89999rem;padding-top:.10001rem}.menu .menu-item--save-to,.menu .menu-item--import-from{display:block}.menu .menu-item--preview,.menu .menu-item--save-to.in-sidebar,.menu .menu-item--import-from.in-sidebar{display:none}.settings a{font-size:1.25rem}.words{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog{font-size:1.25rem}.enter-zen-mode{display:block}.close-zen-mode{right:3rem;top:3rem}#zen{font-size:1.25rem;width:500px}.split-editor{border-right:1px solid #E8E8E8;float:left;height:calc(100vh - 172px);-webkit-overflow-scrolling:touch;padding-right:16px;width:50%}.show-preview .split-editor{display:block}.split-preview{display:block;float:right;height:calc(100vh - 172px);-webkit-overflow-scrolling:touch;position:relative;top:0;width:50%}#editor{font-size:1rem}}@media screen and (min-width:62.5em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--d1of1{width:100%}.g-b--d1of2,.g-b--d2of4,.g-b--d3of6,.g-b--d4of8,.g-b--d5of10,.g-b--d6of12{width:50%}.g-b--d1of3,.g-b--d2of6,.g-b--d4of12{width:33.333%}.g-b--d2of3,.g-b--d4of6,.g-b--d8of12{width:66.666%}.g-b--d1of4,.g-b--d2of8,.g-b--d3of12{width:25%}.g-b--d3of4,.g-b--d6of8,.g-b--d9of12{width:75%}.g-b--d1of5,.g-b--d2of10{width:20%}.g-b--d2of5,.g-b--d4of10{width:40%}.g-b--d3of5,.g-b--d6of10{width:60%}.g-b--d4of5,.g-b--d8of10{width:80%}.g-b--d1of6,.g-b--d2of12{width:16.666%}.g-b--d5of6,.g-b--d10of12{width:83.333%}.g-b--d1of8{width:12.5%}.g-b--d3of8{width:37.5%}.g-b--d5of8{width:62.5%}.g-b--d7of8{width:87.5%}.g-b--d1of10{width:10%}.g-b--d3of10{width:30%}.g-b--d7of10{width:70%}.g-b--d9of10{width:90%}.g-b--d1of12{width:8.333%}.g-b--d5of12{width:41.666%}.g-b--d7of12{width:58.333%}.g-b--d11of12{width:91.666%}.g-b--push--d1of1{margin-left:100%}.g-b--push--d1of2,.g-b--push--d2of4,.g-b--push--d3of6,.g-b--push--d4of8,.g-b--push--d5of10,.g-b--push--d6of12{margin-left:50%}.g-b--push--d1of3,.g-b--push--d2of6,.g-b--push--d4of12{margin-left:33.333%}.g-b--push--d2of3,.g-b--push--d4of6,.g-b--push--d8of12{margin-left:66.666%}.g-b--push--d1of4,.g-b--push--d2of8,.g-b--push--d3of12{margin-left:25%}.g-b--push--d3of4,.g-b--push--d6of8,.g-b--push--d9of12{margin-left:75%}.g-b--push--d1of5,.g-b--push--d2of10{margin-left:20%}.g-b--push--d2of5,.g-b--push--d4of10{margin-left:40%}.g-b--push--d3of5,.g-b--push--d6of10{margin-left:60%}.g-b--push--d4of5,.g-b--push--d8of10{margin-left:80%}.g-b--push--d1of6,.g-b--push--d2of12{margin-left:16.666%}.g-b--push--d5of6,.g-b--push--d10of12{margin-left:83.333%}.g-b--push--d1of8{margin-left:12.5%}.g-b--push--d3of8{margin-left:37.5%}.g-b--push--d5of8{margin-left:62.5%}.g-b--push--d7of8{margin-left:87.5%}.g-b--push--d1of10{margin-left:10%}.g-b--push--d3of10{margin-left:30%}.g-b--push--d7of10{margin-left:70%}.g-b--push--d9of10{margin-left:90%}.g-b--push--d1of12{margin-left:8.333%}.g-b--push--d5of12{margin-left:41.666%}.g-b--push--d7of12{margin-left:58.333%}.g-b--push--d11of12{margin-left:91.666%}.g-b--pull--d1of1{margin-right:100%}.g-b--pull--d1of2,.g-b--pull--d2of4,.g-b--pull--d3of6,.g-b--pull--d4of8,.g-b--pull--d5of10,.g-b--pull--d6of12{margin-right:50%}.g-b--pull--d1of3,.g-b--pull--d2of6,.g-b--pull--d4of12{margin-right:33.333%}.g-b--pull--d2of3,.g-b--pull--d4of6,.g-b--pull--d8of12{margin-right:66.666%}.g-b--pull--d1of4,.g-b--pull--d2of8,.g-b--pull--d3of12{margin-right:25%}.g-b--pull--d3of4,.g-b--pull--d6of8,.g-b--pull--d9of12{margin-right:75%}.g-b--pull--d1of5,.g-b--pull--d2of10{margin-right:20%}.g-b--pull--d2of5,.g-b--pull--d4of10{margin-right:40%}.g-b--pull--d3of5,.g-b--pull--d6of10{margin-right:60%}.g-b--pull--d4of5,.g-b--pull--d8of10{margin-right:80%}.g-b--pull--d1of6,.g-b--pull--d2of12{margin-right:16.666%}.g-b--pull--d5of6,.g-b--pull--d10of12{margin-right:83.333%}.g-b--pull--d1of8{margin-right:12.5%}.g-b--pull--d3of8{margin-right:37.5%}.g-b--pull--d5of8{margin-right:62.5%}.g-b--pull--d7of8{margin-right:87.5%}.g-b--pull--d1of10{margin-right:10%}.g-b--pull--d3of10{margin-right:30%}.g-b--pull--d7of10{margin-right:70%}.g-b--pull--d9of10{margin-right:90%}.g-b--pull--d1of12{margin-right:8.333%}.g-b--pull--d5of12{margin-right:41.666%}.g-b--pull--d7of12{margin-right:58.333%}.g-b--pull--d11of12{margin-right:91.666%}.splashscreen-dillinger{width:700px}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{font-size:1.25rem;margin-bottom:.89999rem;padding-top:.10001rem}.menu .menu-item--export-as{display:block}.menu .menu-item--preview{display:none}.settings a{font-size:1.25rem}.words{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog,#zen{font-size:1.25rem}#zen{width:700px}#editor{font-size:1rem}}@media screen and (min-width:87.5em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.splashscreen-dillinger{width:800px}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{margin-bottom:.89999rem;padding-top:.10001rem}.title-document,.settings a{font-size:1.25rem}.words{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog,#zen{font-size:1.25rem}#editor{font-size:1rem}}@media screen and (max-width:46.1875em){.editor-header{display:none}.editor-header--first{display:block;width:100%}}</style><script type="text/javascript">window.gracenode={};(function (window) {var domain = window.location.origin;/* expose */window.request = request;/*options: {sendAsBinary: <boolean>,mimeType: <string>,headers: <object>}*/function request(url, method, params, options, cb) {url = domain + url;var req;if (!params) {params = {};}if (!options) {options = {};}url = window.encodeURI(url);/* sad but we have to deal with IE < 7 */if (!window.XMLHttpRequest) {/* so someone is ignorant enough to be use IE... */req = new window.ActiveXObject('Microsoft.XMLHTTP');} else {req = new window.XMLHttpRequest();}/* set up request parameters */try {params = setupParams(params);} catch (exception) {return cb(exception);}/* set up request object */req.overrideMimeType(options.mimeType || 'text');req.open(method, url, true);/* default content type header */req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');/* if we need to send more headers */if (options.headers) {for (var name in options.headers) {req.setRequestHeader(name, options.headers[name]);}}/* set up the listener */req.onreadystatechange = function () {handleResponse(req, cb);};/* now send the request */if (options.sendAsBinary) {return req.sendAsBinary(params);}req.send(params);}function setupParams(params) {var str = '';for (var key in params) {if (str !== '') {str += '&';}str += window.encodeURIComponent(key) + '=' + prepareParamValue(params[key]);}return str;}function prepareParamValue(param) {if (typeof param === 'object') {return window.encodeURIComponent(JSON.stringify(param));}return window.encodeURIComponent(param);}function handleResponse(req, cb) {if (req.readyState === 4) {/* we now have the response back */var error;var res = null;/* evaluate response status code */if (req.status > 399) {/* error */error = new Error(req.status);}/* deal with response body */if (req.responseText) {/* is it a JSON? */try {res = JSON.parse(req.responseText);} catch (e) {/* it is not a JSON */res = req.responseText;}}cb(error, res, req.status);}}}(window));(function () {var TAGS = {SRC: 'data-gn-src',LOCAL: 'data-gn-local',DONE: 'data-gn-rendered'};var TAG_EXEC_MAP = {};TAG_EXEC_MAP[TAGS.SRC] = getRemoteData;TAG_EXEC_MAP[TAGS.LOCAL] = getLocalData;document.addEventListener('DOMContentLoaded', parse, false);window.render = function (target) {parse(null, target.parentNode);};function parse(event, target) {for (var key in TAGS) {finder(TAGS[key], target);}}function finder(tagName, target) {target = target || document;var list = target.querySelectorAll('[' + tagName + ']') || [];var exec = TAG_EXEC_MAP[tagName];for (var i = 0, len = list.length; i < len; i++) {if (list[i].getAttribute(TAGS.DONE)) {continue;}exec(list[i], list[i].getAttribute(tagName));}}function getRemoteData(elm, path) {window.request(path, 'GET', {}, {}, function (error, data) {if (error) {console.log(path, error);return;}var dom = buildDOM(data);elm.appendChild(dom);elm.setAttribute(TAGS.DONE, true);});}/* example: gracenode.myData */function getLocalData(elm, str) {var list = str.split('.');var data = window;for (var i = 0, len = list.length; i < len; i++) {data = data[list[i]];}if (!data || data === window) {console.error(str, 'InvalidLocalData');}var dom = buildDOM(data);elm.appendChild(dom);elm.setAttribute(TAGS.DONE, true);}function buildDOM(data) {switch (typeof data) {case 'object':if (Array.isArray(data)) {return buildList(data);}return buildTwoColumnTable(data);default:return buildText(data);}}function buildList(data) {var container;var i;var len;/* a list of map = table */if (typeof data[0] === 'object') {var row;var labels = [];container = document.createElement('table');container.className = 'list-table';/* table labels */row = document.createElement('tr');for (i = 0, len = data.length; i < len; i++) {for (var name in data[i]) {if (labels.indexOf(name) !== -1) {continue;}labels.push(name);var th = document.createElement('th');th.textContent = name;row.appendChild(th);}}container.appendChild(row);/* table rows */var jen = labels.length;for (i = 0, len = data.length; i < len; i++) {row = document.createElement('tr');for (var j = 0; j < jen; j++) {var td = document.createElement('td');content = buildDOM(data[i][labels[j]] || '');td.appendChild(content);row.appendChild(td);}container.appendChild(row);}/* done */return container;}/* a list of text = list */container = document.createElement('ul');container.className = 'list-container';for (i = 0, len = data.length; i < len; i++) {var item = document.createElement('li');item.appendChild(buildDOM(data[i]));container.appendChild(item);}/* done */return container;}function buildTwoColumnTable(data) {var container = document.createElement('table');container.className = 'two-col-table';for (var name in data) {var row = document.createElement('tr');var label = document.createElement('th');label.textContent = name;row.appendChild(label);var value = document.createElement('td');value.appendChild(buildDOM(data[name]));row.appendChild(value);container.appendChild(row);}return container;}function buildText(data) {var container = document.createElement('div');container.className = 'text' + (typeof data === 'number' ? ' number' : '');container.textContent = data;return container;}}());</script>
+      </head><body id="preview">
+      <h1><a id="gracenode_20_0"></a>gracenode 2.0</h1>
+      <p>©Nobuyori Takahashi &lt; <a href="mailto:voltrue2@yahoo.com">voltrue2@yahoo.com</a> &gt;</p>
+      <p><a href="https://travis-ci.org/voltrue2/gracenode"><img src="https://travis-ci.org/voltrue2/gracenode.svg?branch=master" alt="Build Status"></a></p>
+      <h2><a id="Nodejs_Version_6"></a>Node.js Version</h2>
+      <p>Version <code>0.12.10</code> or above.</p>
+      <h2><a id="What_gracenode_does_10"></a>What gracenode does</h2>
+      <ul>
+      <li>
+      <p>Manages cluster process.</p>
+      </li>
+      <li>
+      <p>Handles daemonizing of the application and auto-restarting on file changes. Read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#start-your-application-as-a-daemon">https://github.com/voltrue2/gracenode#start-your-application-as-a-daemon</a>&quot;&gt;here&lt;/a&gt;.</p>
+      </li>
+      <li>
+      <p>Bootstrap other modules to organize setting up of each module on starting of the application process. Read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#bootstrapping-other-modules">https://github.com/voltrue2/gracenode#bootstrapping-other-modules</a>&quot;&gt;here&lt;/a&gt;.</p>
+      </li>
+      <li>
+      <p>Provides a built-in logging module. Read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#logging">https://github.com/voltrue2/gracenode#logging</a>&quot;&gt;here&lt;/a&gt;.</p>
+      </li>
+      <li>
+      <p>Provides plethora of utility functions to aid development. Read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#gracenodelib">https://github.com/voltrue2/gracenode#gracenodelib</a>&quot;&gt;here&lt;/a&gt;.</p>
+      </li>
+      <li>
+      <p>Provides HTTP router for web applications. Read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#http-router">https://github.com/voltrue2/gracenode#http-router</a>&quot;&gt;here&lt;/a&gt;.</p>
+      </li>
+      <li>
+      <p>Provides fast template enigne. Read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#render-1">https://github.com/voltrue2/gracenode#render-1</a>&quot;&gt;here&lt;/a&gt;.</p>
+      </li>
+      </ul>
+      <h2><a id="Installation_via_npm_26"></a>Installation via npm</h2>
+      <p><strong>NOTE:</strong> If you are running your application as a daemon with older version of <strong>gracenode</strong>, please make sure to stop the daemon before installing the newer version.</p>
+      <p><code>npm install gracenode</code></p>
+      <h2><a id="Add_gracenode_as_your_applications_dependency_32"></a>Add gracenode as your application’s dependency</h2>
+      <p>To install <strong>gracenode</strong> you can either add it to your package.json like so:</p>
+      <p><strong>Install From Git Repository</strong></p>
+      <pre><code class="language-json">{
+          "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{
+              "<span class="hljs-attribute">gracenode</span>": <span class="hljs-value"><span class="hljs-string">"git+https://github.com/voltrue2/gracenode.git#master"</span>
+          </span>}
+      </span>}
+      </code></pre>
+      <p><strong>Install From npm Repositiory</strong></p>
+      <pre><code class="language-json">{
+          "<span class="hljs-attribute">dependeicies</span>": <span class="hljs-value">{
+              "<span class="hljs-attribute">gracenode</span>": <span class="hljs-value"><span class="hljs-string">"2.1.2"</span>
+          </span>}
+      </span>}
+      </code></pre>
+      <p><strong>Install From Git Without package.json</strong></p>
+      <p><code>npm install git+https://github.com/voltrue2/gracenode.git#master</code></p>
+      <h2><a id="How_To_Use_gracenode_58"></a>How To Use gracenode</h2>
+      <p>In order to use <strong>gracenode</strong>, you need to properly set it up in your application root file (The file that starts your application).</p>
+      <h2><a id="Create_Boilerplate_To_Get_Started_62"></a>Create Boilerplate To Get Started</h2>
+      <p>To create a basic setup for your application, execute the following command from the root of your application directory:</p>
+      <p><code>./node_modules/gracenode/bin/boilerplate</code></p>
+      <p>The above command will create a very basic setup for you.</p>
+      <p>To start your own HTTP server from here on, execute <code>make start</code>.</p>
+      <p>The above command will daemonize your appliction and the daemon process will automatically restart if you change the application code or/and configurations.</p>
+      <p><strong>NOTE</strong>: By default, your HTTP server will be listening to port <code>http://localhost:8888</code>.</p>
+      <h4><a id="How_To_Start_Your_Application_76"></a>How To Start Your Application</h4>
+      <p>If you executed <code>./node_modules/gracenode/bin/boilerplate</code>, you now have <code>Makefile</code> in your application directory.</p>
+      <p>The following commands are now available:</p>
+      <ul>
+      <li><strong>Lint Your Javascript Files</strong>: <code>make lint</code></li>
+      </ul>
+      <p>You may add more direcotries to lint in Makefile to lint additional files.</p>
+      <ul>
+      <li>
+      <p><strong>Start Application</strong>: <code>make start</code></p>
+      </li>
+      <li>
+      <p><strong>Stop Application</strong>: <code>make stop</code></p>
+      </li>
+      <li>
+      <p><strong>Restart Application</strong>: <code>make restart</code></p>
+      </li>
+      <li>
+      <p><strong>Check Process Status</strong>: <code>make status</code></p>
+      </li>
+      <li>
+      <p><strong>Reload Application</strong>: <code>make reload</code></p>
+      </li>
+      </ul>
+      <h4><a id="Where_is_the_configurations_96"></a>Where is the configurations?</h4>
+      <p>The configuration file(s) are located in <code>configs/</code>.</p>
+      <p>There is a symbolic link that points to <code>configs/config.json</code>.</p>
+      <p>This is the file that the application is reading from.</p>
+      <h4><a id="How_To_Add_More_Endpoints_104"></a>How To Add More Endpoints</h4>
+      <p>To add more HTTP REST endpoints, add more routes to <code>api/index.js</code>.</p>
+      <p>You also need to create a route handler for the route(s) that you are adding.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">gn.http.get(<span class="hljs-string">'/hello2'</span>, <span class="hljs-built_in">require</span>(<span class="hljs-string">'./controllers/hello2'</span>));
+      </code></pre>
+      <h4><a id="How_To_Add_More_Views_116"></a>How To Add More Views</h4>
+      <p>To add more views, you must add new views to <code>api/views/index.js</code>.</p>
+      <p>You also need to add a view handler for your new view.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">modules.exports = {
+              hello: <span class="hljs-built_in">require</span>(<span class="hljs-string">'./hello'</span>),
+              hello2: <span class="hljs-built_in">require</span>(<span class="hljs-string">'./hello2'</span>)
+      };
+      </code></pre>
+      <h4><a id="How_To_Add_More_Templates_131"></a>How To Add More Templates</h4>
+      <p>In order to add more templates, you need to add template files to <code>templates/</code>.</p>
+      <p>The added template files must be read in your new view handlers.</p>
+      <p>See the example in <code>api/views/hello/index.js</code>.</p>
+      <h3><a id="Configure_Logging_and_Cluster_Management_139"></a>Configure Logging and Cluster Management</h3>
+      <p>These are optional configurations, but you will want to know what they do.</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      
+      <span class="hljs-comment">// Here the configurations are given as an object</span>
+      gn.configure({
+              lint: {
+                      <span class="hljs-comment">// lint all application js files when starting. default is true</span>
+                      enable: <span class="hljs-literal">true</span>,
+                      <span class="hljs-comment">// a list of file names or file paths to ignore linting. default is empty</span>
+                      ignore: [],
+                      <span class="hljs-comment">// if this is set to true, lint error(s) will cause your application to terminate immediately. default is false</span>
+                      strict: <span class="hljs-literal">false</span>
+              log: {
+                      <span class="hljs-comment">// default is false</span>
+                      <span class="hljs-built_in">console</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-comment">// default is false</span>
+                      color: <span class="hljs-literal">false</span>,
+                      <span class="hljs-comment">// default is undefined</span>
+                      file: <span class="hljs-string">'/path/to/my/logging/dir/'</span>
+              },
+              cluster: {
+                      <span class="hljs-comment">// Maximum number of workers. default is 0</span>
+                      max: <span class="hljs-number">0</span>
+              },
+              http: {
+                      <span class="hljs-comment">// you must have this value if you need to use gracenode.http</span>
+                      port: <span class="hljs-number">8888</span>,
+                      <span class="hljs-comment">// you must have this value if you need to use gracenode.http</span>
+                      host: <span class="hljs-string">'localhost'</span>
+              },
+              render: {
+                      <span class="hljs-comment">// in order to use gracenode.render, you must provide this vakue</span>
+                      path: <span class="hljs-string">'/path/to/templates/'</span>,
+                      <span class="hljs-comment">// custom cache size for render engine. it is an option</span>
+                      cacheSize: <span class="hljs-number">5000000</span>
+              }
+      });
+      
+      <span class="hljs-comment">// Now start gracenode</span>
+      gn.start(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+              <span class="hljs-comment">// Your application is now ready!</span>
+      });
+      
+      </code></pre>
+      <p><strong>NOTE 1:</strong> You may give the configurations as a JSON file also:</p>
+      <pre><code class="language-javascript">gn.config(<span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/my/config.json'</span>));
+      </code></pre>
+      <p><strong>NOTE 2:</strong> You may call <code>.config()</code> as many times a syou need to merge the configuration objects.</p>
+      <p>This is useful when you have shared common configurtions with other developers and your custom configrations for each.</p>
+      <h4><a id="Example_198"></a>Example:</h4>
+      <pre><code class="language-javascript">gn.config(<span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/my/shared/config.json'</span>));
+      gn.config(<span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/my/custom/config.json'</span>));
+      </code></pre>
+      <p><strong>NOTE 3:</strong> More details for logging and cluster configurations will be given later in this &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#default-configurations">https://github.com/voltrue2/gracenode#default-configurations</a>&quot;&gt;README&lt;/a&gt;.</p>
+      <h3><a id="Linting_207"></a>Linting</h3>
+      <p>gracenode lints your application code when <code>gracenode.start()</code> is called.</p>
+      <p>If <strong>gracenode</strong> detects a lint error, <strong>gracenode</strong> does not terminate immediately.</p>
+      <p>If, however, <code>lint: { strict: true }</code> is set, <strong>gracenode</strong> will terminate its process immediately on lint error(s).</p>
+      <p><strong>NOTE</strong>: Uses <code>jshint</code> with the configurations below:</p>
+      <pre><code><span class="hljs-string">"jshintConfig"</span>: {
+                      <span class="hljs-string">"node"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"bitwise"</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-string">"camelcase"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"curly"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"eqeqeq"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"forin"</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-string">"immed"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"latedef"</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-string">"newcap"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"noarg"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"noempty"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"undef"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"unused"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"nonew"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"white"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"maxdepth"</span>: <span class="hljs-number">5</span>,
+                      <span class="hljs-string">"quotmark"</span>: <span class="hljs-string">"single"</span>,
+                      <span class="hljs-string">"globals"</span>: {
+                              <span class="hljs-string">"mocha"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"describe"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"it"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"before"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"beforeEach"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"after"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"afterEach"</span>: <span class="hljs-literal">false</span>
+                      }
+              }
+      </code></pre>
+      <h5><a id="Strict_Mode_248"></a>Strict Mode</h5>
+      <p>If strict mode is set to <code>true</code>, your application process will terminates on start if lint error(s) is detected.</p>
+      <p>This is set to <code>false</code> by default.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code><span class="hljs-collection">{
+              lint: <span class="hljs-collection">{
+                      enable: <span class="hljs-literal">true</span>,
+                      strict: <span class="hljs-literal">true</span>
+              }</span>
+      }</span>
+      </code></pre>
+      <h5><a id="How_To_Disable_Lint_265"></a>How To Disable Lint</h5>
+      <p>To disable <strong>gracenode</strong> liniting, add the following configuration to your application config.</p>
+      <pre><code><span class="hljs-tag">lint</span>: {
+              <span class="hljs-attribute">enable</span>: false
+      }
+      </code></pre>
+      <h5><a id="How_To_Ignore_Certain_FilesDirectories_For_Lint_275"></a>How To Ignore Certain Files/Directories For Lint</h5>
+      <p>You may have <strong>gracenode</strong> ignore certain files/directories for liniting by adding the following in your application configuration:</p>
+      <pre><code><span class="hljs-tag">lint</span>: {
+              <span class="hljs-attribute">ignore</span>: [
+                      <span class="hljs-string">''</span>
+              ]
+      }
+      </code></pre>
+      <h5><a id="How_To_Change_Lint_Configurations_287"></a>How To Change Lint Configurations</h5>
+      <p>In order to change lint configurations, add/change the following in your <code>package.json</code>:</p>
+      <pre><code><span class="hljs-string">"jshintConfig"</span>: {
+                      <span class="hljs-string">"node"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"bitwise"</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-string">"camelcase"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"curly"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"eqeqeq"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"forin"</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-string">"immed"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"latedef"</span>: <span class="hljs-literal">false</span>,
+                      <span class="hljs-string">"newcap"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"noarg"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"noempty"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"undef"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"unused"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"nonew"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"white"</span>: <span class="hljs-literal">true</span>,
+                      <span class="hljs-string">"maxdepth"</span>: <span class="hljs-number">5</span>,
+                      <span class="hljs-string">"quotmark"</span>: <span class="hljs-string">"single"</span>,
+                      <span class="hljs-string">"globals"</span>: {
+                              <span class="hljs-string">"mocha"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"describe"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"it"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"before"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"beforeEach"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"after"</span>: <span class="hljs-literal">false</span>,
+                              <span class="hljs-string">"afterEach"</span>: <span class="hljs-literal">false</span>
+                      }
+              }
+      </code></pre>
+      <h2><a id="Start_Your_Application_As_A_Daemon_322"></a>Start Your Application As A Daemon</h2>
+      <p>There are 2 different ways to start your application as a daemon.</p>
+      <h4><a id="Example_1_326"></a>Example 1:</h4>
+      <p>Assuming <code>app.js</code> is your appliction file to execute.</p>
+      <p><code>node app.js start -l /path/to/my/daemon/logging/</code></p>
+      <h4><a id="Example_2_332"></a>Example 2:</h4>
+      <p><strong>gracenode</strong> creates <code>./gracenode</code> executable when you install <strong>gracenode</strong>.</p>
+      <p>Assuming <code>app.js</code> is your appliction file to execute.</p>
+      <p><code>./gracenode app.js start -l /path/to/my/daemon/logging/</code></p>
+      <p><strong>NOTE:</strong> More details on the daemonization command options will be explain later in this &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#daemon-commands">https://github.com/voltrue2/gracenode#daemon-commands</a>&quot;&gt;README&lt;/a&gt;.</p>
+      <h2><a id="AutoRestarting_Of_Daemon_Process_342"></a>Auto-Restarting Of Daemon Process</h2>
+      <p>It is very useful when you are developing your application to automatically restart the running daemon on changes that your make.</p>
+      <p>To do so, you need to use a daemon command option <code>-w</code>.</p>
+      <h4><a id="Example_348"></a>Example:</h4>
+      <p><code>node app.js start -l /path/to/my/daemon/logging/ -w /path/to/my/app/code/ /path/to/my/another/ap/code</code></p>
+      <p><strong>NOTE:</strong> <code>-w</code> option watches the directories/files that are given and when there changes such as adding a new file, removing some files, and changing the existing file are detected,
+      daemon will automatically restart so that your changes are now in effect without having to manually restart your daemon.</p>
+      <h2><a id="Bootstrapping_other_modules_355"></a>Bootstrapping other modules</h2>
+      <p>Some modules require some setting up before they can be used in your code, some setup process maybe asynchronous and your application has to wait for it to complete its process.
+      When you use such modules, simply calling <code>var mod = require('great-mod');</code> is not good enough especially when the module requires asynchronous setup.</p>
+      <p><strong>gracenode</strong> can bootstrap all of these modules and handle setting up of each module in an organized way.</p>
+      <p>For example, assuming this <code>foo</code> module needs to read some files before it is ready, <strong>gracenode</strong> can handle it like so:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      
+      gn.use(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'node_modules/foo'</span>, {
+              setup: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">cb</span>) </span>{
+                      <span class="hljs-keyword">this</span>.readFromFiles(cb);
+              }
+      });
+      
+      gn.start({
+              <span class="hljs-comment">// Now gracenode is ready</span>
+              <span class="hljs-comment">// And foo is also ready</span>
+              <span class="hljs-comment">// To access foo module:</span>
+              gn.mod.foo.doSomething();
+      });
+      </code></pre>
+      <p><strong>NOTE 1:</strong> The 2nd argument of <code>.use()</code> is a relative path to load the module <code>foo</code>. The path is relative to the root path of your application.</p>
+      <p><strong>NOTE 2:</strong> The 3rd argument is an optional object that you can assign specific functions to perform setting and/or cleaning.</p>
+      <p><strong>NOTE 3:</strong> <code>this</code> inside of the functions you assign to the 3rd argument is the module you are “using”. In this example, <code>this</code> is <code>foo</code> module.</p>
+      <p><strong>NOTE 4:</strong> More details on <code>.use()</code> and its options will be explained later in this &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#usemodulename-string-modulepath-string-options-object">https://github.com/voltrue2/gracenode#usemodulename-string-modulepath-string-options-object</a>&quot;&gt;README&lt;/a&gt;.</p>
+      <h4><a id="Accessing_Bootstrapped_Modules_389"></a>Accessing Bootstrapped Modules</h4>
+      <p><strong>gracenode</strong> has a property <code>.mod</code> that holds all bootrstapped modules. The first argument of <code>.use()</code> will be the name of bootstrapped module.</p>
+      <p>Here is how you would access the bootstrapped modules in your application code:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      
+      gn.use(<span class="hljs-string">'myModule'</span>, <span class="hljs-string">'/path/to/my/module/'</span>);
+      
+      gn.start(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+              gn.mod.myModule.doSomething();
+      });
+      </code></pre>
+      <h2><a id="Use_gracenode_With_express_Framework_405"></a>Use gracenode With express Framework</h2>
+      <p><strong>gracenode</strong> can be used along side with &lt;a href=&quot;<a href="https://www.npmjs.com/package/express">https://www.npmjs.com/package/express</a>&quot; target=&quot;_blank&quot;&gt;express&lt;/a&gt;.</p>
+      <p>It will give your express application the support for clustering and daemoning out-of-the-box.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      
+      gn.use(<span class="hljs-string">'express'</span>, <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>));
+      
+      gn.start(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+              <span class="hljs-comment">// start your express application</span>
+              <span class="hljs-keyword">var</span> app = gn.mod.express();
+              app.listen(<span class="hljs-number">8000</span>);
+      });
+      </code></pre>
+      <h2><a id="Properties_425"></a>Properties</h2>
+      <h3><a id="log_427"></a>.log</h3>
+      <p>Logging module. For more details, please read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#logging">https://github.com/voltrue2/gracenode#logging</a>&quot;&gt;here&lt;/a&gt;.</p>
+      <h3><a id="lib_431"></a>.lib</h3>
+      <p>Library of built-in utility functions. For more details: &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#gracenodelib">https://github.com/voltrue2/gracenode#gracenodelib</a>&quot;&gt;here&lt;/a&gt;.</p>
+      <h3><a id="render_435"></a>.render</h3>
+      <p>Dynamic renderer for HTML and other contents to be served from the server.</p>
+      <p>For more details, please read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#render-1">https://github.com/voltrue2/gracenode#render-1</a>&quot;&gt;here&lt;/a&gt;.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">gracenode.http.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              <span class="hljs-keyword">var</span> data = {
+                      title: <span class="hljs-string">'Hello World'</span>
+              };
+              <span class="hljs-keyword">var</span> renderedHTML = gracenode.render(<span class="hljs-string">'view/index.html'</span>, data);
+              res.html(renderedHTML);
+      });
+      </code></pre>
+      <h3><a id="http_453"></a>.http</h3>
+      <p>An HTTP server router to help you build HTTP rest server.</p>
+      <p>For more details please read &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#router-1">https://github.com/voltrue2/gracenode#router-1</a>&quot;&gt;here&lt;/a&gt;.</p>
+      <h4><a id="Register_Routings_459"></a>Register Routings</h4>
+      <p>To register HTTP endpoints, call the following functions.</p>
+      <h4><a id="Configurations_463"></a>Configurations</h4>
+      <pre><code><span class="hljs-tag">gracenode</span><span class="hljs-class">.config</span>(<span class="hljs-rules">{
+              <span class="hljs-rule"><span class="hljs-attribute">http</span>:<span class="hljs-value"> {
+                      port: &lt;number&gt;,
+                      host: &lt;string&gt;
+              }
+      })</span></span>;
+      </span></code></pre>
+      <h4><a id="gracenodehttpgeturl_string_handler_function_474"></a>gracenode.http.get(url [string], handler [function])</h4>
+      <p>Registers a routing for GET requests.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      gn.config({
+              http: {
+                      port: <span class="hljs-number">8888</span>,
+                      host: <span class="hljs-string">'localhost'</span>
+              }
+      });
+      gn.http.get(<span class="hljs-string">'/example'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              res.json({ title: <span class="hljs-string">'Hello World'</span> });
+      });
+      gn.http.get(<span class="hljs-string">'/mypage'</span>, <span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/mypage/handler'</span>));
+      </code></pre>
+      <p>&lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#router-1">https://github.com/voltrue2/gracenode#router-1</a>&quot;&gt;More Details Here&lt;/a&gt;</p>
+      <h2><a id="Methods_496"></a>Methods</h2>
+      <h3><a id="getRootPath_498"></a>.getRootPath()</h3>
+      <p>Returns a application root path as a string.</p>
+      <h3><a id="configconfigObj_object_502"></a>.config(configObj [object])</h3>
+      <p>Set configurations as an object as an option.</p>
+      <p>This function can be called multiple times and it will merge all configuration objects being passed.</p>
+      <p><strong>NOTE</strong>: The same configuration properties will be overwritten.</p>
+      <h3><a id="getConfigconfigName_string_510"></a>.getConfig(configName [string])</h3>
+      <p>Returns a matching configurations.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      gn.config({
+              log: {
+                      file: <span class="hljs-string">'/path/to/log/dir/'</span>
+              }
+      });
+      <span class="hljs-keyword">var</span> logFilePath = gn.getConfig(<span class="hljs-string">'log.file'</span>);
+      </code></pre>
+      <h3><a id="onExceptioncallback_function_526"></a>.onException(callback [function])</h3>
+      <p>Assigns a function to be executed on <code>uncaughtException</code> event.</p>
+      <h3><a id="onExittaskFunction_function_530"></a>.onExit(taskFunction [function])</h3>
+      <p>Assigns a function to be executed on process exit of <strong>gracenode</strong>. The assigned function will have a callback function passed.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">gracenode.onExit(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">callback</span>) </span>{
+              <span class="hljs-comment">// do something before terminating the process</span>
+              callback();
+      });
+      </code></pre>
+      <h3><a id="requirepath_string_543"></a>.require(path [string])</h3>
+      <p><code>gracenode.require()</code> requires a module from application root path.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascript"><span class="hljs-comment">// application root: /var/www/myapp/</span>
+      <span class="hljs-comment">// module path: /var/www/my/myapp/mystuff/</span>
+      <span class="hljs-comment">// required location: /var/www/myapp/look/here/index.js</span>
+      <span class="hljs-comment">// without gracenode.require()</span>
+      <span class="hljs-keyword">var</span> mystuff = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../../mystuff'</span>);
+      <span class="hljs-comment">// with gracenode.require()</span>
+      <span class="hljs-keyword">var</span> mystuff = gracenode.require(<span class="hljs-string">'mystuff'</span>);
+      </code></pre>
+      <h4><a id="Default_Configurations_559"></a>Default Configurations</h4>
+      <p><strong>gracenode</strong> can be configured with the following properties by default:</p>
+      <pre><code><span class="hljs-collection">{
+              log: <span class="hljs-collection">{
+                      rotationType: <span class="hljs-collection">[string]</span>,
+                      useTimestamp: <span class="hljs-collection">[boolean]</span>,
+                      bufferSize: <span class="hljs-collection">[int]</span>,
+                      bufferFlushInterval: <span class="hljs-collection">[int]</span>,
+                      oneFile: <span class="hljs-collection">[boolean]</span>,
+                      file: <span class="hljs-collection">[string]</span>,
+                      console: <span class="hljs-collection">[boolean]</span>,
+                      remote: <span class="hljs-collection">[object]</span>,
+                      color: <span class="hljs-collection">[boolean]</span>,
+                      showHidden: <span class="hljs-collection">[boolean]</span>,
+                      depth: <span class="hljs-collection">[int]</span>,
+                      level: <span class="hljs-collection">[string]</span>
+              }</span>,
+              cluster: <span class="hljs-collection">{
+                      max: <span class="hljs-collection">[int]</span>,
+                      autoSpawn: <span class="hljs-collection">[boolean]</span>,
+                      sync: <span class="hljs-collection">[boolean]</span>
+              }</span>
+      }</span>
+      </code></pre>
+      <p><strong>NOTE</strong>: To use configurations for bootstrapped module, simply use the same name as used in <code>.use()</code>.</p>
+      <h5><a id="logrotationType_589"></a>log.rotationType</h5>
+      <p>Defines log file rotation type.</p>
+      <p>The valid types are:</p>
+      <ul>
+      <li>
+      <p><code>year</code></p>
+      </li>
+      <li>
+      <p><code>month</code></p>
+      </li>
+      <li>
+      <p><code>day</code></p>
+      </li>
+      <li>
+      <p><code>hour</code></p>
+      </li>
+      </ul>
+      <p>Default is <code>day</code>,</p>
+      <h5><a id="loguseTimestamp_605"></a>log.useTimestamp</h5>
+      <p>If <code>true</code>, the logging time will be in Unix timestamp.</p>
+      <p>Default is <code>false</code>.</p>
+      <h5><a id="logbufferSize_611"></a>log.bufferSize</h5>
+      <p>Defines the buffer size for log data in bytes.</p>
+      <p>Default is 8128 bytes (8KB).</p>
+      <p><strong>NOTE</strong>: File logging only.</p>
+      <h5><a id="logbufferFlushInterval_619"></a>log.bufferFlushInterval</h5>
+      <p>Defines auto-buffer-flush interval in milliseconds.</p>
+      <p>Default is 5000ms (5 seconds).</p>
+      <p><strong>NOTE</strong>: File logging only.</p>
+      <h5><a id="logoneFile_627"></a>log.oneFile</h5>
+      <p>If <code>true</code>, file logging will be combined in to one file for all log levels.</p>
+      <p>Default is <code>false</code>.</p>
+      <p><strong>NOTE</strong>: File logging only.</p>
+      <h5><a id="logfile_635"></a>log.file</h5>
+      <p>Defines the path to the logging directory.</p>
+      <p>If this is not set, <strong>gracenode</strong> will NOT log to file, but stdout/stderr stream only.</p>
+      <p>Default is not set.</p>
+      <h5><a id="logconsole_643"></a>log.console</h5>
+      <p>If <code>true</code>, all logging will be outputting to stdout/stderr stream.</p>
+      <p>Default is <code>true</code>.</p>
+      <h5><a id="logremote_649"></a>log.remote</h5>
+      <p>Defines the configurations to send logging data to a remote server via UDP protocol.</p>
+      <pre><code><span class="hljs-collection">{
+              host: <span class="hljs-collection">[string]</span>,
+              port: <span class="hljs-collection">[int]</span>
+      }</span>
+      </code></pre>
+      <p>Default is not set.</p>
+      <h5><a id="logcolor_662"></a>log.color</h5>
+      <p>If <code>true</code>, logging data will be colored.</p>
+      <p>Default is <code>false</code>.</p>
+      <h5><a id="logshowHidden_668"></a>log.showHidden</h5>
+      <p>If <code>true</code>, logging objects will show hidden properties.</p>
+      <p>Default is <code>false</code>.</p>
+      <h5><a id="logdepth_674"></a>log.depth</h5>
+      <p>Defines how far logging module should recursively output objects.</p>
+      <p>Default is not set.</p>
+      <h5><a id="loglevel_680"></a>log.level</h5>
+      <p>Defines from which log level to output.</p>
+      <p>The valid log levels are:</p>
+      <ul>
+      <li>
+      <p><code>verbose</code></p>
+      </li>
+      <li>
+      <p><code>debug</code></p>
+      </li>
+      <li>
+      <p><code>table</code></p>
+      </li>
+      <li>
+      <p><code>trace</code></p>
+      </li>
+      <li>
+      <p><code>info</code></p>
+      </li>
+      <li>
+      <p><code>warn</code></p>
+      </li>
+      <li>
+      <p><code>error</code></p>
+      </li>
+      <li>
+      <p><code>fatal</code></p>
+      </li>
+      </ul>
+      <p>Use <code>&gt;</code>, <code>&gt;=</code> to control the definition of log level.</p>
+      <p><strong>Example</strong></p>
+      <pre><code><span class="hljs-string">'&gt;= info'</span>
+      </code></pre>
+      <p>The above example will be logging from log level info to lower (info, warn, error, fatal).</p>
+      <p><strong>NOTE</strong>: From the top highest to lowest</p>
+      <h5><a id="clustermax_714"></a>cluster.max</h5>
+      <p>Defines how many cluster worker processes.</p>
+      <p>If <code>0</code> is given, <strong>gracenode</strong> will not be running in cluster.</p>
+      <p>Default is <code>0</code>.</p>
+      <h5><a id="clusterautoSpawn_722"></a>cluster.autoSpawn</h5>
+      <p>If <code>true</code>, terminated worker processes will be automatically respawned and replaced.</p>
+      <p>Default is <code>false</code>.</p>
+      <h5><a id="clustersync_728"></a>cluster.sync</h5>
+      <p>If <code>true</code>, all workers will share a list of existing workers and their <code>pid</code>.</p>
+      <p>This may lead to server stress.</p>
+      <p>Default is <code>true</code>.</p>
+      <h3><a id="usemoduleName_string_modulePath_string_options_object_736"></a>.use(moduleName [string], modulePath [string], options [object])</h3>
+      <p>Tells <strong>gracenode</strong> to bootstrap and set up a given module.</p>
+      <p><strong>gracenode</strong> will be loading the module from <code>modulePath</code>.</p>
+      <h4><a id="options_object_742"></a>options [object]</h4>
+      <p>Assigns an optional functions to be executed for the bootstrapped module.</p>
+      <p><strong>Structure</strong>:</p>
+      <pre><code>{
+              config: [<span class="hljs-function"><span class="hljs-keyword">function</span></span>],
+              setup: [<span class="hljs-function"><span class="hljs-keyword">function</span></span>],
+              <span class="hljs-keyword">exit</span>: [<span class="hljs-function"><span class="hljs-keyword">function</span></span>]
+      }
+      </code></pre>
+      <h5><a id="optionsconfig_function_756"></a>options.config [function]</h5>
+      <p>A function to be executed when starting the <strong>gracenode</strong> process to read configuration data.</p>
+      <p>The assigned function be will passed a configuration data.</p>
+      <p><strong>Example</strong></p>
+      <pre><code class="language-javascript">gracenode.use(<span class="hljs-string">'myMod'</span>, <span class="hljs-string">'/path/to/my/mod/'</span>, {
+              config: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">configData</span>) </span>{
+                      <span class="hljs-keyword">this</span>.configData = configData;
+              }
+      });
+      </code></pre>
+      <p><strong>NOTE</strong>: <code>this</code> in the function is the bootstrapped module.</p>
+      <h5><a id="optionssetup_function_774"></a>.options.setup [function]</h5>
+      <p>A function to be executed when starting the <strong>gracenode</strong> process after <code>options.config()</code> if provided.</p>
+      <p>If <code>options.config()</code> is not provided, it will be called at the start of bootstrapping the module.</p>
+      <p>The function will be passed a callback function.</p>
+      <p><strong>Example</strong></p>
+      <pre><code class="language-javascript">gracenode.use(<span class="hljs-string">'myMod'</span>, {
+              setup: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">callback</span>) </span>{
+                      <span class="hljs-comment">// do something here</span>
+                      callback();
+              }
+      });
+      </code></pre>
+      <p><strong>NOTE</strong>: <code>this</code> in the function is the bootstrapped module.</p>
+      <h5><a id="optionsexit_function_795"></a>.options.exit [function]</h5>
+      <p>A function to be executed on exitting of the <strong>gracenode</strong> process.</p>
+      <p>It is useful to clean up before the exit.</p>
+      <p>The function will be passed a callback function.</p>
+      <p><strong>Example</strong></p>
+      <pre><code class="language-javascript">gracenode.use(<span class="hljs-string">'myMod'</span>, <span class="hljs-string">'/path/to/my/mod/'</span>, {
+              exit: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">callback</span>) </span>{
+                      <span class="hljs-comment">// do something here</span>
+                      callback();
+              }
+      });
+      </code></pre>
+      <p><strong>NOTE</strong>: <code>this</code> in the function is the bootstrapped module.</p>
+      <h3><a id="startcallback_function_815"></a>.start(callback [function]);</h3>
+      <p>Starts the <strong>gracenode</strong> process.</p>
+      <p><strong>NOTE</strong>: If there is an error while starting the process, it will crush with an exception.</p>
+      <h3><a id="stoperror_error_object_821"></a>.stop(error [*error object])</h3>
+      <p>Stops the running <strong>gracenode</strong> process.</p>
+      <p>If an error object is passed, it will stop the process with an error.</p>
+      <h3><a id="isMaster_827"></a>.isMaster()</h3>
+      <p>Returns <code>true</code> if the process is running in cluster and the process is a master process.</p>
+      <h3><a id="isCluster_831"></a>.isCluster()</h3>
+      <p>Returns <code>true</code> if the process is running in cluster.</p>
+      <h2><a id="Logging_835"></a>Logging</h2>
+      <p><strong>gracenode</strong> comes will built-in logging module.</p>
+      <p>It is accessed as <code>gracenode.log</code>.</p>
+      <h3><a id="How_To_Log_841"></a>How To Log</h3>
+      <p>In order to log some data, you need to create a logger.</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> logger = gracenode.log.create();
+      logger.verbose(<span class="hljs-string">'I am logging something here'</span>);
+      logger.info({ example: <span class="hljs-string">'Example Object'</span> });
+      <span class="hljs-keyword">var</span> loggerWithName = gracenode.log.create(<span class="hljs-string">'my logger'</span>);
+      loggerWithName.warn(<span class="hljs-string">'warning!'</span>);
+      </code></pre>
+      <h4><a id="logsetPrefixprefix_string_853"></a>.log.setPrefix(prefix [string])</h4>
+      <p>Defines a prefix to each logging data.</p>
+      <h4><a id="logcreateloggerName_string_857"></a>.log.create(loggerName [*string])</h4>
+      <p>Returns an instance of logger object.</p>
+      <h4><a id="Logger_Class_Methods_861"></a>Logger Class Methods</h4>
+      <h5><a id="verbose_863"></a>.verbose()</h5>
+      <p>Log level <code>verbose</code>.</p>
+      <h5><a id="debug_867"></a>.debug()</h5>
+      <p>Log level <code>debug</code>.</p>
+      <h5><a id="table_871"></a>.table()</h5>
+      <p>Log level <code>debug</code>.</p>
+      <h5><a id="trace_875"></a>.trace()</h5>
+      <p>Log level <code>debug</code>.</p>
+      <h5><a id="info_879"></a>.info()</h5>
+      <p>Log level <code>info</code>.</p>
+      <h5><a id="warn_883"></a>.warn()</h5>
+      <p>Log level <code>warn</code>.</p>
+      <h5><a id="error_887"></a>.error()</h5>
+      <p>Log level <code>error</code>.</p>
+      <h5><a id="fatal_891"></a>.fatal()</h5>
+      <p>Log level <code>fatal</code>.</p>
+      <h4><a id="Log_Event_895"></a>Log Event</h4>
+      <p><strong>gracenode</strong> logger emits an even on each log output.</p>
+      <p>It is useful for capturing and sending all logging to a database etc.</p>
+      <h5><a id="output_901"></a>output</h5>
+      <pre><code class="language-javasctipt">gracenode.<span class="hljs-built_in">log</span>.<span class="hljs-keyword">on</span>(<span class="hljs-string">'output'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(ip, logName, level, messageObj)</span> {</span>
+              // <span class="hljs-keyword">do</span> something
+      });
+      </code></pre>
+      <h2><a id="Daemon_Commands_909"></a>Daemon Commands</h2>
+      <p>There are some command-line options available for daemon.</p>
+      <h3><a id="Help_913"></a>Help</h3>
+      <p><code>node app.js --help</code>, <code>node app.js -h</code>, <code>./gracenode --help</code>, or <code>./gracenode -h</code>.</p>
+      <h3><a id="Commands_917"></a>Commands</h3>
+      <h4><a id="start_919"></a>start</h4>
+      <p>Start an application as daemon.</p>
+      <p><code>./gracenode start app.js</code></p>
+      <p><code>node app.js start</code></p>
+      <h4><a id="stop_927"></a>stop</h4>
+      <p>Stop a running application.</p>
+      <p><code>./gracenode stop app.js</code></p>
+      <p><code>node app.js stop</code></p>
+      <h4><a id="restart_935"></a>restart</h4>
+      <p>Restart a running application.</p>
+      <p><code>./gracenode restart app.js</code></p>
+      <p><code>node app.js restart</code></p>
+      <h4><a id="reload_943"></a>reload</h4>
+      <p>Gracefully restart a running application.</p>
+      <p>This command works ONLY if your are running the application in cluster mode.</p>
+      <p><code>./gracenode reload app.js</code></p>
+      <p><code>node app.js reload</code></p>
+      <h4><a id="stopall_953"></a>stopall</h4>
+      <p>Stop all running daemon applications.</p>
+      <p><code>./gracenode stopall</code></p>
+      <p><code>node app.js stopall</code></p>
+      <p>To ignore prompting, add an option <code>-f</code>.</p>
+      <p><code>./gracenode stopall -f</code></p>
+      <p><code>node app.js stopall -f</code></p>
+      <h4><a id="restartall_967"></a>restartall</h4>
+      <p>Restart all running applications.</p>
+      <p><code>./gracenode restartall</code></p>
+      <p><code>node app.js restartall</code></p>
+      <p>To ignore prompting, add an option <code>-f</code>.</p>
+      <p><code>./gracenode restartall -f</code></p>
+      <p><code>node app.js restartall -f</code></p>
+      <h4><a id="status_981"></a>status</h4>
+      <p>Output running status of a daemon.</p>
+      <p><code>./gracenode status app.js</code></p>
+      <p><code>node app.js status</code></p>
+      <h4><a id="list_989"></a>list</h4>
+      <p>Output all running status of daemons</p>
+      <p><code>./gracenode list</code></p>
+      <p><code>node app.js list</code></p>
+      <h4><a id="tail_997"></a>tail</h4>
+      <p>Tails daemon log files.</p>
+      <p><code>./gracenode tail app.js</code></p>
+      <p><code>node app.js tail</code></p>
+      <h3><a id="Options_1005"></a>Options</h3>
+      <h4><a id="l_logpath_1007"></a>-l, --log=[path]</h4>
+      <p>Write log data into a file.</p>
+      <h4><a id="e_execpath_1011"></a>-e, --exec=[path]</h4>
+      <p>Daemonize the target application with the given interpreter.</p>
+      <h4><a id="w_a_1015"></a>-w, -a</h4>
+      <p>Automatically restart the daemon process if watch file(s) change.</p>
+      <h4><a id="v_verbose_1019"></a>-v, --verbose</h4>
+      <p>Be more verbose.</p>
+      <h4><a id="f_1023"></a>-f</h4>
+      <p>Stops or restarts all running daemon processes without user inputs. This option is for {stopall|restartall} command only.</p>
+      <h2><a id="Render_1027"></a>Render</h2>
+      <p>Render allows you to create dynamic content from templated static files.</p>
+      <p>It also supports caching rendered data for static templates to improve the run-time performance.</p>
+      <p>It is useful for web pages etc.</p>
+      <h3><a id="gracenoderenderpath_string_data_object_cacheTtl_number_1035"></a>gracenode.render(path [string], data [object], cacheTtl [*number])</h3>
+      <h4><a id="path_1037"></a>path</h4>
+      <p>A path to the pre-rendered file data to render.</p>
+      <h4><a id="data_1041"></a>data</h4>
+      <p>An object to be inserted into the rendered file data.</p>
+      <h4><a id="cacheTtl_1045"></a>cacheTtl</h4>
+      <p>An option to use cache for rendered template data.</p>
+      <p>If this parameter is not given, it does not use cache</p>
+      <p>The cache data will be ignored if given <code>data</code> is different from the cached rendered data.</p>
+      <p><strong>NOTE</strong>: cacheTtl is in miliseconds. If the cache needs to last for 24 hours, cacheTtl = 8640000.</p>
+      <p><strong>Default</strong>: Default cache TTL is 1 hour. Pass <code>0</code> to ignore caching.</p>
+      <h3><a id="Configurations_1057"></a>Configurations</h3>
+      <p>Render requires a path to read the template files from.</p>
+      <p>It will then read all template files and pre-render them on the application process start.</p>
+      <pre><code><span class="xml">render: </span><span class="hljs-expression">{
+              <span class="hljs-variable">path</span>: '<span class="hljs-end-block">/path</span><span class="hljs-end-block">/to</span><span class="hljs-end-block">/my</span><span class="hljs-end-block">/templates</span>',
+              *<span class="hljs-variable">cacheSize</span>: &lt;<span class="hljs-variable">number</span>&gt;
+      }</span><span class="xml">
+      </span></code></pre>
+      <p><strong>cacheSize</strong> is an optional configuration to change the default cache size in <code>bytes</code>.</p>
+      <p>Default cache size is <code>2MB</code>.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      gn.config({
+              render: {
+                      path: <span class="hljs-string">'/path/to/my/template/files/'</span>
+              }
+      });
+      </code></pre>
+      <h3><a id="Embedding_Dynamic_Data_1085"></a>Embedding Dynamic Data</h3>
+      <p>Render can insert dynamically define values to rendered template file data.</p>
+      <h4><a id="Access_Variables_1089"></a>Access Variables</h4>
+      <p><strong>gracenode</strong> allows access to the dynamically defined variables from the client-side javascript.</p>
+      <p><strong>Example</strong></p>
+      <p>To access the variable named <code>example</code>:</p>
+      <pre><code><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+      
+              <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">window</span>.gracenode.example);
+      
+      </span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+      </code></pre>
+      <p>All dynamically defined variables for rendered data can be accessed under <code>window.gracenode</code>.</p>
+      <h4><a id="Embed_Variables_1107"></a>Embed Variables</h4>
+      <p><strong>Syntax</strong></p>
+      <pre><code><span class="hljs-expansion">{{variableName}}</span>
+      </code></pre>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>{{myCar}}<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      </code></pre>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> rendered = gracenode.render(<span class="hljs-string">'/myview.html'</span>, {
+              myCar: <span class="hljs-string">'BMW'</span>
+      });
+      </code></pre>
+      <p>The above examples will result in <code>{{myCar}}</code> being replaced by <code>{ myCar: 'BMW' }</code>, so the rendered result is:</p>
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>BMW<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      </code></pre>
+      <h4><a id="Custom_Registered_Functions_1132"></a>Custom Registered Functions</h4>
+      <p>Render allows user custom functions to be registered and used in render templates.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">gracenode.render.func(<span class="hljs-string">'myFunction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">variableValue</span>) </span>{
+              <span class="hljs-comment">// do somethig here</span>
+              <span class="hljs-keyword">return</span> variableValue * <span class="hljs-number">2</span>;
+      });
+      <span class="hljs-keyword">var</span> data = {
+              myValue: <span class="hljs-number">4</span>
+      };
+      <span class="hljs-keyword">var</span> rendered = gracenode.render(<span class="hljs-string">'/path/to/my/template'</span>, data);
+      </code></pre>
+      <pre><code><span class="hljs-constant">This</span> is my template. <span class="hljs-expansion">{{ myValue }}</span> x <span class="hljs-number">2</span> = <span class="hljs-expansion">{{ myFunction(myValue) }}</span>.
+      </code></pre>
+      <pre><code>This is my <span class="hljs-keyword">template</span>. <span class="hljs-number">4</span> x <span class="hljs-number">2</span> = <span class="hljs-number">8.</span>
+      </code></pre>
+      <h4><a id="Literals_1157"></a>Literals</h4>
+      <p>Render allows you define <code>literals</code> so that render does not attempt to render certain section of your templates.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code><span class="hljs-expansion"> <span class="hljs-keyword">if</span> (<span class="hljs-constant">A</span> === <span class="hljs-constant">B</span>)<span class="hljs-symbol">:</span> <span class="hljs-constant">Example</span> endif </span>
+      </code></pre>
+      <p>The above example will not render as <code>if</code> statement but rendered literally instead.</p>
+      <h4><a id="Handle_Require_Statement_1169"></a>Handle Require Statement</h4>
+      <p>Render can combine multiple pre-rendered template files into one file and render it as one render data.</p>
+      <p><strong>Syntax</strong></p>
+      <pre><code><span class="hljs-expansion">{{<span class="hljs-keyword">require</span>(<span class="hljs-regexp">/path/to</span><span class="hljs-regexp">/my/partial</span>.html)}}</span>
+      </code></pre>
+      <h4><a id="Handle_IfElse_IfElse_Statements_1179"></a>Handle If/Else If/Else Statements</h4>
+      <p>Render handles simple if statements.</p>
+      <p><strong>WARNING</strong>: You must not have nested if statements.</p>
+      <p><strong>WARNING</strong>: You must not have if statement inside of for statement.</p>
+      <p><strong>Syntax</strong></p>
+      <pre><code><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable"><span class="hljs-keyword">if</span></span> ({<span class="hljs-variable">a</span>} === {<span class="hljs-variable">b</span>}):
+              &lt;<span class="hljs-variable">div</span>&gt;{<span class="hljs-variable">a</span>}&amp;<span class="hljs-variable">nbps</span>;<span class="hljs-variable">is</span>&amp;<span class="hljs-variable">nbsp</span>;{<span class="hljs-variable">b</span>}&lt;<span class="hljs-end-block">/div</span>&gt;
+      <span class="hljs-variable">endif</span>}}</span><span class="xml">
+      </span></code></pre>
+      {{
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-html">{{if ({a} === {b}):
+              <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>{a}&amp;nbps;is&amp;nbsp;{b}<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      else if (a &gt; b):
+              <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>{a}&amp;nbsp;is&amp;nbsp;greater&amp;nbps;than&amp;nbsp;{b}<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      else:
+              <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>{a}&amp;nbps;is&amp;nbsp;NOT&amp;nbsp;{b}<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      endif}}
+      </code></pre>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> rendered = gracenode.render(<span class="hljs-string">'myview.html'</span>, {
+              a: <span class="hljs-number">100</span>,
+              b: <span class="hljs-number">10</span>
+      });
+      </code></pre>
+      <p><strong>IMPORTANT</strong>: The variables inside <strong>if</strong> must be <code>{variableName}</code> NOT <code>{{variableName}}</code>.</p>
+      <p>The above example will result in <code>&lt;div&gt;{a}&amp;nbsp;is&amp;nbsp;greater&amp;nbps;than&amp;nbsp;{b}&lt;/div&gt;</code> to be in the rendered result:</p>
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>100&amp;nbsp;is&amp;nbsp;greater&amp;nbps;than&amp;nbsp;10<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      </code></pre>
+      <h4><a id="Handle_For_Statements_Array_Only_1222"></a>Handle For Statements (Array Only)</h4>
+      <p>Render handles simple for statements.</p>
+      <p><strong>WARNING</strong>: You must not have nested for statements.</p>
+      <p><strong>WARNING</strong>: You must not have if statement inside for statement.</p>
+      <p><strong>Syntax</strong></p>
+      <pre><code><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable">for</span> (<span class="hljs-variable">i</span> = <span class="hljs-variable">i</span> &lt; {<span class="hljs-variable">list.length</span>}; <span class="hljs-variable">i</span>++):
+              &lt;<span class="hljs-variable">div</span>&gt;{<span class="hljs-variable">i</span>}:{<span class="hljs-variable">list.i</span>}&lt;<span class="hljs-end-block">/div</span>&gt;
+      <span class="hljs-variable">endfor</span>}}</span><span class="xml">
+      </span></code></pre>
+      <p><strong>NOTE</strong>: <code>{list.i}</code> = <code>list[i]</code></p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-html">
+      </code></pre>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> rendered = gracenode.render(<span class="hljs-string">'/myview.html'</span>, {
+              list: [
+                      <span class="hljs-string">'Apple'</span>,
+                      <span class="hljs-string">'Carrot'</span>,
+                      <span class="hljs-string">'Orange'</span>
+              ]
+      });
+      </code></pre>
+      <p><strong>IMPORTANT</strong>: The variables inside <strong>for</strong> must be <code>{variableName}</code> NOT <code>{{variableName}}</code>.</p>
+      <p>The above example will result in:</p>
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>0:Apple<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>1:Carrot<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>2:Orange<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      </code></pre>
+      <h4><a id="Handle_ForEach_Statement_Object_Only_1268"></a>Handle ForEach Statement (Object Only)</h4>
+      <p>Render handles a simple for loop for object as <code>foreach</code>.</p>
+      <p><strong>Syntax</strong></p>
+      <pre><code><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable">foreach</span> (<span class="hljs-variable">key</span> <span class="hljs-variable"><span class="hljs-keyword">in</span></span> {<span class="hljs-variable">map</span>}):
+              &lt;<span class="hljs-variable">div</span>&gt;{<span class="hljs-variable">key</span>}:{<span class="hljs-variable">map.key</span>}&lt;<span class="hljs-end-block">/div</span>&gt;
+      <span class="hljs-variable">endforeach</span>}}</span><span class="xml">
+      </span></code></pre>
+      <p><strong>NOTE</strong>:</p>
+      <p><code>{map.key}</code> = <code>map[key]</code></p>
+      <p><strong>Example</strong></p>
+      <pre><code class="language-html">{{foreach (key in {map}):
+              <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>{key}:{map.key}<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      endforeach}}
+      </code></pre>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> rendered = gracenode.render(<span class="hljs-string">'/myview.html'</span>, {
+              map: {
+                      meat: beef,
+                      meat: pork,
+                      fruit: apple,
+                      veggi: beans
+              }
+      });
+      </code></pre>
+      <p><strong>IMPORTANT</strong>: The variables inside <strong>foreach</strong> must be <code>{variableName}</code> NOT <code>{{variableName}}</code>.</p>
+      <p>The above example will result in:</p>
+      <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>meat:beef<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>meat:pork<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>fruit:apple<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">div</span>&gt;</span>veggi:beans<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+      </code></pre>
+      <h3><a id="ClientSide_Automatic_HTML_Rendering_1314"></a>Client-Side Automatic HTML Rendering</h3>
+      <p><code>gracenode.render()</code> supports client-side automatic rendering based on data.</p>
+      <h4><a id="AutoRender_From_Remotely_Fetched_Data_1318"></a>Auto-Render From Remotely Fetched Data</h4>
+      <p>In order to auto-render HTML by remotely fetched data, add the following to the target HTML element:</p>
+      <pre><code>&lt;<span class="hljs-keyword">div</span> data-gn-src=<span class="hljs-string">"http://mywebapp.com/get/some/data"</span>&gt;&lt;/<span class="hljs-keyword">div</span>&gt;
+      </code></pre>
+      <p>The above will get data from <code>http://mywebapp.com/get/some/data</code>, and render it to HTML.</p>
+      <h4><a id="AutoRender_From_Local_Data_1328"></a>Auto-Render From Local Data</h4>
+      <p>Cient-side auto-rendering can also render HTML element from locally available javascript value(s).</p>
+      <pre><code>&lt;<span class="hljs-keyword">div</span> data-gn-<span class="hljs-keyword">local</span>=<span class="hljs-string">"myLocalData.listData"</span>&gt;&lt;/<span class="hljs-keyword">div</span>&gt;
+      </code></pre>
+      <p>The above example will try to read data from <code>window.myLocalData.listData</code> and render it to HTML.</p>
+      <hr>
+      <h2><a id="HTTP_Router_1340"></a>HTTP Router</h2>
+      <p>Router lets you build HTTP server and REST endpoints easily.</p>
+      <h3><a id="Access_1344"></a>Access</h3>
+      <p><code>gracenode.http</code></p>
+      <p><strong>Deprecated Notice</strong></p>
+      <p><code>gracenode.router</code> is now deprecated. Please use <code>gracenode.http</code> instead</p>
+      <h3><a id="Configure_Port_and_Host_1352"></a>Configure Port and Host</h3>
+      <p><code>gracenode.http</code> needs a port number and a host name to start the HTTP server.</p>
+      <pre><code><span class="hljs-keyword">http</span>: {
+              port: &lt;<span class="hljs-built_in">number</span>&gt;,
+              host: &lt;<span class="hljs-keyword">string</span>&gt;
+      }
+      </code></pre>
+      <p><strong>Deprecated Notice</strong></p>
+      <p>Configuration <code>router</code> is now deprecated. Please use <code>http</code> instead.</p>
+      <pre><code>router: {
+              <span class="hljs-keyword">port</span>: <span class="hljs-variable">&lt;number&gt;</span>,
+              host: <span class="hljs-variable">&lt;string&gt;</span>
+      }
+      </code></pre>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> gn = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gracenode'</span>);
+      
+      gn.config({
+              http: {
+                      port: <span class="hljs-number">8888</span>,
+                      host: <span class="hljs-string">'localhost'</span>
+              }
+      });
+      
+      gn.start(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+              <span class="hljs-comment">// HTTP server is ready</span>
+      });
+      
+      </code></pre>
+      <p><strong>NOTE</strong>: Once you give <code>port</code> and <code>host</code>, <strong>gracenode</strong> will automatically start the HTTP server while <code>gracenode.start()</code>.</p>
+      <h3><a id="Register_endpoints_1394"></a>Register endpoints</h3>
+      <p>You must register endpoint routes in order to setup your REST server with <code>gracenode.http</code>.</p>
+      <h4><a id="GET_1398"></a>GET</h4>
+      <pre><code class="language-javascript">gracenode.http.get(<span class="hljs-string">'/example'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              <span class="hljs-comment">// respond as JSON</span>
+              res.json({ say: <span class="hljs-string">'hello'</span> });
+      });
+      </code></pre>
+      <h5><a id="Define_URL_parameters_1407"></a>Define URL parameters</h5>
+      <p><code>gracenode.http</code> allows you to define parameters in the request URLs.</p>
+      <p><strong>Example</strong>:</p>
+      <p>The example below defines a URL parameter <code>name</code>.</p>
+      <pre><code>GET /example/{<span class="hljs-property">name</span>}
+      </code></pre>
+      <pre><code>GET <span class="hljs-regexp">/example/</span>Kevin
+      </code></pre>
+      <p>The above request URL will be routed to the handler of <code>GET /example/{name}</code>.</p>
+      <p>To access <code>{name}</code>:</p>
+      <pre><code>exports.exampleHandler = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> </span>{
+              <span class="hljs-comment">// Kevin</span>
+              <span class="hljs-keyword">var</span> name = req.params.name;
+      };
+      </code></pre>
+      <h5><a id="Define_URL_parameters_with_types_1434"></a>Define URL parameters with types</h5>
+      <p><code>granode.http</code> allows you to define typed parameters.</p>
+      <p><strong>Valid Types</strong>:</p>
+      <ul>
+      <li>
+      <p>string</p>
+      </li>
+      <li>
+      <p>number</p>
+      </li>
+      <li>
+      <p>bool</p>
+      </li>
+      <li>
+      <p>object</p>
+      </li>
+      <li>
+      <p>regex *NOTE 1</p>
+      </li>
+      </ul>
+      <p><strong>Syntax</strong></p>
+      <pre><code>{<span class="hljs-typedef"><span class="hljs-keyword">type</span>:paramName}</span>
+      </code></pre>
+      <p><strong>Example</strong>:</p>
+      <pre><code>gracenode.http.<span class="hljs-keyword">get</span>('/example/{<span class="hljs-type">number</span>:<span class="hljs-property">id</span>}/{<span class="hljs-type">string</span>:<span class="hljs-property">name</span>}');
+      </code></pre>
+      <p><strong>NOTE 1</strong>: Date type as regular expression</p>
+      <p><code>http</code> allows you to define the parameter data type as regular expression.</p>
+      <p>If the given parameter does not match the regular expression, the HTTP router will return with an error.</p>
+      <p><strong>Syntax</strong></p>
+      <pre><code>{<span class="hljs-tag">&lt;<span class="hljs-title">regular</span> <span class="hljs-attribute">expression</span>&gt;</span>:paramName}
+      </code></pre>
+      <p><strong>Example</strong></p>
+      <pre><code><span class="hljs-collection">{/^<span class="hljs-collection">[a-zA-Z]</span>*$/g:paramName}</span>
+      </code></pre>
+      <h4><a id="POST_PUT_DELETE_PATCH_and_HEAD_1480"></a>POST, PUT, DELETE, PATCH, and HEAD</h4>
+      <p>To register endpoints for request method other than <code>GET</code>, use the following:</p>
+      <pre><code>gracenode.<span class="hljs-keyword">http</span>.<span class="hljs-built_in">post</span>(url [<span class="hljs-keyword">string</span>], handler [<span class="hljs-function"><span class="hljs-keyword">function</span>]);</span>
+      
+      gracenode.<span class="hljs-keyword">http</span>.<span class="hljs-built_in">put</span>(url [<span class="hljs-keyword">string</span>], handler [<span class="hljs-function"><span class="hljs-keyword">function</span>]);</span>
+      
+      gracenode.<span class="hljs-keyword">http</span>.<span class="hljs-built_in">delete</span>(url [<span class="hljs-keyword">string</span>], handler [<span class="hljs-function"><span class="hljs-keyword">function</span>]);</span>
+      
+      gracenode.<span class="hljs-keyword">http</span>.patch(url [<span class="hljs-keyword">string</span>], handler [<span class="hljs-function"><span class="hljs-keyword">function</span>]);</span>
+      
+      gracenode.<span class="hljs-keyword">http</span>.head(url [<span class="hljs-keyword">string</span>], handler [<span class="hljs-function"><span class="hljs-keyword">function</span>]);</span>
+      </code></pre>
+      <h4><a id="Read_Request_Body_1496"></a>Read Request Body</h4>
+      <p><code>GET</code> and <code>HEAD</code> requests will not read request body by default.</p>
+      <p>In order to read request body of <code>GET</code> or/and <code>HEAD</code> add the following option:</p>
+      <pre><code class="language-javascript">gracenode.http.get(<span class="hljs-string">'/read/req/body'</span>, getReqHandler, { readBody: <span class="hljs-literal">true</span> });
+      </code></pre>
+      <h4><a id="req_1506"></a>req</h4>
+      <p>The handler functions of endpoints will be passed two arguments.</p>
+      <p>The first argument is <code>req</code>. It is an expanded <code>request</code> object.</p>
+      <p><strong>Properties</strong>:</p>
+      <h5><a id="requrl_1514"></a>req.url</h5>
+      <p>Request URL.</p>
+      <h5><a id="reqheaders_1518"></a>req.headers</h5>
+      <p>Request headers.</p>
+      <h5><a id="reqid_1522"></a><a href="http://req.id">req.id</a></h5>
+      <p>Unique ID for each request.</p>
+      <h5><a id="reqargs_1526"></a>req.args</h5>
+      <p>Object to hold user data for sharing the data among &lt;a href=&quot;<a href="https://github.com/voltrue2/gracenode#register-request-hooks">https://github.com/voltrue2/gracenode#register-request-hooks</a>&quot;&gt;request hooks&lt;/a&gt; and handler.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code>// <span class="hljs-operator"><span class="hljs-keyword">set</span> <span class="hljs-keyword">session</span> <span class="hljs-keyword">ID</span>
+      req.args.sessionId = <span class="hljs-string">'xxxx'</span>;</span>
+      
+      // you can <span class="hljs-operator"><span class="hljs-keyword">use</span> the <span class="hljs-keyword">session</span> <span class="hljs-keyword">ID</span> elsewhere
+      <span class="hljs-keyword">var</span> sessionId = req.args.sessionId;</span>
+      </code></pre>
+      <h5><a id="reqquery_1540"></a>req.query</h5>
+      <p>Object that holds GET query data.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code><span class="hljs-comment">// request URL: GET /example?id=1234</span>
+      <span class="hljs-variable"><span class="hljs-keyword">var</span> id</span> = req.query.id;
+      </code></pre>
+      <h5><a id="reqparams_1551"></a>req.params</h5>
+      <p>Object that holds URL parameters.</p>
+      <p><strong>Example</strong>:</p>
+      <p>Example Request: <code>GET /example/animal/info/cat</code>.</p>
+      <pre><code class="language-javascript">gracenode.http.get(<span class="hljs-string">'/example/{category}/info/{name}'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              <span class="hljs-comment">// animal</span>
+              <span class="hljs-keyword">var</span> category = req.params.category;
+              <span class="hljs-comment">// cat</span>
+              <span class="hljs-keyword">var</span> name = req.params.name;
+              <span class="hljs-comment">// do somethinf</span>
+      });
+      </code></pre>
+      <h5><a id="reqbody_1569"></a>req.body</h5>
+      <p>Object that holds request body (For POST, PUT, DELETE, and PATCH).</p>
+      <h5><a id="reqcookies_1573"></a>req.cookies()</h5>
+      <p>Returns a cookie object.</p>
+      <p><strong>Example</strong>:</p>
+      <p>How to set a cookie data</p>
+      <pre><code class="language-javascript">gracenode.http.login(<span class="hljs-string">'/login'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              <span class="hljs-comment">// do some loging operations here</span>
+              <span class="hljs-keyword">var</span> cookies = req.cookies();
+              cookies.set(<span class="hljs-string">'sessionId'</span>, sessionId);
+              <span class="hljs-comment">// respond here</span>
+      });
+      </code></pre>
+      <p>How to get a cookie data</p>
+      <pre><code class="language-javascript">gracenode.http.get(<span class="hljs-string">'/example'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              <span class="hljs-keyword">var</span> cookies = req.cookies();
+              <span class="hljs-keyword">var</span> sessionId = cookies.get(<span class="hljs-string">'session'</span>);
+      });
+      </code></pre>
+      <h4><a id="res_1599"></a>res</h4>
+      <p>Response object tat wraps the HTTP response object of node.js.</p>
+      <h5><a id="resheaders_1603"></a>res.headers</h5>
+      <p>Object that holds response headers.</p>
+      <p><strong>To Set Response Headers</strong>:</p>
+      <pre><code class="language-javascript">gracenode.http.post(<span class="hljs-string">'/example'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              <span class="hljs-comment">// set a custom header</span>
+              res.headers.sessionId = <span class="hljs-string">'xxxx'</span>;
+              <span class="hljs-comment">// respond</span>
+              res.html(htmlData);
+      });
+      </code></pre>
+      <h5><a id="resgzipenable_boolean_1618"></a>res.gzip(enable [boolean])</h5>
+      <p>Enable/Disable gzip compression of response data.</p>
+      <p>By default, the server responds with gzipped data only if requested by request header <code>Accept-Encoding: gzip</code>.</p>
+      <p><strong>NOTE</strong>: This function will override the request header.</p>
+      <h5><a id="resonClosecallback_function_1626"></a>res.onClose(callback [function])</h5>
+      <p>Executes a given callback function on unexpected connection close such as client timeout etc</p>
+      <h5><a id="resjsondata_object_status_number_1630"></a>res.json(data [object], status [*number])</h5>
+      <p>Send response as JSON.</p>
+      <p>The default status is 200.</p>
+      <h5><a id="reshtmlhtml_string_status_number_1636"></a>res.html(html [string], status [*number])</h5>
+      <p>Send response as HTML.</p>
+      <p>The default status is 200.</p>
+      <h5><a id="restexttext_string_status_number_1642"></a>res.text(text [string], status [*number])</h5>
+      <p>Send response as plain text.</p>
+      <p>The default status is 200</p>
+      <h5><a id="resdownloadfilePath_string_status_number_1648"></a>res.download(filePath [string], status [*number])</h5>
+      <p>File download response.</p>
+      <p>The default status is 200.</p>
+      <h6><a id="resstreamfilePath_string_1654"></a>res.stream(filePath [string])</h6>
+      <p>Stream file.</p>
+      <p>Useful for HTML5 video streaming etc.</p>
+      <h5><a id="resfilefilePath_string_status_number_1660"></a>res.file(filePath [string], status [*number])</h5>
+      <p>Server a static file.</p>
+      <h5><a id="reserrorerror_object_number_1664"></a>res.error(error [object], [*number])</h5>
+      <p>Send response as error (response data is JSON object).</p>
+      <p>The default status is 400.</p>
+      <h4><a id="Register_Request_Hooks_1670"></a>Register Request Hooks</h4>
+      <p><code>gracenode.http</code> allows you to setup request hook functions for your endpoints.</p>
+      <p>Useful for session varification etc.</p>
+      <h5><a id="gracenodehttphookurl_string_hook_function_1676"></a>gracenode.http.hook(url [string], hook [function])</h5>
+      <p>Registered hook functions are executed on every match request.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">gracenode.http.hook(<span class="hljs-string">'/'</span>, hookForAllRequest);
+      gracenode.http.hook(<span class="hljs-string">'/exmaple'</span>, hookForExampleRequest);
+      gracenode.http.hook(<span class="hljs-string">'/example/one'</span>, hookForExampleOneReuqest);
+      
+      gracenode.http.get(<span class="hljs-string">'/example'</span>, exampleHandler);
+      gracenode.http.get(<span class="hljs-string">'/example/one'</span>, exampleOneHandler);
+      </code></pre>
+      <ul>
+      <li>
+      <p><code>GET /example</code> will have <code>hookForAllRequest</code>, <code>hookForExampleRequest</code> as request hooks and they will be executed BEFORE <code>exmapleHandler</code>.</p>
+      </li>
+      <li>
+      <p><code>GET /example/one</code> will have <code>hookForAllRequest</code>, <code>hookForExampleRequest</code>, and <code>hookForExampleOneRequest</code> as request hooks and they will be executed BEFORE <code>exampleOneHandler</code>.</p>
+      </li>
+      </ul>
+      <p><strong>Hook Function</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">hook</span>(<span class="hljs-params">req, res, next</span>) </span>{
+              <span class="hljs-comment">// call next() to move on to next hook or handler</span>
+              next();
+      }
+      </code></pre>
+      <p>Each hook function will have <code>req</code>, <code>res</code>, and <code>next</code> as arguments.</p>
+      <p><code>req</code> is the expanded request object.</p>
+      <p><code>res</code> is the response object.</p>
+      <p><code>next</code> is the function to move on to next hook or handler.</p>
+      <p><strong>NOTE</strong>: You may pass an error to <code>next()</code> to response as an error. The default status code is <code>400</code>.</p>
+      <p>To change the status code, pass <code>error.code = &lt;status code&gt;</code> such as <code>500</code>.</p>
+      <h3><a id="Create_Generic_Error_Handling_1716"></a>Create Generic Error Handling</h3>
+      <p><code>gracenode.http</code> can optionally execute an error handler for specific error status such as 404.</p>
+      <p>This is useful when you need to display uniform 404 page on every 404 response etc.</p>
+      <h5><a id="gracenodehttperrorstatus_number_handler_function_1722"></a>gracenode.http.error(status [number], handler [function])</h5>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript">gracenode.http.error(<span class="hljs-number">404</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>{
+              res.json({ message: <span class="hljs-string">'Not Found'</span>}, <span class="hljs-number">404</span>);
+      });
+      </code></pre>
+      <h3><a id="Serving_Static_Files_1732"></a>Serving Static Files</h3>
+      <p><strong>gracenode</strong> HTTP router can serve static files such as images etc.</p>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> staticFileDirectoryList = [
+              <span class="hljs-string">'/public/'</span>,
+      ];
+      gracenode.http.static(<span class="hljs-string">'/static'</span>, staticFileDirectoryList);
+      </code></pre>
+      <p>The above example will create routes as:</p>
+      <p><strong>NOTE</strong>: <code>/public/</code> directory is treated as the document root directory and <strong>IS NOT</strong> present in routed URL.</p>
+      <pre><code>GET /static/{<span class="hljs-keyword">file</span> path}
+      GET /static/css/{<span class="hljs-keyword">file</span> path}
+      GET /static/js/moredir/{<span class="hljs-keyword">file</span> path}
+      // <span class="hljs-built_in">All</span> subdirectories under /<span class="hljs-keyword">public</span> will be routed
+      </code></pre>
+      <p><strong>Example</strong>:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> staticFileDirectoryList = [
+              <span class="hljs-string">'/public/'</span>,
+              <span class="hljs-string">'/asset/'</span>
+      ];
+      gracenode.http.static(<span class="hljs-string">'/static'</span>, staticFileDirectoryList);
+      </code></pre>
+      <p>The above example will create routes as:</p>
+      <p><strong>NOTE</strong>: <code>/public/</code> directory is <strong>NOT</strong> treated as the document root directory and <strong>IS</strong> present in routed URL.</p>
+      <p>When passing more than 1 static file directory paths, <strong>gracenode</strong> HTTP router will be routing static files as shown below:</p>
+      <pre><code>GET <span class="hljs-regexp">/static/</span><span class="hljs-keyword">public</span>/{file path}
+      GET <span class="hljs-regexp">/static/</span><span class="hljs-keyword">public</span><span class="hljs-regexp">/css/</span>{file path}
+      GET <span class="hljs-regexp">/static/</span><span class="hljs-keyword">public</span><span class="hljs-regexp">/js/</span>moredir/{file path}
+      GET <span class="hljs-regexp">/static/</span><span class="hljs-keyword">public</span><span class="hljs-regexp">/asset/</span>{file path}
+      GET <span class="hljs-regexp">/static/</span><span class="hljs-keyword">public</span><span class="hljs-regexp">/asset/</span>img/{file path}
+      GET <span class="hljs-regexp">/static/</span><span class="hljs-keyword">public</span><span class="hljs-regexp">/asset/</span>video/{file path}
+      <span class="hljs-comment">// All subdirectories under /public will be routed</span>
+      </code></pre>
+      <p><strong>NOTE</strong>: When service static files from your application, you must consider the file I/O load.</p>
+      <p>Each request will instruct the server to read from a file.</p>
+      <hr>
+      <h2><a id="gracenodelib_1788"></a>gracenode.lib</h2>
+      <h4><a id="padNumbernum_number_digit_number_1790"></a>.padNumber(num [number], digit [*number])</h4>
+      <p>Returns a padded/none-padded with leading zero string.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> paddedNine = gracenode.lib.padNumber(<span class="hljs-number">9</span>, <span class="hljs-number">2</span>);
+      <span class="hljs-comment">// paddedNine = '09';</span>
+      <span class="hljs-keyword">var</span> nonePaddedTen = gracenode.lib.padNumber(<span class="hljs-number">10</span>, <span class="hljs-number">2</span>);
+      <span class="hljs-comment">// nonePaddedTen = '10';</span>
+      <span class="hljs-keyword">var</span> paddedTen = gracenode.lib.padNumber(<span class="hljs-number">10</span>, <span class="hljs-number">3</span>);
+      <span class="hljs-comment">// paddedTen = '010';</span>
+      <span class="hljs-keyword">var</span> nonePaddedHundred = gracenode.lib.padNumber(<span class="hljs-number">100</span>, <span class="hljs-number">3</span>);
+      <span class="hljs-comment">// nonePaddedHundred = '100';</span>
+      </code></pre>
+      <h4><a id="getDatesstartDate_object_endDate_object_1807"></a>.getDates(startDate [object], endDate [object])</h4>
+      <p>Returns an array of date objects between <code>startDate</code> amd <code>endDate</code>.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> dates = gracenode.lib.getDates(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-string">'2015-04-22'</span>), <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-string">'2015-05-22'</span>));
+      <span class="hljs-comment">// dates will contain date objects between 2015/04/22 and 2015/05/22</span>
+      </code></pre>
+      <h4><a id="findfindFrom_object_findMethod_function_1818"></a>.find(findFrom [object], findMethod [function])</h4>
+      <p>Returns an array of matched elements and their indexes/keys from either an object or an array.</p>
+      <p>If there are no matched elements, an empty array is returned.</p>
+      <p>Example With Array:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> list = [
+              { name: <span class="hljs-string">'Bob'</span>, age: <span class="hljs-number">40</span> },
+              { name: <span class="hljs-string">'John'</span>, age: <span class="hljs-number">37</span> },
+              { name: <span class="hljs-string">'Chris'</span>, age: <span class="hljs-number">44</span> },
+              { name: <span class="hljs-string">'Dale'</span>, age: <span class="hljs-number">51</span> }
+      ];
+      <span class="hljs-keyword">var</span> finder = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">elm</span>) </span>{
+              <span class="hljs-keyword">return</span> elm.age &gt;= <span class="hljs-number">40</span> &amp;&amp; elm.age &lt;= <span class="hljs-number">50</span>;
+      };
+      <span class="hljs-keyword">var</span> matched = gracenode.lib.find(list, finder);
+      <span class="hljs-comment">/*
+      matched: [
+              { index: 0, element: { name: 'Bob', age: 40 } },
+              { index: 2, element: { name: 'Chris', age: 44 } }
+      ]
+      */</span>
+      </code></pre>
+      <p>Example With Object:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> map = {
+              a00: { name: <span class="hljs-string">'Bob'</span>, age: <span class="hljs-number">40</span> },
+              a01: { name: <span class="hljs-string">'John'</span>, age: <span class="hljs-number">37</span> },
+              a02: { name: <span class="hljs-string">'Chris'</span>, age: <span class="hljs-number">44</span> },
+              a03: { name: <span class="hljs-string">'Dale'</span>, age: <span class="hljs-number">51</span> }
+      };
+      <span class="hljs-keyword">var</span> finder = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">elm</span>) </span>{
+              <span class="hljs-keyword">return</span> elm.age &gt;= <span class="hljs-number">40</span> &amp;&amp; elm.age &lt;= <span class="hljs-number">50</span>;
+      };
+      <span class="hljs-keyword">var</span> matched = gracenode.lib.find(map, finder);
+      <span class="hljs-comment">/*
+      matched: [
+              { index: 'a00', element: { name: 'Bob', age: 40 } },
+              { index: 'a02', element: { name: 'Chris', age: 44 } }
+      ]
+      */</span>
+      </code></pre>
+      <h4><a id="typeCastvalue_string_1866"></a>.typeCast(value [string])</h4>
+      <p>Converts a given string value to  appropriate data type.</p>
+      <p>Example:</p>
+      <pre><code><span class="hljs-variable"><span class="hljs-keyword">var</span> num</span> = gracenode.lib.typeCast('<span class="hljs-number">100</span>');
+      <span class="hljs-comment">// 100</span>
+      <span class="hljs-variable"><span class="hljs-keyword">var</span> float</span> = gracenode.lib.typeCast('<span class="hljs-number">1.5</span>');
+      <span class="hljs-comment">// 1.5</span>
+      <span class="hljs-variable"><span class="hljs-keyword">var</span> truthy</span> = gracenode.lib.typeCast('<span class="hljs-literal">true</span>');
+      <span class="hljs-comment">// true</span>
+      <span class="hljs-variable"><span class="hljs-keyword">var</span> obj</span> = gracenode.lib.typeCast('{<span class="hljs-string">"example"</span>:<span class="hljs-number">1</span>,<span class="hljs-string">"blah"</span>:<span class="hljs-string">"test"</span>}');
+      <span class="hljs-comment">// { example: 1, blah: 'test' }</span>
+      </code></pre>
+      <h4><a id="randomIntmin_number_max_number_1883"></a>.randomInt(min [number], max [number])</h4>
+      <p>Returns a pseudo-random integer between min and max.</p>
+      <h4><a id="randomFloatmin_number_max_number_1887"></a>.randomFloat(min [number], max [number])</h4>
+      <p>Returns a pseudo-random floating point number between min and max.</p>
+      <p>The thrid argument “precision” is optional and default is 2.</p>
+      <h4><a id="getArgumentsfunc_function_1893"></a>.getArguments(func [function])</h4>
+      <p>Returns an array of arguments that the given function expects.</p>
+      <pre><code class="language-javascript">
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params">num1, num2</span>) </span>{
+              <span class="hljs-keyword">return</span> num1 + num2;
+      }
+      
+      <span class="hljs-keyword">var</span> args = gracenode.lib.getArguments(foo);
+      <span class="hljs-comment">// args = ["num1", "num2"];</span>
+      </code></pre>
+      <h4><a id="walkDirdirectoryPath_string_callback_function_1907"></a>.walkDir(directoryPath [string], callback [function])</h4>
+      <p>Recursively walks the given path and passes an array of file paths to the callback function.</p>
+      <h4><a id="cloneObjobj_object_propNames_array_1911"></a>.cloneObj(obj [object], propNames [array])</h4>
+      <p>Returns a clone of given object. In javascript, objects are passed around as references. Use this in order to avoid mutating the original objects.</p>
+      <p>If propNames is given, the function will clone ONLY the properties given in propNames array.</p>
+      <h4><a id="createTimedDataconfig_object_1917"></a>.createTimedData(config [object])</h4>
+      <p>Returns an instance of TimedData that changes its value over time.</p>
+      <p>Configs:</p>
+      <pre><code class="language-javascript">{
+          <span class="hljs-string">"max"</span>: <span class="hljs-number">10</span>, <span class="hljs-comment">// maximum value</span>
+          <span class="hljs-string">"min"</span>: <span class="hljs-number">0</span>, <span class="hljs-comment">// minimum value</span>
+          <span class="hljs-string">"interval"</span>: <span class="hljs-number">60000</span>, <span class="hljs-comment">// value increments/decrements every "interval"</span>
+          <span class="hljs-string">"step"</span>: <span class="hljs-number">1</span>, <span class="hljs-comment">// at every interval, the value increments/decrements by "step"</span>
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"inc"</span>, <span class="hljs-comment">// either "inc" for incrementing type of "dec" for decrementing type</span>
+          init: <span class="hljs-number">10</span> <span class="hljs-comment">// initial value to start with</span>
+      }
+      </code></pre>
+      <p>Usage Example:</p>
+      <p>TimedData that recovers its value by 1 every 1 second.</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> config = {
+              max: <span class="hljs-number">10</span>,
+              min: <span class="hljs-number">0</span>,
+              interval: <span class="hljs-number">1000</span>,
+              step: <span class="hljs-number">1</span>,
+              type: <span class="hljs-string">'inc'</span>,
+              init: <span class="hljs-number">0</span>
+      };
+      <span class="hljs-keyword">var</span> td = gracenode.lib.createTimedData(config);
+      setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+              <span class="hljs-keyword">var</span> value = td.getValue();
+              <span class="hljs-comment">// value should be 1</span>
+      }, <span class="hljs-number">1000</span>);
+      </code></pre>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> config = {
+              max: <span class="hljs-number">10</span>,
+              min: <span class="hljs-number">0</span>,
+              interval: <span class="hljs-number">1000</span>,
+              step: <span class="hljs-number">1</span>,
+              type: <span class="hljs-string">'inc'</span>,
+              init: <span class="hljs-number">10</span>
+      };
+      <span class="hljs-keyword">var</span> td = gracenode.lib.createTimedData(config);
+      td.dec(<span class="hljs-number">5</span>);
+      setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+              <span class="hljs-keyword">var</span> value = td.getValue();
+              <span class="hljs-comment">// value should be 6</span>
+      }, <span class="hljs-number">1000</span>);
+      </code></pre>
+      <h3><a id="TimedData_Class_1971"></a>TimedData Class</h3>
+      <h4><a id="getValue_1973"></a>.getValue()</h4>
+      <p>Returns the current value.</p>
+      <h4><a id="incincrementValue_number_1977"></a>.inc(incrementValue [number])</h4>
+      <p>Increments the current value by incrementValue.</p>
+      <p>Returns <code>true</code> if successful.</p>
+      <h4><a id="decdecrementValue_number_1983"></a>.dec(decrementValue [number])</h4>
+      <p>Decrements the current value by decrementValue.</p>
+      <p>Returns <code>true</code> if successful.</p>
+      <h4><a id="reset_1989"></a>.reset()</h4>
+      <p>Resets the state of <code>TimedData</code> object to its initial state.</p>
+      <h4><a id="getMaxValue_1993"></a>.getMaxValue()</h4>
+      <p>Returns maximum value.</p>
+      <h4><a id="getMinValue_1997"></a>.getMinValue()</h4>
+      <p>Returns minimum value.</p>
+      <h4><a id="getInterval_2001"></a>.getInterval()</h4>
+      <p>Returns the interval for every update in milliseconds.</p>
+      <h4><a id="getStep_2005"></a>.getStep()</h4>
+      <p>Returns the value of step for every update.</p>
+      <h4><a id="toObject_2009"></a>.toObject()</h4>
+      <p>Returns a JSON format of <code>TimedData</code> object.</p>
+      <h4><a id="createDateTimetime_mix_defaultFormat_string_2013"></a>.createDateTime(time [*mix], defaultFormat [*string])</h4>
+      <p>Returns an instance of DateTime object.</p>
+      <p><code>time</code> can be a <code>YYYY-MM-DD HH:MM:SS</code> style string, javascript Date object, or timestamp such as <code>Date.now()</code>.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> dt = gracenode.lib.createDateTime();
+      <span class="hljs-keyword">var</span> fomratted = dt.format(<span class="hljs-string">'m/d/Y H:M:S'</span>);
+      <span class="hljs-comment">// e.g. 04/28/2015 21:13:09</span>
+      </code></pre>
+      <h2><a id="DateTime_Object_2027"></a>DateTime Object</h2>
+      <h3><a id="Methods_2029"></a>Methods</h3>
+      <h4><a id="formatformat_string_2031"></a>.format(format [*string])</h4>
+      <p>Returns a formatted date time string.</p>
+      <p>If default format is set and the format string is not passed to <code>.format()</code>, default format will be used.</p>
+      <p>Example With Format:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> dt = gracenode.lib.createDateTime(<span class="hljs-string">'2015-04-30 09:52:00'</span>);
+      <span class="hljs-keyword">var</span> formattedDate = dt.format(<span class="hljs-string">'m/d/y H:M'</span>);
+      <span class="hljs-built_in">console</span>.log(formattedDate);
+      <span class="hljs-comment">// 04/30/15 09:52</span>
+      </code></pre>
+      <p>Example With Default Format:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> dt = gracenode.lib.createDateTime(<span class="hljs-string">'2015-04-30 14:30:00'</span>, <span class="hljs-string">'Y/m/d H:I'</span>);
+      <span class="hljs-keyword">var</span> formattedDate = dt.format();
+      <span class="hljs-built_in">console</span>.log(formattedDate);
+      <span class="hljs-comment">// 2015/04/30 02:30</span>
+      </code></pre>
+      <h4><a id="Formatting_rules_2055"></a>Formatting rules</h4>
+      <table>
+      <thead>
+      <tr>
+      <th>Format</th>
+      <th>Meaning</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td>y</td>
+      <td>The last 2 digit of the year</td>
+      </tr>
+      <tr>
+      <td>Y</td>
+      <td>Year</td>
+      </tr>
+      <tr>
+      <td>m</td>
+      <td>Month with leading 0</td>
+      </tr>
+      <tr>
+      <td>n</td>
+      <td>Shortened name of a month</td>
+      </tr>
+      <tr>
+      <td>f</td>
+      <td>Full name of a month</td>
+      </tr>
+      <tr>
+      <td>d</td>
+      <td>Date with leading 0</td>
+      </tr>
+      <tr>
+      <td>H</td>
+      <td>Hours with leading 0 in 24 hours format</td>
+      </tr>
+      <tr>
+      <td>I</td>
+      <td>Hours with leading 0 in 12 hours format</td>
+      </tr>
+      <tr>
+      <td>M</td>
+      <td>Minutes with leading 0</td>
+      </tr>
+      <tr>
+      <td>S</td>
+      <td>Seconds with leading 0</td>
+      </tr>
+      <tr>
+      <td>N</td>
+      <td>Milliseconds with leading 0</td>
+      </tr>
+      </tbody>
+      </table>
+      <h4><a id="offsetInDaysoffset_number_2071"></a>.offsetInDays(offset [number])</h4>
+      <p>Offests the date.</p>
+      <p><strong>NOTE</strong>: By giving more than 30 days or 365 days, it can exceed current year or month.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascripript"><span class="hljs-variable"><span class="hljs-keyword">var</span> dt</span> = gracenode.lib.createDateTime();
+      <span class="hljs-comment">// 1 day in the future</span>
+      dt.offsetInDays(<span class="hljs-number">1</span>);
+      </code></pre>
+      <pre><code class="language-javascripript"><span class="hljs-variable"><span class="hljs-keyword">var</span> dt</span> = gracenode.lib.createDateTime();
+      <span class="hljs-comment">// 1 day in the past</span>
+      dt.offsetInDays(-<span class="hljs-number">1</span>);
+      </code></pre>
+      <h4><a id="offsetInHoursoffset_number_2090"></a>.offsetInHours(offset [number])</h4>
+      <p>Offests the hours.</p>
+      <p><strong>NOTE</strong>: By giving more than 24 hours, it can exceed current date and so on.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascripript"><span class="hljs-variable"><span class="hljs-keyword">var</span> dt</span> = gracenode.lib.createDateTime();
+      <span class="hljs-comment">// 1 hour in the future</span>
+      dt.offsetInHours(<span class="hljs-number">1</span>);
+      </code></pre>
+      <pre><code class="language-javascripript"><span class="hljs-variable"><span class="hljs-keyword">var</span> dt</span> = gracenode.lib.createDateTime();
+      <span class="hljs-comment">// 1 hour in the past</span>
+      dt.offsetInHours(-<span class="hljs-number">1</span>);
+      </code></pre>
+      <h4><a id="now_2110"></a>.now()</h4>
+      <p>Returns a unix timestamp in milliseconds.</p>
+      <h4><a id="getDaysInRangedate_mix_2114"></a>.getDaysInRange(date [mix])</h4>
+      <p>Returns an array of DateTime objects within the given range.</p>
+      <p><strong>NOTE</strong>: <code>date</code> can be either DateTime or Date.</p>
+      <p>Example:</p>
+      <pre><code class="language-javascript"><span class="hljs-keyword">var</span> dt = gracenode.lib.createDateTime(<span class="hljs-string">'2015-01-01'</span>);
+      <span class="hljs-keyword">var</span> dates = dt.getDaysInRange(gracenode.lib.createDateTime(<span class="hljs-string">'2015-01-10'</span>));
+      <span class="hljs-comment">// dates = [ ... ];</span>
+      <span class="hljs-comment">// dates will contain instances of DateTime object from 2015-01-01 to 2015-01-10</span>
+      </code></pre>
+      
+      </body></html>
