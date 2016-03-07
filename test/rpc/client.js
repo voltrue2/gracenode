@@ -23,7 +23,7 @@ client.connect(port, host, function () {
 		console.log('send packet #' + counter);
 
 		var list = [];
-		for (var i = 0; i < 1000; i++) {
+		for (var i = 0; i < 1; i++) {
 			list.push(counter * i);
 		}
 

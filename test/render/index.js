@@ -390,15 +390,15 @@ describe('gracenode.render', function () {
 
 	/*
 	it('can render w/ invalid logics and more', function () {
-		var rendered = gn.render('/gn.html');
-		var expected = fs.readFileSync(__dirname + '/expected/gn.html', 'utf8');
+		var rendered = gn.render('/gn');
+		var expected = fs.readFileSync(__dirname + '/expected/gn', 'utf8');
 		assert.equal(expected, rendered);
 	});
 	*/
 
 	it('can render w/ invalid logics', function () {
-		var rendered = gn.render('/bad.html');
-		var expected = fs.readFileSync(__dirname + '/expected/bad.html', 'utf8');
+		var rendered = gn.render('/bad');
+		var expected = fs.readFileSync(__dirname + '/expected/bad', 'utf8');
 		assert.equal(expected, rendered);
 	});
 
