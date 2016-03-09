@@ -2,6 +2,30 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.5.2
+
+## Added
+
+None
+
+## Changed
+
+#### Boilerplate view index now automatically registers all custom render functions
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+## Removed
+
+None
+
+***
+
 ## Version 2.5.1
 
 ## Added
