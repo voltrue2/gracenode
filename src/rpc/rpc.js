@@ -23,7 +23,7 @@ module.exports.setup = function (cb) {
 	config = gn.getConfig('rpc');
 
 	if (!config || !config.host || !config.portRange) {
-		return;
+		return cb();
 	}
 	
 	if (!Array.isArray(config.portRange) || config.portRange.length < 2) {
