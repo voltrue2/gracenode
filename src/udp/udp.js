@@ -13,10 +13,15 @@ module.exports.setup = function (cb) {
 	logger = gn.log.create('UDP');
 	config = gn.getConfig('udp');
 
-	if (!config || !config.host || !config.portRange) {
+	if (!config || !config.portRange) {
 		return cb();
 	}
 	
+	if (!config.address) {
+		logger.info('UDP server will listen to all address: 0.0.0.0');
+		config.address = '0.0.0.0';
+	}
+
 	if (!Array.isArray(config.portRange) || config.portRange.length < 2) {
 		logger.error(
 			'incorrect port range',
@@ -40,23 +45,25 @@ module.exports.setup = function (cb) {
 			if (!running) {
 				logger.info(
 					'UDP server not running yet [skipp]:',
-					config.host + ':' + boundPort
+					config.address + ':' + boundPort
 				);
 				return next();
 			}
 
 			logger.info(
 				'UDP server closing',
-				config.host + ':' + boundPort
+				config.address + ':' + boundPort
 			);
 
-			server.close(next);
+			server.close();
+
+			next();
 		});
 
 		running = true;
 		server.on('message', handleMessage);
 
-		logger.info('UDP server started at', config.host + ':' + boundPort);
+		logger.info('UDP server started at', config.address + ':' + boundPort);
 
 		cb();
         };
@@ -67,14 +74,14 @@ module.exports.setup = function (cb) {
 		}
 
 		var port = ports[portIndex];
-		logger.verbose('binding to:', config.host + ':' + port);
+		logger.verbose('binding to:', config.address + ':' + port);
 		// create UDP server
 		server = dgram.createSocket('udp4');
 		server.on('error', handleError);
 		server.on('listening', done);
 		server.bind({
 			port: port,
-			host: config.host,
+			address: config.address,
 			// make sure all workers do NOT share the same port
 			exclusive: true
 		});
@@ -111,7 +118,6 @@ function handleMessage(buff) {
 // test code
 gn.config({
 	udp: {
-		host: 'localhost',
 		portRange: [7980, 7990]
 	},
 	log: {
