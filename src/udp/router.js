@@ -7,12 +7,12 @@ var commands = {};
 var logger;
 
 module.exports.setup = function () {
-	logger = gn.log.create('RPC.router');
+	logger = gn.log.create('UDP.router');
 };
 
 module.exports.define = function (cmdId, cmdName, handler) {
 	if (commands[cmdId]) {
-		throw new Error('<RPC_COMMAND_ALREADY_DEFINED>:' + cmdId + '(' + cmdName + ')');
+		throw new Error('<UDP_COMMAND_ALREADY_DEFINED>:' + cmdId + '(' + cmdName + ')');
 	}
 	commands[cmdId] = {
 		id: cmdId,

@@ -14,6 +14,13 @@ describe('dev set up gracenode', function () {
 
 	it('can gracenode.require', function () {
 		var req = gn.require('../../../test/lib/path');
+		assert.notEqual(req, null);
+	});
+
+	it('can create UUID v4', function () {
+		var uuid = gn.lib.uuid.v4();
+		console.log(uuid.toString());
+		console.log(uuid.toBytes());
 	});
 
 });

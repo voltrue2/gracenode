@@ -6,12 +6,14 @@ var gn = require('../gracenode');
 var Connection = require('./connection');
 var router = require('./router');
 var hooks = require('./hooks');
-var DefaultCryptoEngine = require('../../lib/packet/cryptoengine');
 
 var logger;
 var config;
 var conns = {};
-var cryptoEngine = null;
+var cryptoEngine = {
+	encrypt: null,
+	decrypt: null
+};
 var connId = 0;
 
 var SOCK_TIMEOUT = 30000;
@@ -69,6 +71,8 @@ module.exports.setup = function (cb) {
 		});
 
 		logger.info('RPC server started at', config.host + ':' + boundPort);
+		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));
+		logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
 
 		cb();
 	};	
@@ -104,19 +108,18 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
-// assign a crypto engine for encryption and decryption of packets
-module.exports.cryptoEngine = function (engine) {
-	if (!engine) {
-		// use gracenode default crypto engine
-		engine = new DefaultCryptoEngine();
+module.exports.useEncrypt = function (encrypt) {
+	if (typeof encrypt !== 'function') {
+		throw new Error('EncryptMustBeFunction');
 	}
-	if (!engine.encryption || !engine.decryption) {
-		throw new Error(
-			'InvalidCryptoEngine: ' + 
-			'{ encrypt: <function>, decrypt: <function>, getSessionId: <function> }'
-		);
+	cryptoEngine.encrypt = encrypt;
+};
+
+module.exports.useDecrypt = function (decrypt) {
+	if (typeof decrypt !== 'function') {
+		throw new Error('DecryptMustBeFunction');
 	}
-	cryptoEngine = engine;	
+	cryptoEngine.decrypt = decrypt;
 };
 
 // assign a handler function to a command

@@ -11,7 +11,6 @@ var mod = require('./mod');
 var render = require('../render');
 var lint = require('../lint');
 var pkg = require('../../package.json');
-var rpc = require('../rpc');
 
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
@@ -43,10 +42,13 @@ exports.render = render.render;
 exports.http = require('../http');
 
 // deprecated
-exports.router = module.exports.http;
+exports.router = exports.http;
 
 // not officially released nor documented
-exports.rpc = rpc;
+exports.rpc = require('../rpc');
+
+// not officially released nor documented
+exports.udp = require('../udp');
 
 exports.getRootPath = function () {
 	return rootPath;
@@ -343,7 +345,7 @@ function startHTTP(cb) {
 
 function startRPC(cb) {
 	if (!cluster.isMaster() && config.get('rpc')) {
-		rpc.setup(cb);
+		exports.rpc.setup(cb);
 		return;
 	}
 	if (cluster.isMaster() &&  config.get('rpc')) {
