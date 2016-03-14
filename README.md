@@ -18,11 +18,11 @@ Version `0.12.10` or above.
 
 - Provides a built-in logging module. Read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
 
-- Provides plethora of utility functions to aid development. Read <a href="https://github.com/voltrue2/gracenode#gracenodelib">here</a>. 
+- Provides plethora of utility functions to aid development. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/lib#gracenodelib">here</a>. 
 
 - Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/http#http-router">here</a>.
 
-- Provides fast template enigne. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/render#render-1">here</a>.
+- Provides fast template enigne. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/render#render">here</a>.
 
 ## Installation via npm
 

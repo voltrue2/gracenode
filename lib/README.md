@@ -1,9 +1,6 @@
-#gracenode.lib
+# gracenode.lib
 
-### Configuration
-*N/A*
-
-#### .padNumber(num [number], digit [*number])
+## .padNumber(num [number], digit [*number])
 
 Returns a padded/none-padded with leading zero string.
 
@@ -20,7 +17,7 @@ var nonePaddedHundred = gracenode.lib.padNumber(100, 3);
 // nonePaddedHundred = '100';
 ```
 
-#### .getDates(startDate [object], endDate [object])
+## .getDates(startDate [object], endDate [object])
 
 Returns an array of date objects between `startDate` amd `endDate`.
 
@@ -31,7 +28,7 @@ var dates = gracenode.lib.getDates(new Date('2015-04-22'), new Date('2015-05-22'
 // dates will contain date objects between 2015/04/22 and 2015/05/22
 ```
 
-#### .find(findFrom [object], findMethod [function])
+## .find(findFrom [object], findMethod [function])
 
 Returns an array of matched elements and their indexes/keys from either an object or an array.
 
@@ -79,7 +76,7 @@ matched: [
 */
 ```
 
-#### .typeCast(value [string])
+## .typeCast(value [string])
 
 Converts a given string value to  appropriate data type.
 
@@ -96,17 +93,17 @@ var obj = gracenode.lib.typeCast('{"example":1,"blah":"test"}');
 // { example: 1, blah: 'test' }
 ```
 
-#### .randomInt(min [number], max [number])
+## .randomInt(min [number], max [number])
 
 Returns a pseudo-random integer between min and max.
 
-#### .randomFloat(min [number], max [number])
+## .randomFloat(min [number], max [number])
 
 Returns a pseudo-random floating point number between min and max.
 
 The thrid argument "precision" is optional and default is 2.
 
-#### .getArguments(func [function])
+## .getArguments(func [function])
 
 Returns an array of arguments that the given function expects.
 
@@ -120,17 +117,21 @@ var args = gracenode.lib.getArguments(foo);
 // args = ["num1", "num2"];
 ```
 
-#### .walkDir(directoryPath [string], callback [function])
+## .walkDir(directoryPath [string], callback [function])
 
 Recursively walks the given path and passes an array of file paths to the callback function.
 
-#### .cloneObj(obj [object], propNames [array])
+## .deepCopy(obj [object])
+
+Returns a deep copied object. Use this function instead of `gracenode.lib.cloneObj()`.
+
+## .cloneObj(obj [object], propNames [array]) (Deprecated)
 
 Returns a clone of given object. In javascript, objects are passed around as references. Use this in order to avoid mutating the original objects.
 
 If propNames is given, the function will clone ONLY the properties given in propNames array.
 
-#### .createTimedData(config [object])
+## .createTimedData(config [object])
 
 Returns an instance of TimedData that changes its value over time.
 
@@ -184,49 +185,49 @@ setTimeout(function () {
 }, 1000);
 ```
 
-### TimedData Class
+## TimedData Class
 
-#### .getValue()
+## .getValue()
 
 Returns the current value.
 
-#### .inc(incrementValue [number])
+## .inc(incrementValue [number])
 
 Increments the current value by incrementValue.
 
 Returns `true` if successful.
 
-#### .dec(decrementValue [number])
+## .dec(decrementValue [number])
 
 Decrements the current value by decrementValue.
 
 Returns `true` if successful.
 
-#### .reset()
+## .reset()
 
 Resets the state of `TimedData` object to its initial state.
 
-#### .getMaxValue()
+## .getMaxValue()
 
 Returns maximum value.
 
-#### .getMinValue()
+## .getMinValue()
 
 Returns minimum value.
 
-#### .getInterval()
+## .getInterval()
 
 Returns the interval for every update in milliseconds.
 
-#### .getStep()
+## .getStep()
 
 Returns the value of step for every update.
 
-#### .toObject()
+## .toObject()
 
 Returns a JSON format of `TimedData` object.
 
-#### .createDateTime(time [*mix], defaultFormat [*string])
+## .createDateTime(time [*mix], defaultFormat [*string])
 
 Returns an instance of DateTime object.
 
@@ -240,11 +241,11 @@ var fomratted = dt.format('m/d/Y H:M:S');
 // e.g. 04/28/2015 21:13:09
 ```
 
-## DateTime Object
+# DateTime Object
 
-### Methods
+## Methods
 
-#### .format(format [*string])
+## .format(format [*string])
 
 Returns a formatted date time string.
 
@@ -268,7 +269,7 @@ console.log(formattedDate);
 // 2015/04/30 02:30
 ```
 
-#### Formatting rules
+## Formatting rules
 
 |Format|Meaning|
 |---|---|
@@ -284,7 +285,7 @@ console.log(formattedDate);
 |S|Seconds with leading 0|
 |N|Milliseconds with leading 0|
 
-#### .offsetInDays(offset [number])
+## .offsetInDays(offset [number])
 
 Offests the date.
 
@@ -303,7 +304,7 @@ var dt = gracenode.lib.createDateTime();
 // 1 day in the past
 dt.offsetInDays(-1);
 ```
-#### .offsetInHours(offset [number])
+## .offsetInHours(offset [number])
 
 Offests the hours.
 
@@ -323,11 +324,11 @@ var dt = gracenode.lib.createDateTime();
 dt.offsetInHours(-1);
 ```
 
-#### .now()
+## .now()
 
 Returns a unix timestamp in milliseconds.
 
-#### .getDaysInRange(date [mix])
+## .getDaysInRange(date [mix])
 
 Returns an array of DateTime objects within the given range.
 
@@ -342,3 +343,28 @@ var dates = dt.getDaysInRange(gracenode.lib.createDateTime('2015-01-10'));
 // dates will contain instances of DateTime object from 2015-01-01 to 2015-01-10
 ````
 
+***
+
+## gracenode.lib.uuid.v4()
+
+Returns a UUID object.
+
+Example:
+
+```javascript
+var uuid = gracenode.lib.uuid.v4();
+// 128 bits UUID string
+var uuidString = uuid.toString();
+// UUID in raw binary
+var uuidBuffer = uuid.toBytes();
+// length of UUID string
+var uuidStringLen = uuid.getLength();
+// length of UUID binary
+var uuidBuffLen = uuid.getByteLength();
+```
+
+## gracenode.lib.uuid.create(input [mix])
+
+Creates a UUID object from `input`.
+
+`input` can be a UUID string, UUID binary, or UUID object.
