@@ -2131,6 +2131,8 @@ var dates = dt.getDaysInRange(gracenode.lib.createDateTime('2015-01-10'));
 // dates will contain instances of DateTime object from 2015-01-01 to 2015-01-10
 ````
 
+***
+
 #### gracenode.lib.uuid.v4()
 
 Returns a UUID object.
