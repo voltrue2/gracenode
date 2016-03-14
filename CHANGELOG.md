@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.5.3
+
+## Added
+
+#### gracenode.lib.uuid added
+
+## Changed
+
+#### gracenode.lib.deepCopy() added
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.5.2
 
 ## Added

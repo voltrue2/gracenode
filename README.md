@@ -1909,7 +1909,11 @@ var args = gracenode.lib.getArguments(foo);
 
 Recursively walks the given path and passes an array of file paths to the callback function.
 
-#### .cloneObj(obj [object], propNames [array])
+#### .deepCopy(obj [object])
+
+Returns a deep copied object. Use this function instead of `gracenode.lib.cloneObj()`.
+
+#### .cloneObj(obj [object], propNames [array]) (Deprecated)
 
 Returns a clone of given object. In javascript, objects are passed around as references. Use this in order to avoid mutating the original objects.
 
@@ -2127,3 +2131,26 @@ var dates = dt.getDaysInRange(gracenode.lib.createDateTime('2015-01-10'));
 // dates will contain instances of DateTime object from 2015-01-01 to 2015-01-10
 ````
 
+#### gracenode.lib.uuid.v4()
+
+Returns a UUID object.
+
+Example:
+
+```javascript
+var uuid = gracenode.lib.uuid.v4();
+// 128 bits UUID string
+var uuidString = uuid.toString();
+// UUID in raw binary
+var uuidBuffer = uuid.toBytes();
+// length of UUID string
+var uuidStringLen = uuid.getLength();
+// length of UUID binary
+var uuidBuffLen = uuid.getByteLength();
+```
+
+#### gracenode.lib.uuid.create(input [mix])
+
+Creates a UUID object from `input`.
+
+`input` can be a UUID string, UUID binary, or UUID object.
