@@ -122,7 +122,7 @@ exports.setup = function (cb) {
 		);
 		cb(error);
 	});
-	gn.onExit(function (next) {
+	gn.onExit(function HTTPShutdown(next) {
 		try {
 			logger.info('Stopping HTTP server...');
 			server.close();

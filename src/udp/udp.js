@@ -154,7 +154,7 @@ function handleMessage(buff) {
 
 	if (cryptoEngine.decrypt) {
 		logger.info('using decryption for incoming message');
-		cryptoEngine.decrypt(buff, function (error, sessionId, seq, decrypted) {
+		cryptoEngine.decrypt(buff, function (error, sessId, seq, sessData, decrypted) {
 			if (error) {
 				return logger.error('decryption of message failed:', error);
 			}
@@ -162,12 +162,12 @@ function handleMessage(buff) {
 			var msg = JSON.parse(decrypted.toString());
 			logger.verbose(
 				'decrypted message:',
-				'(session ID:' + sessionId + ')',
+				'(session ID:' + sessId + ')',
 				'(seq:' + seq + ')',
 				msg
 			);
 			// route and execute command
-			executeCmd(sessionId, seq, msg);
+			executeCmd(sessId, seq, sessData, msg);
 		});
 		return;				
 	}
@@ -177,10 +177,10 @@ function handleMessage(buff) {
 
 	logger.verbose('message:', msgText);
 
-	executeCmd(null, null, msgText);
+	executeCmd(null, null, null, msgText);
 }
 
-function executeCmd(sessionId, seq, msg) {
+function executeCmd(sessionId, seq, sessionData, msg) {
 	var cmd = router.route(msg);	
 	
 	if (!cmd) {
@@ -199,6 +199,7 @@ function executeCmd(sessionId, seq, msg) {
 	var state = {
 		sessionId: sessionId,
 		seq: seq,
+		session: sessionData,
 		payload: msg
 	};
 

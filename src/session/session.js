@@ -16,7 +16,7 @@ var using = {
 	rpc: false,
 	udp: false
 };
-// development use only by default
+// development use only by default: this does NOT support cluster mode
 var inMemStorage = {};
 
 var SESSION_ID_NAME = 'sessionid';
@@ -70,6 +70,20 @@ module.exports.useHTTPSession = function (routes) {
 	}
 };
 
+module.exports.useRPCSession = function () {
+	gn.rpc.useDecryption(socketSessionValidation);
+	gn.rpc.useEncryption(socketSessionEncryption);
+};
+
+module.exports.useUDPSession = function () {
+	gn.udp.useDecryption(socketSessionValidation);
+	gn.udp.useEncryption(socketSessionEncryption);
+};
+
+module.exports.createSocketCipher = function () {
+	return gn.lib.CryptoEngine.createCipher();
+};
+
 // this needs to be manually called in the application
 // typically in login etc
 module.exports.setHTTPSession = function (req, res, sessionData, cb) {
@@ -99,9 +113,11 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 	
 	inMemStorage[id] = {
 		ttl: Date.now() + options.ttl,
+		seq: 0,
 		data: sessionData
 	};
-
+	
+	req.args.sessionId = id;
 	req.args.session = sessionData;
 	cb();
 };
@@ -134,6 +150,94 @@ module.exports.delHTTPSession = function (req, res, cb) {
 	cb();
 };
 
+function socketSessionValidation(packet, next) {
+	var ce = new gn.lib.CryptoEngine();
+	var res = ce.getSessionIdAndPayload(packet);
+	
+	if (get && set) {
+		logger.verbose('custom getter is defined');
+		get(res.sessionId, function (error, sessionData) {
+			if (error) {
+				return next(error);
+			}
+			if (!sessionData) {
+				logger.error('session not found:', res.sessionId);
+				return next(new Error('SessionNotFound'));
+			}
+			if (res.seq <= sessionData.seq) {
+				// we do NOT allow incoming seq that is smaller or the same as stored in the session
+				// this is to prevent duplicated command execution
+				logger.error('invalid seq:', res.sessionId);
+				return next(new Error('InvalidSeq'));
+			}
+			// check session TTL
+			if (sessionData.ttl <= Date.now()) {
+				logger.error('session ID has expired:', res.sessionId);
+				return next(new Error('SessionExpired'));
+			}
+			// update session and move on
+			sessionData.ttl = Date.now() + options.ttl;
+			sessionData.seq = res.seq;
+			if (sessionData.seq > 0xffffffff) {
+				sessionData.seq = 0;
+			}
+			set(res.sessionId, sessionData, function (error) {
+				if (error) {
+					return next(error);
+				}
+				socketSessionDecrypt(ce, res, sessionData, next);
+			});
+		});
+		return;
+	}
+
+	logger.warn('get is using defailt in-memory storage: Not for production');
+	
+	var sess = inMemStorage[res.sessionId];
+
+	if (!sess) {
+		logger.error('session not found:', res.sessionId);
+		return next(new Error('SessionNotFound'));
+	}
+	if (sess.ttl <= Date.now()) {
+		logger.error('session ID has expired:', res.sessionId);
+		return next(new Error('SessionExpired'));
+	}
+	// update session and move on
+	sess.ttl = Date.now() + options.ttl;
+	sess.seq = res.seq;
+	if (sess.seq > 0xffffffff) {
+		sess.seq = 0;
+	}
+	inMemStorage[res.sessionId] = sess;
+
+	socketSessionDecrypt(ce, res, sess, next);
+}
+
+function socketSessionDecrypt(ce, res, sess, next) {
+	var decrypted = ce.decrypt(
+		sess.data.cipherKey,
+		sess.data.cipherNounce,
+		sess.data.macKey,
+		res.seq,
+		res.payload
+	);
+	next(null, res.sessionId, res.seq, sess, decrypted);
+}
+
+function socketSessionEncryption(state, msg, next) {
+	var ce = gn.lib.CryptoEngine();
+	var sess = state.session;
+	var encrypted = ce.encrypt(
+		sess.cipherKey,
+		sess.cipherNounce,
+		sess.macKey,
+		state.seq,
+		msg
+	);
+	next(null, encrypted);
+}
+
 function HTTPSessionValidation(req, res, next) {
 	var id = getHTTPSessionId(req);
 	var newId = null;
@@ -163,6 +267,11 @@ function HTTPSessionValidation(req, res, next) {
 			}
 			if (!sessData) {
 				return next(new Error('SessionNotFound'));
+			}
+			// check for TTL
+			if (sessData.ttl <= Date.now()) {
+				logger.error('session ID has expired:', id);
+				return next(new Error('SessionExpired'));
 			}
 			// append it to req.args for easy access
 			req.args.session = sessData.data;
