@@ -6,6 +6,10 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### gracenode.session added
+
+For details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session">HERE</a>.
+
 #### gracenode.lib.uuid added
 
 ## Changed

@@ -10,6 +10,7 @@ var config = require('./config');
 var mod = require('./mod');
 var render = require('../render');
 var lint = require('../lint');
+var session = require('../session');
 var pkg = require('../../package.json');
 
 // this will be overridden by logger in setupLog()
@@ -43,6 +44,8 @@ exports.http = require('../http');
 
 // deprecated
 exports.router = exports.http;
+
+exports.session = session;
 
 // not officially released nor documented
 exports.rpc = require('../rpc');
@@ -117,6 +120,7 @@ exports.start = function (cb) {
 			startMod,
 			setupLogCleaner,
 			setupRender,
+			setupSession,
 			startHTTP,
 			startRPC
 		];
@@ -327,6 +331,11 @@ function setupRender(cb) {
 		});
 		return;
 	}
+	cb();
+}
+
+function setupSession(cb) {
+	session.setup();
 	cb();
 }
 

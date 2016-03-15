@@ -220,7 +220,16 @@ function executeCmd(sessionId, seq, msg) {
 function send(sessionId, seq, msg) {
 	if (cryptoEngine.encrypt) {
 		logger.info('using encryption for server push message');
-		// TODO: implement
+		cryptoEngine.encrypt(sessionId, seq, msg, function (error, encrypted) {
+			if (error) {
+				return logger.error(
+					'encryption of message failed:',
+					sessionId,
+					seq,
+					error
+				);
+			}
+		});	
 	}
 }
 */

@@ -55,7 +55,7 @@ function readMultipartBody(req, cb) {
 			body.files.push(files[f][0]);
 		}
 		logger.verbose(
-			'Request body:',
+			'Request multipart body:',
 			util.fmt('url', req.method + ' ' + req.url),
 			util.fmt('id', req.id),
 			'\n<body>', body
