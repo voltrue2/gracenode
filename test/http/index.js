@@ -1263,7 +1263,7 @@ describe('gracenode.http', function () {
 		});
 		request.GET(http + '/secure/', {}, options, function (error, res, st) {
 			assert(error);
-			assert.equal(st, 400);
+			assert.equal(st, 401);
 			assert.equal(res.message, 'SessionIdNotFound');
 			done();
 		});
@@ -1303,7 +1303,7 @@ describe('gracenode.http', function () {
 			assert.equal(res.message, 'OK');
 			request.GET(http + '/secure/', {}, opt, function (error, res, st) {
 				assert(error);
-				assert.equal(st, 400);
+				assert.equal(st, 401);
 				assert.equal(res.message, 'SessionNotFound');
 				done();
 			});
@@ -1366,7 +1366,7 @@ describe('gracenode.http', function () {
 		});
 		request.GET(http + '/secure2/', {}, options, function (error, res, st) {
 			assert(error);
-			assert.equal(st, 400);
+			assert.equal(st, 401);
 			assert.equal(res.message, 'SessionIdNotFound');
 			done();
 		});
@@ -1406,7 +1406,7 @@ describe('gracenode.http', function () {
 			assert.equal(res.message, 'OK');
 			request.GET(http + '/secure2/', {}, opt, function (error, res, st) {
 				assert(error);
-				assert.equal(st, 400);
+				assert.equal(st, 401);
 				assert.equal(res.message, 'SessionNotFound');
 				done();
 			});
