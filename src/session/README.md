@@ -1,6 +1,6 @@
 # Session
 
-**gracenode** comes with built-in session management for HTTP server and more.
+**gracenode** comes with built-in session management for HTTP server, UDP server, and more.
 
 **NOTE**: By default `gracenode.session` uses `node.js` in-memory storage to keep session.
 
@@ -83,6 +83,14 @@ gracenode.http.get('/mySecurePage', function (req, res) {
 	// do something here and respond to the client
 });
 ```
+
+## How to enable UDP session
+
+### .useUDPSession()
+
+Enables UDP server's session and data encryption/decryption.
+
+For more details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp">HERE</a>.
 
 ## Define custom storage for session
 

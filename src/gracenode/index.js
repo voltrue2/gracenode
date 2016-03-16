@@ -122,6 +122,7 @@ exports.start = function (cb) {
 			setupRender,
 			setupSession,
 			startHTTP,
+			startUDP,
 			startRPC
 		];
 		var done = function (error) {
@@ -359,6 +360,17 @@ function startHTTP(cb) {
 	}
 	if (cluster.isMaster() && host && port) {
 		logger.verbose('Master process does not start HTTP server');
+	}
+	cb();
+}
+
+function startUDP(cb) {
+	if (!cluster.isMaster() && config.get('udp')) {
+		exports.udp.setup(cb);
+		return;
+	}
+	if (cluster.isMaster() && config.get('udp')) {
+		logger.verbose('Master process does not start UDP server');
 	}
 	cb();
 }

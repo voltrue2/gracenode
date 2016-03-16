@@ -23,12 +23,7 @@ gn.session.useUDPSession();
 gn.udp.hook(1, testHook1);
 gn.udp.command(1, 'testCommand1', testCommand1);
 
-gn.start(function () {
-
-	gn.udp.setup(function () {
-		console.log('ready');
-	});
-});
+gn.start();
 
 function testHook1(state, next) {
 	console.log('command hook', state.sessionId, state.seq);
