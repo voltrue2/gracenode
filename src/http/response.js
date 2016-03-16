@@ -63,7 +63,11 @@ Response.prototype.error = function (error, status) {
 	}
 	status = status || DEFAULT_ERROR_STATUS;
 	this.headers['Content-Type'] = 'application/json; charset=UTF-8';
-	logger.error('Error response:', data, status);
+	logger.error(
+		'Error response:', data, status,
+		util.fmt('url', this._req.method + ' ' + this._req.url),
+		util.fmt('id', this._req.id)
+	);
 	this._send(JSON.stringify(data), status);
 };
 

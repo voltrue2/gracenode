@@ -247,7 +247,7 @@ function HTTPSessionValidation(req, res, next) {
 			'session ID not found in:',
 			(options.useCookie ? 'cookies' : 'request headers')
 		);
-		return res.error(new Error('SessionIdNotFound'), 401);
+		return next(new Error('SessionIdNotFound'), 401);
 	}
 
 	if (options.oneTime) {
@@ -263,15 +263,15 @@ function HTTPSessionValidation(req, res, next) {
 		logger.verbose('custom getter is defined');
 		get(id, function (error, sessData) {
 			if (error) {
-				return res.error(error, 401);
+				return next(error, 401);
 			}
 			if (!sessData) {
-				return res.error(new Error('SessionNotFound'), 401);
+				return next(new Error('SessionNotFound'), 401);
 			}
 			// check for TTL
 			if (sessData.ttl <= Date.now()) {
 				logger.error('session ID has expired:', id);
-				return res.error(new Error('SessionExpired'), 401);
+				return next(new Error('SessionExpired'), 401);
 			}
 			// append it to req.args for easy access
 			req.args.sessionId = id;
@@ -292,13 +292,13 @@ function HTTPSessionValidation(req, res, next) {
 
 	if (!sess) {
 		logger.error('session not found by session ID:', id);
-		return res.error(new Error('SessionNotFound'), 401);
+		return next(new Error('SessionNotFound'), 401);
 	}
 
 	// check for TTL
 	if (sess.ttl <= Date.now()) {
 		logger.error('session ID has expired:', id);
-		return res.error(new Error('SessionExpired'), 401);
+		return next(new Error('SessionExpired'), 401);
 	}
 
 	// found a valid session. update TTL

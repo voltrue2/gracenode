@@ -208,6 +208,19 @@ function requestHandler(req, res) {
 		);		
 	});
 
+	var hookDone = function (error, statusCode) {
+		if (error) {
+			// error response 400
+			if (!statusCode) {
+				statusCode = 400;
+			}
+			resp.error(error, error.code || statusCode);
+			return;
+		}
+		reqHandlerLog(req);
+		parsed.handler(req, resp);
+	};
+
 	var handleHook = function (hook, next) {
 		logger.verbose(
 			'Execute request hook for',
@@ -215,7 +228,20 @@ function requestHandler(req, res) {
 			util.fmt('id', req.id),
 			util.fmt('hook name', (hook.name || 'anonymous'))
 		);
-		hook(req, resp, next);
+		hook(req, resp, function (error, statusCode) {
+			if (error) {
+				logger.error(
+					'Request hook error:',
+					error, '(status:' + (statusCode || 400) + ')',
+					util.fmt('url', req.method + ' ' + req.url),
+					util.fmt('id', req.id),
+					util.fmt('hook name', (hook.name || 'anonymous'))
+				);
+				hookDone(error, statusCode);
+				return;
+			}
+			next();
+		});
 	};
 
 	// parsed url path
@@ -243,18 +269,7 @@ function requestHandler(req, res) {
 		}
 
 		// execute hooks -> request handler
-		async.eachSeries(parsed.hooks, handleHook, function (error, statusCode) {
-			if (error) {
-				// error response 400
-				if (!statusCode) {
-					statusCode = 400;
-				}
-				resp.error(error, error.code || statusCode);
-				return;
-			}
-			reqHandlerLog(req);
-			parsed.handler(req, resp);
-		});
+		async.eachSeries(parsed.hooks, handleHook, hookDone);
 	});
 }
 
