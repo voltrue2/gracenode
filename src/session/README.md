@@ -171,7 +171,9 @@ If set `true`, `gracenode.session` will use `cookies`.
 
 Default is `true`.
 
-**NOTE:** If this is set to `false`, it will use `request` and `response` headers to pass session ID around.
+**NOTE:** If this is set to `false`, it will use `request` and `response` headers or request query to pass session ID around.
+
+The session ID key name is always `sessionid`.
 
 The header name is `sessionid`.
 

@@ -320,6 +320,6 @@ function getHTTPSessionId(req) {
 		var cookies = req.cookies();
 		return cookies.get(SESSION_ID_NAME) || null;
 	}
-	// if not using cookie, we assume to get it from request header
-	return req.headers[SESSION_ID_NAME] || null;
+	// if not using cookie, we assume to get it from request header or request query
+	return req.headers[SESSION_ID_NAME] || (req.query[SESSION_ID_NAME] || null);
 }
