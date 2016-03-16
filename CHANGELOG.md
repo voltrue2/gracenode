@@ -14,6 +14,8 @@ For details please read <a href="https://github.com/voltrue2/gracenode/tree/deve
 
 ## Changed
 
+#### gracenode.http hook error no longer uses error object's property code for status code
+
 #### gracenode.http hooks' next function can now take HTTP status code as second argument
 
 #### gracenode.lib.deepCopy() added

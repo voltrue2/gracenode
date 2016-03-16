@@ -214,7 +214,7 @@ function requestHandler(req, res) {
 			if (!statusCode) {
 				statusCode = 400;
 			}
-			resp.error(error, error.code || statusCode);
+			resp.error(error, statusCode);
 			return;
 		}
 		reqHandlerLog(req);
@@ -232,7 +232,7 @@ function requestHandler(req, res) {
 			if (error) {
 				logger.error(
 					'Request hook error:',
-					error, '(status:' + (statusCode || 400) + ')',
+					error, '(status:' + statusCode + ')',
 					util.fmt('url', req.method + ' ' + req.url),
 					util.fmt('id', req.id),
 					util.fmt('hook name', (hook.name || 'anonymous'))
