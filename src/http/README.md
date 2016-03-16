@@ -372,7 +372,7 @@ Each hook function will have `req`, `res`, and `next` as arguments.
 
 **NOTE**: You may pass an error to `next()` to response as an error. The default status code is `400`.
 
-To change the status code, pass `error.code = <status code>` such as `500`.
+To change the status code, pass `error.code = <status code>` such as `500` or pass a second argument like so `next(error, 401)`.
 
 ## Create Generic Error Handling
 

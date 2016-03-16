@@ -243,10 +243,13 @@ function requestHandler(req, res) {
 		}
 
 		// execute hooks -> request handler
-		async.eachSeries(parsed.hooks, handleHook, function (error) {
+		async.eachSeries(parsed.hooks, handleHook, function (error, statusCode) {
 			if (error) {
 				// error response 400
-				resp.error(error, error.code || 400);
+				if (!statusCode) {
+					statusCode = 400;
+				}
+				resp.error(error, error.code || statusCode);
 				return;
 			}
 			reqHandlerLog(req);
