@@ -307,6 +307,10 @@ function HTTPSessionValidation(req, res, next) {
 	// append it to req.args object for easy access
 	req.args.sessionId = id;
 	req.args.session = sess.data;
+	if (newId) {
+		id = newId;
+	}
+	inMemStorage[id] = sess;
 	// move on
 	next();
 }

@@ -1413,4 +1413,214 @@ describe('gracenode.http', function () {
 		});
 	});
 
+	it('can setup built-in session for HTTP with custom get/set/del w/o using cookie', function () {
+		gn.session.useCookie(false);
+		gn.session.useHTTPSession([
+			'/secure3',
+			'/logout3'
+		]);
+		gn.session.defineSet(function (id, data, cb) {
+			var logger = gn.log.create();
+			logger.debug('set session:', id, data);
+			testData[id] = data;
+			cb();
+		});
+		gn.session.defineGet(function (id, cb) {
+			var data = testData[id] || null;
+			var logger = gn.log.create();
+			logger.debug('get session:', id, data);
+			if (!data) {
+				return cb(new Error('SessionNotFound'));
+			}
+			cb(null, data);
+		});
+		gn.session.defineDel(function (id, cb) {
+			delete testData[id];
+			var logger = gn.log.create();
+			logger.debug('del session:', id);
+			cb();
+		});
+	});
+
+	it('can create login3 route and handle it w/ built-in session (no cookie) for HTTP', function (done) {
+		gn.http.post('/login3', function (req, res) {
+			var data = {
+				message: 'Hello'
+			};
+			gn.session.setHTTPSession(req, res, data, function (error) {
+				assert.equal(error, null);
+				assert.equal(req.args.session.message, data.message);
+				res.json({ message: 'OK' });
+			});			
+		});
+		request.POST(http + '/login3/', {}, options, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			testData.sessionid = headers.sessionid;
+			done();
+		});
+	});
+
+	it('can not access route that requires session w/o correct sessionid for built-in session (no cookie) for HTTP', function (done) {
+		gn.http.get('/secure3', function (req, res) {
+			assert.equal(req.args.session.message, 'Hello');
+			res.json({ message: 'OK' });
+		});
+		var opt = gn.lib.deepCopy(options);
+		request.GET(http + '/secure3/', {}, opt, function (error, res, st) {
+			assert(error);
+			assert.equal(st, 401);
+			assert.equal(res.message, 'SessionIdNotFound');
+			done();
+		});
+	});	
+
+	it('can access route that requires session w/ built-in session (no cookie) for HTTP', function (done) {
+		gn.http.get('/secure3', function (req, res) {
+			assert.equal(req.args.session.message, 'Hello');
+			res.json({ message: 'OK' });
+		});
+		var opt = gn.lib.deepCopy(options);
+		opt.headers = {
+			sessionid: testData.sessionid
+		};
+		request.GET(http + '/secure3/', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			done();
+		});
+	});	
+
+	it('can delete session w/ built-in session (no cookie) for HTTP', function (done) {
+		gn.http.post('/logout3/', function (req, res) {
+			gn.session.delHTTPSession(req, res, function (error) {
+				assert.equal(error, null);
+				res.json({ message: 'OK' });	
+			});
+		});
+		var opt = gn.lib.deepCopy(options);
+		opt.headers = {
+			sessionid: testData.sessionid
+		};
+		request.POST(http + '/logout3/', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			request.GET(http + '/secure2/', {}, opt, function (error, res, st) {
+				assert(error);
+				assert.equal(st, 401);
+				assert.equal(res.message, 'SessionNotFound');
+				done();
+			});
+		});
+	});
+
+	it('can setup built-in session for HTTP with custom get/set/del w/o using cookie and one time session ID', function () {
+		gn.session.useCookie(false);
+		gn.session.oneTimeSessionId(true);
+		gn.session.useHTTPSession([
+			'/secure4',
+			'/logout4'
+		]);
+		gn.session.defineSet(function (id, data, cb) {
+			var logger = gn.log.create();
+			logger.debug('set session:', id, data);
+			testData[id] = data;
+			cb();
+		});
+		gn.session.defineGet(function (id, cb) {
+			var data = testData[id] || null;
+			var logger = gn.log.create();
+			logger.debug('get session:', id, data);
+			if (!data) {
+				return cb(new Error('SessionNotFound'));
+			}
+			cb(null, data);
+		});
+		gn.session.defineDel(function (id, cb) {
+			delete testData[id];
+			var logger = gn.log.create();
+			logger.debug('del session:', id);
+			cb();
+		});
+	});
+
+	it('can create login4 route and handle it w/ built-in session (no cookie + one time session ID) for HTTP', function (done) {
+		gn.http.post('/login4', function (req, res) {
+			var data = {
+				message: 'Hello'
+			};
+			gn.session.setHTTPSession(req, res, data, function (error) {
+				assert.equal(error, null);
+				assert.equal(req.args.session.message, data.message);
+				res.json({ message: 'OK' });
+			});			
+		});
+		request.POST(http + '/login4/', {}, options, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			testData.sessionid = headers.sessionid;
+			done();
+		});
+	});
+
+	it('can not access route that requires session w/o correct sessionid for built-in session (no cookie + one time session ID) for HTTP', function (done) {
+		gn.http.get('/secure4', function (req, res) {
+			assert.equal(req.args.session.message, 'Hello');
+			res.json({ message: 'OK' });
+		});
+		var opt = gn.lib.deepCopy(options);
+		request.GET(http + '/secure4/', {}, opt, function (error, res, st) {
+			assert(error);
+			assert.equal(st, 401);
+			assert.equal(res.message, 'SessionIdNotFound');
+			done();
+		});
+	});	
+
+	it('can access route that requires session w/ built-in session (no cookie one time session ID) for HTTP', function (done) {
+		gn.http.get('/secure4', function (req, res) {
+			assert.equal(req.args.session.message, 'Hello');
+			res.json({ message: 'OK' });
+		});
+		var opt = gn.lib.deepCopy(options);
+		opt.headers = {
+			sessionid: testData.sessionid
+		};
+		request.GET(http + '/secure4/', {}, opt, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			testData.sessionid = headers.sessionid;
+			done();
+		});
+	});	
+
+	it('can delete session w/ built-in session (no cookie + one time session ID) for HTTP', function (done) {
+		gn.http.post('/logout4/', function (req, res) {
+			gn.session.delHTTPSession(req, res, function (error) {
+				assert.equal(error, null);
+				res.json({ message: 'OK' });	
+			});
+		});
+		var opt = gn.lib.deepCopy(options);
+		opt.headers = {
+			sessionid: testData.sessionid
+		};
+		request.POST(http + '/logout4/', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			request.GET(http + '/secure4/', {}, opt, function (error, res, st) {
+				assert(error);
+				assert.equal(st, 401);
+				assert.equal(res.message, 'SessionNotFound');
+				done();
+			});
+		});
+	});
+
 });
