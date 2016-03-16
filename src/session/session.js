@@ -101,6 +101,7 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 
 	if (set) {
 		logger.verbose('custom setter is defined');
+		req.args.sessionId = id;
 		req.args.session = sessionData;
 		var data = {
 			ttl: Date.now() + options.ttl,
