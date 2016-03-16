@@ -130,12 +130,23 @@ exports.start = function (cb) {
 			}
 			var time = Date.now() - start;
 			logger.info(
+				'node.js <' + process.version + '>',
 				'gracenode <v' + pkg.version + '> is ready:',
 				'[time:' + time + 'ms]'
 			);
 			if (typeof cb === 'function') {
 				cb();
 			}
+
+			var gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
+			var currentV = parseFloat(process.version.replace('v', ''));
+			if (gnReqVersion > currentV) {
+				logger.warn(
+					'gracenode requires', pkg.engine.engine,
+					'but current version of node is', process.version
+				);
+			}
+
 			ready = true;
 		};
 		async.series(tasks, done);

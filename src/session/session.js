@@ -23,9 +23,17 @@ var SESSION_ID_NAME = 'sessionid';
 
 module.exports.setup = function () {
 	logger = gn.log.create('session');
-	logger.info('session uses cookie:', options.useCookie);
-	logger.info('session renews ID every time:', options.oneTime);
-	logger.info('session for HTTP enabled:', using.http);
+	if (using.http) {
+		logger.info('session for HTTP enabled');
+		logger.info('session uses cookie:', options.useCookie);
+		logger.info('session renews ID every time:', options.oneTime);
+	}
+	if (using.udp) {
+		logger.info('session for UDP enabled');
+	}
+	if (using.rpc) {
+		logger.info('session for RPC enabled');
+	}
 };
 
 module.exports.defineSet = function (func) {
@@ -71,17 +79,15 @@ module.exports.useHTTPSession = function (routes) {
 };
 
 module.exports.useRPCSession = function () {
+	using.rpc = true;
 	gn.rpc.useDecryption(socketSessionValidation);
 	gn.rpc.useEncryption(socketSessionEncryption);
 };
 
 module.exports.useUDPSession = function () {
+	using.udp = true;
 	gn.udp.useDecryption(socketSessionValidation);
 	gn.udp.useEncryption(socketSessionEncryption);
-};
-
-module.exports.createSocketCipher = function () {
-	return gn.lib.CryptoEngine.createCipher();
 };
 
 // this needs to be manually called in the application
@@ -107,6 +113,10 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 			ttl: Date.now() + options.ttl,
 			data: sessionData
 		};
+		if (using.udp || using.rpc) {
+			data.cipher = createSocketCipher();
+			req.args.cipher = data.cipher;
+		}
 		return set(id, data, cb);
 	}
 
@@ -117,6 +127,10 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 		seq: 0,
 		data: sessionData
 	};
+	if (using.udp || using.rpc) {
+		inMemStorage[id].cipher = createSocketCipher();
+		req.args.cipher = inMemStorage[id].cipher;
+	}
 	
 	req.args.sessionId = id;
 	req.args.session = sessionData;
@@ -217,9 +231,9 @@ function socketSessionValidation(packet, next) {
 
 function socketSessionDecrypt(ce, res, sess, next) {
 	var decrypted = ce.decrypt(
-		sess.data.cipherKey,
-		sess.data.cipherNounce,
-		sess.data.macKey,
+		sess.cipher.cipherKey,
+		sess.cipher.cipherNounce,
+		sess.cipher.macKey,
 		res.seq,
 		res.payload
 	);
@@ -227,12 +241,12 @@ function socketSessionDecrypt(ce, res, sess, next) {
 }
 
 function socketSessionEncryption(state, msg, next) {
-	var ce = gn.lib.CryptoEngine();
+	var ce = new gn.lib.CryptoEngine();
 	var sess = state.session;
 	var encrypted = ce.encrypt(
-		sess.cipherKey,
-		sess.cipherNounce,
-		sess.macKey,
+		sess.cipher.cipherKey,
+		sess.cipher.cipherNounce,
+		sess.cipher.macKey,
 		state.seq,
 		msg
 	);
@@ -322,4 +336,8 @@ function getHTTPSessionId(req) {
 	}
 	// if not using cookie, we assume to get it from request header or request query
 	return req.headers[SESSION_ID_NAME] || (req.query[SESSION_ID_NAME] || null);
+}
+
+function createSocketCipher() {
+	return gn.lib.CryptoEngine.createCipher();
 }

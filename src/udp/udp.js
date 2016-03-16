@@ -73,8 +73,10 @@ module.exports.setup = function (cb) {
 
 		running = true;
 		server.on('message', handleMessage);
+		
+		var info = server.address();
 
-		logger.info('UDP server started at', config.address + ':' + boundPort);
+		logger.info('UDP server started at', info.address + ':' + info.port);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));
 		logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
 
@@ -148,14 +150,15 @@ module.exports.hook = function (cmdIdList, handler) {
 	hooks.add(cmdIdList, handler);
 };
 
-function handleMessage(buff) {
+function handleMessage(buff, rinfo) {
 
-	logger.verbose('message received:', server.address(), buff);
+	logger.verbose('message received:', server.address(), buff, 'from:', rinfo);
 
 	if (cryptoEngine.decrypt) {
 		logger.info('using decryption for incoming message');
 		cryptoEngine.decrypt(buff, function (error, sessId, seq, sessData, decrypted) {
 			if (error) {
+				// this is also the same as session failure
 				return logger.error('decryption of message failed:', error);
 			}
 			// assumes the message text to be a JSON
@@ -167,7 +170,7 @@ function handleMessage(buff) {
 				msg
 			);
 			// route and execute command
-			executeCmd(sessId, seq, sessData, msg);
+			executeCmd(sessId, seq, sessData, msg, rinfo);
 		});
 		return;				
 	}
@@ -177,10 +180,10 @@ function handleMessage(buff) {
 
 	logger.verbose('message:', msgText);
 
-	executeCmd(null, null, null, msgText);
+	executeCmd(null, null, null, msgText, rinfo);
 }
 
-function executeCmd(sessionId, seq, sessionData, msg) {
+function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 	var cmd = router.route(msg);	
 	
 	if (!cmd) {
@@ -200,7 +203,12 @@ function executeCmd(sessionId, seq, sessionData, msg) {
 		sessionId: sessionId,
 		seq: seq,
 		session: sessionData,
-		payload: msg
+		clientAddress: rinfo.address,
+		clientPort: rinfo.port,
+		payload: msg,
+		send: function (msg) {
+			send(state, msg);
+		}
 	};
 
 	cmd.hooks(state, function (error) {
@@ -217,20 +225,67 @@ function executeCmd(sessionId, seq, sessionData, msg) {
 	});
 }
 
-/*
-function send(sessionId, seq, msg) {
+function send(state, msg) {
+
+	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
+		msg = JSON.stringify(msg);
+	}
+
+	// move forward seq
+	state.seq += 1;
+
+	var sent = function (error) {
+		if (error) {
+			return logger.error(
+				'sending UDP packet failed:',
+				error,
+				'to:', state.clientAddress + ':' +
+				state.clientPort
+			);
+		}
+		logger.info(
+			'UDP packet sent to:',
+			state.clientAddress + ':' + state.clientPort
+		);
+	};
+
 	if (cryptoEngine.encrypt) {
 		logger.info('using encryption for server push message');
-		cryptoEngine.encrypt(sessionId, seq, msg, function (error, encrypted) {
+		cryptoEngine.encrypt(state, msg, function (error, encrypted) {
 			if (error) {
 				return logger.error(
 					'encryption of message failed:',
-					sessionId,
-					seq,
+					state.sessionId,
+					state.seq,
 					error
 				);
 			}
-		});	
+			logger.info(
+				'send UDP packet to client:',
+				'session ID seq message',
+				state.sessionId,
+				state.seq,
+				msg
+			);
+			server.send(
+				encrypted,
+				0,
+				encrypted.length,
+				state.clientPort,
+				state.clientAddress,
+				sent
+			);
+		});
+		return;
 	}
+
+	var data = new Buffer(msg);
+	server.send(
+		data,
+		0,
+		data.length,
+		state.clientPort,
+		state.clientAddress,
+		sent
+	);
 }
-*/
