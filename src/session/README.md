@@ -68,6 +68,22 @@ gn.http.post('/login', function (req, res) {
 });
 ```
 
+## How to access HTTP session data
+
+Each successful HTTP request will have `request.args.session` and `request.args.sessionId`.
+
+Example:
+
+```javascript
+gracenode.http.get('/mySecurePage', function (req, res) {
+	// my session ID
+	var sessionId = req.args.sessionId;
+	// my session data
+	var session = req.args.session;
+	// do something here and respond to the client
+});
+```
+
 ## Define custom storage for session
 
 `gracenode.session` allows you to define how and where you want to keep your session such as a database.
@@ -76,7 +92,7 @@ gn.http.post('/login', function (req, res) {
 
 Defines a function to "set" and store session data.
 
-The callback `handler` function will have `sessionId` and `sessionData` passed.
+The callback `handler` function will have `sessionId`, `sessionData`, and `callback` passed.
 
 **NOTE**: This function will be called whenever we need to set a session.
 
@@ -101,7 +117,7 @@ gn.session.defineSet(function (sessionId, sessionData, cb) {
 
 Defines a function to "get" session data from the storage of your choice.
 
-The callback `handler` function will have `sessionId` passed.
+The callback `handler` function will have `sessionId` and `callback` passed.
 
 **NOTE**: `gracenode.session` automatically updates session TTL upon successful session "get".
 
@@ -127,6 +143,8 @@ gn.session.defineGet(function (sessionId, cb) {
 Defines a function "delete" session data stored.
 
 This function will automatically be called when calling `gracenode.session.delHTTPSession(req, res, callback)`.
+
+The callback `handler` function will have `sessionId` and `callback` passed.
 
 ```javascript
 var gn = require('gracenode');

@@ -274,6 +274,7 @@ function HTTPSessionValidation(req, res, next) {
 				return next(new Error('SessionExpired'));
 			}
 			// append it to req.args for easy access
+			req.args.sessionId = id;
 			req.args.session = sessData.data;
 			// update session and move on
 			sessData.ttl = Date.now() + options.ttl;
@@ -303,6 +304,7 @@ function HTTPSessionValidation(req, res, next) {
 	// found a valid session. update TTL
 	sess.ttl = Date.now() + options.ttl; 
 	// append it to req.args object for easy access
+	req.args.sessionId = id;
 	req.args.session = sess.data;
 	// move on
 	next();
