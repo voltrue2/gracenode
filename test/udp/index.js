@@ -53,9 +53,7 @@ describe('gracenode.udp', function () {
 			command: 0,
 			message: clientMsg
 		};
-		simpleClient.sender(portOne, data, function (error) {
-			assert.equal(error, null);
-		});
+		simpleClient.sender(portOne, data);
 	});
 
 	it('can register UDP command + hook and handle message from client and revieve message from server w/o session + encryption', function (done) {
@@ -78,9 +76,7 @@ describe('gracenode.udp', function () {
 			command: 1,
 			message: clientMsg
 		};
-		simpleClient.sender(portOne, data, function (error) {
-			assert.equal(error, null);
-		});
+		simpleClient.sender(portOne, data);
 	});
 
 	it('can set up session + encryption/decryption for UDP server and HTTP authentication endpoint', function () {
@@ -122,8 +118,7 @@ describe('gracenode.udp', function () {
 				seq: res.cipher.seq
 			};
 			cipher.seq += 1;
-			simpleClient.secureSender(portOne, sessionId, cipher, data, function (error) {
-				assert.equal(error, null);
+			simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
 				cipher.seq += 1;
 				simpleClient.secureReceiver(cipher, function (error, msg) {
 					assert.equal(error, null);
@@ -163,8 +158,7 @@ describe('gracenode.udp', function () {
 				seq: res.cipher.seq
 			};
 			cipher.seq += 1;
-			simpleClient.secureSender(portOne, sessionId, cipher, data, function (error) {
-				assert.equal(error, null);
+			simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
 				cipher.seq += 1;
 				simpleClient.secureReceiver(cipher, function (error, msg) {
 					assert.equal(error, null);
@@ -207,8 +201,7 @@ describe('gracenode.udp', function () {
 			};
 			var send = function () {
 				cipher.seq += 1;
-				simpleClient.secureSender(portOne, sessionId, cipher, data, function (error) {
-					assert.equal(error, null);
+				simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
 					cipher.seq += 1;
 					simpleClient.secureReceiver(cipher, function (error, msg) {
 						assert.equal(error, null);
