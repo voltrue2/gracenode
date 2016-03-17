@@ -148,7 +148,7 @@ Lint.prototype._reportResults = function (cb) {
 		return cb(new Error('LintError'));
 	}
 
-	print.out('Lint [' + print.g(' DONE ') + ']');
+	print.out('Lint ' + this._files.length + ' files [' + print.g(' DONE ') + ']');
 	cb();
 };
 
