@@ -14,10 +14,10 @@ if (singleRun !== 'false') {
 	require('./express');
 	// test daemon of gracenode
 	require('./daemon');
+	// test gracenode.udp
+	require('./udp');
 	// test gracenode.http
 	require('./http');
 	// test gracenode.render
 	require('./render');
-	// test gracenode.udp
-	//require('./udp');
 }

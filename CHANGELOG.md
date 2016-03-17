@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 2.6.0
+
+## Added
+
+#### UDP server added
+
+For details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp">HERE</a>.
+
+## Changed
+
+None
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 2.5.3
 
 ## Added
