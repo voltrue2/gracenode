@@ -18,4 +18,6 @@ if (singleRun !== 'false') {
 	require('./http');
 	// test gracenode.render
 	require('./render');
+	// test gracenode.udp
+	//require('./udp');
 }

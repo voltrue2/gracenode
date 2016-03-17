@@ -41,6 +41,8 @@ In order to utilize commands, the UDP message sent from the client must meet the
 
 Command IDs are registered with an `integer` value.
 
+**NOTE**: Valid command ID range is `0` to `65536`.
+
 ## How to register commands on the server
 
 ```javascript
@@ -167,3 +169,23 @@ The structure of the object is:
 Encrypted messages that sent from the server must be decrypted using the `cipher` data you received from HTTP end point when authenticating.
 
 The `cipher` data is valid for the duration of the session.
+
+## Error Handling
+
+**gracenode** UDP allows you to register an error handler function.
+
+### .onError(handler [function])
+
+Example:
+
+```javascript
+var gn = require('gracenode');
+gn.config({
+	udp: {
+		portRanges: [xxx, yyy]
+	}
+});
+gn.udp.onError(function (error) {
+	// do something about the error
+});
+```

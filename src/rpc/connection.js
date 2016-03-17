@@ -190,7 +190,7 @@ function executeCmd(that, cmd, parsedData, cb) {
 		get: function (key) {
 			return (that.data.hasOwnProperty(key)) ? that.data[key] : null;
 		},
-		push: function (payload, cb) {
+		send: function (payload, cb) {
 			that._push.apply(that, [payload, cb]);
 		},
 		payload: JSON.parse(parsedData.payload)

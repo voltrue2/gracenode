@@ -266,12 +266,21 @@ function HTTPSessionValidation(req, res, next) {
 	}
 
 	if (options.oneTime) {
+		var prevId = id;
 		newId = gn.lib.uuid.v4().toString();
 		// if not using cookie and oneTime is true
 		// update the session ID in response headers
 		if (!options.useCookie) {
 			res.headers[SESSION_ID_NAME] = newId;
 		}
+		// we delete the current session b/c session ID is used once
+		var _next = next;
+		next = function (error) {
+			if (error) {
+				return _next(error, 401);
+			}
+			del(prevId, _next);
+		};
 	}
 
 	if (get && set) {

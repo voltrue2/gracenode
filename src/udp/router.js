@@ -22,7 +22,7 @@ module.exports.define = function (cmdId, cmdName, handler) {
 };
 
 module.exports.route = function (packet) {
-	if (!commands[packet.command]) {
+	if (commands[packet.command] === undefined) {
 		logger.error('command handler not found for ', packet.command, packet);
 		return null;	
 	}

@@ -12,6 +12,7 @@ var PORT_IN_USE = 'EADDRINUSE';
 var logger;
 var config;
 var server;
+var onErrorHandler;
 
 var cryptoEngine = {
 	encrypt: null,
@@ -55,7 +56,7 @@ module.exports.setup = function (cb) {
 
 			if (!running) {
 				logger.info(
-					'UDP server not running yet [skipp]:',
+					'UDP server not running yet [skip]:',
 					config.address + ':' + boundPort
 				);
 				return next();
@@ -126,6 +127,10 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
+module.exports.onError = function (cb) {
+	onErrorHandler = cb;
+};
+
 module.exports.useEncryption = function (encrypt) {
 	if (typeof encrypt !== 'function') {
 		throw new Error('EncryptMustBeFunction');
@@ -159,7 +164,9 @@ function handleMessage(buff, rinfo) {
 		cryptoEngine.decrypt(buff, function (error, sessId, seq, sessData, decrypted) {
 			if (error) {
 				// this is also the same as session failure
-				return logger.error('decryption of message failed:', error);
+				logger.error('decryption of message failed:', error);
+				dispatchOnError(new Error('DecryptionFailed'));
+				return;
 			}
 			// assumes the message text to be a JSON
 			var msg = JSON.parse(decrypted.toString());
@@ -176,11 +183,17 @@ function handleMessage(buff, rinfo) {
 	}
 
 	// assumes the message text is a JSON
-	var msgText = buff.toString();
+	var msgText = JSON.parse(buff.toString());
 
 	logger.verbose('message:', msgText);
 
 	executeCmd(null, null, null, msgText, rinfo);
+}
+
+function dispatchOnError(error) {
+	if (typeof onErrorHandler === 'function') {
+		onErrorHandler(error);
+	}
 }
 
 function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
@@ -188,6 +201,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 	
 	if (!cmd) {
 		logger.error('command not found:', msg);
+		dispatchOnError(new Error('CommandNotFound'));
 		return;
 	}
 
@@ -219,6 +233,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 				'session ID', sessionId,
 				'seq', seq
 			);
+			dispatchOnError(error);
 			return;
 		}
 		cmd.handler(state);
@@ -236,12 +251,13 @@ function send(state, msg) {
 
 	var sent = function (error) {
 		if (error) {
-			return logger.error(
+			logger.error(
 				'sending UDP packet failed:',
 				error,
 				'to:', state.clientAddress + ':' +
 				state.clientPort
 			);
+			return dispatchOnError(error);
 		}
 		logger.info(
 			'UDP packet sent to:',
@@ -253,12 +269,13 @@ function send(state, msg) {
 		logger.info('using encryption for server push message');
 		cryptoEngine.encrypt(state, msg, function (error, encrypted) {
 			if (error) {
-				return logger.error(
+				logger.error(
 					'encryption of message failed:',
 					state.sessionId,
 					state.seq,
 					error
 				);
+				return dispatchOnError(new Error('EncryptionFailed'));
 			}
 			logger.info(
 				'send UDP packet to client:',
