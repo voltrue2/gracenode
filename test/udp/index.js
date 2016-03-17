@@ -14,7 +14,7 @@ var cipher;
 var sessionId;
 
 // global UDP error handler
-gn.udp.onError(function (error) {
+gn.udp.onError(function (error, rinfo) {
 	throw error;
 });
 

@@ -37,6 +37,8 @@ In order to utilize commands, the UDP message sent from the client must meet the
 }
 ```
 
+As shown above, `command` property is a required field, but the message from the client can contain anything as long as there is `command` proerty with valid command ID.
+
 ### Command ID
 
 Command IDs are registered with an `integer` value.
@@ -176,6 +178,12 @@ The `cipher` data is valid for the duration of the session.
 
 ### .onError(handler [function])
 
+The callback handler function will have `error` object and `rinfo` object passed.
+
+#### rinfo
+
+The object contains `address` which is the address of the client and `port`, the client port number.
+
 Example:
 
 ```javascript
@@ -185,7 +193,7 @@ gn.config({
 		portRanges: [xxx, yyy]
 	}
 });
-gn.udp.onError(function (error) {
+gn.udp.onError(function (error, rinfo) {
 	// do something about the error
 });
 ```

@@ -165,7 +165,7 @@ function handleMessage(buff, rinfo) {
 			if (error) {
 				// this is also the same as session failure
 				logger.error('decryption of message failed:', error);
-				dispatchOnError(new Error('DecryptionFailed'));
+				dispatchOnError(new Error('DecryptionFailed'), rinfo);
 				return;
 			}
 			// assumes the message text to be a JSON
@@ -190,9 +190,9 @@ function handleMessage(buff, rinfo) {
 	executeCmd(null, null, null, msgText, rinfo);
 }
 
-function dispatchOnError(error) {
+function dispatchOnError(error, rinfo) {
 	if (typeof onErrorHandler === 'function') {
-		onErrorHandler(error);
+		onErrorHandler(error, rinfo);
 	}
 }
 
@@ -201,7 +201,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 	
 	if (!cmd) {
 		logger.error('command not found:', msg);
-		dispatchOnError(new Error('CommandNotFound'));
+		dispatchOnError(new Error('CommandNotFound'), rinfo);
 		return;
 	}
 
@@ -233,7 +233,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 				'session ID', sessionId,
 				'seq', seq
 			);
-			dispatchOnError(error);
+			dispatchOnError(error, rinfo);
 			return;
 		}
 		cmd.handler(state);
@@ -257,7 +257,11 @@ function send(state, msg) {
 				'to:', state.clientAddress + ':' +
 				state.clientPort
 			);
-			return dispatchOnError(error);
+			var rinfo = {
+				address: state.clientAddress,
+				port: state.clientPort
+			};
+			return dispatchOnError(error, rinfo);
 		}
 		logger.info(
 			'UDP packet sent to:',
@@ -275,7 +279,11 @@ function send(state, msg) {
 					state.seq,
 					error
 				);
-				return dispatchOnError(new Error('EncryptionFailed'));
+				var rinfo2 = {
+					address: state.clientAddress,
+					port: state.clientPort
+				};
+				return dispatchOnError(new Error('EncryptionFailed'), rinfo2);
 			}
 			logger.info(
 				'send UDP packet to client:',
