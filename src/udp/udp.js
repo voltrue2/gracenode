@@ -39,14 +39,14 @@ module.exports.setup = function (cb) {
 			config.portRange
 		);
 		throw new Error('<PORT_RANGE_FOR_UDP_SERVER_INCORRECT>');
-        }
+	}
 
 	router.setup();
 
 	var running = false;
 	var ports = [];
-        var portIndex = 0;
-        var boundPort;
+	var portIndex = 0;
+	var boundPort;
 
 	var done = function () {
 		// UDP server is now successfully bound and listening
@@ -82,7 +82,7 @@ module.exports.setup = function (cb) {
 		logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
 
 		cb();
-        };
+	};
 	var listen = function () {
 		
 		if (server) {
@@ -118,11 +118,11 @@ module.exports.setup = function (cb) {
 		gn.stop(error);
 	};
 
-        for (var p = config.portRange[0]; p <= config.portRange[1]; p++) {
-                ports.push(p);
-        }
+	for (var p = config.portRange[0]; p <= config.portRange[1]; p++) {
+		ports.push(p);
+	}
 
-        logger.verbose('port range is', config.portRange[0], 'to', config.portRange[1]);
+	logger.verbose('port range is', config.portRange[0], 'to', config.portRange[1]);
 
 	listen();
 };
