@@ -1,6 +1,8 @@
-# gracenode 2.0
+# gracenode 3
 
 ©Nobuyori Takahashi < voltrue2@yahoo.com >
+
+A node.js framework for real-time applications.
 
 [![Build Status](https://travis-ci.org/voltrue2/gracenode.svg?branch=master)](https://travis-ci.org/voltrue2/gracenode)
 
