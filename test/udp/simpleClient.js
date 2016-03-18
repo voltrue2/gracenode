@@ -19,7 +19,7 @@ exports.sender = function (port, msg, cb) {
 	client.send(buff, 0, buff.length, port, 'localhost', cb);
 };
 
-exports.reciever = function (cb) {
+exports.receiver = function (cb) {
 	client.once('message', function (buff) {
 		cb(buff.toString());
 	});

@@ -8,11 +8,13 @@ This is a list of manually mantained changes and updates for each version.
 
 #### UDP server added
 
+**Still Expreimental**
+
 For details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp">HERE</a>.
 
 ## Changed
 
-None
+#### Makefile correct to handle options properly
 
 ## Deprecated
 

@@ -212,7 +212,6 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		'seq', seq
 	);
 
-	// TODO: add method to push to client etc
 	var state = {
 		sessionId: sessionId,
 		seq: seq,

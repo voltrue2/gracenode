@@ -1,6 +1,12 @@
-var singleRun = process.argv[process.argv.length - 1].replace('--single=', '');
+var singleRun = process.argv[process.argv.length - 2].replace('--single=', '');
+var groupRun = process.argv[process.argv.length - 1].replace('--group=', '');
 if (singleRun !== 'false') {
 	require('./' + singleRun);
+} else if (groupRun !== 'false') {
+	var list = groupRun.split(',');
+	for (var i = 0, len = list.length; i < len; i++) {
+		require('./' + list[i]);
+	}
 } else {
 	// test boilerplate
 	require('./boilerplate');
@@ -16,6 +22,8 @@ if (singleRun !== 'false') {
 	require('./daemon');
 	// test gracenode.udp
 	require('./udp');
+	// test gracenode.rpc
+	require('./rpc');
 	// test gracenode.http
 	require('./http');
 	// test gracenode.render

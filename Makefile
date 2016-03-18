@@ -21,7 +21,12 @@ lint: ## Execute lint against the source code
 .PHONY: test
 ifndef log
   log=false
+endif
+ifndef single
   single=false
 endif
+ifndef group
+  group=false
+endif
 test: ## Execute all unit tests. Optionally you can run "make test single=[test name]" to execute individual test
-	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 50000 --log=$(log) --single=$(single)
+	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 50000 --log=$(log) --single=$(single) --group=$(group)

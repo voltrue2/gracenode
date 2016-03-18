@@ -45,7 +45,7 @@ describe('gracenode.udp', function () {
 			assert.equal(state.payload.message, clientMsg);
 			state.send(serverMsg);
 		});
-		simpleClient.reciever(function (msg) {
+		simpleClient.receiver(function (msg) {
 			assert.equal(msg, serverMsg);
 			done();
 		});
@@ -68,7 +68,7 @@ describe('gracenode.udp', function () {
 			assert.equal(state.hookPassed, true);
 			state.send(serverMsg);
 		});
-		simpleClient.reciever(function (msg) {
+		simpleClient.receiver(function (msg) {
 			assert.equal(msg, serverMsg);
 			done();
 		});

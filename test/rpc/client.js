@@ -4,6 +4,7 @@ var port = process.argv[3] || 8889;
 var interval = process.argv[4] ? process.argv[4] * 1000 : 1000;
 
 var PacketParser = require('../../lib/packet');
+var protocol = require('../../lib/packet/protocol');
 
 var MAX = 10;
 var counter = 0;
@@ -32,7 +33,7 @@ client.connect(port, host, function () {
 		var seq = 0;
 		var payload = JSON.stringify({ a: 'AAA', b: 'BBB', c: 10000, d: 53.632, list: list });
 		// regular TCP
-		var packetParser = new PacketParser();
+		var packetParser = new PacketParser(console);
 		packet = packetParser.createReq(cmdId, seq, payload);
 		// raw text
 		packet = JSON.stringify({
@@ -50,6 +51,8 @@ client.connect(port, host, function () {
 
 client.on('data', function (data) {
 	console.log('response from the server:', data);
+	var parsed = protocol.parseData(data);
+	console.log('parsed response from the server:', parsed, JSON.parse(parsed.payload));
 });
 
 client.on('close', function () {

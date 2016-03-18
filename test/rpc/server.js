@@ -9,7 +9,7 @@ gn.config({
 		level: '>= verbose'
 	},
 	cluster: {
-		max: 2
+		max: 0
 	},
 	rpc: {
 		host: 'localhost',

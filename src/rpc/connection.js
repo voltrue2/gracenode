@@ -13,11 +13,11 @@ var router = require('./router');
 
 module.exports = Connection;
 
-function Connection(connId, sock) {
+function Connection(connId, sock, options) {
 	EventEmitter.call(this);
 	// this.data is accessible from command controller functions
 	// can also be used to identify the connection from outside
-	this.cryptoEngine = null;
+	this.cryptoEngine = options.cryptoEngine || null;
 	this.data = {};
 	this.connId = connId;
 	this.sock = sock;
@@ -26,11 +26,8 @@ function Connection(connId, sock) {
 	this.logger = gn.log.create(
 		'RPC.connection(ID:' + connId + ')<local:' + this.self + '><remote:' + this.from + '>'
 	);
-	
-	//this.sockTimeout = options.sockTimeout;
-	//this.authTimeout = options.authTimeout;
 
-	this.packetParser = new Packet();
+	this.packetParser = new Packet(gn.log.create('RPC.packetParser'));
 
 	var that = this;
 
@@ -102,18 +99,17 @@ Connection.prototype._handleData = function (packet) {
 		});
 		that.logger.info('commands handled and responded:', 'commands:', list.join(','));
 	};
-
-	// route to commands and execute each command handler
-	async.eachSeries(parsed, function (parsedData, next) {
+	var routeAndExec = function (parsedData, sessionData, next) {
 		var cmd = router.route(parsedData);
 		
 		if (!cmd) {
 			that.logger.error(
 				'command not found:', parsedData,
-				'payload:', JSON.parse(parsedData.payload)
+				'payload:', parsedData.payload
 			);
 			var notFound = parser.createReply(parser.STATUS_CODE.NOT_FOUND, parsedData.seq, '');
-			return that._write(notFound);
+			that._write(notFound);
+			return next();
 		}
 
 		that.logger.info(
@@ -122,7 +118,31 @@ Connection.prototype._handleData = function (packet) {
 			'seq:', parsedData.seq
 		);
 		
-		executeCmd(that, cmd, parsedData, next);	
+		executeCmd(that, cmd, parsedData, sessionData, next);	
+	};
+
+	// route to commands and execute each command handler
+	async.eachSeries(parsed, function (parsedData, next) {
+		
+		if (that.cryptoEngine.decrypt) {
+			that.logger.info('using decryption for incoming packet');
+			that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
+				if (error) {
+					that.logger.error('failed to decrypt:', error);
+					return next();
+				}
+				var sessionData = {
+					sessionId: sid,
+					seq: seq,
+					data: sdata
+				};
+				parsedData.payload = decrypted;
+				routeAndExec(parsedData, sessionData, next);
+			});
+			return;
+		}
+		
+		routeAndExec(parsedData, null, next);
 	
 	}, done);
 };
@@ -138,8 +158,26 @@ Connection.prototype._write = function (data, cb) {
 };
 
 // private/public: this will be called from command handlers 
-Connection.prototype._push = function (payload, cb) {
+Connection.prototype._push = function (state, payload, cb) {
 	var pushPacket = this.packetParser.createPush(payload);
+
+	// move forward seq
+	state.seq += 1;
+
+	if (this.cryptoEngine.encrypt) {
+		var that = this;
+		this.logger.info('using encryption for sending packet to client');
+		this.cryptoEngine.encrypt(state, pushPacket, function (error, encrypted) {
+			if (error) {
+				that.logger.error('encryption failed:', payload);
+				return cb(error);
+			}
+			that.logger.info('encrypted push from server:', payload);
+			that._write(encrypted, cb);
+		});
+		return;
+	}
+
 	this.logger.info('push from server:', payload);
 	this._write(pushPacket, cb);
 };
@@ -155,20 +193,59 @@ Connection.prototype._handleError = function (error) {
 		
 };
 
+// private
+Connection.prototype._handleDecrypt = function (data, cb) {
+	this.cryptoEngine.decrypt(data, cb);
+};
 
-
-function executeCmd(that, cmd, parsedData, cb) {
+function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var parser = that.packetParser; 
 	var write = function (error, res, options, cb) {
 		if (error) {
-			that.logger.error('command:', cmd.id, cmd.name, error);
+			that.logger.error('command response as error:', cmd.id, cmd.name, error);
 			res = {
 				message: error.message,
 				code: error.code || null
 			};
 		}
+		
+		if (that.cryptoEngine.encrypt) {
+			that.logger.info('using encryption for response to client');
+			if (typeof res === 'object' && !(res instanceof Buffer)) {
+				res = JSON.stringify(res);
+			}	
+			that.cryptoEngine.encrypt(state, res, function (error, encrypted) {
+				if (error) {
+					that.logger.error('encryption failed:', res);
+					return cb(error);
+				}
+				that.logger.info('encrypted response to client:', res);
+				var encryptedRepPacket = parser.createReply(
+					parser.status(error),
+					parsedData.req,
+					encrypted
+				);
+				that._write(encryptedRepPacket);
+				// check options
+				if (options) {
+					if (options.closeAfterReply) {
+						return that.close();
+					}
+					if (options.killAfterReply) {
+						return that.kill();
+					}
+				}
+				if (typeof cb === 'function') {
+					cb();
+				}
+			});
+			return;
+		}
+
+		that.logger.info('response from server:', res);
 		var replyPacket = parser.createReply(parser.status(error), parsedData.seq, res);
 		that._write(replyPacket);
+
 		// check options
 		if (options) {
 			if (options.closeAfterReply) {
@@ -191,10 +268,16 @@ function executeCmd(that, cmd, parsedData, cb) {
 			return (that.data.hasOwnProperty(key)) ? that.data[key] : null;
 		},
 		send: function (payload, cb) {
-			that._push.apply(that, [payload, cb]);
+			that._push.apply(that, [state, payload, cb]);
 		},
 		payload: JSON.parse(parsedData.payload)
 	};
+
+	if (sessionData) {
+		state.sessionId = sessionData.sessionId;
+		state.seq = sessionData.seq;
+		state.session = sessionData.data;
+	}
 
 	// execute command hooks
 	cmd.hooks(state, function (error) {

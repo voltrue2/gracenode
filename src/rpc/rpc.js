@@ -6,6 +6,7 @@ var gn = require('../gracenode');
 var Connection = require('./connection');
 var router = require('./router');
 var hooks = require('./hooks');
+var protocol = require('../../lib/packet/protocol');
 
 var logger;
 var config;
@@ -23,6 +24,8 @@ var PORT_IN_USE = 'EADDRINUSE';
 module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
+
+	protocol.setup(gn);
 
 	if (!config || !config.host || !config.portRange) {
 		return cb();
@@ -108,14 +111,14 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
-module.exports.useEncrypt = function (encrypt) {
+module.exports.useEncryption = function (encrypt) {
 	if (typeof encrypt !== 'function') {
 		throw new Error('EncryptMustBeFunction');
 	}
 	cryptoEngine.encrypt = encrypt;
 };
 
-module.exports.useDecrypt = function (decrypt) {
+module.exports.useDecryption = function (decrypt) {
 	if (typeof decrypt !== 'function') {
 		throw new Error('DecryptMustBeFunction');
 	}
@@ -166,7 +169,8 @@ module.exports.getConnectionById = function (id) {
 function handleConn(sock) {
 	var opt = {
 		sockTimeout: config.socketTimeout || SOCK_TIMEOUT,
-		authTimeout: config.authTimeout || AUTH_TIMEOUT
+		authTimeout: config.authTimeout || AUTH_TIMEOUT,
+		cryptoEngine: cryptoEngine
 	};
 
 	var conn = new Connection(connId, sock, opt);
