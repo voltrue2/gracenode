@@ -22,7 +22,9 @@ Version `0.12.10` or above.
 
 - Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/http#http-router">here</a>.
 
-- Provides UDP server for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp">here</a>.
+- Provides UDP server for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">here</a>.
+
+- Provides RPC server over TCP for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
 
 - Provides built-in session management as an option. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
 
