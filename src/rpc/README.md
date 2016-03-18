@@ -39,7 +39,8 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 |0 Byte       |uint 8            |**Protocol Version** |
 |4 Byte       |uint 16 Big Endian|Command ID           |
 |6 Byte       |uint 16 Big Endian|Sequence             |
-|8 Byte       |                  |Payload              |
+|8 Byte       |uint 32 Big Endian|Timestamp in seconds |
+|10 Byte      |                  |Payload              |
 |             |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol version**:
@@ -69,7 +70,8 @@ RPC server can also push packets to client
 |4 Byte       |uint 8            |**Reply Flag**       |
 |5 Byte       |uint 8            |**Status**           |
 |6 Byte       |uint 16 Big Endian|Sequence             |
-|8 Byte       |                  |Payload              |
+|8 Byte       |uint 32 Big Endian|Timestamp in seconds |
+|10 Byte      |                  |Payload              |
 |             |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol Version**:
@@ -96,6 +98,12 @@ The value is `0x01`.
 |8    |Unavailable  |503                   |
 |99   |Unknown      |None                  |
 
+**Magic Stop Symbol**: 
+
+It tells RPC server that this is the end of a command packet.
+
+The value of **Magic Stop Symbol** is `0x5c725c6e`.
+
 ### Push Packet Structure
 
 |Byte Position|Size              |Meaning              |
@@ -104,8 +112,9 @@ The value is `0x01`.
 |0 Byte       |uint 8            |**Protocol Version** |
 |4 Byte       |uint 8            |**Push Flag**        |
 |5 Byte       |uint 8            |**Status**           |
-|6 Byte       |uint 16 Big Endian|Sequence             |
-|8 Byte       |                  |Payload              |
+|6 Byte       |uint 16 Big Endian|**Sequence**         |
+|8 Byte       |uint 32 Big Endian|Timestamp in seconds |
+|10 Byte      |                  |Payload              |
 |             |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol Version**:
@@ -122,6 +131,10 @@ The value is `0x0`.
 
 Status for pushed packets is always `0`.
 
+**Sequence**
+
+Sequence for push packets is always `0`.
+
 **Protocol Version**:
 
 The reply and push packets from RPC server will always have  protocol version of `0x0`.
@@ -132,9 +145,11 @@ A flag to indicate that it is a pushed packet from RPC server.
 
 The value is `0x01`.
 
-**Status**
+**Magic Stop Symbol**: 
 
+It tells RPC server that this is the end of a command packet.
 
+The value of **Magic Stop Symbol** is `0x5c725c6e`.
 
 ## Command ID
 
@@ -185,7 +200,7 @@ Command handler functions will have `state` object and `callback` function passe
 
 ### Set Key/Value for the connection
 
-#### state.se(key [string], value [mixed])
+#### state.set(key [string], value [mixed])
 
 `state` can "remember" values for as long as the current connection is open.
 

@@ -227,10 +227,39 @@ describe('gracenode.rpc', function () {
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
-			cipher.seq += 1;
 			client.secureReceiver(cipher, function (data) {
 				assert.equal(data.message, pushMsg);
 				done();
+			});
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can handle secure command and send push to client after 100msec twice w/ session', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var pushMsg = 'Secure Push';
+		var cid = 31;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			assert.equal(state.payload.message, clientMsg);
+			cb(null, { message: serverMsg });
+			setTimeout(function () {
+				state.send({ message: pushMsg });
+				setTimeout(function () {
+					state.send({ message: pushMsg });
+				}, 100);
+			}, 100);
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, serverMsg);
+			client.secureReceiver(cipher, function (data) {
+				assert.equal(data.message, pushMsg);
+				client.secureReceiver(cipher, function (data) {
+					assert.equal(data.message, pushMsg);
+					done();
+				});
 			});
 		});
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {

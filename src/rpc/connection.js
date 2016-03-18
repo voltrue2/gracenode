@@ -159,9 +159,7 @@ Connection.prototype._write = function (data, cb) {
 
 // private/public: this will be called from command handlers 
 Connection.prototype._push = function (state, payload, cb) {
-	// move forward seq
-	state.seq += 1;
-
+	
 	if (this.cryptoEngine.encrypt) {
 		var that = this;
 		this.logger.info('using encryption for sending packet to client');
