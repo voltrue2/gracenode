@@ -267,11 +267,28 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
-	it('can fail to call incoorect command session', function (done) {
+	it('can fail to call incoorect command', function (done) {
 		var clientMsg = 'Secure Hello';
 		var serverMsg = 'Secure Echo';
 		var errMsg = 'NOT_FOUND';
 		var cid = 5000;
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, errMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can reply with an error', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var errMsg = 'ERROR';
+		var cid = 5000;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb(new Error(errMsg), state.STATUS.ERROR);
+		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();

@@ -230,12 +230,17 @@ Connection.prototype._handleDecrypt = function (data, cb) {
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var parser = that.packetParser; 
 	var write = function (error, res, options, cb) {
+
 		if (error) {
 			that.logger.error('command response as error:', cmd.id, cmd.name, error);
 			res = {
 				message: error.message,
 				code: error.code || null
 			};
+		}
+
+		if (options && options.status) {
+			res.code = options.status;
 		}
 
 		that._prepareWrite(state, res, function (error, data) {
@@ -247,7 +252,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			}
 			that.logger.info('response from server:', res);
 			var replyPacket = parser.createReply(
-				parser.status(error),
+				parser.status(res),
 				parsedData.seq,
 				data
 			);

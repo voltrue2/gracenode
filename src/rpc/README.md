@@ -208,6 +208,35 @@ Command handler functions will have `state` object and `callback` function passe
 }
 ```
 
+### Arguments for callback
+
+```javascript
+var gn = require('gracenode');
+gn.rpc.command(1, 'command1', function (state, cb) {
+	var error = null;
+	var response = { message: 'Hello' };
+	var options = {};
+	cb(error, response, options);
+});
+```
+
+**error**: If you pass an Error object, RPC server will reply to the client as an error.
+
+**response**: This is the response object sent to the client.
+
+**options**: An optional object:
+
+```
+{
+	// use this to control response status
+	status: [response status code],
+	// if true, RPC server will disconnect after reply
+	closeAfterReply: [bool],
+	// if true, RPC server will "kill" the connection after reply
+	killAfterReply: [bool]
+}
+```
+
 ### Set Key/Value for the connection
 
 #### state.set(key [string], value [mixed])
