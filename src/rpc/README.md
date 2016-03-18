@@ -4,6 +4,8 @@
 
 RPC server can optionally use built-in session/encryption for secure data transmission.
 
+**STABILITY**: This feature is still unstable and subjected to changes in the future.
+
 ## Access
 
 `gracenode.rpc`
@@ -16,6 +18,10 @@ rpc: {
 	portRange: [ [port to start from], [port to end with] ]
 }
 ```
+
+## How to start RPC server
+
+When you provide the above configurations and call `gracenode.start()`, RPC server will automatically start.
 
 ## Commands
 

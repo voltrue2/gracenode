@@ -4,6 +4,8 @@
 
 The **gracenode** UDP server can optionally use built-in session/encyption to secure all packets sent and received.
 
+**STABILITY**: This feature is still unstable and subjected to changes in the future.
+
 ## Access
 
 `gracenode.udp`
@@ -22,6 +24,10 @@ In order to start the UDP server, you will need to provide the following configu
 	}
 }
 ```
+
+## How to start UDP server
+
+When you provide the above configurations and call `gracenode.start`, UDP server will automatically start.
 
 ## Commands
 

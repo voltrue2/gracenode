@@ -2,15 +2,17 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 2.6.0
+## Version 3.0.0
 
 ## Added
 
 #### UDP server added
 
-**Still Expreimental**
+For details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">HERE</a>.
 
-For details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp">HERE</a>.
+#### RPC server added
+
+For details please read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">HERE</a>.
 
 ## Changed
 

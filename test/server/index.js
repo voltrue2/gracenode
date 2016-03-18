@@ -1,4 +1,4 @@
-var logEnabled = process.argv[process.argv.length - 1].replace('--log=', '') === 'true' ? true : false;
+var logEnabled = require('../arg')('--log');
 var port = 8099;
 var dummy = '/dummy';
 var assert = require('assert');
@@ -6,7 +6,10 @@ var request = require('./request');
 var gn = require('../../src/gracenode');
 var http = 'http://localhost:' + port + dummy; 
 var options = {
-	gzip: true
+	gzip: true,
+	headers: {
+		'Accept-Encoding': 'gzip'
+	}
 };
 var hookTest1 = function (req, done) {
 	var result = req.data('result');
