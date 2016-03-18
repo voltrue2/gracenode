@@ -65,7 +65,7 @@ RPC server can also push packets to client
 
 |Byte Position|Size              |Meaning              |
 |:-----------:|:----------------:|:-------------------:|
-|0 Bypte      |uint 32 Big Endian|Payload Size         |
+|0 Byte       |uint 32 Big Endian|Payload Size         |
 |0 Byte       |uint 8            |**Protocol Version** |
 |4 Byte       |uint 8            |**Reply Flag**       |
 |5 Byte       |uint 8            |**Status**           |
@@ -92,10 +92,8 @@ The value is `0x01`.
 |2    |Bad Request  |400                   |
 |3    |Forbidden    |401                   |
 |4    |Not Found    |404                   |
-|5    |Conflict     |None                  |
-|6    |Server Error |500                   |
-|7    |Invalid Tolen|None                  |
-|8    |Unavailable  |503                   |
+|5    |Server Error |500                   |
+|6    |Unavailable  |503                   |
 |99   |Unknown      |None                  |
 
 **Magic Stop Symbol**: 
@@ -108,7 +106,7 @@ The value of **Magic Stop Symbol** is `0x5c725c6e`.
 
 |Byte Position|Size              |Meaning              |
 |:-----------:|:----------------:|:-------------------:|
-|0 Bypte      |uint 32 Big Endian|Payload Size         |
+|0 Byte       |uint 32 Big Endian|Payload Size         |
 |0 Byte       |uint 8            |**Protocol Version** |
 |4 Byte       |uint 8            |**Push Flag**        |
 |5 Byte       |uint 8            |**Status**           |
