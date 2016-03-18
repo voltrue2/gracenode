@@ -137,8 +137,51 @@ describe('gracenode.rpc', function () {
 			cb(null, { message: serverMsg });
 		});
 		client.secureReceiver(cipher, function (data) {
-			console.log(data);
 			assert.equal(data.message, serverMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can handle secure command + hook w/ session', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var cid = 4;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			assert.equal(state.payload.message, clientMsg);
+			assert.equal(state.hookPassed, true);
+			cb(null, { message: serverMsg });
+		});
+		gn.rpc.hook(cid, function (state, next) {
+			state.hookPassed = true;
+			next();
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, serverMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can fail secure command hook w/ session', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var errMsg = 'Oops';
+		var cid = 5;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			assert.equal(state.payload.message, clientMsg);
+			assert.equal(state.hookPassed, true);
+			cb(null, { message: serverMsg });
+		});
+		gn.rpc.hook(cid, function (state, next) {
+			next(new Error(errMsg));
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, errMsg);
 			done();
 		});
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {

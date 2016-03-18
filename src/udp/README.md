@@ -12,7 +12,7 @@ The **gracenode** UDP server can optionally use built-in session/encyption to se
 
 In order to start the UDP server, you will need to provide the following configurations:
 
-```javascript
+```
 {
 	udp: {
 		// UDP server will attempt to bind between the two port numbers given here
@@ -31,7 +31,7 @@ Commands are pre-defined handler functions that process incoming UDP packets.
 
 In order to utilize commands, the UDP message sent from the client must meet the following structure:
 
-```javascript
+```
 {
 	command: [command ID in integer]
 }
@@ -41,7 +41,7 @@ As shown above, `command` property is a required field, but the message from the
 
 ### Command ID
 
-Command IDs are registered with an `integer` value.
+Command IDs are registered with `integer` values.
 
 **NOTE**: Valid command ID range is `0` to `65536`.
 
@@ -62,7 +62,7 @@ Command handler functions will have `state` object passed.
 
 `state` object contains the following:
 
-```javascript
+```
 {
 	sessionId: [session ID] or null,
 	seq: [command sequence number] or null,
@@ -108,7 +108,7 @@ gn.udp.hook(commandId, function (state, next) {
 });
 ```
 
-**NOTE**: You may pass an array of command IDs instead of a command ID to hook multiple commands.
+**NOTE**: You may pass an array of command IDs instead of a command ID to register multiple command hooks.
 
 Example:
 
@@ -149,7 +149,7 @@ gn.http.post('/authenticate', function (req, res) {
 });
 ```
 
-Notice `req.args.cipher` is automatically set when you call `gracenode.session.useUDPSession()` and `gracenode.session.setHTTPSession()`.
+**NOTICE**: `req.args.cipher` is automatically set when you call `gracenode.session.useUDPSession()` and `gracenode.session.setHTTPSession()`.
 
 ### req.args.cipher
 
@@ -164,7 +164,7 @@ The structure of the object is:
 }
 ```
 
-**NOTE**: Whenever the client sends UDP message to the server, `seq` must be incremented.
+**NOTE**: Whenever the client sends UDP message to the server, `seq` must be incremented by 1.
 
 ## Encrypted Packet
 

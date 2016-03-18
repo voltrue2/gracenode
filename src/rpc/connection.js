@@ -282,13 +282,11 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	// execute command hooks
 	cmd.hooks(state, function (error) {
 		if (error) {
-			that.logger.error('command hook:', cmd.id, cmd.name, error);
 			var msg = {
 				message: error.message,
 				code: error.code || null
 			};
-			var epacket = parser.createReply(parser.status(error), parsedData.seq, msg);
-			that._write(epacket);
+			write(error, msg, cmd, null, cb);
 			return;
 		}	
 		// execute command handler
