@@ -159,26 +159,29 @@ Connection.prototype._write = function (data, cb) {
 
 // private/public: this will be called from command handlers 
 Connection.prototype._push = function (state, payload, cb) {
-	var pushPacket = this.packetParser.createPush(payload);
-
 	// move forward seq
 	state.seq += 1;
 
 	if (this.cryptoEngine.encrypt) {
 		var that = this;
 		this.logger.info('using encryption for sending packet to client');
-		this.cryptoEngine.encrypt(state, pushPacket, function (error, encrypted) {
+		if (typeof payload === 'object' && !(payload instanceof Buffer)) {
+			payload = JSON.stringify(payload);
+		}
+		this.cryptoEngine.encrypt(state, payload, function (error, encrypted) {
 			if (error) {
 				that.logger.error('encryption failed:', payload);
 				return cb(error);
 			}
 			that.logger.info('encrypted push from server:', payload);
-			that._write(encrypted, cb);
+			var encryptedPacket = that.packetParser.createPush(encrypted);
+			that._write(encryptedPacket, cb);
 		});
 		return;
 	}
 
 	this.logger.info('push from server:', payload);
+	var pushPacket = this.packetParser.createPush(payload);
 	this._write(pushPacket, cb);
 };
 

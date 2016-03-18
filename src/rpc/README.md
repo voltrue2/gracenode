@@ -74,7 +74,7 @@ RPC server can also push packets to client
 
 **Protocol Version**:
 
-The push packets from RPC server will always have  protocol version of `0x0`.
+The reply and push packets from RPC server will always have  protocol version of `0x0`.
 
 **Reply Flag**:
 
@@ -95,6 +95,46 @@ The value is `0x01`.
 |7    |Invalid Tolen|None                  |
 |8    |Unavailable  |503                   |
 |99   |Unknown      |None                  |
+
+### Push Packet Structure
+
+|Byte Position|Size              |Meaning              |
+|:-----------:|:----------------:|:-------------------:|
+|0 Bypte      |uint 32 Big Endian|Payload Size         |
+|0 Byte       |uint 8            |**Protocol Version** |
+|4 Byte       |uint 8            |**Push Flag**        |
+|5 Byte       |uint 8            |**Status**           |
+|6 Byte       |uint 16 Big Endian|Sequence             |
+|8 Byte       |                  |Payload              |
+|             |uint 32 Big Endian|**Magic Stop Symbol**|
+
+**Protocol Version**:
+
+The reply and push packets from RPC server will always have  protocol version of `0x0`.
+
+**Push Flag**:
+
+A flag to indicate that it is a pushed packet from RPC server.
+
+The value is `0x0`.
+
+**Status**
+
+Status for pushed packets is always `0`.
+
+**Protocol Version**:
+
+The reply and push packets from RPC server will always have  protocol version of `0x0`.
+
+**Reply Flag**:
+
+A flag to indicate that it is a pushed packet from RPC server.
+
+The value is `0x01`.
+
+**Status**
+
+
 
 ## Command ID
 
@@ -145,6 +185,8 @@ Command handler functions will have `state` object and `callback` function passe
 
 ### Set Key/Value for the connection
 
+#### state.se(key [string], value [mixed])
+
 `state` can "remember" values for as long as the current connection is open.
 
 ```javascript
@@ -157,6 +199,8 @@ gn.rpc.command(1, 'commandOne', function (state, cb) {
 
 ### Get Key/Value for the connection
 
+#### state.get(key [string])
+
 `state` can "read" values that have been "set" by `state.set()` for as long as the current connection is open.
 
 ```javascript
@@ -164,6 +208,18 @@ gn.rpc.command(2, 'commandTwo', function (state, cb) {
 	// read the value that has been set before
 	var rememberMe = state.get('rememberMe');
 	cb({ message: rememberMe });
+});
+```
+
+### Send packets to client
+
+#### state.send(data [object])
+
+```javascript
+gn.rpc.command(3, 'command3', function (state, cb) {
+	// do something here
+	// now send some packets other than response
+	state.send({ message: 'Hello' });
 });
 ```
 
