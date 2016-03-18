@@ -129,6 +129,11 @@ Connection.prototype._handleData = function (packet) {
 			that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
 				if (error) {
 					that.logger.error('failed to decrypt:', error);
+					var forbidden = parser.createReply(
+						parser.STATUS_CODE.FORBIDDEN, parsedData.seq,
+						''
+					);
+					that._write(forbidden);
 					return next();
 				}
 				var sessionData = {
