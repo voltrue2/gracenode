@@ -291,7 +291,11 @@ gn.rpc.command(commandId, commandName, function (state, cb) {
     cb({ message: 'Hello from RPC server' });
 });
 gn.udp.hook(commandId, function (state, next) {
-    // do something and move on
+    // if there is an error
+    if (error) {
+      return next(error);
+    }
+    // or do something and move on
     next();
 });
 ```

@@ -229,7 +229,7 @@ Connection.prototype._handleDecrypt = function (data, cb) {
 
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var parser = that.packetParser; 
-	var write = function (error, res, options, cb) {
+	var write = function (error, res, cmd, options, cb) {
 
 		if (error) {
 			that.logger.error('command response as error:', cmd.id, cmd.name, error);
@@ -240,6 +240,11 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 		}
 
 		if (options && options.status) {
+			if (typeof res !== 'object') {
+				res = {
+					message: res
+				};
+			}
 			res.code = options.status;
 		}
 

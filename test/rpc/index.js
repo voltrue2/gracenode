@@ -281,13 +281,81 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
-	it('can reply with an error', function (done) {
+	it('can reply with an error w/ status 2', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var errMsg = 'BAD REQUEST';
+		var cid = 5000;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb(new Error(errMsg), null, { status: state.STATUS.BAD_REQ });
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, errMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can reply with an error w/ status 3', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var errMsg = 'FORBIDDEN';
+		var cid = 5001;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb(new Error(errMsg), null, { status: state.STATUS.FORBIDDEN });
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, errMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can reply with an error w/ status 4', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var errMsg = 'NOT FOUND';
+		var cid = 5002;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb(new Error(errMsg), null, { status: state.STATUS.NOT_FOUND });
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, errMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can reply with an error w/ status 5', function (done) {
 		var clientMsg = 'Secure Hello';
 		var serverMsg = 'Secure Echo';
 		var errMsg = 'ERROR';
-		var cid = 5000;
+		var cid = 5003;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
-			cb(new Error(errMsg), state.STATUS.ERROR);
+			cb(new Error(errMsg), null, { status: state.STATUS.ERROR });
+		});
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, errMsg);
+			done();
+		});
+		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can reply with an error w/ status 6', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var errMsg = 'UNAVAILABLE';
+		var cid = 5006;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb(new Error(errMsg), null, { status: state.STATUS.UNAVAILABLE });
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);
