@@ -177,7 +177,19 @@ Command handler functions will have `state` object and `callback` function passe
 {
 	// constants for response status
 	STATUS: {
-		
+		OK: 1,
+		// HTTP 400
+		BAD_REQ: 2,
+		// HTTP 401
+		FORBIDDEN: 3,
+		// HTTP 404
+		NOT_FOUND: 4,
+		// HTTP 500
+		ERROR: 5,
+		// HTTP 503
+		UNAVAILABLE: 6,
+		// UNKNOWN
+		UNKNOWN: 99
 	},
 	payload: [payload data],
 	// set a key/value for this TCP connection to remember
