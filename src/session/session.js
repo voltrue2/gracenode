@@ -206,7 +206,7 @@ function socketSessionValidation(packet, next) {
 		return;
 	}
 
-	logger.warn('get is using defailt in-memory storage: Not for production');
+	logger.warn('get is using default in-memory storage: Not for production');
 	
 	var sess = inMemStorage[res.sessionId];
 
