@@ -40,7 +40,7 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 |4 Byte       |uint 16 Big Endian|Command ID           |
 |6 Byte       |uint 16 Big Endian|Sequence             |
 |8 Byte       |uint 32 Big Endian|Timestamp in seconds |
-|10 Byte      |                  |Payload              |
+|12 Byte      |                  |Payload              |
 |             |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol version**:
@@ -71,7 +71,7 @@ RPC server can also push packets to client
 |5 Byte       |uint 8            |**Status**           |
 |6 Byte       |uint 16 Big Endian|Sequence             |
 |8 Byte       |uint 32 Big Endian|Timestamp in seconds |
-|10 Byte      |                  |Payload              |
+|12 Byte      |                  |Payload              |
 |             |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol Version**:
@@ -112,7 +112,7 @@ The value of **Magic Stop Symbol** is `0x5c725c6e`.
 |5 Byte       |uint 8            |**Status**           |
 |6 Byte       |uint 16 Big Endian|**Sequence**         |
 |8 Byte       |uint 32 Big Endian|Timestamp in seconds |
-|10 Byte      |                  |Payload              |
+|12 Byte      |                  |Payload              |
 |             |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol Version**:
