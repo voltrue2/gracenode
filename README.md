@@ -502,6 +502,24 @@ gn.http.get('/mypage', require('/path/to/mypage/handler'));
 
 <a href="https://github.com/voltrue2/gracenode#router-1">More Details Here</a>
 
+### .session
+
+**gracenode** comes with built-in session management for `HTTP`, `UDP`, and `RPC` server.
+
+For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
+
+### .udp
+
+For real-time applications, **garcenode** comes with UDP server.
+
+For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">here</a>. 
+
+### .rpc
+
+**gracenode** comes with RPC real-time application solution over TCP.
+
+For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
+
 ## Methods
 
 ### .getRootPath()
@@ -548,24 +566,6 @@ gracenode.onExit(function (callback) {
 	callback();
 });
 ```
-
-### .session
-
-**gracenode** comes with built-in session management for `HTTP`, `UDP`, and `RPC` server.
-
-For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
-
-### .udp
-
-For real-time applications, **garcenode** comes with UDP server.
-
-For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">here</a>. 
-
-### .rpc
-
-**gracenode** comes with RPC real-time application solution over TCP.
-
-For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
 
 ### .require(path [string])
 
