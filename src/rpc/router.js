@@ -29,7 +29,7 @@ module.exports.route = function (packet) {
 	
 	var cmd = commands[packet.command];
 	
-	logger.info('commnd routing resolved:', packet.command, cmd.name);
+	logger.info('command routing resolved:', packet.command, cmd.name);
 
 	var hookList = hooks.findByCmdId(packet.command);
 
