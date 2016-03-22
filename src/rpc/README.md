@@ -467,3 +467,8 @@ gn.onKilled(function (connectionId, connection) {
 	// do something
 });
 ```
+
+## Connection Error and Timeout
+
+RPC server detects and calls `.onClosed()` TCP connection error, timeout, and client disconnect.
+

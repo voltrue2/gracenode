@@ -44,6 +44,13 @@ function Connection(connId, sock, options) {
 	this.sock.on('error', function (error) {
 		that._handleError(error);
 	});
+	this.sock.on('close', function () {
+		that.close();
+	});
+	this.sock.on('timeout', function () {
+		that.logger.error('TCP connection timed out');
+		that.close();
+	});
 
 	// if heartbeat is required, set it up here now
 	if (gn.getConfig('rpc.heartbeat')) {
@@ -238,13 +245,16 @@ Connection.prototype._prepareWrite = function (state, payload, cb) {
 
 // private
 Connection.prototype._handleEnd = function () {
-	this.logger.info('TCP connection ended');
+	this.logger.info('TCP connection ended by client');
+	// this event is followed by close event
+	// Connection class will catch close event and call this.close()
 };
 
 // private
 Connection.prototype._handleError = function (error) {
-	this.logger.error(error);
-		
+	this.logger.error('TCP connection error detected:', error);
+	// this event is followed by close event
+	// Connection class will catch close event and call this.close()
 };
 
 // private
@@ -295,7 +305,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			};
 		}
 
-		if (typeof res !== 'object') {
+		if (typeof res !== 'object' || res === null) {
 			res = {
 				message: res
 			};
@@ -358,13 +368,16 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	}
 
 	// execute command hooks
-	cmd.hooks(state, function (error) {
+	cmd.hooks(state, function (error, status) {
 		if (error) {
+			if (!status) {
+				status = parser.STATUS_CODE.BAD_REQ;
+			}
 			var msg = {
 				message: error.message,
-				code: error.code || null
+				code: status
 			};
-			write(error, msg, cmd, null, cb);
+			write(error, msg, cmd, status, cb);
 			return;
 		}	
 		// execute command handler

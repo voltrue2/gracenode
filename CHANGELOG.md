@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.1
+
+## Added
+
+None
+
+## Changed
+
+#### RPC server now calls the callback of .onClosed() when client disconnects/TCP error is detected/connection timeout
+
+#### Minor logging improvements for RPC server
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.0
 
 ## Added

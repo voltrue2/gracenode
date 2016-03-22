@@ -403,10 +403,14 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can heartbeat-timeout', function (done) {
+		var isDone = false;
 		gn.rpc.onClosed(function (id) {
 			var logger = gn.log.create();
 			logger.debug(id, 'has timed out');
-			done();
+			if (!isDone) {
+				done();
+				isDone = true;
+			}
 		});
 	});
 });
