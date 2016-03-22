@@ -229,24 +229,23 @@ Connection.prototype._handleDecrypt = function (data, cb) {
 
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var parser = that.packetParser; 
-	var write = function (error, res, cmd, options, cb) {
+	var write = function (error, res, cmd, status, options, cb) {
 
 		if (error) {
 			that.logger.error('command response as error:', cmd.id, cmd.name, error);
 			res = {
-				message: error.message,
-				code: error.code || null
+				message: error.message
 			};
 		}
 
-		if (options && options.status) {
-			if (typeof res !== 'object') {
-				res = {
-					message: res
-				};
-			}
-			res.code = options.status;
+		if (typeof res !== 'object') {
+			res = {
+				message: res
+			};
 		}
+	
+		// response status
+		res.code = status;
 
 		that._prepareWrite(state, res, function (error, data) {
 			if (error) {
@@ -255,7 +254,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				}
 				return;
 			}
-			that.logger.info('response from server:', res);
+			that.logger.info('response from server:', cmd.id, cmd.name, res);
 			var replyPacket = parser.createReply(
 				parser.status(res),
 				parsedData.seq,
@@ -308,9 +307,21 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			return;
 		}	
 		// execute command handler
-		cmd.handler(state, function (error, res, options) {
+		cmd.handler(state, function (res, status, options) {
 			// move on: we do not pass error as we want to handle the res of the commands
-			write(error, res, cmd, options, cb);
+			var error = null;
+			if (res instanceof Error) {
+				error = res;
+				if (!status) {
+					// default error response status
+					status = parser.STATUS_CODE.BAD_REQ;
+				}
+			}
+			if (!status) {
+				// default response status
+				status = parser.STATUS_CODE.OK;
+			}
+			write(error, res, cmd, status, options, cb);
 		});
 	});
 }

@@ -42,7 +42,7 @@ describe('gracenode.rpc', function () {
 		var cid = 0;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 		});
 		client.receiver(function (data) {
 			assert.equal(data.message, serverMsg);
@@ -60,7 +60,7 @@ describe('gracenode.rpc', function () {
 		var cid = 10;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 			setTimeout(function () {
 				state.send({message: pushMsg });
 			}, 100);
@@ -84,7 +84,7 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 		});
 		gn.rpc.hook(cid, function (state, next) {
 			state.hookPassed = true;
@@ -106,7 +106,7 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 		});
 		gn.rpc.hook(cid, function (state, next) {
 			next(new Error('HookError'));
@@ -158,7 +158,7 @@ describe('gracenode.rpc', function () {
 		var cid = 3;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
@@ -176,7 +176,7 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 		});
 		gn.rpc.hook(cid, function (state, next) {
 			state.hookPassed = true;
@@ -199,7 +199,7 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 		});
 		gn.rpc.hook(cid, function (state, next) {
 			next(new Error(errMsg));
@@ -220,7 +220,7 @@ describe('gracenode.rpc', function () {
 		var cid = 30;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 			setTimeout(function () {
 				state.send({ message: pushMsg });
 			}, 100);
@@ -244,7 +244,7 @@ describe('gracenode.rpc', function () {
 		var cid = 31;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
-			cb(null, { message: serverMsg });
+			cb({ message: serverMsg });
 			setTimeout(function () {
 				state.send({ message: pushMsg });
 				setTimeout(function () {
@@ -287,7 +287,7 @@ describe('gracenode.rpc', function () {
 		var errMsg = 'BAD REQUEST';
 		var cid = 5000;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
-			cb(new Error(errMsg), null, { status: state.STATUS.BAD_REQ });
+			cb(new Error(errMsg), state.STATUS.BAD_REQ);
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);
@@ -304,7 +304,7 @@ describe('gracenode.rpc', function () {
 		var errMsg = 'FORBIDDEN';
 		var cid = 5001;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
-			cb(new Error(errMsg), null, { status: state.STATUS.FORBIDDEN });
+			cb(new Error(errMsg), state.STATUS.FORBIDDEN);
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);
@@ -321,7 +321,7 @@ describe('gracenode.rpc', function () {
 		var errMsg = 'NOT FOUND';
 		var cid = 5002;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
-			cb(new Error(errMsg), null, { status: state.STATUS.NOT_FOUND });
+			cb(new Error(errMsg), state.STATUS.NOT_FOUND);
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);
@@ -338,7 +338,7 @@ describe('gracenode.rpc', function () {
 		var errMsg = 'ERROR';
 		var cid = 5003;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
-			cb(new Error(errMsg), null, { status: state.STATUS.ERROR });
+			cb(new Error(errMsg), state.STATUS.ERROR);
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);
@@ -355,7 +355,7 @@ describe('gracenode.rpc', function () {
 		var errMsg = 'UNAVAILABLE';
 		var cid = 5006;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
-			cb(new Error(errMsg), null, { status: state.STATUS.UNAVAILABLE });
+			cb(new Error(errMsg), state.STATUS.UNAVAILABLE);
 		});
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, errMsg);

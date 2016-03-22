@@ -35,8 +35,8 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 
 |Byte Position|Size              |Meaning              |
 |:-----------:|:----------------:|:-------------------:|
-|0 Byte       |uint 32 Big Endian|Payload Size         |
 |0 Byte       |uint 8            |**Protocol Version** |
+|0 Byte       |uint 32 Big Endian|Payload Size         |
 |4 Byte       |uint 16 Big Endian|Command ID           |
 |6 Byte       |uint 16 Big Endian|Sequence             |
 |8 Byte       |uint 32 Big Endian|Timestamp in seconds |
@@ -65,8 +65,8 @@ RPC server can also push packets to client
 
 |Byte Position|Size              |Meaning              |
 |:-----------:|:----------------:|:-------------------:|
-|0 Byte       |uint 32 Big Endian|Payload Size         |
 |0 Byte       |uint 8            |**Protocol Version** |
+|0 Byte       |uint 32 Big Endian|Payload Size         |
 |4 Byte       |uint 8            |**Reply Flag**       |
 |5 Byte       |uint 8            |**Status**           |
 |6 Byte       |uint 16 Big Endian|Sequence             |
@@ -106,8 +106,8 @@ The value of **Magic Stop Symbol** is `0x5c725c6e`.
 
 |Byte Position|Size              |Meaning              |
 |:-----------:|:----------------:|:-------------------:|
-|0 Byte       |uint 32 Big Endian|Payload Size         |
 |0 Byte       |uint 8            |**Protocol Version** |
+|0 Byte       |uint 32 Big Endian|Payload Size         |
 |4 Byte       |uint 8            |**Push Flag**        |
 |5 Byte       |uint 8            |**Status**           |
 |6 Byte       |uint 16 Big Endian|**Sequence**         |
@@ -213,16 +213,32 @@ Command handler functions will have `state` object and `callback` function passe
 ```javascript
 var gn = require('gracenode');
 gn.rpc.command(1, 'command1', function (state, cb) {
-	var error = null;
 	var response = { message: 'Hello' };
+	var status = state.STATUS.OK;
 	var options = {};
-	cb(error, response, options);
+	cb(response, status, options);
 });
 ```
 
-**error**: If you pass an Error object, RPC server will reply to the client as an error.
+#### callback(response [object], status [*number], options [*object])
 
-**response**: This is the response object sent to the client.
+**response**: This is the response object sent to the client. If you pass an error object, the response will be sent as an error.
+
+Example:
+
+```javascript
+var gn = require('gracenode');
+
+gn.rpc.command(1, 'command1', function (state, cb) {
+	// this response withh be sent to the client as an error with status of `5`
+	cb(new Error('SomeError'), state.STATUS.ERROR);
+});
+
+```
+
+**status**: `status` is a status of the response much like HTTP response status code. By default, non-error response's status is `1` (`state.STATUS.OK`).
+
+Default status for an error response is `4` (`state.STATUS.BAD_REQ`).
 
 **options**: An optional object:
 
