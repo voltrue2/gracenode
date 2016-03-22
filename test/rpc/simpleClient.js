@@ -59,14 +59,18 @@ exports.secureSender = function (sid, cipher, commandId, seq, msg, cb) {
 exports.secureReceiver = function (cipher, cb) {
 	client.once('data', function (packet) {
 		var parsed = packetParser.parse(packet);
-		var decrypted = ce.decrypt(
-			cipher.cipherKey,
-			cipher.cipherNounce,
-			cipher.macKey,
-			cipher.seq,
-			parsed[0].payload
-		);
-		logger.debug('client received encrypted:', decrypted.toString());
-		cb(JSON.parse(decrypted.toString()));
+		try {
+			var decrypted = ce.decrypt(
+				cipher.cipherKey,
+				cipher.cipherNounce,
+				cipher.macKey,
+				cipher.seq,
+				parsed[0].payload
+			);
+			logger.debug('client received encrypted:', decrypted.toString());
+			cb(JSON.parse(decrypted.toString()));
+		} catch (e) {
+			cb(e);
+		}
 	});
 };

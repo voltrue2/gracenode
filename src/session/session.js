@@ -179,6 +179,7 @@ function socketSessionValidation(packet, next) {
 				logger.error('session not found:', res.sessionId);
 				return next(new Error('SessionNotFound'));
 			}
+			logger.verbose('seq:', res.sessionId, res.seq, '>', sessionData.seq);
 			if (res.seq <= sessionData.seq) {
 				// we do NOT allow incoming seq that is smaller or the same as stored in the session
 				// this is to prevent duplicated command execution
@@ -213,6 +214,13 @@ function socketSessionValidation(packet, next) {
 	if (!sess) {
 		logger.error('session not found:', res.sessionId);
 		return next(new Error('SessionNotFound'));
+	}
+	logger.verbose('seq:', res.sessionId, res.seq, '>', sess.seq);
+	if (res.seq <= sess.seq) {
+		// we do NOT allow incoming seq that is smaller or the same as stored in the session
+		// this is to prevent duplicated command execution
+		logger.error('invalid seq:', res.sessionId);
+		return next(new Error('InvalidSeq'));
 	}
 	if (sess.ttl <= Date.now()) {
 		logger.error('session ID has expired:', res.sessionId);

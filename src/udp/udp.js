@@ -245,9 +245,6 @@ function send(state, msg) {
 		msg = JSON.stringify(msg);
 	}
 
-	// move forward seq
-	state.seq += 1;
-
 	var sent = function (error) {
 		if (error) {
 			logger.error(

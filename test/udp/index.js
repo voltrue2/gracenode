@@ -119,7 +119,6 @@ describe('gracenode.udp', function () {
 			};
 			cipher.seq += 1;
 			simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
-				cipher.seq += 1;
 				simpleClient.secureReceiver(cipher, function (error, msg) {
 					assert.equal(error, null);
 					assert.equal(msg, serverMsg);
@@ -159,7 +158,6 @@ describe('gracenode.udp', function () {
 			};
 			cipher.seq += 1;
 			simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
-				cipher.seq += 1;
 				simpleClient.secureReceiver(cipher, function (error, msg) {
 					assert.equal(error, null);
 					assert.equal(msg, serverMsg);
@@ -202,7 +200,6 @@ describe('gracenode.udp', function () {
 			var send = function () {
 				cipher.seq += 1;
 				simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
-					cipher.seq += 1;
 					simpleClient.secureReceiver(cipher, function (error, msg) {
 						assert.equal(error, null);
 						assert.equal(msg, serverMsg);

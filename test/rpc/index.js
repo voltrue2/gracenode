@@ -168,6 +168,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, serverMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -190,6 +191,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, serverMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -212,6 +214,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -236,6 +239,7 @@ describe('gracenode.rpc', function () {
 				done();
 			});
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -266,12 +270,13 @@ describe('gracenode.rpc', function () {
 				});
 			});
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
 
-	it('can fail to call incoorect command', function (done) {
+	it('can fail to call incorrect command', function (done) {
 		var clientMsg = 'Secure Hello';
 		var serverMsg = 'Secure Echo';
 		var errMsg = 'NOT_FOUND';
@@ -280,6 +285,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -297,6 +303,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -314,6 +321,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -331,6 +339,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -348,6 +357,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -365,6 +375,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(data.message, errMsg);
 			done();
 		});
+		cipher.seq += 1;
 		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
@@ -373,6 +384,17 @@ describe('gracenode.rpc', function () {
 	it('can send client heartbeat', function (done) {
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, 'heartbeat');
+			done();
+		});
+		cipher.seq += 1;
+		client.secureSender(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can failed to send w/o incrementing seq client heartbeat', function (done) {
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, 'BadSignature');
 			done();
 		});
 		client.secureSender(sessionId, cipher, 911, cipher.seq, {}, function (error) {
