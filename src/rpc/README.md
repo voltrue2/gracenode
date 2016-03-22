@@ -394,6 +394,8 @@ Encrypted messages that sent from the server must be decrypted using the cipher 
 
 The cipher data is valid for the duration of the session.
 
+**NOTE**: All command requests sent from the client using session/encryption must increment `seq` by `1` everytime the request is sent.
+
 ## Properties
 
 ### .id

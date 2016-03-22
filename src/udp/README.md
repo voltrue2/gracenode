@@ -132,6 +132,8 @@ In order to enable session and data encrytion/decryption, you must have the foll
 
 **NOTE**: In order to use session and encryption/decryption for UDP server, you **MUST** have HTTP server with authentication end point that ueses `gracenode.session.setHTTPSession()`.
 
+**NOTE**: All command requests sent from the client using session/encryption must increment `seq` by `1` everytime the request is sent.
+
 ```javascript
 var gn = require('gracenode');
 // tell gracenode to use UDP session + encryption/decryption
