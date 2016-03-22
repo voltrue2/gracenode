@@ -2,6 +2,16 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.2
+
+## Added
+
+None
+
+#### RPC and UDP encryption/decryption now uses AES-128-CBC indstead of AES-128-EBC for improved security
+
+Reference: <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">Block Cipher Mode of Operation</a>
+
 ## Version 3.0.1
 
 ## Added
