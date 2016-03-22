@@ -25,13 +25,13 @@ rpc: {
 
 RPC server can optionally require each connected client to send `heartbeat` packet at certain internval before the connection times out.
 
-This is useful detecting disconnected clients without sending `FINN` packet.
+This is useful detecting disconnected clients without sending `FIN` packet.
 
 ### heartbeat packet
 
-The packet content of heartbeat must meet the request packet structure.
+The client must send heartbeat packet with command ID `911` at certain interval that is smaller than `heartbeat.timeout`.
 
-The payload can be empty.
+The packet content of heartbeat must use the request packet structure with empty payload.
 
 ## How to start RPC server
 
