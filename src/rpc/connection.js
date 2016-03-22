@@ -285,7 +285,11 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var write = function (error, res, cmd, status, options, cb) {
 
 		if (error) {
-			that.logger.error('command response as error:', cmd.id, cmd.name, error);
+			that.logger.error(
+				'command response as error:',
+				cmd.id, cmd.name, error.message,
+				'(status:' + status + ')'
+			);
 			res = {
 				message: error.message
 			};
@@ -307,7 +311,11 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				}
 				return;
 			}
-			that.logger.info('response from server:', cmd.id, cmd.name, res);
+			that.logger.info(
+				'command response:',
+				cmd.id, cmd.name, res,
+				'(status:' + status + ')'
+			);
 			var replyPacket = parser.createReply(
 				parser.status(res),
 				parsedData.seq,
