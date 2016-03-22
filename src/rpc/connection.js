@@ -8,6 +8,11 @@ var Packet = require('../../lib/packet');
 // this is not HTTP router
 var router = require('./router');
 
+var HEARTBEAT = {
+	ID: 911,
+	NAME: 'heartbeat'
+};
+
 module.exports = Connection;
 
 function Connection(connId, sock, options) {
@@ -16,8 +21,9 @@ function Connection(connId, sock, options) {
 	// can also be used to identify the connection from outside
 	this.cryptoEngine = options.cryptoEngine || null;
 	this.data = {};
-	this.connId = connId;
+	this.id = connId;
 	this.sock = sock;
+	this.heartbeatTime = 0;
 	this.self = (this.sock) ? this.sock.localAddress + ':' + this.sock.localPort : 'UNKNOWN';
 	this.from = (this.sock) ? this.sock.remoteAddress + ':' + this.sock.remotePort : 'UNKNOWN';
 	this.logger = gn.log.create(
@@ -39,7 +45,25 @@ function Connection(connId, sock, options) {
 		that._handleError(error);
 	});
 
-	this.logger.info('RPC connection ready: (connection ID:' + this.connId + ')');
+	// if heartbeat is required, set it up here now
+	if (gn.getConfig('rpc.heartbeat')) {
+		/*
+		rpc.heartbeat: {
+			timeout: [milliseconds] // time to timeout and disconnect w/o heartbeat from client,
+			checkFrequency: [milliseconds] // heartbeat check internval
+		}
+		*/
+		router.define(HEARTBEAT.ID, HEARTBEAT.NAME, function (state, cb) {
+			that._handleHeartbeat(state, cb);
+		});
+		that._setupHeartbeat(gn.getConfig('rpc.heartbeat'));
+		this.logger.info(
+			'RPC server requires client heartbeat at every',
+			gn.getConfig('rpc.heartbeat').timeout, 'msec'
+		);
+	}
+
+	this.logger.info('RPC connection ready: (connection ID:' + this.id + ')');
 }
 
 util.inherits(Connection, EventEmitter);
@@ -60,6 +84,7 @@ Connection.prototype.close = function () {
 
 	// this will invoke 'end event'
 	this.sock.end();
+	this.emit('close');
 };
 
 // public
@@ -184,7 +209,7 @@ Connection.prototype._push = function (state, payload, cb) {
 		}
 		that.logger.info('push from server:', payload);
 		var pushPacket = that.packetParser.createPush(data);
-		that._write(pushPacket, cb);
+		that._write(pushPacket, true, cb);
 	});
 };
 
@@ -227,6 +252,34 @@ Connection.prototype._handleDecrypt = function (data, cb) {
 	this.cryptoEngine.decrypt(data, cb);
 };
 
+// private
+Connection.prototype._handleHeartbeat = function (state, cb) {
+	this.heartbeatTime = Date.now();
+	cb({ message: 'heartbeat' });
+};
+
+// private
+Connection.prototype._setupHeartbeat = function (heartbeat) {
+	var that = this;
+	var checker = function () {
+		setTimeout(function () {
+			var now = Date.now();
+			that.logger.verbose(
+				'heartbeat check > now and last heartbeat:',
+				now, that.heartbeatTime
+			);
+			if (now - that.heartbeatTime >= heartbeat.timeout) {
+				that.logger.error('heartbeat timeout and disconnecting');
+				that.close();
+				that.emit('heartbeatTimeout');
+				return;
+			}
+			checker();
+		}, heartbeat.checkFrequency);
+	};
+	checker();
+};
+
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var parser = that.packetParser; 
 	var write = function (error, res, cmd, status, options, cb) {
@@ -260,7 +313,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				parsedData.seq,
 				data
 			);
-			that._write(replyPacket);
+			that._write(replyPacket, true);
 
 			// check options
 			if (options) {

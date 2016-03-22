@@ -17,8 +17,6 @@ var cryptoEngine = {
 };
 var connId = 0;
 
-var SOCK_TIMEOUT = 30000;
-var AUTH_TIMEOUT = 3000;
 var PORT_IN_USE = 'EADDRINUSE';
 
 module.exports.setup = function (cb) {
@@ -161,6 +159,22 @@ module.exports.getConnectionsByData = function (key, valList) {
 	return list;
 };
 
+module.exports.onClosed = function (func) {
+	module.exports._onClosed = func;
+};
+
+module.exports.onKilled = function (func) {
+	module.exports._onKilled = func;
+};
+
+module.exports._onClosed = function () {
+
+};
+
+module.exports._onKilled = function () {
+
+};
+
 // get a connection by connection ID
 module.exports.getConnectionById = function (id) {
 	return conns[id] || null;
@@ -168,8 +182,6 @@ module.exports.getConnectionById = function (id) {
 
 function handleConn(sock) {
 	var opt = {
-		sockTimeout: config.socketTimeout || SOCK_TIMEOUT,
-		authTimeout: config.authTimeout || AUTH_TIMEOUT,
 		cryptoEngine: cryptoEngine
 	};
 
@@ -179,13 +191,19 @@ function handleConn(sock) {
 		conn.useCryptoEngine(cryptoEngine);
 	}
 
+	conn.on('close', function () {
+		module.exports._onClosed(this.id, this);
+		delete conns[this.id];
+	});
+
 	conn.on('kill', function () {
-		delete conns[connId];
+		module.exports._onKilled(this.id, this);
+		delete conns[this.id];
 	});
 
 	logger.info('new TCP connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort);
-	
-	connId += 1;
 
 	conns[connId] = conn;
+	
+	connId += 1;
 }

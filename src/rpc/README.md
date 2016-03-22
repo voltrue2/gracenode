@@ -15,9 +15,23 @@ RPC server can optionally use built-in session/encryption for secure data transm
 ```
 rpc: {
 	host: [host name],
-	portRange: [ [port to start from], [port to end with] ]
+	portRange: [ [port to start from], [port to end with] ],
+	maxPayloadSize: [optional] // default is 8000 bytes,
+	heartbeat: [optional] { timeout: [milliseconds], checkFrequency: [milliseconds] }
 }
 ```
+
+## heartbeat
+
+RPC server can optionally require each connected client to send `heartbeat` packet at certain internval before the connection times out.
+
+This is useful detecting disconnected clients without sending `FINN` packet.
+
+### heartbeat packet
+
+The packet content of heartbeat must meet the request packet structure.
+
+The payload can be empty.
 
 ## How to start RPC server
 
@@ -51,7 +65,7 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 |0x50 |Proxy Protocol v1|            |
 |0x0d |Proxy Protocol v2|Not Suppoted|
 
-**Max Payload Size**: It is `8000` bytes.
+**Max Payload Size**: It is `8000` bytes (This value is configurable).
 
 **Magic Stop Symbol**: 
 
@@ -379,3 +393,75 @@ The structure of the object is:
 Encrypted messages that sent from the server must be decrypted using the cipher data you received from HTTP end point when authenticating.
 
 The cipher data is valid for the duration of the session.
+
+## Properties
+
+### .id
+
+Connection ID of the connection object
+
+### .data
+
+Data object  of the connection managed by `state.get()` and `state.set()`.
+
+## Methods
+
+### .command(commandId [number], commandName [string], handler [function])
+
+Call this function to register command handler function.
+
+```javascript
+var gn = require('gracenode');
+gn.command(1, 'commandOne', function (state, cb) {
+	// do something here and respond
+	cb({ message: 'OK' });
+});
+```
+
+### .hook(commandId [number or array] handler [function])
+
+Call this function to register a command hook handler function.
+
+```javascript
+// command hook for command ID 1
+var gn = require('gracenode');
+gn.hook(1, function (state, next) {
+	next();
+});
+```
+
+or 
+
+```javascript
+// command hook for command ID 1 and 2
+var gn = require('gracenode');
+gn.hook([1, 2], function (state, next) {
+	next();
+});
+```
+
+### .onClosed(handler [function])
+
+Call this to register on connection close handler function.
+
+Usueful if you need to broadcast that this connection is gone to other connections in the netwrok etc.
+
+```javascript
+var gn = require('gracenode');
+gn.onClosed(function (connectionId, connection) {
+	// do something
+});
+```
+
+### .onKilled(handler [function])
+
+Call this to register on connection kill handler function.
+
+Usueful if you need to broadcast that this connection is gone to other connections in the netwrok etc.
+
+```javascript
+var gn = require('gracenode');
+gn.onKilled(function (connectionId, connection) {
+	// do something
+});
+```

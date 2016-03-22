@@ -26,7 +26,11 @@ describe('gracenode.rpc', function () {
 			},
 			rpc: {
 				host: 'localhost',
-				portRange: [ portOne, portTwo ]
+				portRange: [ portOne, portTwo ],
+				heartbeat: {
+					timeout: 2000,
+					checkFrequency: 1000
+				}
 			}
 		});
 		gn.start(done);
@@ -366,4 +370,21 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can send client heartbeat', function (done) {
+		client.secureReceiver(cipher, function (data) {
+			assert.equal(data.message, 'heartbeat');
+			done();
+		});
+		client.secureSender(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can heartbeat-timeout', function (done) {
+		gn.rpc.onClosed(function (id) {
+			var logger = gn.log.create();
+			logger.debug(id, 'has timed out');
+			done();
+		});
+	});
 });
