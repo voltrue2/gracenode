@@ -47,15 +47,15 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 
 ### Request Packet Structure
 
-|Byte Position|Size              |Meaning              |
-|:-----------:|:----------------:|:-------------------:|
-|0 Byte       |uint 8            |**Protocol Version** |
-|0 Byte       |uint 32 Big Endian|Payload Size         |
-|4 Byte       |uint 16 Big Endian|Command ID           |
-|6 Byte       |uint 16 Big Endian|Sequence             |
-|8 Byte       |uint 32 Big Endian|Timestamp in seconds |
-|12 Byte      |                  |Payload              |
-|             |uint 32 Big Endian|**Magic Stop Symbol**|
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 16 Big Endian|Command ID           |
+|Byte Offset 6 |uint 16 Big Endian|Sequence             |
+|Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
+|Byte Offset 12|                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol version**:
 
@@ -77,16 +77,16 @@ The value of **Magic Stop Symbol** is `0x5c725c6e`.
 
 RPC server can also push packets to client
 
-|Byte Position|Size              |Meaning              |
-|:-----------:|:----------------:|:-------------------:|
-|0 Byte       |uint 8            |**Protocol Version** |
-|0 Byte       |uint 32 Big Endian|Payload Size         |
-|4 Byte       |uint 8            |**Reply Flag**       |
-|5 Byte       |uint 8            |**Status**           |
-|6 Byte       |uint 16 Big Endian|Sequence             |
-|8 Byte       |uint 32 Big Endian|Timestamp in seconds |
-|12 Byte      |                  |Payload              |
-|             |uint 32 Big Endian|**Magic Stop Symbol**|
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 8            |**Reply Flag**       |
+|Byte Offset 5 |uint 8            |**Status**           |
+|Byte Offset 6 |uint 16 Big Endian|Sequence             |
+|Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
+|Byte Offset 12|                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol Version**:
 
@@ -116,18 +116,20 @@ It tells RPC server that this is the end of a command packet.
 
 The value of **Magic Stop Symbol** is `0x5c725c6e`.
 
+**NOTE**: Offset byte position for `magic stop symbol` is dynamic since the size of payload can vary.
+
 ### Push Packet Structure
 
-|Byte Position|Size              |Meaning              |
-|:-----------:|:----------------:|:-------------------:|
-|0 Byte       |uint 8            |**Protocol Version** |
-|0 Byte       |uint 32 Big Endian|Payload Size         |
-|4 Byte       |uint 8            |**Push Flag**        |
-|5 Byte       |uint 8            |**Status**           |
-|6 Byte       |uint 16 Big Endian|**Sequence**         |
-|8 Byte       |uint 32 Big Endian|Timestamp in seconds |
-|12 Byte      |                  |Payload              |
-|             |uint 32 Big Endian|**Magic Stop Symbol**|
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 8            |**Push Flag**        |
+|Byte Offset 5 |uint 8            |**Status**           |
+|Byte Offset 6 |uint 16 Big Endian|**Sequence**         |
+|Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
+|Byte Offset 12|                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
 
 **Protocol Version**:
 
