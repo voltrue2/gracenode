@@ -342,7 +342,7 @@ gn.rpc.hook([1, 2, 3, 4], hookHandler);
 
 **gracenode** RPC server can optionally handle session and data encryption/decryption.
 
-The encryption/decryption method used is `aes-ecb`.
+The encryption/decryption method used is `aes-128-ecb` and `CTR-mode` with random IV/nounce.
 
 In order to enable session and data encryption/decryption, you must have the following before you start **gracenode**:
 
