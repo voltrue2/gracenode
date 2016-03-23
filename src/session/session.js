@@ -183,7 +183,10 @@ function socketSessionValidation(packet, next) {
 			if (res.seq <= sessionData.seq) {
 				// we do NOT allow incoming seq that is smaller or the same as stored in the session
 				// this is to prevent duplicated command execution
-				logger.error('invalid seq:', res.sessionId);
+				logger.error(
+					'invalid seq for session', res.sessionId,
+					'incoming seq:', res.seq, 'must be greater then', sessionData.seq
+				);
 				return next(new Error('InvalidSeq'));
 			}
 			// check session TTL
@@ -219,7 +222,10 @@ function socketSessionValidation(packet, next) {
 	if (res.seq <= sess.seq) {
 		// we do NOT allow incoming seq that is smaller or the same as stored in the session
 		// this is to prevent duplicated command execution
-		logger.error('invalid seq:', res.sessionId);
+		logger.error(
+			'invalid seq for session', res.sessionId,
+			'incoming seq:', res.seq, 'must be greater then', sess.seq
+		);
 		return next(new Error('InvalidSeq'));
 	}
 	if (sess.ttl <= Date.now()) {

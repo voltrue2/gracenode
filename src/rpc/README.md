@@ -52,7 +52,7 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 |Byte Offset 0 |uint 8            |**Protocol Version** |
 |Byte Offset 0 |uint 32 Big Endian|Payload Size         |
 |Byte Offset 4 |uint 16 Big Endian|Command ID           |
-|Byte Offset 6 |uint 16 Big Endian|Sequence             |
+|Byte Offset 6 |uint 16 Big Endian|**Sequence**         |
 |Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
 |Byte Offset 12|                  |Payload              |
 |              |uint 32 Big Endian|**Magic Stop Symbol**|
@@ -66,6 +66,10 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 |0x0d |Proxy Protocol v2|Not Suppoted|
 
 **Max Payload Size**: It is `8000` bytes (This value is configurable).
+
+**Sequence**: `Sequence` must be incremented by `1` when client sends a command to RPC server.
+
+`Sequence` that is smaller or same value will be rejected by the server.
 
 **Magic Stop Symbol**: 
 
