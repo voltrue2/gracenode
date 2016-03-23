@@ -265,7 +265,7 @@ Connection.prototype._handleDecrypt = function (data, cb) {
 // private
 Connection.prototype._handleHeartbeat = function (state, cb) {
 	this.heartbeatTime = Date.now();
-	cb({ message: 'heartbeat' });
+	cb({ message: 'heartbeat', serverTime: this.heartbeatTime });
 };
 
 // private

@@ -37,6 +37,17 @@ The packet content of heartbeat must use the request packet structure with empty
 
 When you provide the above configurations and call `gracenode.start()`, RPC server will automatically start.
 
+### heartbeat response
+
+RPC server sends response back to each heartbeat. The response packet's payload contains:
+
+```
+{
+	message: 'heartbeat',
+	serverTime: [timestamp in milliseconds]
+}
+```
+
 ## Commands
 
 **gracenode** RPC server handles incoming packets with `commands`.

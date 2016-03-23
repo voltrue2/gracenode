@@ -384,6 +384,7 @@ describe('gracenode.rpc', function () {
 	it('can send client heartbeat', function (done) {
 		client.secureReceiver(cipher, function (data) {
 			assert.equal(data.message, 'heartbeat');
+			assert(data.serverTime);
 			done();
 		});
 		cipher.seq += 1;
