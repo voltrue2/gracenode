@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.3
+
+## Added
+
+None
+
+## Changed
+
+#### RPC and UDP encryption/decryption changed back to using AES-128-EBC
+
+For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#use-session-and-encryption">HERE</a>.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.2
 
 ## Added
@@ -11,6 +39,22 @@ None
 #### RPC and UDP encryption/decryption now uses AES-128-CBC indstead of AES-128-EBC for improved security
 
 Reference: <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">Block Cipher Mode of Operation</a>
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
 
 ## Version 3.0.1
 
