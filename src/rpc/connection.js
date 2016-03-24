@@ -27,7 +27,7 @@ function Connection(connId, sock, options) {
 	this.self = (this.sock) ? this.sock.localAddress + ':' + this.sock.localPort : 'UNKNOWN';
 	this.from = (this.sock) ? this.sock.remoteAddress + ':' + this.sock.remotePort : 'UNKNOWN';
 	this.logger = gn.log.create(
-		'RPC.connection(ID:' + connId + ')][server=' + this.self + ' client=' + this.from
+		'RPC.connection ID:' + connId + '][server=' + this.self + ' client=' + this.from
 	);
 
 	this.packetParser = new Packet(gn.log.create('RPC.packetParser'));
