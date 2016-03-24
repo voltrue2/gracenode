@@ -24,10 +24,6 @@ gn.rpc.command(1, 'test1', function (state, cb) {
 
 gn.rpc.hook(function all(state, next) {
 	console.log('hook got called!');
-	if (gn.lib.randomInt(0, 1)) {
-		// 50% percent of chance to respond to the client here
-		return next(new Error('hook one 50% error'));
-	}
 	next();
 });
 

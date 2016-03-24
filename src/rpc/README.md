@@ -180,6 +180,40 @@ It tells RPC server that this is the end of a command packet.
 
 The value of **Magic Stop Symbol** is `0x5c725c6e`.
 
+## Request Packet Examples
+
+Example in C:
+
+```c
+struct packet {
+	int ver;
+	uint16_t cmd;
+	uint16_t seq;
+	uint32_t timestamp;
+	char payload[0];
+};
+
+// request packet
+struct packet req;
+// protocol version 0 is RPC
+req.ver = 0;
+// payload size
+uint32_t plength = strlen(strJSONData);
+uint32_t plen = htonl(plength);
+// now add payload size
+memmove(&(req), &plen, sizeof(plen));
+// command ID
+req.cmd = htons(commandId);
+// sequence
+req.seq = htons(seq);
+// now add payload
+memmove(&(req.payload[0]), &strJSONData, strlen(strJSONData));
+// magic stop symbol
+uint32_t stopval = 0x5c725c6e;
+uint32_t stop = htonl(stopval);
+memmove(&(req.payload[strlen(strJSONData)]), &stop, sizeof(stop));
+```
+
 ## Command ID
 
 Command IDs are registered with `integer` values.
