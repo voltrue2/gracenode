@@ -123,6 +123,9 @@ Connection.prototype._handleData = function (packet) {
 	var parser = that.packetParser;
 	var done = function () {
 		var list = parsed.map(function (item) {
+			if (!item) {
+				return '';
+			}
 			return item.command;
 		});
 		that.logger.info('all incoming commands handled:', list.join(','));
@@ -164,7 +167,11 @@ Connection.prototype._handleData = function (packet) {
 
 	// route to commands and execute each command handler
 	async.eachSeries(parsed, function (parsedData, next) {
-		
+	
+		if (!parsedData) {
+			return next();
+		}
+	
 		if (that.cryptoEngine.decrypt) {
 			that.logger.info('using decryption for incoming packet');
 			that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {

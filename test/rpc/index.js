@@ -7,7 +7,6 @@ var portOne = 9877;
 var portTwo = 9880;
 var httpPort = 9899;
 
-var ce = new gn.lib.CryptoEngine();
 var cipher;
 var sessionId;
 
