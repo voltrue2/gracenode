@@ -16,6 +16,8 @@ For more details read <a href="https://github.com/voltrue2/gracenode/tree/develo
 
 #### RPC removed timestamp from request and reply packet
 
+#### Removed bitwise-xor package dependency
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()

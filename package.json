@@ -21,8 +21,7 @@
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
 		"cookies": "0.5.1",
-		"node-uuid": "1.4.3",
-		"bitwise-xor": "0.0.0"	
+		"node-uuid": "1.4.3"
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",
