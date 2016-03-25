@@ -14,6 +14,8 @@ None
 
 For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#use-session-and-encryption">HERE</a>.
 
+#### RPC removed timestamp from request and reply packet
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()

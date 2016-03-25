@@ -64,7 +64,6 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 |Byte Offset 0 |uint 32 Big Endian|Payload Size         |
 |Byte Offset 4 |uint 16 Big Endian|Command ID           |
 |Byte Offset 6 |uint 16 Big Endian|**Sequence**         |
-|Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
 |Byte Offset 12|                  |Payload              |
 |              |uint 32 Big Endian|**Magic Stop Symbol**|
 
@@ -99,7 +98,6 @@ RPC server can also push packets to client
 |Byte Offset 4 |uint 8            |**Reply Flag**       |
 |Byte Offset 5 |uint 8            |**Status**           |
 |Byte Offset 6 |uint 16 Big Endian|Sequence             |
-|Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
 |Byte Offset 12|                  |Payload              |
 |              |uint 32 Big Endian|**Magic Stop Symbol**|
 
@@ -142,7 +140,6 @@ The value of **Magic Stop Symbol** is `0x5c725c6e`.
 |Byte Offset 4 |uint 8            |**Push Flag**        |
 |Byte Offset 5 |uint 8            |**Status**           |
 |Byte Offset 6 |uint 16 Big Endian|**Sequence**         |
-|Byte Offset 8 |uint 32 Big Endian|Timestamp in seconds |
 |Byte Offset 12|                  |Payload              |
 |              |uint 32 Big Endian|**Magic Stop Symbol**|
 

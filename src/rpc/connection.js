@@ -159,7 +159,7 @@ Connection.prototype._handleData = function (packet) {
 		that.logger.info(
 			'command routing resolved:',
 			'command:', cmd.id, cmd.name,
-			'seq:', parsedData.seq
+			'(seq:' + parsedData.seq + ')'
 		);
 		
 		executeCmd(that, cmd, parsedData, sessionData, next);	
@@ -305,6 +305,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			that.logger.error(
 				'command response as error:',
 				cmd.id, cmd.name, error.message,
+				'(seq:' + parsedData.seq + ')',
 				'(status:' + status + ')'
 			);
 			res = {
@@ -331,6 +332,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			that.logger.info(
 				'command response:',
 				cmd.id, cmd.name, res,
+				'(seq:' + parsedData.seq + ')',
 				'(status:' + status + ')'
 			);
 			var replyPacket = parser.createReply(
