@@ -18,6 +18,8 @@ For more details read <a href="https://github.com/voltrue2/gracenode/tree/develo
 
 #### Removed bitwise-xor package dependency
 
+#### RPC server added timeout for shutdown
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()

@@ -18,6 +18,7 @@ var cryptoEngine = {
 var connId = 0;
 
 var PORT_IN_USE = 'EADDRINUSE';
+var TIMEOUT_FOR_CLOSE = 5000;
 
 module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
@@ -66,6 +67,13 @@ module.exports.setup = function (cb) {
 			for (var id in conns) {
 				conns[id].close();
 			}
+
+			// set up time out if connections do not close within the time, it hard closes
+			setTimeout(next, TIMEOUT_FOR_CLOSE);
+			logger.info(
+				'RPC server will forcefully close if all connections do not close in',
+				TIMEOUT_FOR_CLOSE, 'msc'
+			);
 
 			// stop accepting new connections and shutdown when all connections are closed
 			server.close(next);

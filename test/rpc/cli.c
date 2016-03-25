@@ -50,7 +50,6 @@ int main(int argc, char *argv[]) {
 	 
 	//keep communicating with server
 	while (1) {
-		bzero(message[1000]);
 		printf("Enter message : ");
 		scanf("%s", message);
 		 

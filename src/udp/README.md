@@ -29,6 +29,10 @@ In order to start the UDP server, you will need to provide the following configu
 
 When you provide the above configurations and call `gracenode.start`, UDP server will automatically start.
 
+## UDP Message Packet
+
+UDP server communicates with `UTF-8` plain text `JSON` messages.
+
 ## Commands
 
 **gracenode** UDP server handles incoming packets with `commands`.
