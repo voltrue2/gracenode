@@ -35,12 +35,6 @@ client.connect(port, host, function () {
 		// regular TCP
 		var packetParser = new PacketParser(console);
 		packet = packetParser.createReq(cmdId, seq, payload);
-		// raw text
-		packet = JSON.stringify({
-			command: 1,
-			seq: 0,
-			payload: payload
-		});
 		// send
 		client.write(packet);
 		setTimeout(call, interval);

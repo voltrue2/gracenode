@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
 		int ver;
 		uint16_t cmd;
 		uint16_t seq;
-		uint32_t timestamp;
 		char payload[0];
 	};
  

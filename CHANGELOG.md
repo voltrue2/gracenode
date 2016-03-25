@@ -2,7 +2,33 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 3.0.3
+## Version 3.0.4
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix with RPC packet parsing
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+#e Version 3.0.3
 
 ## Added
 
