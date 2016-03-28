@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "A node.js framework for real-time application with extendable modules for quick development.",
-	"version": "3.0.4",
+	"version": "3.0.5",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -14,9 +14,9 @@
 	},
 	"dependencies": {
 		"jshint": "2.8.0",
-		"gracelog": "0.6.2",
-		"aeterno": "0.5.5",
-		"cluster-mode": "0.2.1",
+		"gracelog": "0.6.3",
+		"aeterno": "0.5.6",
+		"cluster-mode": "0.2.2",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
 		"cookies": "0.5.1",
