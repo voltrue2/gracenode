@@ -1,7 +1,7 @@
 'use strict';
 
 var req = require('../src/request');
-var async = require('async');
+var async = require('../../lib/async');
 var gn = require('../../src/gracenode');
 var dgram = require('dgram');
 var client = dgram.createSocket('udp4');

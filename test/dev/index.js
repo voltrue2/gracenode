@@ -1,3 +1,4 @@
+var logEnabled = require('../arg')('--log');
 var assert = require('assert');
 var gn = require('../../src/gracenode');
 
@@ -6,7 +7,7 @@ describe('dev set up gracenode', function () {
 	it('start gracenode', function (done) {
 		gn.config({
 			log: {
-				console: false
+				console: logEnabled
 			}
 		});
 		gn.start(done);

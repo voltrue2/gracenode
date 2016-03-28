@@ -21,7 +21,7 @@ gn.config({
 	}
 });
 
-gn.use('async', require('async'));
+gn.use('async', require('../../lib/async'));
 
 if (process.argv[2] && process.argv[3]) {
 	gn.use(process.argv[2], process.argv[3]);

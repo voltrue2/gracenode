@@ -1,4 +1,4 @@
-var async = require('async');
+var async = require('../../lib/async');
 var assert = require('assert');
 var exec = require('child_process').exec;
 var path = __dirname + '/test.js';

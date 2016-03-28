@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var async = require('async');
+var async = require('../../lib/async');
 var log = require('gracelog');
 var er = require('./error');
 

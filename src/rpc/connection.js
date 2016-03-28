@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+var async = require('../../lib/async');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var gn = require('../gracenode');

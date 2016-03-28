@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+var async = require('../../../../lib/async');
 var jshintcli = require('jshint/src/cli');
 var print = require('./print');
 var files = require('./files');

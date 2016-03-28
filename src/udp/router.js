@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+var async = require('../../lib/async');
 var gn = require('../gracenode');
 var hooks = require('./hooks');
 var commands = {};

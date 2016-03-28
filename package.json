@@ -13,7 +13,6 @@
 		"install": "ln -fs node_modules/gracenode/aeterno ../../gracenode"
 	},
 	"dependencies": {
-		"async": "1.4.2",
 		"jshint": "2.8.0",
 		"gracelog": "0.6.2",
 		"aeterno": "0.5.5",

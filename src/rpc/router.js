@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+var async = require('../../lib/async');
 var gn = require('../gracenode');
 var hooks = require('./hooks');
 var commands = {};
@@ -34,11 +34,15 @@ module.exports.route = function (packet) {
 	
 	var cmd = commands[packet.command];
 	
-	logger.info('command routing resolved:', packet.command, cmd.name);
+	logger.info(
+		'command routing resolved:',
+		packet.command, cmd.name,
+		'(seq:' + packet.seq + ')'
+	);
 
 	var hookList = hooks.findByCmdId(packet.command);
 
-	logger.info('command hooks:', hookList);
+	logger.info('command hooks:', hookList, '(seq:' + packet.seq + ')');
 
 	return {
 		id: cmd.id,

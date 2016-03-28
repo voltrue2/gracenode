@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var async = require('async');
+var async = require('../../lib/async');
 var render = require('./render');
 var gn = require('../gracenode');
 
@@ -27,15 +27,17 @@ exports.load = function (path, cb) {
 
 exports.loadClient = function (cb) {
 	var root = getClientPath();
-	async.eachSeries(CLIENT_PATHS, function (path, next) {
-		fs.readFile(root + path, 'utf8', function (error, data) {
-			if (error) {
-				return next(error);
-			}
-			client += data.replace(/(\n|\r|\t)/g, '');
-			next();
-		});
-	}, cb);
+	return function () {
+		async.eachSeries(CLIENT_PATHS, function (path, next) {
+			fs.readFile(root + path, 'utf8', function (error, data) {
+				if (error) {
+					return next(error);
+				}
+				client += data.replace(/(\n|\r|\t)/g, '');
+				next();
+			});
+		}, cb);
+	};
 };
 
 exports.getLoadedByPath = function (path) {
