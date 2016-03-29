@@ -1,6 +1,6 @@
 'use strict';
 
-var uuid = require('node-uuid');
+var uuid = require('../../lib/uuid/uuid');
 var async = require('../../lib/async');
 var http = require('http');
 var Cookies = require('cookies');

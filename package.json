@@ -19,8 +19,7 @@
 		"cluster-mode": "0.2.2",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
-		"cookies": "0.5.1",
-		"node-uuid": "1.4.3"
+		"cookies": "0.5.1"
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",

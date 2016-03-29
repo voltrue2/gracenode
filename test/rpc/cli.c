@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 		 
-		puts("Server reply :");
+		puts("Server reply:");
 		puts(server_reply);
 	}
 	 
