@@ -12,6 +12,8 @@ None
 
 #### Updated Dependency versions
 
+#### Removed node-uuid from dependency
+
 #### Removed async from dependency
 
 ## Deprecated
