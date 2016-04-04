@@ -47,11 +47,11 @@ exports.router = exports.http;
 
 exports.session = session;
 
-// not officially released nor documented
 exports.rpc = require('../rpc');
 
-// not officially released nor documented
 exports.udp = require('../udp');
+
+exports.cluster = cluster;
 
 exports.getRootPath = function () {
 	return rootPath;

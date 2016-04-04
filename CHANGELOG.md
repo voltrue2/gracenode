@@ -6,7 +6,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### .cluster property added
 
 ## Changed
 

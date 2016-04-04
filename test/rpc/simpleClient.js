@@ -6,7 +6,7 @@ var net = require('net');
 var client = new net.Socket();
 var PacketParser = require('../../lib/packet');
 var packetParser;
-var protocol = require('../../lib/packet/protocol');
+//var protocol = require('../../lib/packet/protocol');
 
 var logger;
 

@@ -520,6 +520,65 @@ For more details read <a href="https://github.com/voltrue2/gracenode/tree/develo
 
 For more details read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
 
+### .cluster
+
+**gracenode** manages cluster and communications between cluster nodes.
+
+#### .cluster.getWorkers()
+
+If `sync` option in configuration object for `.start()` is `true`, It will return the worker map, but if it is `false`, it will return an empty object.
+
+Returns a map of all available workers.
+
+The keys of the map are worker IDs.
+
+**NOTE**: The map is synchronized from master process asynchronously.
+
+#### .cluster.send(workerId [number], message [object])
+
+Sends a message object to a specific worker process.
+
+The sent `message` can be caught by `message` event in the targeted worker process.
+
+#### Event sync
+
+Emitted when worker map is synced.
+
+The callback will be passed the worker map (Same map as .getWorkers() would return).
+
+**NOTE**: If `sync` option is set to `false` in the configuration object for `.start()`, the event will NOT be emitted.
+
+```javascript
+gracenode.cluster.on('sync', function () {
+	// do something
+});
+```
+
+#### Event message
+
+The event is emitted when the process recieves a message object from another cluster process by `.send()`.
+
+The callback will be passed the message object.
+
+Message Object Structure:
+
+```
+{
+    from: <worker ID>/<string "master">
+    msg: <message data>
+}
+```
+
+Example Code:
+
+```javascript
+var cluster = require('cluster-mode');
+cluster.on('message', function (data) {
+    console.log('message was sent from', data.from);
+    console.log('sent message is', data.msg);
+});
+```
+
 ## Methods
 
 ### .getRootPath()

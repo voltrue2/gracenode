@@ -277,7 +277,6 @@ describe('gracenode.rpc', function () {
 
 	it('can fail to call incorrect command', function (done) {
 		var clientMsg = 'Secure Hello';
-		var serverMsg = 'Secure Echo';
 		var errMsg = 'NOT_FOUND';
 		var cid = 5000;
 		client.secureReceiver(cipher, function (data) {
@@ -292,7 +291,6 @@ describe('gracenode.rpc', function () {
 
 	it('can reply with an error w/ status 2', function (done) {
 		var clientMsg = 'Secure Hello';
-		var serverMsg = 'Secure Echo';
 		var errMsg = 'BAD REQUEST';
 		var cid = 5000;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
@@ -310,7 +308,6 @@ describe('gracenode.rpc', function () {
 
 	it('can reply with an error w/ status 3', function (done) {
 		var clientMsg = 'Secure Hello';
-		var serverMsg = 'Secure Echo';
 		var errMsg = 'FORBIDDEN';
 		var cid = 5001;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
@@ -328,7 +325,6 @@ describe('gracenode.rpc', function () {
 
 	it('can reply with an error w/ status 4', function (done) {
 		var clientMsg = 'Secure Hello';
-		var serverMsg = 'Secure Echo';
 		var errMsg = 'NOT FOUND';
 		var cid = 5002;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
@@ -346,7 +342,6 @@ describe('gracenode.rpc', function () {
 
 	it('can reply with an error w/ status 5', function (done) {
 		var clientMsg = 'Secure Hello';
-		var serverMsg = 'Secure Echo';
 		var errMsg = 'ERROR';
 		var cid = 5003;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
@@ -364,7 +359,6 @@ describe('gracenode.rpc', function () {
 
 	it('can reply with an error w/ status 6', function (done) {
 		var clientMsg = 'Secure Hello';
-		var serverMsg = 'Secure Echo';
 		var errMsg = 'UNAVAILABLE';
 		var cid = 5006;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {

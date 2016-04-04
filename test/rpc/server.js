@@ -9,7 +9,8 @@ gn.config({
 		level: '>= verbose'
 	},
 	cluster: {
-		max: 0
+		max: process.argv[2] || 0,
+		sync: process.argv[3] === 'true' ? true : false
 	},
 	rpc: {
 		host: 'localhost',
@@ -17,8 +18,16 @@ gn.config({
 	}
 });
 
+gn.cluster.on('message', function (msg) {
+	console.log('cluster message sync:', msg);
+});
+
 gn.rpc.command(1, 'test1', function (state, cb) {
 	console.log('we have data:', state.payload);
+	var workers = gn.cluster.getWorkers();
+	for (var id in workers) {
+		gn.cluster.send(id, { message: Date.now() });
+	}
 	cb({ message: 'OK' });
 });
 
