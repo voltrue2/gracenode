@@ -191,8 +191,6 @@ If this is set `true`, `gracenode.session` will change session ID on every reque
 
 Default is `false`.
 
-**NOTE**: This is only available for `.useCookie(false)`.
-
 ### .sessionDuration(duration [number])
 
 Allows you to set session duration in milliseconds.
