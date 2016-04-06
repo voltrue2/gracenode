@@ -58,11 +58,11 @@ module.exports.defineGet = function (func) {
 };
 
 module.exports.useCookie = function (val) {
-	options.useCookie = (val === true) ? true : false;
+	options.useCookie = (val === false) ? false : true;
 };
 
 module.exports.oneTimeSessionId = function (val) {
-	options.oneTime = (val === true) ? true : false;
+	options.oneTime = (val === false) ? false : true;
 };
 
 module.exports.sessionDuration = function (msec) {

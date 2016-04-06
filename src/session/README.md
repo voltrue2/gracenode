@@ -173,7 +173,7 @@ gn.session.defineDel(function (sessionId, cb) {
 
 `gracenode.session` allows you to configure how session should behaive.
 
-### .useCookie(use [bool])
+### .useCookie(use [*bool])
 
 If set `true`, `gracenode.session` will use `cookies`.
 
@@ -185,7 +185,7 @@ The session ID key name is always `sessionid`.
 
 The header name is `sessionid`.
 
-### .oneTimeSessionId(use [bool])
+### .oneTimeSessionId(use [*bool])
 
 If this is set `true`, `gracenode.session` will change session ID on every request responded.
 

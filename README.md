@@ -14,23 +14,23 @@ Version `0.12.10` or above.
 
 - Manages cluster process.
 
-- Handles daemonizing of the application and auto-restarting on file changes. Read <a href="https://github.com/voltrue2/gracenode#start-your-application-as-a-daemon">here</a>.
+- Handles **daemonizing** of the application and auto-restarting on file changes. Read <a href="https://github.com/voltrue2/gracenode#start-your-application-as-a-daemon">here</a>.
 
 - Bootstrap other modules to organize setting up of each module on starting of the application process. Read <a href="https://github.com/voltrue2/gracenode#bootstrapping-other-modules">here</a>.
 
-- Provides a built-in logging module. Read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
+- Provides a built-in **logging** module. Read <a href="https://github.com/voltrue2/gracenode#logging">here</a>.
 
 - Provides plethora of utility functions to aid development. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/lib#gracenodelib">here</a>. 
 
-- Provides HTTP router for web applications. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/http#http-router">here</a>.
+- Provides **HTTP router** for web applications. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/http#http-router">here</a>.
 
-- Provides UDP server for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">here</a>.
+- Provides **UDP server** for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">here</a>.
 
-- Provides RPC server over TCP for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
+- Provides **RPC server** over TCP for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
 
-- Provides built-in session management as an option. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
+- Provides built-in **session** management as an option. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
 
-- Provides fast template enigne. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/render#render">here</a>.
+- Provides fast **template enigne**. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/render#render">here</a>.
 
 ## Installation via npm
 
