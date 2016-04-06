@@ -10,6 +10,10 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
+#### Session oneTimeSessionId() now supports cookies
+
+#### Session bug fix for default in memory storage using oneTimeSessionId()
+
 #### Update dependency aeterno version
 
 ## Deprecated

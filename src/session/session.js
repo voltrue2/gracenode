@@ -295,7 +295,10 @@ function HTTPSessionValidation(req, res, next) {
 			if (error) {
 				return _next(error, 401);
 			}
-			del(prevId, _next);
+			if (del) {
+				return del(prevId, _next);
+			}
+			delete inMemStorage[prevId];
 		};
 	}
 
