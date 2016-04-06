@@ -97,11 +97,11 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 	var id = uuid.toString();
 
 	if (options.useCookie) {
-		logger.verbose('setting session ID to cookies');
+		logger.info('setting session ID to cookies:', id);
 		var cookies = req.cookies();
 		cookies.set(SESSION_ID_NAME, id);
 	} else {
-		logger.verbose('session session ID to response headers');
+		logger.info('session session ID to response headers:', id);
 		res.headers[SESSION_ID_NAME] = id;
 	}
 
@@ -282,10 +282,12 @@ function HTTPSessionValidation(req, res, next) {
 	if (options.oneTime) {
 		var prevId = id;
 		newId = gn.lib.uuid.v4().toString();
-		// if not using cookie and oneTime is true
 		// update the session ID in response headers
 		if (!options.useCookie) {
 			res.headers[SESSION_ID_NAME] = newId;
+		} else {
+			var cookies = req.cookies();
+			cookies.set(SESSION_ID_NAME, newId);
 		}
 		// we delete the current session b/c session ID is used once
 		var _next = next;

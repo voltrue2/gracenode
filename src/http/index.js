@@ -188,7 +188,7 @@ function requestHandler(req, res) {
 	var furl = util.fmt('url', req.method + ' ' + req.url);
 	var fid = util.fmt('id', req.id);
 	logger.info('Request Resolved:', furl, fid);
-	logger.verbose('Resolved Request:', furl, fid, parsed);
+	logger.verbose('Resolved Request:', furl, fid, parsed, req.headers);
 
 	if (parsed === null) {
 		// 404

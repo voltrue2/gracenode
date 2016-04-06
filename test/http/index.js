@@ -315,49 +315,6 @@ describe('gracenode.http', function () {
 		});
 	});
 
-	/*
-	it('can reroute a request from /take/me/ to /land/here/', function (done) {
-		request.GET(http + '/take/me/', {}, options, function (error, body) {
-			assert.equal(allRequestHookCalled, true);
-			allRequestHookCalled = false;
-			assert.equal(error, undefined);
-			assert.equal(body, 'land/here');
-			done();
-		});
-	});
-
-	it('can reroute a request from /take/me/ to /land/here/ and carry the original request data', function (done) {
-		request.GET(http + '/take/me/?id=1', {}, options, function (error, body) {
-			assert.equal(allRequestHookCalled, true);
-			allRequestHookCalled = false;
-			assert.equal(error, undefined);
-			assert.equal(body, 'land/here1');
-			done();
-		});
-	});
-
-	it('can reroute a request from /take/me/ to /land/here/ and carry the original parameters', function (done) {
-		request.GET(http + '/take/me/100/', {}, options, function (error, body) {
-			assert.equal(allRequestHookCalled, true);
-			allRequestHookCalled = false;
-			assert.equal(error, undefined);
-			assert.equal(body, 'land/here100');
-			done();
-		});
-	});
-	
-	it('can reroute a request from / to /land/here/', function (done) {
-		request.GET(http, {}, options, function (error, body, status) {
-			assert.equal(allRequestHookCalled, true);
-			allRequestHookCalled = false;
-			assert.equal(error, undefined);
-			assert.equal(body, 'land/here');
-			assert.equal(status, 200);
-			done();
-		});
-	});
-	*/
-
 	it('can reject wrong request method', function (done) {
 		request.POST(http + '/test/get2/', {}, options, function (error, body, status) {
 			assert.equal(allRequestHookCalled, false);
@@ -388,19 +345,6 @@ describe('gracenode.http', function () {
 			done();
 		});		
 	});
-
-	/*
-	it('can auto look-up index.js for a request /test/', function (done) {
-		request.GET(http + '/test/', {}, options, function (error, body, status) {
-			assert.equal(allRequestHookCalled, true);
-			allRequestHookCalled = false;
-			assert.equal(error, undefined);
-			assert.equal(status, 200);
-			assert.equal(body, 'index');
-			done();
-		});
-	});
-	*/
 
 	it('can pass request hook', function (done) {
 		request.POST(http + '/hook/success/', { result: 'success' }, options, function (error) {
@@ -749,53 +693,6 @@ describe('gracenode.http', function () {
 			done();
 		});
 	});
-
-	/*
-	it('can get a list of all end points (mapped controllers and their methods)', function () {
-		var list = gn.mod.server.getEndPointList();
-		var expectedList = [
-			'/content/data/',
-			'/content/download/',
-			'/content/html/',
-			'/content/json/',
-			'/error/internal/',
-			'/error/notFound/',
-			'/error/unauthorized/',
-			'/file/upload/',
-			'/expected/index/',
-			'/hook2/failed/',
-			'/hook3/index/',
-			'/hook/failed/',
-			'/hook/success/',
-			'/land/here/',
-			'/redirect/perm/',
-			'/redirect/tmp/',
-			'/redirect/dest/',
-			'/test/cache/',
-			'/test/delete/',
-			'/test/errorOut/',
-			'/test/double/',
-			'/test/get/',
-			'/test/get2/',
-			'/test/get3/',
-			'/test/head/',
-			'/test/index/',
-			'/test/post/',
-			'/test/params/',
-			'/test/post2/',
-			'/test/put/',
-			'/test/sub/call/',
-			'/test/sub/index/',
-			'/test/sub/sub2/foo/',
-			'/test/sub/sub2/index/'
-		];
-		for (var i = 0, len = expectedList.length; i < len; i++) {
-			if (list.indexOf(expectedList[i]) === -1) {
-				throw new Error('endpoint list does not match the expected: ' + expectedList[i]);		
-			}
-		}
-	});
-	*/
 
 	it('can apply URL prefix and route the request correctly', function (done) {
 		request.GET(http + '/test/params/one/two/', null, options, function (error, body, status) {
@@ -1615,6 +1512,99 @@ describe('gracenode.http', function () {
 			assert.equal(st, 200);
 			assert.equal(res.message, 'OK');
 			request.GET(http + '/secure4/', {}, opt, function (error, res, st) {
+				assert(error);
+				assert.equal(st, 401);
+				assert.equal(res.message, 'SessionNotFound');
+				done();
+			});
+		});
+	});
+
+	it('can use built-in session using cookie and one time session ID', function (done) {
+		gn.session.useCookie(true);
+		gn.session.oneTimeSessionId(true);
+		gn.session.useHTTPSession([
+			'/secure10',
+			'/secure11',
+			'/logout10'
+		]);
+		gn.http.post('/login10', function (req, res) {
+			var data = {
+				message: 'Hello'
+			};
+			gn.session.setHTTPSession(req, res, data, function (error) {
+				assert.equal(error, null);
+				assert.equal(req.args.session.message, data.message);
+				res.json({ message: 'OK' });
+			});			
+		});
+		request.POST(http + '/login10/', {}, options, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			var cookie = headers['set-cookie'][0].replace('sessionid=', '');
+			testData.sessionid = cookie.substring(0, cookie.indexOf(';'));
+			assert(testData.sessionid);
+			done();
+		});
+	});
+
+	it('can access /secure10 w/ one time session ID using cookie', function (done) {
+		gn.http.get('/secure10', function (req, res) {
+			res.json({ message: 'OK' });
+		});
+		var opts = gn.lib.deepCopy(options);
+		opts.headers = {
+			cookie: 'sessionid=' + testData.sessionid + ';'
+		};
+		request.GET(http + '/secure10/', {}, opts, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			var cookie = headers['set-cookie'][0].replace('sessionid=', '');
+			var sessionid = cookie.substring(0, cookie.indexOf(';'));
+			assert.notEqual(testData.sessionid, sessionid);	
+			testData.sessionid = sessionid;
+			done();
+		});
+	});
+
+	it('can access /secure11 w/ one time session ID using cookie', function (done) {
+		gn.http.get('/secure11', function (req, res) {
+			res.json({ message: 'OK' });
+		});
+		var opts = gn.lib.deepCopy(options);
+		opts.headers = {
+			cookie: 'sessionid=' + testData.sessionid + ';'
+		};
+		request.GET(http + '/secure10/', {}, opts, function (error, res, st, headers) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			var cookie = headers['set-cookie'][0].replace('sessionid=', '');
+			var sessionid = cookie.substring(0, cookie.indexOf(';'));
+			assert.notEqual(testData.sessionid, sessionid);	
+			testData.sessionid = sessionid;
+			done();
+		});
+	});
+
+	it('can delete session w/ built-in session (cookie + one time session ID) for HTTP', function (done) {
+		gn.http.post('/logout10/', function (req, res) {
+			gn.session.delHTTPSession(req, res, function (error) {
+				assert.equal(error, null);
+				res.json({ message: 'OK' });	
+			});
+		});
+		var opt = gn.lib.deepCopy(options);
+		opt.headers = {
+			cookie: 'sessionid=' + testData.sessionid + ';'
+		};
+		request.POST(http + '/logout10/', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.message, 'OK');
+			request.GET(http + '/secure10/', {}, opt, function (error, res, st) {
 				assert(error);
 				assert.equal(st, 401);
 				assert.equal(res.message, 'SessionNotFound');
