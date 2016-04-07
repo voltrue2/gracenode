@@ -367,7 +367,7 @@ var commandName = 'exampleCommand';
 gn.rpc.command(commandId, commandName, function (state, cb) {
     cb({ message: 'Hello from RPC server' });
 });
-gn.udp.hook(commandId, function (state, next) {
+gn.rpc.hook(commandId, function (state, next) {
     // if there is an error
     if (error) {
       return next(error);
@@ -463,7 +463,7 @@ Call this function to register command handler function.
 
 ```javascript
 var gn = require('gracenode');
-gn.command(1, 'commandOne', function (state, cb) {
+gn.rpc.command(1, 'commandOne', function (state, cb) {
 	// do something here and respond
 	cb({ message: 'OK' });
 });
@@ -476,7 +476,7 @@ Call this function to register a command hook handler function.
 ```javascript
 // command hook for command ID 1
 var gn = require('gracenode');
-gn.hook(1, function (state, next) {
+gn.rpc.hook(1, function (state, next) {
 	next();
 });
 ```
