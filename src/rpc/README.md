@@ -486,7 +486,7 @@ or
 ```javascript
 // command hook for command ID 1 and 2
 var gn = require('gracenode');
-gn.hook([1, 2], function (state, next) {
+gn.rpc.hook([1, 2], function (state, next) {
 	next();
 });
 ```
@@ -499,7 +499,7 @@ Usueful if you need to broadcast that this connection is gone to other connectio
 
 ```javascript
 var gn = require('gracenode');
-gn.onClosed(function (connectionId, connection) {
+gn.rpc.onClosed(function (connectionId, connection) {
 	// do something
 });
 ```
@@ -512,7 +512,7 @@ Usueful if you need to broadcast that this connection is gone to other connectio
 
 ```javascript
 var gn = require('gracenode');
-gn.onKilled(function (connectionId, connection) {
+gn.rpc.onKilled(function (connectionId, connection) {
 	// do something
 });
 ```
