@@ -13,7 +13,7 @@ gn.config({
 		sync: process.argv[3] === 'true' ? true : false
 	},
 	rpc: {
-		host: 'localhost',
+		host: '49.212.31.139',
 		portRange: [9876, 9880]
 	}
 });

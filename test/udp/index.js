@@ -1,7 +1,5 @@
 var logEnabled = require('../arg')('--log');
 var request = require('../src/request');
-var path = require('../lib/path');
-var exec = require('child_process').exec;
 var assert = require('assert');
 var gn = require('../../src/gracenode');
 var simpleClient = require('./simpleClient');
@@ -9,12 +7,11 @@ var portOne = 7980;
 var portTwo = 7981;
 var httpPort = 7982;
 
-var ce = new gn.lib.CryptoEngine();
 var cipher;
 var sessionId;
 
 // global UDP error handler
-gn.udp.onError(function (error, rinfo) {
+gn.udp.onError(function (error) {
 	throw error;
 });
 
