@@ -48,10 +48,12 @@ class Tcp {
 		Buffer.BlockCopy(payloadSizeBytes, 0, packet, 0, uint32Size);
 
 		// add command ID at the offset of 4: command ID is uint16 2 bytes
+		// IPAddress.HostToNetworkOrder() is to take care of big endianesss
 		byte[] cmd = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)cmdId));
 		Buffer.BlockCopy(cmd, 0, packet, 4, uint16Size);
 
 		// add seq at the offset of 6: seq is uint16 2 bytes
+		// IPAddress.HostToNetworkOrder() is to take care of big endianesss
 		byte[] seqBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)seq));
 		Buffer.BlockCopy(seqBytes, 0, packet, 6, uint16Size);
 
@@ -59,6 +61,7 @@ class Tcp {
 		Buffer.BlockCopy(msg, 0, packet, 8, msg.Length);
 
 		// add magic stop symbol: magic stop symbol is uint 32 4 bytes
+		// IPAddress.HostToNetworkOrder() is to take care of big endianesss
 		int stop = IPAddress.HostToNetworkOrder(Convert.ToInt32(stopSymbol));
 		byte[] stopBytes = BitConverter.GetBytes(stop);
 		Buffer.BlockCopy(stopBytes, 0, packet, msg.Length + 8, uint32Size);
@@ -108,6 +111,7 @@ class Tcp {
 
 			// read payload
 			byte[] payloadBytes = new byte[psize];
+			// Convert.ToInt32() is to convert uint value to int b/c Buffer.BlockCopy takes int
 			Buffer.BlockCopy(res, 8, payloadBytes, 0, Convert.ToInt32(psize));
 			string payload = Encoding.UTF8.GetString(payloadBytes, 0, payloadBytes.Length);
 
@@ -115,6 +119,7 @@ class Tcp {
 
 			// read magic stop symbol
 			byte[] sbytes = new byte[uint32Size];
+			// Convert.ToInt32() is to convert uint value to int b/c Buffer.BlockCopy takes int
 			Buffer.BlockCopy(res, 8 + Convert.ToInt32(psize), sbytes, 0, uint32Size);
 			// big endian
 			Array.Reverse(sbytes);
