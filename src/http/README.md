@@ -120,7 +120,7 @@ exports.exampleHandler = function (req, res) {
 gracenode.http.get('/example/{number:id}/{string:name}');
 ```
 
-**NOTE 1**: Date type as regular expression
+**NOTE 1**: Data type as regular expression
 
 `http` allows you to define the parameter data type as regular expression.
 

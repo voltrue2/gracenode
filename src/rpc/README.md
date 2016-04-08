@@ -210,6 +210,67 @@ uint32_t stop = htonl(stopval);
 memmove(&(req.payload[strlen(strJSONData)]), &stop, sizeof(stop));
 ```
 
+Example in C#:
+
+```c#
+string serverHost = "000.000.000.000";
+int serverPort = yyyy;
+int payloadSize;
+int uint16Size = 2;
+int uint32Size = 4;
+int packetSize;
+uint cmdId = 1;
+uint seq = 100;
+byte[] msg;
+byte[] packet;
+
+TcpClient client = new TcpClient(serverHost, serverPort);
+NetworkStream stream = client.GetStream();
+
+msg = Encoding.UTF8.GetBytes("{ \"message\":\"Hello\"}");
+
+// create gracenode RPC command packet
+payloadSize = IPAddress.HostToNetworkOrder(msg.Length);
+byte[] payloadSizeBytes = BitConverter.GetBytes(payloadSize);
+packetSize = uint32Size + (uint16Size * 2) + msg.Length + uint32Size;
+packet = new byte[packetSize];
+
+Console.WriteLine("payload size is {0}", msg.Length);
+Console.WriteLine("packet size is {0}", packetSize);
+
+// RPC protocol version 0
+packet[0] = 0x0;
+
+// add payload size at the offset of 0: payload size if utin32 4 bytes
+Buffer.BlockCopy(payloadSizeBytes, 0, packet, 0, uint32Size);
+
+// add command ID at the offset of 4: command ID is uint16 2 bytes
+byte[] cmd = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)cmdId));
+Buffer.BlockCopy(cmd, 0, packet, 4, uint16Size);
+
+// add seq at the offset of 6: seq is uint16 2 bytes
+byte[] seqBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)seq));
+Buffer.BlockCopy(seqBytes, 0, packet, 6, uint16Size);
+
+// add payload at the offset of 8
+Buffer.BlockCopy(msg, 0, packet, 8, msg.Length);
+
+// add magic stop symbol: magic stop symbol is uint 32 4 bytes
+int stop = IPAddress.HostToNetworkOrder(1550998638);
+byte[] stopBytes = BitConverter.GetBytes(stop);
+Buffer.BlockCopy(stopBytes, 0, packet, msg.Length + 8, uint32Size);
+
+Console.WriteLine("Sending command packet: {0}", packet.Length);
+
+// send command packet to server
+stream.Write(packet, 0, packet.Length);
+
+Console.WriteLine("Done and close connection");
+
+// close the connection
+stream.Close();
+```
+
 ## Command ID
 
 Command IDs are registered with `integer` values.
@@ -367,7 +428,7 @@ var commandName = 'exampleCommand';
 gn.rpc.command(commandId, commandName, function (state, cb) {
     cb({ message: 'Hello from RPC server' });
 });
-gn.udp.hook(commandId, function (state, next) {
+gn.rpc.hook(commandId, function (state, next) {
     // if there is an error
     if (error) {
       return next(error);
@@ -463,7 +524,7 @@ Call this function to register command handler function.
 
 ```javascript
 var gn = require('gracenode');
-gn.command(1, 'commandOne', function (state, cb) {
+gn.rpc.command(1, 'commandOne', function (state, cb) {
 	// do something here and respond
 	cb({ message: 'OK' });
 });
@@ -476,7 +537,7 @@ Call this function to register a command hook handler function.
 ```javascript
 // command hook for command ID 1
 var gn = require('gracenode');
-gn.hook(1, function (state, next) {
+gn.rpc.hook(1, function (state, next) {
 	next();
 });
 ```
@@ -486,7 +547,7 @@ or
 ```javascript
 // command hook for command ID 1 and 2
 var gn = require('gracenode');
-gn.hook([1, 2], function (state, next) {
+gn.rpc.hook([1, 2], function (state, next) {
 	next();
 });
 ```
@@ -499,7 +560,7 @@ Usueful if you need to broadcast that this connection is gone to other connectio
 
 ```javascript
 var gn = require('gracenode');
-gn.onClosed(function (connectionId, connection) {
+gn.rpc.onClosed(function (connectionId, connection) {
 	// do something
 });
 ```
@@ -512,7 +573,7 @@ Usueful if you need to broadcast that this connection is gone to other connectio
 
 ```javascript
 var gn = require('gracenode');
-gn.onKilled(function (connectionId, connection) {
+gn.rpc.onKilled(function (connectionId, connection) {
 	// do something
 });
 ```
