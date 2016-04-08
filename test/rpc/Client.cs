@@ -7,8 +7,8 @@ using System.Threading;
 class Tcp {
 	
 	public static void Main(string[] args) {
-		string serverHost = "49.212.31.139";
-		int serverPort = 9876;
+		string serverHost;
+		int serverPort;
 		int payloadSize;
 		int uint16Size = 2;
 		int uint32Size = 4;
@@ -19,7 +19,6 @@ class Tcp {
 		byte[] msg;
 		byte[] packet;
 
-		/*
 		Console.WriteLine("Enter server host name:");
 
 		serverHost = Console.ReadLine();
@@ -27,7 +26,6 @@ class Tcp {
 		Console.WriteLine("Enter server port number:");
 
 		serverPort = int.Parse(Console.ReadLine());
-		*/
 
 		TcpClient client = new TcpClient(serverHost, serverPort);
 		NetworkStream stream = client.GetStream();
