@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.7
+
+## Added
+
+None
+
+## Changed
+
+#### HTTP session for RPC and DUP added base64 string of cipherKey, cipherNounce, and macKey
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.6
 
 ## Added

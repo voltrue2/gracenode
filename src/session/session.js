@@ -168,6 +168,7 @@ module.exports.delHTTPSession = function (req, res, cb) {
 function socketSessionValidation(packet, next) {
 	var ce = new gn.lib.CryptoEngine();
 	var res = ce.getSessionIdAndPayload(packet);
+	var now = Date.now();
 	
 	if (get && set) {
 		logger.verbose('custom getter is defined');
@@ -190,12 +191,15 @@ function socketSessionValidation(packet, next) {
 				return next(new Error('InvalidSeq'));
 			}
 			// check session TTL
-			if (sessionData.ttl <= Date.now()) {
-				logger.error('session ID has expired:', res.sessionId);
+			if (sessionData.ttl <= now) {
+				logger.error(
+					'session ID has expired:',
+					res.sessionId, sessionData.ttl + ' <= ' + now
+				);
 				return next(new Error('SessionExpired'));
 			}
 			// update session and move on
-			sessionData.ttl = Date.now() + options.ttl;
+			sessionData.ttl = now + options.ttl;
 			sessionData.seq = res.seq;
 			if (sessionData.seq > 0xffffffff) {
 				sessionData.seq = 0;
@@ -228,8 +232,12 @@ function socketSessionValidation(packet, next) {
 		);
 		return next(new Error('InvalidSeq'));
 	}
-	if (sess.ttl <= Date.now()) {
-		logger.error('session ID has expired:', res.sessionId);
+	if (sess.ttl <= now) {
+		logger.error(
+			'session ID has expired:',
+			res.sessionId,
+			sess.ttl + ' <= ' + now
+		);
 		return next(new Error('SessionExpired'));
 	}
 	// update session and move on
@@ -368,5 +376,11 @@ function getHTTPSessionId(req) {
 }
 
 function createSocketCipher() {
-	return gn.lib.CryptoEngine.createCipher();
+	var cipher = gn.lib.CryptoEngine.createCipher();
+	cipher.base64 = {
+		cipherKey: cipher.cipherKey.toString('base64'),
+		cipherNounce: cipher.cipherNounce.toString('base64'),
+		macKey: cipher.macKey.toString('base64')
+	};
+	return cipher;
 }
