@@ -271,7 +271,9 @@ stream.Close();
 
 ## Encryption and Decryption
 
-Encryption/Decryption Example in C#:
+For RPC command packet, only `payload` is encrypted.
+
+**Encryption/Decryption Example in C#**:
 
 ```c#
 using System;
