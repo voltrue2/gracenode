@@ -104,24 +104,22 @@ public class Crypto {
 		return epacket;
 	}
 
-	// TODO: untested
 	public byte[] Decrypt(byte[] payload) {
 		int seqSize = sizeof(uint);
-		uint seq = (uint)IPAddress.HostToNetworkOrder(BitConverter.ToUInt32(payload, 0));
-		byte[] payloadToSign = ByteSlice(payload, 0, payload.Length + _hashLength);
-		byte[] serverHmac = ByteSlice(payload, payload.Length - _hashLength, _hashLength);
+		byte[] payloadToSign = ByteSlice(payload, 0, payload.Length - _hashLength);
+		byte[] serverHmac = ByteSlice(payload, payload.Length - _hashLength, payload.Length);
 		byte[] clientHmac = _hashAlgorithm.ComputeHash(payloadToSign);
 
-		if (ByteEqual(serverHmac, clientHmac)) {
-			byte[] eBytes = ByteSlice(payload, seqSize, payload.Length - serverHmac.Length);
-			byte[] dBytes = new byte[eBytes.Length];
-
-			Ctr(seq, eBytes, dBytes, 0);
-
-			return dBytes;
+		if (!ByteEqual(serverHmac, clientHmac)) {
+			throw new System.ArgumentException("Bad Signature");
 		}
 
-		return null;
+		byte[] eBytes = ByteSlice(payload, seqSize, payload.Length - serverHmac.Length);
+		byte[] dBytes = new byte[eBytes.Length];
+
+		Ctr(_sequence, eBytes, dBytes, 0);
+
+		return dBytes;	
 	}
 
 	private static byte[] TransposeGuidBytes(byte[] buffIn) {

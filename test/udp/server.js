@@ -33,9 +33,6 @@ function testHook1(state, next) {
 function testCommand1(state) {
 	console.log('command', state.payload);
 	state.send({ message: 'Echo', payload: state.payload });
-	setTimeout(function () {
-		state.send({ message: 'Echo2', payload: state.payload });
-	}, 2000);
 }
 
 function handleAuth(req, res) {
