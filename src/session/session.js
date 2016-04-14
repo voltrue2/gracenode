@@ -254,7 +254,7 @@ function socketSessionValidation(packet, next) {
 function socketSessionDecrypt(ce, res, sess, next) {
 	var decrypted = ce.decrypt(
 		sess.cipher.cipherKey,
-		sess.cipher.cipherNounce,
+		sess.cipher.cipherNonce,
 		sess.cipher.macKey,
 		res.seq,
 		res.payload
@@ -267,7 +267,7 @@ function socketSessionEncryption(state, msg, next) {
 	var sess = state.session;
 	var encrypted = ce.encrypt(
 		sess.cipher.cipherKey,
-		sess.cipher.cipherNounce,
+		sess.cipher.cipherNonce,
 		sess.cipher.macKey,
 		state.seq,
 		msg
@@ -379,7 +379,7 @@ function createSocketCipher() {
 	var cipher = gn.lib.CryptoEngine.createCipher();
 	cipher.base64 = {
 		cipherKey: cipher.cipherKey.toString('base64'),
-		cipherNounce: cipher.cipherNounce.toString('base64'),
+		cipherNonce: cipher.cipherNonce.toString('base64'),
 		macKey: cipher.macKey.toString('base64')
 	};
 	return cipher;

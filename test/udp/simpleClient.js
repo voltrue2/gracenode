@@ -29,7 +29,7 @@ exports.secureReceiver = function (cipher, cb) {
 	client.once('message', function (buff) {
 		var decrypted = ce.decrypt(
 			cipher.cipherKey,
-			cipher.cipherNounce,
+			cipher.cipherNonce,
 			cipher.macKey,
 			cipher.seq,
 			buff
@@ -45,7 +45,7 @@ exports.secureSender = function (port, sid, cipher, msg, cb) {
 	session.writeUInt32BE(cipher.seq, 16);
 	var encrypted = ce.encrypt(
 		cipher.cipherKey,
-		cipher.cipherNounce,
+		cipher.cipherNonce,
 		cipher.macKey,
 		cipher.seq,
 		JSON.stringify(msg)

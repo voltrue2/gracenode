@@ -490,7 +490,7 @@ The structure of the object is:
 ```
 {
 	cipherKey: [buffer],
-	cipherNounce: [buffer],
+	cipherNonce: [buffer],
 	macKey: [buffer],
 	seq: [integer]
 }

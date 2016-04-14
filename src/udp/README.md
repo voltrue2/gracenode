@@ -172,7 +172,7 @@ The structure of the object is:
 ```javascipt
 {
 	cipherKey: [buffer],
-	cipherNounce: [buffer],
+	cipherNonce: [buffer],
 	macKey: [buffer],
 	seq: [integer]
 }

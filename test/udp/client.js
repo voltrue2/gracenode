@@ -17,7 +17,7 @@ client.on('message', function (packet, rinfo) {
 	console.log('received from server:', rinfo, packet, sess);
 	var decrypted = ce.decrypt(
 		sess.cipherKey,
-		sess.cipherNounce,
+		sess.cipherNonce,
 		sess.macKey,
 		sess.seq,
 		packet
@@ -62,7 +62,7 @@ function auth(next) {
 		console.log('auth response', res);
 		sess = {
 			cipherKey: new Buffer(res.cipherData.cipherKey),
-			cipherNounce: new Buffer(res.cipherData.cipherNounce),
+			cipherNonce: new Buffer(res.cipherData.cipherNonce),
 			macKey: new Buffer(res.cipherData.macKey),
 			seq: res.cipherData.seq,
 			host: res.host,
@@ -118,7 +118,7 @@ function sendUDP(cb) {
 	};
 	var encrypted = ce.encrypt(
 		sess.cipherKey,
-		sess.cipherNounce,
+		sess.cipherNonce,
 		sess.macKey,
 		sess.seq++,
 		new Buffer(JSON.stringify(data))

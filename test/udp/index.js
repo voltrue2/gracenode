@@ -110,7 +110,7 @@ describe('gracenode.udp', function () {
 			sessionId = res.sessionId;
 			cipher = {
 				cipherKey: new Buffer(res.cipher.cipherKey),
-				cipherNounce: new Buffer(res.cipher.cipherNounce),
+				cipherNonce: new Buffer(res.cipher.cipherNonce),
 				macKey: new Buffer(res.cipher.macKey),
 				seq: res.cipher.seq
 			};
@@ -149,7 +149,7 @@ describe('gracenode.udp', function () {
 			sessionId = res.sessionId;
 			cipher = {
 				cipherKey: new Buffer(res.cipher.cipherKey),
-				cipherNounce: new Buffer(res.cipher.cipherNounce),
+				cipherNonce: new Buffer(res.cipher.cipherNonce),
 				macKey: new Buffer(res.cipher.macKey),
 				seq: res.cipher.seq
 			};
@@ -190,7 +190,7 @@ describe('gracenode.udp', function () {
 			sessionId = res.sessionId;
 			cipher = {
 				cipherKey: new Buffer(res.cipher.cipherKey),
-				cipherNounce: new Buffer(res.cipher.cipherNounce),
+				cipherNonce: new Buffer(res.cipher.cipherNonce),
 				macKey: new Buffer(res.cipher.macKey),
 				seq: res.cipher.seq
 			};

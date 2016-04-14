@@ -47,7 +47,7 @@ exports.secureSender = function (sid, cipher, commandId, seq, msg, cb) {
 
 	var encrypted = ce.encrypt(
 		cipher.cipherKey,
-		cipher.cipherNounce,
+		cipher.cipherNonce,
 		cipher.macKey,
 		seq,
 		JSON.stringify(msg)
@@ -62,7 +62,7 @@ exports.secureReceiver = function (cipher, cb) {
 		try {
 			var decrypted = ce.decrypt(
 				cipher.cipherKey,
-				cipher.cipherNounce,
+				cipher.cipherNonce,
 				cipher.macKey,
 				cipher.seq,
 				parsed[0].payload
