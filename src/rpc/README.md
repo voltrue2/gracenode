@@ -213,8 +213,6 @@ memmove(&(req.payload[strlen(strJSONData)]), &stop, sizeof(stop));
 Example in C#:
 
 ```c#
-string serverHost = "000.000.000.000";
-int serverPort = yyyy;
 int payloadSize;
 int uint16Size = 2;
 int uint32Size = 4;
@@ -269,6 +267,37 @@ Console.WriteLine("Done and close connection");
 
 // close the connection
 stream.Close();
+```
+
+## Encryption and Decryption
+
+Example in C#:
+
+```c#
+_sequence++;
+byte[] seqBytes = BitConverter.GetBytes(IPAddress.NetworkToHostOrder((int)_sequence));
+byte[] cipherBytes = new byte[payload.Length];
+byte[] outpacket = new byte[cipherBytes.Length + seqBytes.Length + _hashLength];
+
+// CTR-mode encryption/decryption
+// https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Counter_.28CTR.29
+Ctr(_sequence, payload, cipherBytes, 0);
+
+Buffer.BlockCopy(seqBytes, 0, outpacket, 0, seqBytes.Length);
+Buffer.BlockCopy(cipherBytes, 0, outpacket, seqBytes.Length, cipherBytes.Length);
+
+byte[] payloadToSign = ByteSlice(outpacket, 0, outpacket.Length - _hashLength);
+byte[] hmac = _hashAlgorithm.ComputeHash(payloadToSign);
+
+Buffer.BlockCopy(hmac, 0, outpacket, outpacket.Length - _hashLength, _hashLength);
+
+byte[] epacket = new byte[_sessionId.Length + seqBytes.Length + outpacket.Length];
+
+Buffer.BlockCopy(_sessionId, 0, epacket, 0, _sessionId.Length);
+Buffer.BlockCopy(seqBytes, 0, epacket, _sessionId.Length, seqBytes.Length);
+Buffer.BlockCopy(outpacket, 0, epacket, _sessionId.Length + seqBytes.Length, outpacket.Length);
+
+return epacket;
 ```
 
 ## Command ID

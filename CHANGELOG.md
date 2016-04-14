@@ -12,6 +12,8 @@ None
 
 #### HTTP session for RPC and DUP added base64 string of cipherKey, cipherNounce, and macKey
 
+#### Typo fix for UDP and RPC encryption/decription: Nonce
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
