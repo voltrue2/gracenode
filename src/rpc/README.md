@@ -203,6 +203,7 @@ req.cmd = htons(commandId);
 // sequence
 req.seq = htons(seq);
 // now add payload
+// if you're using encryption, encrypt strJSONData
 memmove(&(req.payload[0]), &strJSONData, strlen(strJSONData));
 // magic stop symbol
 uint32_t stopval = 0x5c725c6e;
@@ -251,6 +252,7 @@ byte[] seqBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)seq)
 Buffer.BlockCopy(seqBytes, 0, packet, 6, uint16Size);
 
 // add payload at the offset of 8
+// if you are using encryption, encrypt msg
 Buffer.BlockCopy(msg, 0, packet, 8, msg.Length);
 
 // add magic stop symbol: magic stop symbol is uint 32 4 bytes

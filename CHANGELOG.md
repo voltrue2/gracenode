@@ -10,7 +10,7 @@ None
 
 ## Changed
 
-#### HTTP session for RPC and DUP added base64 string of cipherKey, cipherNounce, and macKey
+#### HTTP session for RPC and DUP added base64 string of cipherKey, cipherNonce, and macKey
 
 #### Typo fix for UDP and RPC encryption/decription: Nonce
 
