@@ -113,7 +113,7 @@ Connection.prototype.kill = function (error) {
 Connection.prototype._handleData = function (packet) {
 	this.logger.verbose('packet received');
 
-	var parsed = this.packetParser.parse(packet, this.cryptoEngine);
+	var parsed = this.packetParser.parse(packet);
 
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
