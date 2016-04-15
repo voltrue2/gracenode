@@ -255,6 +255,17 @@ public class Crypto {
 }
 ```
 
+### Connection Infomation
+
+#### .info()
+
+Returns an object of listening host/IP address and port.
+
+```
+var info = gracenode.udp.info();
+console.log(info.host, info.port);
+```
+
 ### Command ID
 
 Command IDs are registered with `integer` values.

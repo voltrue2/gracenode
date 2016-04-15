@@ -35,6 +35,12 @@ describe('gracenode.rpc', function () {
 		gn.start(done);
 	});
 
+	it('can get connected host and port of RPC server', function () {
+		var info = gn.rpc.info();
+		assert(info.host);
+		assert(info.port);
+	});
+
 	it('can start client', function (done) {
 		client.start('localhost', portOne, done);
 	});

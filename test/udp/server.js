@@ -18,8 +18,11 @@ gn.config({
 });
 
 gn.http.post('/auth', handleAuth);
-gn.session.sessionDuration(100000);
-gn.session.useUDPSession();
+if (process.argv[2] === 'secure') {
+	gn.session.sessionDuration(100000);
+	gn.session.useUDPSession();
+	console.log('Starting UDP server in secure mode');
+}
 gn.udp.hook(1, testHook1);
 gn.udp.command(1, 'testCommand1', testCommand1);
 

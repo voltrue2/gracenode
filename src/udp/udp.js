@@ -18,6 +18,17 @@ var cryptoEngine = {
 	encrypt: null,
 	decrypt: null
 };
+var connectionInfo = {
+	host: null,
+	port: null
+};
+
+module.exports.info = function () {
+	return {
+		host: connectionInfo.host,
+		port: connectionInfo.port
+	};
+};
 
 module.exports.setup = function (cb) {
 	logger = gn.log.create('UDP');
@@ -76,6 +87,9 @@ module.exports.setup = function (cb) {
 		server.on('message', handleMessage);
 		
 		var info = server.address();
+
+		connectionInfo.host = info.address;
+		connectionInfo.port = info.port;
 
 		logger.info('UDP server started at', info.address + ':' + info.port);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));

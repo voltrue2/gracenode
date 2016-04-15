@@ -785,6 +785,15 @@ gn.rpc.onKilled(function (connectionId, connection) {
 });
 ```
 
+### .info()
+
+Returns an object of listening host/IP address and port.
+
+```
+var info = gracenode.rpc.info();
+console.log(info.host, info.port);
+```
+
 ## Connection Error and Timeout
 
 RPC server detects and calls `.onClosed()` TCP connection error, timeout, and client disconnect.

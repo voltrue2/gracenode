@@ -19,6 +19,17 @@ var connId = 0;
 
 var PORT_IN_USE = 'EADDRINUSE';
 var TIMEOUT_FOR_CLOSE = 5000;
+var connectionInfo = {
+	host: null,
+	port: null
+};
+
+module.exports.info = function () {
+	return {
+		host: connectionInfo.host,
+		port: connectionInfo.port
+	};
+};
 
 module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
@@ -78,6 +89,9 @@ module.exports.setup = function (cb) {
 			// stop accepting new connections and shutdown when all connections are closed
 			server.close(next);
 		});
+
+		connectionInfo.host = config.host;
+		connectionInfo.port = boundPort;
 
 		logger.info('RPC server started at', config.host + ':' + boundPort);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));

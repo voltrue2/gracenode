@@ -34,6 +34,12 @@ describe('gracenode.udp', function () {
 		});
 		gn.start(done);
 	});
+	
+	it('can get connection info', function () {
+		var info = gn.udp.info();
+		assert(info.host);
+		assert(info.port);
+	});
 
 	it('can register UDP command and handle message from client and revieve message from server w/o session + encryption', function (done) {
 		var clientMsg = 'Hello';
