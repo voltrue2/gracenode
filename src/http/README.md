@@ -320,7 +320,7 @@ Useful for HTML5 video streaming etc.
 
 ### res.file(filePath [string], status [*number])
 
-Server a static file.
+Serve a static file.
 
 ### res.error(error [object], [*number])
 
