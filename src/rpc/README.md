@@ -223,9 +223,6 @@ uint seq = 100;
 byte[] msg;
 byte[] packet;
 
-TcpClient client = new TcpClient(serverHost, serverPort);
-NetworkStream stream = client.GetStream();
-
 msg = Encoding.UTF8.GetBytes("{ \"message\":\"Hello\"}");
 
 // create gracenode RPC command packet
@@ -233,9 +230,6 @@ payloadSize = IPAddress.HostToNetworkOrder(msg.Length);
 byte[] payloadSizeBytes = BitConverter.GetBytes(payloadSize);
 packetSize = uint32Size + (uint16Size * 2) + msg.Length + uint32Size;
 packet = new byte[packetSize];
-
-Console.WriteLine("payload size is {0}", msg.Length);
-Console.WriteLine("packet size is {0}", packetSize);
 
 // RPC protocol version 0
 packet[0] = 0x0;
@@ -259,16 +253,6 @@ Buffer.BlockCopy(msg, 0, packet, 8, msg.Length);
 int stop = IPAddress.HostToNetworkOrder(1550998638);
 byte[] stopBytes = BitConverter.GetBytes(stop);
 Buffer.BlockCopy(stopBytes, 0, packet, msg.Length + 8, uint32Size);
-
-Console.WriteLine("Sending command packet: {0}", packet.Length);
-
-// send command packet to server
-stream.Write(packet, 0, packet.Length);
-
-Console.WriteLine("Done and close connection");
-
-// close the connection
-stream.Close();
 ```
 
 ## Encryption and Decryption
