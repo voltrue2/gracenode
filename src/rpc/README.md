@@ -798,3 +798,10 @@ console.log(info.host, info.port);
 
 RPC server detects and calls `.onClosed()` TCP connection error, timeout, and client disconnect.
 
+## C# Test Client
+
+There is a very baisc test client written in C# in `test/rpc/cs/`.
+
+Execute `build.sh` to make a build. `tcp.exe` file will be created and execute the binary: `mono tcp.exe`
+
+**NOTE:** This requires mono installed on your Linux server.

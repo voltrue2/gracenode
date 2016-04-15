@@ -428,3 +428,12 @@ gn.udp.onError(function (error, rinfo) {
 	// do something about the error
 });
 ```
+
+## C# Test Client
+
+There is a very baisc test client written in C# in `test/udp/cs/`.
+
+Execute `build.sh` to make a build. `udp.exe` file will be created and execute the binary: `mono udp.exe`
+
+**NOTE:** This requires mono installed on your Linux server.
+
