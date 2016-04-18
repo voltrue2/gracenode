@@ -110,6 +110,7 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 		req.args.sessionId = id;
 		req.args.session = sessionData;
 		var data = {
+			seq: 0,
 			ttl: Date.now() + options.ttl,
 			data: sessionData
 		};
@@ -123,8 +124,8 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 	logger.warn('set is using default in-memory storage: Not for production');
 	
 	inMemStorage[id] = {
-		ttl: Date.now() + options.ttl,
 		seq: 0,
+		ttl: Date.now() + options.ttl,
 		data: sessionData
 	};
 	if (using.udp || using.rpc) {

@@ -12,7 +12,7 @@ Version `0.12.10` or above.
 
 ## What gracenode does
 
-- Manages cluster process.
+- Manages **cluster process**. Read <a href="https://github.com/voltrue2/cluster-mode">here</a>.
 
 - Handles **daemonizing** of the application and auto-restarting on file changes. Read <a href="https://github.com/voltrue2/gracenode#start-your-application-as-a-daemon">here</a>.
 
@@ -26,7 +26,7 @@ Version `0.12.10` or above.
 
 - Provides **UDP server** for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/udp#udp-server">here</a>.
 
-- Provides **RPC server** over **TCP/IP** for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
+- Provides **RPC server** over **TCP** for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
 
 - Provides built-in **session** management as an option. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
 
@@ -256,7 +256,7 @@ If, however, `lint: { strict: true }` is set, **gracenode** will terminate its p
 
 ##### Strict Mode
 
-If strict mode is set to `true`, your application process will terminates on start if lint error(s) is detected.
+If strict mode is set to `true`, your application process will terminate on start if lint error(s) is detected.
 
 This is set to `false` by default.
 
@@ -524,60 +524,9 @@ For more details read <a href="https://github.com/voltrue2/gracenode/tree/develo
 
 **gracenode** manages cluster and communications between cluster nodes.
 
-#### .cluster.getWorkers()
+**gracenode** uses `cluster-mode` module to manage clustering and process to process communication.
 
-If `sync` option in configuration object for `.start()` is `true`, It will return the worker map, but if it is `false`, it will return an empty object.
-
-Returns a map of all available workers.
-
-The keys of the map are worker IDs.
-
-**NOTE**: The map is synchronized from master process asynchronously.
-
-#### .cluster.send(workerId [number], message [object])
-
-Sends a message object to a specific worker process.
-
-The sent `message` can be caught by `message` event in the targeted worker process.
-
-#### Event sync
-
-Emitted when worker map is synced.
-
-The callback will be passed the worker map (Same map as .getWorkers() would return).
-
-**NOTE**: If `sync` option is set to `false` in the configuration object for `.start()`, the event will NOT be emitted.
-
-```javascript
-gracenode.cluster.on('sync', function () {
-	// do something
-});
-```
-
-#### Event message
-
-The event is emitted when the process recieves a message object from another cluster process by `.send()`.
-
-The callback will be passed the message object.
-
-Message Object Structure:
-
-```
-{
-    from: <worker ID>/<string "master">
-    msg: <message data>
-}
-```
-
-Example Code:
-
-```javascript
-var cluster = require('cluster-mode');
-cluster.on('message', function (data) {
-    console.log('message was sent from', data.from);
-    console.log('sent message is', data.msg);
-});
-```
+More details is <a href="https://github.com/voltrue2/cluster-mode">HERE</a>.
 
 ## Methods
 

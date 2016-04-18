@@ -12,7 +12,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
-None
+#### Updated to cluster-mode version 1.0.0
 
 ## Deprecated
 
