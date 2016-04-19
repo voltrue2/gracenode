@@ -2,7 +2,7 @@
 
 **gracenode** comes with built-in session management for HTTP server, UDP server, and more.
 
-**NOTE**: By default `gracenode.session` uses `node.js` in-memory storage to keep session.
+**NOTE**: By default `gracenode.session` uses `node.js` in-memory storage (shared among worker proccesses) to keep session.
 
 This is for development use only and it should never be used in production.
 

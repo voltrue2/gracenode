@@ -18,7 +18,7 @@ var using = {
 };
 // development use only by default: this does NOT support cluster mode
 var inMemStorage = {};
-
+var setup = false;
 var SESSION_ID_NAME = 'sessionid';
 
 mem.setDuration(options.ttl);
@@ -36,10 +36,28 @@ module.exports.setup = function () {
 	if (using.rpc) {
 		logger.info('session for RPC enabled');
 	}
+
+	if (set || get || del) {
+		if (!set) {
+			throw new Error('<SESSION_CUSTOM_SET_MISSING>');
+		}
+		if (!get) {
+			throw new Error('<SESSION_CUSTOM_GET_MISSING>');
+		}
+		if (!del) {
+			throw new Error('<SESSION_CUSTOM_DEL_MISSING>');
+		}
+	}
+	
+	setup = true;
+
 	mem.setup();
 };
 
 module.exports.defineSet = function (func) {
+	if (setup) {
+		logger.warn('.defineSet() should not be called after gracenode.start()');
+	}
 	if (typeof func !== 'function') {
 		throw new Error('<SESSION_SET_MUST_BE_FUNCTION>');
 	}
@@ -47,6 +65,9 @@ module.exports.defineSet = function (func) {
 };
 
 module.exports.defineDel = function (func) {
+	if (setup) {
+		logger.warn('.defineDel() should not be called after gracenode.start()');
+	}
 	if (typeof func !== 'function') {
 		throw new Error('<SESSION_DEL_MUST_BE_FUNCTION>');
 	}
@@ -54,6 +75,9 @@ module.exports.defineDel = function (func) {
 };
 
 module.exports.defineGet = function (func) {
+	if (setup) {
+		logger.warn('.defineGet() should not be called after gracenode.start()');
+	}
 	if (typeof func !== 'function') {
 		throw new Error('<SESSION_GET_MUST_BE_FUNCTION>');
 	}

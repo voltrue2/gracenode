@@ -170,6 +170,24 @@ describe('gracenode.udp', function () {
 		});
 	});
 
+	it('can set custom session set and get', function () {
+		var data = {};
+		gn.session.defineSet(function (id, sess, cb) {
+			data[id] = sess;
+			cb();
+		});
+		gn.session.defineGet(function (id, cb) {
+			if (!data[id]) {
+				return cb(new Error('SessionNotFound'));
+			}
+			cb(null, data[id]);
+		});
+		gn.session.defineDel(function (id, cb) {
+			delete data[id];
+			cb();
+		});
+	});
+
 	it('can repeat client to server secure communication multiple times', function (done) {
 		var clientMsg = 'Safe';
 		var serverMsg = 'Safe ehco';

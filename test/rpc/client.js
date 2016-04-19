@@ -4,16 +4,15 @@ var gn = require('../../src/gracenode');
 var sclient = require('./simpleClient');
 var req = require('../src/request');
 
-var secure = true;
 var ip = process.argv[2];
 var httpPort = process.argv[3];
 var port = process.argv[4];
-
+var max = process.argv[5] || 1;
 var cmd = 1;
 
 gn.config({
 	cluster: {
-		max: process.argv[5] || 0
+		max: process.argv[6] || 0
 	}
 });
 gn.start(function () {
@@ -34,23 +33,24 @@ gn.start(function () {
 			var sid = res.sessionId;
 			// RPC response receiver
 			var counter = 0;
-			var max = 3;
 			// RPC send
+			var recv = function (resp) {
+				counter += 1;
+				console.log('response:', counter, resp);
+				if (max === counter) {
+					gn.stop();
+				}
+			};
+			var send = function (error) {
+				if (error) {
+					return gn.stop(error);
+				}
+				console.log('RPC sent:', i);
+			};
 			for (var i = 0; i < max; i++) {
-				sclient.secureReceiver(cipher, function (resp) {
-					counter += 1;
-					console.log('response:', counter, resp);
-					if (max === counter) {
-						gn.stop();
-					}
-				});
+				sclient.secureReceiver(cipher, recv);
 				cipher.seq += 1;
-				sclient.secureSender(sid, cipher, cmd, cipher.seq, { message: 'Hello ' + i }, function (error) {
-					if (error) {
-						return gn.stop(error);
-					}
-					console.log('RPC sent:', i);
-				});
+				sclient.secureSender(sid, cipher, cmd, cipher.seq, { message: 'Hello ' + i }, send);
 			}
 		});
 	});
