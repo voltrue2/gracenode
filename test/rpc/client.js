@@ -1,63 +1,57 @@
-var net = require('net');
-var host = process.argv[2] || 'localhost';
-var port = process.argv[3] || 8889;
-var interval = process.argv[4] ? process.argv[4] * 1000 : 1000;
+'use strict';
 
-var PacketParser = require('../../lib/packet');
-var protocol = require('../../lib/packet/protocol');
+var gn = require('../../src/gracenode');
+var sclient = require('./simpleClient');
+var req = require('../src/request');
 
-var MAX = 10;
-var counter = 0;
+var secure = true;
+var ip = process.argv[2];
+var httpPort = process.argv[3];
+var port = process.argv[4];
 
-var client = new net.Socket();
-client.connect(port, host, function () {
-	var call = function () {
+var cmd = 1;
 
-		if (counter === MAX) {
-			//done
-			client.end();
-			return;
+gn.config({
+	cluster: {
+		max: process.argv[5] || 0
+	}
+});
+gn.start(function () {
+	sclient.start(ip, port, function (error) {
+		if (error) {
+			return gn.stop(error);
 		}
-
-		counter++;
-
-		console.log('send packet #' + counter);
-
-		var list = [];
-		for (var i = 0; i < 1; i++) {
-			list.push(counter * i);
-		}
-
-		var packet;
-		var cmdId = 1;
-		var seq = 0;
-		var payload = JSON.stringify({ a: 'AAA', b: 'BBB', c: 10000, d: 53.632, list: list });
-		// regular TCP
-		var packetParser = new PacketParser(console);
-		packet = packetParser.createReq(cmdId, seq, payload);
-		// send
-		client.write(packet);
-		setTimeout(call, interval);
-	};
-	console.log('send packet every', (interval / 1000), 'seconds');
-	call();
-});
-
-client.on('data', function (data) {
-	console.log('response from the server:', data);
-	var parsed = protocol.parseData(data);
-	console.log('parsed response from the server:', parsed, JSON.parse(parsed.payload));
-});
-
-client.on('close', function () {
-	console.log('closed');
-});
-
-client.on('error', function (data) {
-	console.log('error:', data);
-	process.exit();
-});
-
-process.on('uncaughtException', function () {
-	console.error(arguments);
+		req.POST('http://' + ip + ':' + httpPort + '/auth', null, null, function (error, res, st) {
+			if (error) {
+				return gn.stop(error);
+			}
+			var cipher = {
+				cipherKey: new Buffer(res.cipherData.cipherKey.data),
+				cipherNonce: new Buffer(res.cipherData.cipherNonce.data),
+				macKey: new Buffer(res.cipherData.macKey.data),
+				seq: res.cipherData.seq
+			};
+			var sid = res.sessionId;
+			// RPC response receiver
+			var counter = 0;
+			var max = 3;
+			// RPC send
+			for (var i = 0; i < max; i++) {
+				sclient.secureReceiver(cipher, function (resp) {
+					counter += 1;
+					console.log('response:', counter, resp);
+					if (max === counter) {
+						gn.stop();
+					}
+				});
+				cipher.seq += 1;
+				sclient.secureSender(sid, cipher, cmd, cipher.seq, { message: 'Hello ' + i }, function (error) {
+					if (error) {
+						return gn.stop(error);
+					}
+					console.log('RPC sent:', i);
+				});
+			}
+		});
+	});
 });

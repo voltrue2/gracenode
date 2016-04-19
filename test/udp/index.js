@@ -85,7 +85,7 @@ describe('gracenode.udp', function () {
 	it('can set up session + encryption/decryption for UDP server and HTTP authentication endpoint', function () {
 		gn.session.useUDPSession();
 		gn.http.post('/udpauth', function (req, res) {
-			gn.session.setHTTPSession(req, res, 'session data', function (error) {
+			gn.session.setHTTPSession(req, res, { msg: 'session data' }, function (error) {
 				assert.equal(error, null);
 				res.json({
 					sessionId: req.args.sessionId,

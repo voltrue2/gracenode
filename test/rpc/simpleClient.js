@@ -43,7 +43,7 @@ exports.secureSender = function (sid, cipher, commandId, seq, msg, cb) {
 	uuid.toBytes().copy(session, 0, 0, uuid.getByteLength());
 	session.writeUInt32BE(seq, 16);
 
-	logger.debug('request encrypted w/', sid, seq);
+	logger.debug('request encrypted w/', sid, cipher);
 
 	var encrypted = ce.encrypt(
 		cipher.cipherKey,

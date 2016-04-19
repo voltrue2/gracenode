@@ -6,6 +6,10 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### Session stored cipher data can now be either serialized (node.js native) Buffer or base64 encoded string
+
+#### Default in memory session now supports cluster: session data is now shared among all the workers
+
 #### gracenode.rpc.info() added
 
 #### gracenode.udp.info() added

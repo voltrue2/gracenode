@@ -53,7 +53,7 @@ gn.rpc.hook(1, function hookForOne(state, next) {
 gn.start();
 
 function handleAuth(req, res) {
-        var data = 'session data';
+        var data = { message: 'session data' };
         gn.session.setHTTPSession(req, res, data, function (error) {
                 if (error) {
                         return res.error(error);

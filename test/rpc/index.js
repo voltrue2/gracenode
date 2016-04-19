@@ -132,7 +132,7 @@ describe('gracenode.rpc', function () {
 	it('can setup session + encryption for RPC and HTTP enpoint for authentication', function () {
 		gn.session.useRPCSession();
 		gn.http.post('/rpcauth', function (req, res) {
-			gn.session.setHTTPSession(req, res, 'session data', function (error) {
+			gn.session.setHTTPSession(req, res, { msg: 'session data' }, function (error) {
 				assert.equal(error, null);
 				res.json({
 					sessionId: req.args.sessionId,
