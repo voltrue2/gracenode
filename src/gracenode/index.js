@@ -248,11 +248,16 @@ function execOnExceptions(error) {
 }
 
 function startCluster(cb) {
-	cluster.start(clusterConfig);
-	if (cluster.isCluster()) {
-		log.setPrefix((cluster.isMaster() ? 'MASTER' : 'WORKER') + ': ' + process.pid);
-	}
-	cb();
+	cluster.start(clusterConfig, function () {
+		if (cluster.isCluster()) {
+			log.setPrefix(
+				(cluster.isMaster() ? 'MASTER' : 'WORKER') +
+				':' + process.pid +
+				(cluster.id() ? ' ' + cluster.id() : '') 
+			);
+		}
+		cb();
+	});
 }
 
 function setupLog(cb) {

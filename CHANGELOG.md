@@ -2,6 +2,40 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.9
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix in in memory session TTL running with cluster
+
+TTL update was not including the duration of the session
+
+#### Minor parser optimaization for RPC packet parser
+
+#### Cluster log output now has worker ID along with PID
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+#### RPC packet parser minor optimization
+
 ## Version 3.0.8
 
 ## Added

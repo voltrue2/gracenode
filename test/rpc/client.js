@@ -11,6 +11,9 @@ var max = process.argv[5] || 1;
 var cmd = 1;
 
 gn.config({
+	log: {
+		console: false
+	},
 	cluster: {
 		max: process.argv[6] || 0
 	}
@@ -20,7 +23,7 @@ gn.start(function () {
 		if (error) {
 			return gn.stop(error);
 		}
-		req.POST('http://' + ip + ':' + httpPort + '/auth', null, null, function (error, res, st) {
+		req.POST('http://' + ip + ':' + httpPort + '/auth', null, null, function (error, res) {
 			if (error) {
 				return gn.stop(error);
 			}
@@ -47,8 +50,8 @@ gn.start(function () {
 				}
 				console.log('RPC sent:', i);
 			};
+			sclient.recv(cipher, recv);
 			for (var i = 0; i < max; i++) {
-				sclient.secureReceiver(cipher, recv);
 				cipher.seq += 1;
 				sclient.secureSender(sid, cipher, cmd, cipher.seq, { message: 'Hello ' + i }, send);
 			}

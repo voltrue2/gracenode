@@ -130,40 +130,6 @@ Connection.prototype._handleData = function (packet) {
 		});
 		that.logger.info('all incoming commands handled:', list.join(','));
 	};
-	var routeAndExec = function (parsedData, sessionData, next) {
-		var cmd = router.route(parsedData);
-		
-		if (!cmd) {
-			var state = {};
-			if (sessionData) {
-				state.sessionId = sessionData.sessionId;
-				state.seq = sessionData.seq;
-				state.session = sessionData.data;
-			}
-			var err = { message: 'NOT_FOUND' };
-			that._prepareWrite(state, err, function (error, data) {
-				if (error) {
-					return next(error);
-				}
-				var notFound = parser.createReply(
-					parser.STATUS_CODE.NOT_FOUND,
-					parsedData.seq,
-					data
-				);
-				that._write(notFound);
-				next();
-			});
-			return;
-		}
-
-		that.logger.info(
-			'command routing resolved:',
-			'command:', cmd.id, cmd.name,
-			'(seq:' + parsedData.seq + ')'
-		);
-		
-		executeCmd(that, cmd, parsedData, sessionData, next);	
-	};
 
 	// route to commands and execute each command handler
 	async.eachSeries(parsed, function (parsedData, next) {
@@ -172,32 +138,72 @@ Connection.prototype._handleData = function (packet) {
 			return next();
 		}
 	
-		if (that.cryptoEngine.decrypt) {
-			that.logger.info('using decryption for incoming packet');
-			that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
-				if (error) {
-					that.logger.error('failed to decrypt:', error);
-					var forbidden = parser.createReply(
-						parser.STATUS_CODE.FORBIDDEN, parsedData.seq,
-						''
-					);
-					that._write(forbidden);
-					return next();
-				}
-				var sessionData = {
-					sessionId: sid,
-					seq: seq,
-					data: sdata
-				};
-				parsedData.payload = decrypted;
-				routeAndExec(parsedData, sessionData, next);
-			});
-			return;
+		if (!that.cryptoEngine.decrypt) {
+			return that._routeAndExec(parser, parsedData, null, next);
 		}
-		
-		routeAndExec(parsedData, null, next);
-	
+		that.logger.info('using decryption for incoming packet');
+		that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
+			if (error) {
+				that.logger.error('failed to decrypt:', error);
+				var forbidden = parser.createReply(
+					parser.STATUS_CODE.FORBIDDEN, parsedData.seq,
+					''
+				);
+				if (forbidden instanceof Error) {
+					return next(forbidden);
+				}
+				that._write(forbidden);
+				return next();
+			}
+			var sessionData = {
+				sessionId: sid,
+				seq: seq,
+				data: sdata
+			};
+			parsedData.payload = decrypted;
+			that._routeAndExec(parser, parsedData, sessionData, next);
+		});
 	}, done);
+};
+
+// private called from ._handleData()
+Connection.prototype._routeAndExec = function (parser, parsedData, sessionData, next) {
+	var cmd = router.route(parsedData);
+	
+	if (!cmd) {
+		var state = {};
+		if (sessionData) {
+			state.sessionId = sessionData.sessionId;
+			state.seq = sessionData.seq;
+			state.session = sessionData.data;
+		}
+		var that = this;
+		var err = { message: 'NOT_FOUND' };
+		this._prepareWrite(state, err, function (error, data) {
+			if (error) {
+				return next(error);
+			}
+			var notFound = parser.createReply(
+				parser.STATUS_CODE.NOT_FOUND,
+				parsedData.seq,
+				data
+			);
+			if (notFound instanceof Error) {
+				return next(notFound);
+			}
+			that._write(notFound);
+			next();
+		});
+		return;
+	}
+
+	this.logger.info(
+		'command routing resolved:',
+		'command:', cmd.id, cmd.name,
+		'(seq:' + parsedData.seq + ')'
+	);
+	
+	executeCmd(this, cmd, parsedData, sessionData, next);	
 };
 
 // private
@@ -324,6 +330,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 
 		that._prepareWrite(state, res, function (error, data) {
 			if (error) {
+				that.logger.error(error);
 				if (typeof cb === 'function') {
 					return cb(error);
 				}
@@ -340,6 +347,13 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				parsedData.seq,
 				data
 			);
+			if (replyPacket instanceof Error) {
+				that.logger.error(replyPacket);
+				if (typeof cb === 'function') {
+					return cb(error);
+				}
+				return;
+			}
 			that._write(replyPacket, true);
 
 			// check options

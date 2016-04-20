@@ -1,5 +1,6 @@
 'use strict';
 
+var async = require('../../lib/async');
 var gn = require('../../src/gracenode');
 var ce = new gn.lib.CryptoEngine();
 var net = require('net');
@@ -72,5 +73,37 @@ exports.secureReceiver = function (cipher, cb) {
 		} catch (e) {
 			cb(e);
 		}
+	});
+};
+
+// asynchronous receiver listener
+exports.recv = function (cipher, cb) {
+	client.on('data', function (buffer) {
+		var packets = packetParser.parse(buffer);
+		async.eachSeries(packets, function (packet, next) {
+			if (!packet) {
+				return next();
+			}
+			if (cipher) {
+				packet = ce.decrypt(
+					cipher.cipherKey,
+					cipher.cipherNonce,
+					cipher.macKey,
+					cipher.seq,
+					packet.payload
+				).toString();
+			} else {
+				packet = packet.payload;
+
+			}
+			try {
+				cb(JSON.parse(packet));
+			} catch (e) {
+				cb(e);
+			}
+			next();
+		}, function () {
+			logger.debug('recv done');
+		});
 	});
 };

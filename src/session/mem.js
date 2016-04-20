@@ -10,6 +10,7 @@ var CMD = {
 };
 
 var data = {};
+var logger;
 var dur;
 
 module.exports.setDuration = function (d) {
@@ -26,7 +27,7 @@ module.exports.setup = function () {
 				return cb(new Error('SessionNotFound'));
 			}
 			// update ttl
-			data[msg.sid].ttl = Date.now();
+			data[msg.sid].ttl = Date.now() + dur;
 			cb(null, sess.data);
 		});
 		gn.cluster.registerCommand(CMD.SET, function (msg, cb) {
@@ -44,8 +45,8 @@ module.exports.setup = function () {
 			}
 			cb();
 		});
-		return;
 	}
+	logger = gn.log.create('session.mem');
 };
 
 module.exports.get = function (id, cb) {
@@ -102,6 +103,7 @@ function removeExpired() {
 	var now = Date.now();
 	for (var id in data) {
 		if (now >= data[id].ttl) {
+			logger.verbose('session expired:', id, now, '>=', data[id].ttl);
 			delete data[id];
 		}
 	}
