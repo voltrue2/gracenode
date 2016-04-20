@@ -1,6 +1,5 @@
 'use strict';
 
-var async = require('../../lib/async');
 var gn = require('../../src/gracenode');
 var ce = new gn.lib.CryptoEngine();
 var net = require('net');
@@ -43,9 +42,6 @@ exports.secureSender = function (sid, cipher, commandId, seq, msg, cb) {
 	var session = new Buffer(16 + 4);
 	uuid.toBytes().copy(session, 0, 0, uuid.getByteLength());
 	session.writeUInt32BE(seq, 16);
-
-	logger.debug('request encrypted w/', sid, cipher);
-
 	var encrypted = ce.encrypt(
 		cipher.cipherKey,
 		cipher.cipherNonce,
@@ -54,6 +50,7 @@ exports.secureSender = function (sid, cipher, commandId, seq, msg, cb) {
 		JSON.stringify(msg)
 	);
 	var payload = Buffer.concat([ session, encrypted ]);
+	logger.debug('sender seq:', seq);
 	exports.sender(commandId, seq, payload, cb);
 };
 
@@ -78,18 +75,22 @@ exports.secureReceiver = function (cipher, cb) {
 
 // asynchronous receiver listener
 exports.recv = function (cipher, cb) {
+	var seq = cipher.seq;
 	client.on('data', function (buffer) {
 		var packets = packetParser.parse(buffer);
-		async.eachSeries(packets, function (packet, next) {
+		for (var i = 0, len = packets.length; i < len; i++) {
+			var packet = packets[i];
 			if (!packet) {
-				return next();
+				continue;
 			}
+			seq += 1;
+			logger.debug('recv seq:', seq);
 			if (cipher) {
 				packet = ce.decrypt(
 					cipher.cipherKey,
 					cipher.cipherNonce,
 					cipher.macKey,
-					cipher.seq,
+					seq,
 					packet.payload
 				).toString();
 			} else {
@@ -101,9 +102,6 @@ exports.recv = function (cipher, cb) {
 			} catch (e) {
 				cb(e);
 			}
-			next();
-		}, function () {
-			logger.debug('recv done');
-		});
+		}
 	});
 };

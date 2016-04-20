@@ -9,11 +9,14 @@ var httpPort = process.argv[3];
 var port = process.argv[4];
 var max = process.argv[5] || 1;
 var cmd = 1;
+var interval = 10;
 
 gn.config({
+	/*
 	log: {
 		console: false
 	},
+	*/
 	cluster: {
 		max: process.argv[6] || 0
 	}
@@ -35,26 +38,34 @@ gn.start(function () {
 			};
 			var sid = res.sessionId;
 			// RPC response receiver
-			var counter = 0;
+			var counter = 1;
 			// RPC send
 			var recv = function (resp) {
 				counter += 1;
 				console.log('response:', counter, resp);
-				if (max === counter) {
+				if (counter >= max) {
 					gn.stop();
 				}
 			};
-			var send = function (error) {
-				if (error) {
-					return gn.stop(error);
-				}
-				console.log('RPC sent:', i);
-			};
 			sclient.recv(cipher, recv);
-			for (var i = 0; i < max; i++) {
-				cipher.seq += 1;
-				sclient.secureSender(sid, cipher, cmd, cipher.seq, { message: 'Hello ' + i }, send);
-			}
+			var sender = function () {
+				setTimeout(function () {
+					cipher.seq += 1;
+					var seq = cipher.seq;
+					sclient.secureSender(sid, cipher, cmd, cipher.seq, { message: 'Hello ' + cipher.seq }, function (error) {
+						if (error) {
+							return gn.stop(error);
+						}
+						console.log('sent:', seq);
+					});
+					if (cipher.seq < max) {
+						sender();
+					} else {
+						console.log('done sending');
+					}
+				}, interval);
+			};
+			sender();
 		});
 	});
 });
