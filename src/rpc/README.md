@@ -25,7 +25,7 @@ rpc: {
 
 RPC server can optionally require each connected client to send `heartbeat` packet at certain internval before the connection times out.
 
-This is useful detecting disconnected clients without sending `FIN` packet.
+This is useful detecting disconnected clients without sending `FIN` packet caused by unexpected network disconnect such as client crash, network problemts etc.
 
 ### heartbeat packet
 
