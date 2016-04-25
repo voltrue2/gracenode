@@ -34,6 +34,12 @@ module.exports.setup = function (cb) {
 	logger = gn.log.create('UDP');
 	config = gn.getConfig('udp');
 
+	if (!gn.isSupportedVersion()) {
+		return gn.stop(new Error(
+			'UDP server does not support node.js version: ' + process.version
+		));
+	}
+
 	if (!config || !config.portRange) {
 		return cb();
 	}

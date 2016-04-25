@@ -35,6 +35,12 @@ module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
+	if (!gn.isSupportedVersion()) {
+		return gn.stop(new Error(
+			'RPC server does not support node.js version: ' + process.version
+		));
+	}
+
 	protocol.setup(gn);
 
 	if (!config || !config.host || !config.portRange) {

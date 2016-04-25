@@ -6,7 +6,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-None
+#### Running node.js version check added to UDP and RPC for immediate exit of process on detecting incorrect node.js version
 
 ## Changed
 

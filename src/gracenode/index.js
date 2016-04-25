@@ -20,6 +20,7 @@ var renderConf;
 var clusterConfig;
 var onExceptions = [];
 var ready = false;
+var isSupportedVersion = true;
 
 var ER = {
 	NOT_WRITABLE: '<NOT_WRITABLE>',
@@ -139,15 +140,6 @@ exports.start = function (cb) {
 				cb();
 			}
 
-			var gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
-			var currentV = parseFloat(process.version.replace('v', ''));
-			if (gnReqVersion > currentV) {
-				logger.warn(
-					'gracenode requires', pkg.engine.engine,
-					'but current version of node is', process.version
-				);
-			}
-
 			ready = true;
 		};
 		async.series(tasks, done);
@@ -161,6 +153,10 @@ exports.stop = function (error) {
 		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
+};
+
+exports.isSupportedVersion = function () {
+	return isSupportedVersion;
 };
 
 function applyConfig() {
@@ -216,6 +212,15 @@ function setup(cb) {
 		}
 		execOnExceptions(error);
 	});
+	var gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
+	var currentV = parseFloat(process.version.replace('v', ''));
+	if (gnReqVersion > currentV) {
+		logger.warn(
+			'gracenode requires', pkg.engine.engine,
+			'but current version of node is', process.version
+		);
+		isSupportedVersion = false;
+	}
 	cb();
 }
 
