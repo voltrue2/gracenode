@@ -18,6 +18,8 @@ TTL update was not including the duration of the session
 
 #### Cluster log output now has worker ID along with PID
 
+#### Boilerplate added basic CSS and Javascript including exmaple template HTML files
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
