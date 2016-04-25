@@ -1,11 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head></head>
+
+<head>
+
+{{ require(common/meta.html) }}
+
+</head>
+
 <body>
+
+{{ require(common/header.html) }}
+
+<div class="content">
+
+<div class="main">
+
 <h1>Message from the server: Hello {{message}}</h1>
 <h2>Today is {{showToday(today)}}</h2>
+
 {{ if ({message} != World):
-	<a href="/hello/World">Say hello to the world.</a>
+<div class="box">
+<a href="/hello/World">Say hello to the world.</a>
+</div>
 endif }}
+
+<table>
+<tr>
+<th>Foo</th>
+<th>Boo</th>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+</tr>
+</table>
+
+</div>
+
+</div>
+
+{{ require(common/footer.html) }}
+
 </body>
+
 </html>

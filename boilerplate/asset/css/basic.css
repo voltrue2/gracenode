@@ -1,0 +1,209 @@
+html {
+	margin: 0;
+	padding: 0;
+	font-family: 'sanfrantext', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	/* minus the height of footer */
+	height: 96%;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	/* minus the height of footer */
+	height: 96%;
+	/* controlled by js */
+	opacity: 0;
+	transition: opacity 0.3s ease-out;
+}
+
+h1 {
+	padding: 2px 6px;
+	border-bottom: 3px solid rgb(51, 133, 255);
+	border-radius: 0 0 6px 6px;
+}
+
+h2 {
+	padding: 2px 6px;
+	border-left: 3px solid rgb(51, 133, 255);
+	border-radius: 6px 0 0 6px;
+}
+
+table {
+	border-collapse: collapse;
+	border: 1px solid #ddd;
+	width: 100%;
+}
+
+th {
+	text-align: center;
+	border: 1px solid #ddd;
+	padding: 4px 10px;
+	background: #fff;
+}
+
+td {
+	border: 1px solid #ddd;
+	padding: 4px 10px;
+}
+
+tr {
+	background #fff;
+	transition: all 0.3s ease-out;
+}
+
+tr:hover {
+	background-color: #efefef;
+}
+
+/*************
+* Anchor Tag *
+*************/
+
+a {
+	text-decoration: none;
+	color: rgb(51, 119, 255);
+	transition: color 0.3s ease-out;
+}
+
+a:hover {
+	color: rgb(0, 51, 153);
+}
+
+/************
+* Clickable *
+************/
+
+.clickable {
+	cursor: pointer;
+	transition: all 0.3s ease-out;
+}
+
+.clickable:hover {
+	opacity: 0.7;
+	transform: rotate(360deg);
+}
+
+/********
+* Icons *
+********/
+
+.icon {
+	margin: 0 6px;	
+}
+
+/******
+* Box *
+******/
+
+.box {
+	border: 1px solid #ddd;
+	border-top: 3px solid rgb(51, 133, 255); 
+	border-radius: 4px;
+	padding: 6px;
+	margin: 4px;
+}
+
+
+/*****************
+* Blurred Filter *
+*****************/
+
+.white-glass {
+	background: rgba(255, 255, 255, 0.4);
+	filter: blur(5px);
+}
+
+/**************
+* Page Header *
+**************/
+
+.header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9px;
+	width: 100%;
+	height: 4%;
+	line-height: 150%;
+	font-size: 100%;
+	padding: 0 10px;
+	color: rgb(255, 255, 255);
+	background: #333;
+}
+
+/************************
+* Left Auto-Hiding Menu *
+************************/
+
+.left-menu {
+	position: fixed;
+	/* below .header element */
+	top: 4%;
+	left: -1000;
+	width: 30%;
+	/* minus the height of header and footer */
+	height: 92%;
+	background: rgb(240, 242, 244);
+	color: rgb(43, 49, 59);
+	border-right: 1px solid rgb(211, 215, 222);
+	display: none;
+	overflow: auto;
+	transition: all 0.3s ease-out;
+}
+
+.left-menu .tab {
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background: rgb(226, 228, 233);
+	border-bottom: 1px solid rgb(211, 215, 222);
+	font-size: 30px;
+}
+
+.left-menu .menu-item {
+	padding: 10px;
+	transition: all 0.3s ease-out;
+	border-bottom: 1px solid rgb(211, 215, 222);
+}
+
+.left-menu .menu-item:hover {
+	background: rgb(229, 238, 255);
+	border-bottom: 1px solid rgb(203, 212, 231);
+}
+
+/**********************************
+*         Page Content            *
+* Goes between .header and footer *
+**********************************/
+
+.content {
+	position: relative;
+	/* below the .header element */
+	top: 4%;
+	/* auto changing left by js */
+	left: 0;
+	/* auto changing width by js */
+	width: 100%;
+	transition: all 0.3s ease-out;
+}
+
+.content .main {
+	padding: 0 10px;
+}
+
+/***************
+* Page Footer  *
+***************/
+
+.footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 4%;
+	line-height: 300%;
+	padding: 0 10px;
+	background rgb(255, 255, 255);
+	border-top: 1px solid rgb(200, 200, 200);
+}

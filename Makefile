@@ -16,7 +16,7 @@ install: ## Initial installation
 	@echo 'done'
 
 lint: ## Execute lint against the source code
-	./bin/lint index.js src/ lib/ boilerplate/
+	./bin/lint index.js src/ lib/ boilerplate/api
 
 .PHONY: test
 ifndef log
