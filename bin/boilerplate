@@ -1,16 +1,116 @@
-#!/bin/bash
+#!/usr/bin/env node
 
-PWD=`pwd`;
-PATH="$PWD/node_modules/gracenode/boilerplate";
+var gn = require('gracenode');
+var readline = require('readline');
+var fs = require('fs');
+var exec = require('child_process').exec;
+var rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+var bPath;
+var appPath;
+var async;
 
-echo "Creating a bolierplate...";
- 
-/bin/cp -rv "$PATH/"* "$PWD";
+var logger;
 
-/bin/ln -sf "$PWD"/configs/my.json "$PWD"/configs/config.json
+gn.config({
+	log: {
+		color: true,
+		console: true,
+		level: '>= info'
+	}
+});
+gn.start(start);
 
-/bin/mkdir "$PWD"/logs
+function start() {
+	appPath = gn.getRootPath().replace('node_modules/gracenode/bin/', '');
+	bPath = appPath + 'node_modules/gracenode/boilerplate/';
+	logger = gn.log.create('setup boilerplate');
 
-/bin/mkdir "$PWD"/daemonlogs
+	logger.info('Current application directory:', appPath);
+	logger.info('Working from:', bPath);
 
-echo "Your application is ready. Execute node index.js -l daemonlogs/ to start your application...";
+	async = gn.require('../lib/async');
+
+	async.series([
+		cpFiles,
+		mkdir,
+		setHTTPPort,
+		createSymlink,
+		startHTTPServer
+	],
+	function (error) {
+		gn.stop(error);
+	});	
+}
+
+function cpFiles(next) {
+	var cmd = 'cp -rv ' + bPath + '* ' + appPath;
+	exec(cmd, function (error, out) {
+		if (error) {
+			return next(error);
+		}
+		logger.info(out);
+		next();
+	});
+}
+
+function mkdir(next) {
+	var logPath = appPath + 'logs/';
+	var dLogPath = appPath + 'daemonlogs/';
+	var create = function (path, cb) {
+		logger.info('Create directory:', path);
+		exec('mkdir ' + path, cb);
+	};
+	create(logPath, function (error) {
+		if (error) {
+			return next(error);
+		}
+		create(dLogPath, next);
+	});
+}
+
+function setHTTPPort(next) {
+	var confPath = appPath + 'configs/my.json';
+	rl.question('Enter port number for HTTP server: ', function (res) {
+		fs.readFile(confPath, 'utf8', function (error, text) {
+			if (error) {
+				return next(error);
+			}
+			text = text.replace('8888', res);
+			logger.info('Set HTTP server port to:', res);
+			fs.writeFile(confPath, text, next);
+		});
+	});
+}
+
+function createSymlink(next) {
+	var cmd = 'ln -sf ' +
+		appPath + 'configs/my.json ' +
+		appPath + 'configs/config.json';
+	exec(cmd, function (error, out) {
+		if (error) {
+			return next(error);
+		}
+		logger.info(out);
+		next();
+	});
+}
+
+function startHTTPServer(next) {
+	rl.question('Do you want to start HTTP server now? (Y/N): ', function (res) {
+		if (res === 'Y' || res === 'y') {
+			exec('make -C ' + appPath + ' start', function (error, out) {
+				if (error) {
+					return next(error);
+				}
+				logger.info(out);
+				next();
+			});
+			return;
+		}
+		logger.info('Not starting HTTP server [ DONE ]');
+		next();
+	});
+}

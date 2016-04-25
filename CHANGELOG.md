@@ -14,6 +14,10 @@ This is a list of manually mantained changes and updates for each version.
 
 TTL update was not including the duration of the session
 
+#### Rewrote boilerplate script in node.js from bash
+
+Added a user prompt to set HTTP server port and optional start of HTTP server when creating a project from boilerplate 
+
 #### Minor parser optimaization for RPC packet parser
 
 #### Cluster log output now has worker ID along with PID
