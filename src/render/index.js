@@ -44,6 +44,10 @@ exports.render = function (path, vars, cacheTtl) {
 	return render.render(path, vars);
 };
 
+exports.render.getAllPaths = function () {
+	return render.getAllPaths();
+};
+
 exports.render.func = function (name, handler) {
 	func.add(name, handler);
 };

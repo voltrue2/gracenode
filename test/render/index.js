@@ -42,6 +42,31 @@ describe('gracenode.render', function () {
 		assert.equal(expected, rendered);
 	});
 
+	it('can get all pre-rendered template paths', function () {
+		var paths = gn.render.getAllPaths();
+		var list = [
+			'/bad',
+			'/func.text',
+			'/index',
+			'/gn',
+			'/one/index',
+			'/large/content.1',
+			'/large/1',
+			'/large/list.1',
+			'/large/list.2',
+			'/large/list.3',
+			'/large/script.1.js',
+			'/three/index',
+			'/three/style.css',
+			'/three/script.js',
+			'/two/require',
+			'/two/require2'
+		];
+		for (var i = 0, len = list.length; i < len; i++) {
+			assert.notEqual(list.indexOf(paths[i]), -1);
+		}
+	});
+
 	it('can render a template and require css style and javascript', function () {
 		var data = {
 			title: 'ペットの名前一覧',
