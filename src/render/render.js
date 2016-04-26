@@ -58,6 +58,10 @@ endif }}
 endfor }}
 */
 
+exports.getAllPaths = function () {
+	return loader.getAllPaths();
+};
+
 exports.prerender = function (content) {
 	// remove line breaks and tabs
 	content = content.replace(REG.LB, LB);

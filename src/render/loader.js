@@ -40,6 +40,14 @@ exports.loadClient = function (cb) {
 	};
 };
 
+exports.getAllPaths = function () {
+	var paths = [];
+	for (var path in loaded) {
+		paths.push(path);
+	}
+	return paths;
+};
+
 exports.getLoadedByPath = function (path) {
 	if (loaded[path]) {
 		return loaded[path];
