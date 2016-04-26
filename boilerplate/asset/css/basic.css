@@ -19,14 +19,14 @@ body {
 
 h1 {
 	padding: 2px 6px;
-	border-bottom: 3px solid rgb(51, 133, 255);
-	border-radius: 0 0 6px 6px;
+	border-left: 6px solid rgb(51, 133, 255);
+	border-bottom: 1px solid rgb(51, 133, 255);
 }
 
 h2 {
 	padding: 2px 6px;
-	border-left: 3px solid rgb(51, 133, 255);
-	border-radius: 6px 0 0 6px;
+	border-left: 6px solid rgb(51, 133, 255);
+	border-bottom: 1px solid #ddd;
 }
 
 table {
@@ -70,6 +70,85 @@ a:hover {
 	color: rgb(0, 51, 153);
 }
 
+/***********************************************
+* Horizontal Centering for Fixed Width Element *
+***********************************************/
+
+.hr-center {
+	margin-left: auto !important;
+	margin-right: auto !important;	
+}
+
+/**********
+* Buttons *
+**********/
+
+.btn {
+	/* disable text selection */
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none;   /* Chrome/Safari/Opera */
+	-khtml-user-select: none;    /* Konqueror */
+	-moz-user-select: none;      /* Firefox */
+	-ms-user-select: none;       /* Internet Explorer/Edge */
+	user-select: none;           /* Non-prefixed version, currently */
+	width: 100px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 16px;
+	border-radius: 4px;
+	color: #fff;
+	background: #03d568;
+	border: 2px solid #03d568;
+	cursor: pointer;
+	margin: 1px;
+	transition: all 0.3s ease-out;
+}
+
+.btn-small {
+	/* disable text selection */
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none;   /* Chrome/Safari/Opera */
+	-khtml-user-select: none;    /* Konqueror */
+	-moz-user-select: none;      /* Firefox */
+	-ms-user-select: none;       /* Internet Explorer/Edge */
+	user-select: none;           /* Non-prefixed version, currently */
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 16px;
+	border-radius: 4px;
+	color: #fff;
+	background: #03d568;
+	border: 2px solid #03d568;
+	cursor: pointer;
+	margin: 1px;
+	transition: all 0.3s ease-out;
+}
+
+.btn-cancel {
+	background: #ff4e48 !important;
+	border: 2px solid #ff4e48 !important;
+}
+
+.btn-disable {
+	background: #ccc !important;
+	border: 2px solid #ccc;
+	color: #999 !important;
+	pointer-events: none;
+}
+
+.btn:hover,
+.btn-small:hover {
+	transform: scale(0.98);
+	background: #70d4a0;
+}
+
+.btn-cancel:hover {
+	background: #fe6e69 !important;
+}
+
 /************
 * Clickable *
 ************/
@@ -99,7 +178,7 @@ a:hover {
 .box {
 	border: 1px solid #ddd;
 	border-top: 3px solid rgb(51, 133, 255); 
-	border-radius: 4px;
+	border-radius: 4px 4px 0 0;
 	padding: 6px;
 	margin: 4px;
 }
@@ -122,7 +201,7 @@ a:hover {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 9px;
+	z-index: 1;
 	width: 100%;
 	height: 4%;
 	line-height: 150%;
@@ -141,7 +220,7 @@ a:hover {
 	/* below .header element */
 	top: 4%;
 	left: -1000;
-	width: 30%;
+	width: 20%;
 	/* minus the height of header and footer */
 	height: 92%;
 	background: rgb(240, 242, 244);
@@ -185,6 +264,8 @@ a:hover {
 	left: 0;
 	/* auto changing width by js */
 	width: 100%;
+	/* top offset for scroll */
+	padding-bottom: 8%;
 	transition: all 0.3s ease-out;
 }
 
@@ -200,10 +281,11 @@ a:hover {
 	position: fixed;
 	bottom: 0;
 	left: 0;
+	z-index: 2;
 	width: 100%;
 	height: 4%;
 	line-height: 300%;
 	padding: 0 10px;
-	background rgb(255, 255, 255);
 	border-top: 1px solid rgb(200, 200, 200);
+	background: rgb(255, 255, 255);
 }
