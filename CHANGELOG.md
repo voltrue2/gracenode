@@ -10,7 +10,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
-none
+#### gracenode.start() executiong order has changed: bootstapping of external module will be the last operation now
 
 ## Deprecated
 

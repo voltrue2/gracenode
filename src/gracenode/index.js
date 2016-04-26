@@ -118,13 +118,13 @@ exports.start = function (cb) {
 			startCluster,
 			setupLog,
 			execLint,
-			startMod,
 			setupLogCleaner,
 			setupRender,
 			setupSession,
 			startHTTP,
 			startUDP,
-			startRPC
+			startRPC,
+			startMod
 		];
 		var done = function (error) {
 			if (error) {
