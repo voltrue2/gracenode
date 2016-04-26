@@ -1,0 +1,214 @@
+#!/usr/bin/env node
+
+var gn = require('gracenode');
+var readline = require('readline');
+var fs = require('fs');
+var exec = require('child_process').exec;
+var rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+var bPath;
+var appPath;
+var async;
+
+var logger;
+
+gn.config({
+	log: {
+		color: true,
+		console: true,
+		level: '>= info'
+	}
+});
+gn.start(start);
+
+function start() {
+	appPath = gn.getRootPath().replace('node_modules/gracenode/bin/', '');
+	bPath = appPath + 'node_modules/gracenode/cms/';
+	logger = gn.log.create('setup CMS');
+
+	logger.info('Current application directory:', appPath);
+	logger.info('Working from:', bPath);
+
+	async = gn.require('../lib/async');
+
+	async.series([
+		cpFiles,
+		mkdir,
+		setHTTPPort,
+		setupDB,
+		createSymlink,
+		startHTTPServer
+	],
+	function (error) {
+		gn.stop(error);
+	});	
+}
+
+function cpFiles(next) {
+	var cmd = 'cp -rv ' + bPath + '* ' + appPath;
+	exec(cmd, function (error, out) {
+		if (error) {
+			return next(error);
+		}
+		logger.info(out);
+		next();
+	});
+}
+
+function mkdir(next) {
+	var logPath = appPath + 'logs/';
+	var dLogPath = appPath + 'daemonlogs/';
+	var create = function (path, cb) {
+		logger.info('Create directory:', path);
+		exec('mkdir ' + path, cb);
+	};
+	create(logPath, function (error) {
+		if (error) {
+			return next(error);
+		}
+		create(dLogPath, next);
+	});
+}
+
+function setHTTPPort(next) {
+	var confPath = appPath + 'configs/my.json';
+	rl.question('Enter port number for HTTP server: ', function (res) {
+		fs.readFile(confPath, 'utf8', function (error, text) {
+			if (error) {
+				return next(error);
+			}
+			text = text.replace('8888', res);
+			logger.info('Set HTTP server port to:', res);
+			fs.writeFile(confPath, text, next);
+		});
+	});
+}
+
+function setupDB(next) {
+	var conf = {
+		mysql: {},
+		mongo: {}
+	};
+	var addDatabase = function () {
+		var database = {};
+		var setDatabaseType = function (cb) {
+			rl.question('Select database type (mysql/mongo): ', function (res) {
+				if (!res) {
+					return setDatabaseType(cb);
+				}
+				if (res !== 'mysql' && res !== 'mongo') {
+					logger.error('Incorrect database type');
+					return setDatabaseType(cb);
+				}
+				database.type = res;
+				cb();
+			});
+		};
+		var setDatabaseName = function (cb) {
+			rl.question('Enter database name: ', function (res) {
+				if (!res) {
+					return setDatabaseName(cb);
+				}
+				if (conf[database.type][res]) {
+					logger.error('Database name already used');
+					return setDatabaseName(cb);
+				}
+				database.name = res;
+				cb();
+			});
+		};
+		var setDatabaseHost = function (cb) {
+			rl.question('Enter database host: ', function (res) {
+				database.host = res || null;
+				cb();
+			});
+		};
+		var setDatabasePort = function (cb) {
+			rl.question('Enter database port: ', function (res) {
+				database.port = res || null;
+				cb();
+			});
+		};
+		var setDatabaseUser = function (cb) {
+			rl.question('Enter database user: ', function (res) {
+				database.user = res || null;
+				cb();
+			});
+		};
+		var setDatabasePass = function (cb) {
+			rl.question('Enter database password: ', function (res) {
+				database.password = res || null;
+				cb();
+			});
+		};
+		var done = function () {
+			logger.info(database);
+			conf[database.type][database.name] = {
+				host: database.host,
+				port: database.port,
+				user: database.user,
+				password: database.password
+			};
+			rl.question('Add more database?: (Y/N)', function (res) {
+				if (res === 'Y' || res === 'y') {
+					return addDatabase();
+				}
+				var confPath = appPath + 'configs/my.json';
+				fs.readFile(confPath, 'utf8', function (error, text) {
+					if (error) {
+						return next(error);
+					}
+					var configData = JSON.parse(text);
+					for (var type in conf) {
+						configData[type] = conf[type];
+					}
+					logger.info('Database set up complete', conf);
+					fs.writeFile(confPath, JSON.stringify(configData), next);
+				});
+			});
+		};
+		var tasks = [
+			setDatabaseType,
+			setDatabaseName,
+			setDatabaseHost,
+			setDatabasePort,
+			setDatabaseUser,
+			setDatabasePass
+		];
+		async.series(tasks, done);
+	};
+
+	addDatabase();
+}
+
+function createSymlink(next) {
+	var cmd = 'ln -sf ' +
+		appPath + 'configs/my.json ' +
+		appPath + 'configs/config.json';
+	exec(cmd, function (error, out) {
+		if (error) {
+			return next(error);
+		}
+		logger.info(out);
+		next();
+	});
+}
+
+function startHTTPServer(next) {
+	rl.question('Do you want to start HTTP server now? (Y/N): ', function (res) {
+		if (res === 'Y' || res === 'y') {
+			exec('make -C ' + appPath + ' start', function (error, out) {
+				if (error) {
+					return next(error);
+				}
+				logger.info(out);
+				next();
+			});
+			return;
+		}
+		logger.info('Not starting HTTP server [ DONE ]');
+		next();
+	});
+}
