@@ -74,7 +74,8 @@ function mkdir(next) {
 }
 
 function npm(next) {
-	exec('npm install', function (error, out) {
+	logger.info('install npm packages in', appPath);
+	exec('cd ' + appPath + ' && npm install', function (error, out) {
 		if (error) {
 			logger.error(error);
 			return next(error);

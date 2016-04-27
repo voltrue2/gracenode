@@ -1,17 +1,17 @@
 'use strict';
 
 var fs = require('fs');
-var async = require('../../lib/async');
 var log = require('gracelog');
 var aeterno = require('aeterno');
 var cluster = require('cluster-mode');
 var rootPath = getRootPath(require('./parent').getTopmostParent());
-var config = require('./config');
-var mod = require('./mod');
-var render = require('../render');
-var lint = require('../lint');
-var session = require('../session');
-var pkg = require('../../package.json');
+var config = requireInternal('./config');
+var mod = requireInternal('./mod');
+var render = requireInternal('../render');
+var lint = requireInternal('../lint');
+var session = requireInternal('../session');
+var async = requireInternal('../../lib/async');
+var pkg = requireInternal('../../package.json');
 
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
@@ -35,7 +35,7 @@ exports._isLogging = false;
 exports.mod = {};
 
 // backward compatibility for gracenode 1.x
-exports.lib = require(__dirname + '/../../lib');
+exports.lib = requireInternal('/../../lib');
 
 exports.log = log;
 
@@ -48,9 +48,9 @@ exports.router = exports.http;
 
 exports.session = session;
 
-exports.rpc = require('../rpc');
+exports.rpc = requireInternal('../rpc');
 
-exports.udp = require('../udp');
+exports.udp = requireInternal('../udp');
 
 exports.cluster = cluster;
 
@@ -407,4 +407,8 @@ function setOption(origin, opt) {
 		}
 	}
 	return origin;
+}
+
+function requireInternal(path) {
+	return require(__dirname + '/' + path);
 }
