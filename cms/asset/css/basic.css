@@ -60,7 +60,7 @@ input[type=text],
 input[type=password] {
 	margin: 10px;
 	width: 80%;
-	padding: 8px 0;
+	padding: 8px 4px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	transition: all 0.3s ease-out;
@@ -156,8 +156,8 @@ a:hover {
 	text-align: center;
 	font-size: 16px;
 	border-radius: 4px;
-	color: #fff;
-	background: #03d568;
+	color: #03d568;
+	background: #fff;
 	border: 2px solid #03d568;
 	cursor: pointer;
 	margin: 1px;
@@ -178,8 +178,8 @@ a:hover {
 	text-align: center;
 	font-size: 16px;
 	border-radius: 4px;
-	color: #fff;
-	background: #03d568;
+	color: #03d568;
+	background: #fff;
 	border: 2px solid #03d568;
 	cursor: pointer;
 	margin: 1px;
@@ -187,7 +187,8 @@ a:hover {
 }
 
 .btn-cancel {
-	background: #ff4e48 !important;
+	background: #fff !important;
+	color: #ff4e48 !important;
 	border: 2px solid #ff4e48 !important;
 }
 
@@ -200,12 +201,15 @@ a:hover {
 
 .btn:hover,
 .btn-small:hover {
-	transform: scale(0.98);
-	background: #70d4a0;
+	background: #03d568;
+	border: 2px solid #fff;
+	color: #fff;
 }
 
 .btn-cancel:hover {
-	background: #fe6e69 !important;
+	background: #ff4e48 !important;
+	border: 2px solid #fff !important;
+	color: #fff !important;
 }
 
 /************

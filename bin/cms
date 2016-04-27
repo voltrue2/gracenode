@@ -36,6 +36,7 @@ function start() {
 	async.series([
 		cpFiles,
 		mkdir,
+		npm,
 		setHTTPPort,
 		setupDB,
 		createSymlink,
@@ -69,6 +70,17 @@ function mkdir(next) {
 			return next(error);
 		}
 		create(dLogPath, next);
+	});
+}
+
+function npm(next) {
+	exec('npm install', function (error, out) {
+		if (error) {
+			logger.error(error);
+			return next(error);
+		}
+		logger.info(out);
+		next();
 	});
 }
 
