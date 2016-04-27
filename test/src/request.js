@@ -61,8 +61,9 @@ function send(url, method, args, options, cb) {
 		if (error) {
 			return cb(error, body, res ? res.statusCode : null);
 		}
-		if (!gzip) {
-			return cb(null, body, res ? res.statusCode : null);
+		var error2 = res.statusCode > 399 ? new Error(res.statusCode) : null;
+		if (!gzip || method === 'head') {
+			return cb(error2, body, res.statusCode, res.headers);
 		}
 		zlib.gunzip(body, function (err, unzipped) {
 			if (err) {
@@ -74,7 +75,7 @@ function send(url, method, args, options, cb) {
 			} catch (e) {
 				body = unzipped;
 			}
-			cb(res.statusCode > 399 ? new Error(res.statusCode) : null, body, res.statusCode, res.headers);
+			cb(error2, body, res.statusCode, res.headers);
 		});
 	});
 }

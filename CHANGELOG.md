@@ -10,6 +10,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Changed
 
+#### Corrected HTTP unit tests for response asserts on HEAD requests
+
 #### Changed the way gracenode loads internal modules to support require() change in node.js v6.0.0
 
 #### gracenode.start() executiong order has changed: bootstapping of external module will be the last operation now
