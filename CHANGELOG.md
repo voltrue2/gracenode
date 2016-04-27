@@ -6,6 +6,8 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### CI tests added for node.js version 5+ and 6.0
+
 #### render.getAllPaths() added
 
 ## Changed
