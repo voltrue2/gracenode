@@ -20,6 +20,8 @@ Added session handshake to keep remote IP and port in order to block highjacked 
 
 ## Changed
 
+#### RPC fixed heartbeat issues with multiple connections
+
 #### Corrected HTTP unit tests for response asserts on HEAD requests
 
 #### Changed the way gracenode loads internal modules to support require() change in node.js v6.0.0
