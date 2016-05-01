@@ -181,7 +181,8 @@ function handleMessage(buff, rinfo) {
 
 	if (cryptoEngine.decrypt) {
 		logger.info('using decryption for incoming message');
-		cryptoEngine.decrypt(buff, function (error, sessId, seq, sessData, decrypted) {
+		var info = module.exports.info();
+		cryptoEngine.decrypt(buff, info.host, info.port, function (error, sessId, seq, sessData, decrypted) {
 			if (error) {
 				// this is also the same as session failure
 				logger.error('decryption of message failed:', error);

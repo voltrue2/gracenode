@@ -6,6 +6,14 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
+#### RPC added session handshake
+
+Added session handshake to keep remote IP and port in order to block highjacked sessions used with different connections
+
+#### UDP added session handshake
+
+Added session handshake to keep remote IP and port in order to block highjacked sessions used with different connections
+
 #### CI tests added for node.js version 5+ and 6.0
 
 #### render.getAllPaths() added

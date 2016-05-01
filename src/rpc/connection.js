@@ -8,11 +8,6 @@ var Packet = require('../../lib/packet');
 // this is not HTTP router
 var router = require('./router');
 
-var HEARTBEAT = {
-	ID: 911,
-	NAME: 'heartbeat'
-};
-
 module.exports = Connection;
 
 function Connection(connId, sock, options) {
@@ -60,9 +55,6 @@ function Connection(connId, sock, options) {
 			checkFrequency: [milliseconds] // heartbeat check internval
 		}
 		*/
-		router.define(HEARTBEAT.ID, HEARTBEAT.NAME, function (state, cb) {
-			that._handleHeartbeat(state, cb);
-		});
 		that._setupHeartbeat(gn.getConfig('rpc.heartbeat'));
 		this.logger.info(
 			'RPC server requires client heartbeat at every',
@@ -121,7 +113,10 @@ Connection.prototype._handleData = function (packet) {
 
 	var that = this;
 	var parser = that.packetParser;
-	var done = function () {
+	var done = function (error) {
+		if (error) {
+			return that.kill(error);		
+		}
 		var list = parsed.map(function (item) {
 			if (!item) {
 				return '';
@@ -144,16 +139,7 @@ Connection.prototype._handleData = function (packet) {
 		that.logger.info('using decryption for incoming packet');
 		that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
 			if (error) {
-				that.logger.error('failed to decrypt:', error);
-				var forbidden = parser.createReply(
-					parser.STATUS_CODE.FORBIDDEN, parsedData.seq,
-					''
-				);
-				if (forbidden instanceof Error) {
-					return next(forbidden);
-				}
-				that._write(forbidden);
-				return next();
+				return next(error);
 			}
 			var sessionData = {
 				sessionId: sid,
@@ -171,7 +157,9 @@ Connection.prototype._routeAndExec = function (parser, parsedData, sessionData, 
 	var cmd = router.route(parsedData);
 	
 	if (!cmd) {
-		var state = {};
+		var state = {
+			connection: this
+		};
 		if (sessionData) {
 			state.sessionId = sessionData.sessionId;
 			state.seq = sessionData.seq;
@@ -272,13 +260,12 @@ Connection.prototype._handleError = function (error) {
 
 // private
 Connection.prototype._handleDecrypt = function (data, cb) {
-	this.cryptoEngine.decrypt(data, cb);
-};
-
-// private
-Connection.prototype._handleHeartbeat = function (state, cb) {
-	this.heartbeatTime = Date.now();
-	cb({ message: 'heartbeat', serverTime: this.heartbeatTime });
+	this.cryptoEngine.decrypt(
+		data,
+		this.sock.remoteAddress,
+		this.sock.remotePort,
+		cb
+	);
 };
 
 // private
@@ -381,6 +368,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 		send: function (payload, cb) {
 			that._push.apply(that, [state, payload, cb]);
 		},
+		connection: that,
 		payload: JSON.parse(parsedData.payload)
 	};
 

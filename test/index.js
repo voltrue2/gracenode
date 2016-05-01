@@ -20,12 +20,12 @@ if (singleRun !== 'false') {
 	require('./express');
 	// test daemon of gracenode
 	require('./daemon');
+	// test gracenode.http
+	require('./http');
 	// test gracenode.udp
 	require('./udp');
 	// test gracenode.rpc
 	require('./rpc');
-	// test gracenode.http
-	require('./http');
 	// test gracenode.render
 	require('./render');
 }

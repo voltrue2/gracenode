@@ -108,7 +108,7 @@ describe('gracenode.udp', function () {
 			assert.equal(state.payload.message, clientMsg);
 			state.send(serverMsg);
 		});
-		request.POST('http://localhost:' + httpPort + '/udpauth', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/udpauth/', null, null, function (error, res, st) {
 			assert.equal(error, null);
 			assert.equal(st, 200);
 			assert(res.sessionId);
@@ -147,7 +147,7 @@ describe('gracenode.udp', function () {
 			assert.equal(state.hookPassed, true);
 			state.send(serverMsg);
 		});
-		request.POST('http://localhost:' + httpPort + '/udpauth', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/udpauth/', null, null, function (error, res, st) {
 			assert.equal(error, null);
 			assert.equal(st, 200);
 			assert(res.sessionId);
@@ -206,7 +206,7 @@ describe('gracenode.udp', function () {
 			assert.equal(state.hookPassed, true);
 			state.send(serverMsg);
 		});
-		request.POST('http://localhost:' + httpPort + '/udpauth', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/udpauth/', null, null, function (error, res, st) {
 			assert.equal(error, null);
 			assert.equal(st, 200);
 			assert(res.sessionId);

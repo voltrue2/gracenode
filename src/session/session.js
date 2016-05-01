@@ -189,17 +189,15 @@ module.exports.delHTTPSession = function (req, res, cb) {
 
 	logger.warn('del is using default in-memory storage: Not for production');
 
-	/*
-	delete inMemStorage[id];
-	cb();
-	*/
 	mem.del(id, cb);
 };
 
-function socketSessionValidation(packet, next) {
+function socketSessionValidation(packet, remoteIp, remotePort, next) {
 	var ce = new gn.lib.CryptoEngine();
 	var res = ce.getSessionIdAndPayload(packet);
 	var now = Date.now();
+
+	logger.verbose('validating socket session:', res.sessionId, remoteIp + ':' + remotePort);
 	
 	if (get && set) {
 		logger.verbose('custom getter is defined');
@@ -228,6 +226,27 @@ function socketSessionValidation(packet, next) {
 					res.sessionId, sessionData.ttl + ' <= ' + now
 				);
 				return next(new Error('SessionExpired'));
+			}
+			// handle initial handshake to keep the client IP and port in the session
+			if (!sessionData.client) {
+				logger.info(
+					'handling initial handshake from:',
+					remoteIp + ':' + remotePort,
+					'session:', res.sessionId
+				);
+				sessionData.client = {
+					ip: remoteIp,
+					port: remotePort
+				};
+			}
+			// check for client IP and port
+			if (sessionData.client.ip !== remoteIp || sessionData.client.port !== remotePort) {
+				logger.error(
+					'invalid client IP address/port number detected:',
+					remoteIp + ':' + remotePort,
+					'session:', res.sessionId
+				);
+				return next('InvalidClient');
 			}
 			// update session and move on
 			sessionData.ttl = now + options.ttl;
@@ -261,6 +280,27 @@ function socketSessionValidation(packet, next) {
 				'incoming seq:', res.seq, 'must be greater then', sess.seq
 			);
 			return next(new Error('InvalidSeq'));
+		}
+		// handle initial handshake to keep the client IP and port in the session
+		if (!sess.client) {
+			logger.info(
+				'handling initial handshake from:',
+				remoteIp + ':' + remotePort,
+				'session:', res.sessionId
+			);
+			sess.client = {
+				ip: remoteIp,
+				port: remotePort
+			};
+		}
+		// check for client IP and port
+		if (sess.client.ip !== remoteIp || sess.client.port !== remotePort) {
+			logger.error(
+				'invalid client IP address/port number detected:',
+				remoteIp + ':' + remotePort,
+				'session:', res.sessionId
+			);
+			return next('InvalidClient');
 		}
 		// update session and move on
 		sess.seq = res.seq;

@@ -19,6 +19,10 @@ var connId = 0;
 
 var PORT_IN_USE = 'EADDRINUSE';
 var TIMEOUT_FOR_CLOSE = 5000;
+var HEARTBEAT = {
+	ID: 911,
+	NAME: 'heartbeat'
+};
 var connectionInfo = {
 	host: null,
 	port: null
@@ -98,6 +102,23 @@ module.exports.setup = function (cb) {
 
 		connectionInfo.host = config.host;
 		connectionInfo.port = boundPort;
+
+		// if heartbeat is required, set it up here now
+		if (gn.getConfig('rpc.heartbeat')) {
+			/*
+			rpc.heartbeat: {
+				timeout: [milliseconds] // time to timeout and disconnect w/o heartbeat from client,
+				checkFrequency: [milliseconds] // heartbeat check internval
+			}
+			*/
+			try {
+				router.define(HEARTBEAT.ID, HEARTBEAT.NAME, function (state, cb) {
+					handleHeartbeat(state, cb);
+				});
+			} catch (e) {
+				logger.warn(e);
+			}
+		}	
 
 		logger.info('RPC server started at', config.host + ':' + boundPort);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));
@@ -207,6 +228,14 @@ module.exports._onKilled = function () {
 module.exports.getConnectionById = function (id) {
 	return conns[id] || null;
 };
+
+function handleHeartbeat(state, cb) {
+	state.connection.heartbeatTime = Date.now();
+	cb({
+		message: 'heartbeat',
+		serverTime: state.connection.heartbeatTime
+	});
+}
 
 function handleConn(sock) {
 	var opt = {

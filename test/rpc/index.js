@@ -2,11 +2,12 @@ var logEnabled = require('../arg')('--log');
 var request = require('../src/request');
 var assert = require('assert');
 var gn = require('../../src/gracenode');
-var client = require('./simpleClient');
+var Client = require('./simpleClient');
 var portOne = 9877;
 var portTwo = 9880;
 var httpPort = 9899;
 
+var client;
 var cipher;
 var sessionId;
 
@@ -42,6 +43,7 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can start client', function (done) {
+		client = new Client();
 		client.start('localhost', portOne, done);
 	});
 
@@ -53,11 +55,11 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.payload.message, clientMsg);
 			cb({ message: serverMsg });
 		});
-		client.receiver(function (data) {
+		client.recvOnce(function (data) {
 			assert.equal(data.message, serverMsg);
 			done();
 		});
-		client.sender(cid, 0, { message: clientMsg }, function (error) {
+		client.send(cid, 0, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -74,14 +76,14 @@ describe('gracenode.rpc', function () {
 				state.send({message: pushMsg });
 			}, 100);
 		});
-		client.receiver(function (data) {
+		client.recvOnce(function (data) {
 			assert.equal(data.message, serverMsg);
-			client.receiver(function (data) {
+			client.recvOnce(function (data) {
 				assert.equal(data.message, pushMsg);
 				done();
 			});
 		});
-		client.sender(cid, 0, { message: clientMsg }, function (error) {
+		client.send(cid, 0, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -99,11 +101,11 @@ describe('gracenode.rpc', function () {
 			state.hookPassed = true;
 			next();
 		});
-		client.receiver(function (data) {
+		client.recvOnce(function (data) {
 			assert.equal(data.message, serverMsg);
 			done();
 		});
-		client.sender(cid, 1, { message: clientMsg }, function (error) {
+		client.send(cid, 1, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -120,11 +122,11 @@ describe('gracenode.rpc', function () {
 		gn.rpc.hook(cid, function (state, next) {
 			next(new Error('HookError'));
 		});
-		client.receiver(function (data) {
+		client.recvOnce(function (data) {
 			assert.equal(data.message, 'HookError');
 			done();
 		});
-		client.sender(cid, 2, { message: clientMsg }, function (error) {
+		client.send(cid, 2, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -145,9 +147,8 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can be authenticated by HTTP endpoint', function (done) {
-		request.POST('http://localhost:' + httpPort + '/rpcauth', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
 			assert.equal(error, null);
-			assert.equal(st, 200);
 			assert(res.cipher);
 			assert(res.sessionId);
 			cipher = {
@@ -169,12 +170,12 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.payload.message, clientMsg);
 			cb({ message: serverMsg });
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -192,12 +193,12 @@ describe('gracenode.rpc', function () {
 			state.hookPassed = true;
 			next();
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -215,12 +216,12 @@ describe('gracenode.rpc', function () {
 		gn.rpc.hook(cid, function (state, next) {
 			next(new Error(errMsg));
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -237,15 +238,15 @@ describe('gracenode.rpc', function () {
 				state.send({ message: pushMsg });
 			}, 100);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
-			client.secureReceiver(cipher, function (data) {
+			client.recvOnceSecure(cipher, function (data) {
 				assert.equal(data.message, pushMsg);
 				done();
 			});
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -265,32 +266,32 @@ describe('gracenode.rpc', function () {
 				}, 100);
 			}, 100);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
-			client.secureReceiver(cipher, function (data) {
+			client.recvOnceSecure(cipher, function (data) {
 				assert.equal(data.message, pushMsg);
-				client.secureReceiver(cipher, function (data) {
+				client.recvOnceSecure(cipher, function (data) {
 					assert.equal(data.message, pushMsg);
 					done();
 				});
 			});
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
 
-	it('can fail to call incorrect command', function (done) {
+	it('can fail calling incorrect command', function (done) {
 		var clientMsg = 'Secure Hello';
 		var errMsg = 'NOT_FOUND';
 		var cid = 5000;
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -302,12 +303,12 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			cb(new Error(errMsg), state.STATUS.BAD_REQ);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -319,12 +320,12 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			cb(new Error(errMsg), state.STATUS.FORBIDDEN);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -336,12 +337,12 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			cb(new Error(errMsg), state.STATUS.NOT_FOUND);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -353,12 +354,12 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			cb(new Error(errMsg), state.STATUS.ERROR);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -370,47 +371,118 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			cb(new Error(errMsg), state.STATUS.UNAVAILABLE);
 		});
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, errMsg);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
 
 	it('can send client heartbeat', function (done) {
-		client.secureReceiver(cipher, function (data) {
+		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, 'heartbeat');
 			assert(data.serverTime);
 			done();
 		});
 		cipher.seq += 1;
-		client.secureSender(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
 			assert.equal(error, null);
 		});
 	});
 
 	it('can failed to send w/o incrementing seq client heartbeat', function (done) {
-		client.secureReceiver(cipher, function (data) {
-			assert.equal(data.message, 'BadSignature');
+		client.recvOnceSecure(cipher, function (data) {
+			assert.equal(data.message, 'closed');
 			done();
 		});
-		client.secureSender(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
 			assert.equal(error, null);
+		});
+	});
+
+	it('can be re-authenticated by HTTP endpoint', function (done) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+			assert.equal(error, null);
+			assert(res.cipher);
+			assert(res.sessionId);
+			cipher = {
+				cipherKey: new Buffer(res.cipher.cipherKey),
+				cipherNonce: new Buffer(res.cipher.cipherNonce),
+				macKey: new Buffer(res.cipher.macKey),
+				seq: res.cipher.seq
+			};
+			sessionId = res.sessionId;
+			done();
+		});
+	});
+
+	it('can reconnect', function (done) {
+		client.stop(function () {
+			client = new Client();
+			client.start('localhost', portOne, done);
 		});
 	});
 
 	it('can heartbeat-timeout', function (done) {
 		var isDone = false;
-		gn.rpc.onClosed(function (id) {
-			var logger = gn.log.create();
-			logger.debug(id, 'has timed out');
+		gn.rpc.onClosed(function () {
 			if (!isDone) {
-				done();
 				isDone = true;
+				client.stop(done);
 			}
+		});
+	});
+
+	it('can reconnect', function (done) {
+		client.stop(function () {
+			client = new Client();
+			client.start('localhost', portOne, done);
+		});
+	});
+
+	it('can be re-authenticated by HTTP endpoint', function (done) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+			assert.equal(error, null);
+			assert(res.cipher);
+			assert(res.sessionId);
+			cipher = {
+				cipherKey: new Buffer(res.cipher.cipherKey),
+				cipherNonce: new Buffer(res.cipher.cipherNonce),
+				macKey: new Buffer(res.cipher.macKey),
+				seq: res.cipher.seq
+			};
+			sessionId = res.sessionId;
+			done();
+		});
+	});
+
+	it('can send a heartbeat from the new authenticated connection', function (done) {
+		client.recvOnceSecure(cipher, function (data) {
+			assert.equal(data.message, 'heartbeat');
+			assert(data.serverTime);
+			done();
+		});
+		cipher.seq += 1;
+		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it ('can start another connection', function (done) {
+		client = new Client();	
+		client.start('localhost', portOne, done);
+	});
+
+	it('try session highjack (use session ID for different connection) and be rejected from the server', function (done) {
+		client.recvOnceSecure(cipher, function (data) {
+			assert.equal(data.message, 'closed');
+			done();
+		});
+		cipher.seq += 1;
+		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
 		});
 	});
 });
