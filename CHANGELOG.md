@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.11
+
+## Added
+
+None
+
+## Changed
+
+#### Basic C# test clients build scripts support Mac OS
+
+#### Session validation for UDP and RPC minor improvments
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.10
 
 ## Added

@@ -195,128 +195,104 @@ module.exports.delHTTPSession = function (req, res, cb) {
 function socketSessionValidation(packet, remoteIp, remotePort, next) {
 	var ce = new gn.lib.CryptoEngine();
 	var res = ce.getSessionIdAndPayload(packet);
-	var now = Date.now();
-
 	logger.verbose('validating socket session:', res.sessionId, remoteIp + ':' + remotePort);
-	
 	if (get && set) {
 		logger.verbose('custom getter is defined');
 		get(res.sessionId, function (error, sessionData) {
 			if (error) {
 				return next(error);
 			}
-			if (!sessionData) {
-				logger.error('session not found:', res.sessionId);
-				return next(new Error('SessionNotFound'));
-			}
-			logger.verbose('seq:', res.sessionId, res.seq, '>', sessionData.seq);
-			if (res.seq <= sessionData.seq) {
-				// we do NOT allow incoming seq that is smaller or the same as stored in the session
-				// this is to prevent duplicated command execution
-				logger.error(
-					'invalid seq for session', res.sessionId,
-					'incoming seq:', res.seq, 'must be greater then', sessionData.seq
-				);
-				return next(new Error('InvalidSeq'));
-			}
-			// check session TTL
-			if (sessionData.ttl <= now) {
-				logger.error(
-					'session ID has expired:',
-					res.sessionId, sessionData.ttl + ' <= ' + now
-				);
-				return next(new Error('SessionExpired'));
-			}
-			// handle initial handshake to keep the client IP and port in the session
-			if (!sessionData.client) {
-				logger.info(
-					'handling initial handshake from:',
-					remoteIp + ':' + remotePort,
-					'session:', res.sessionId
-				);
-				sessionData.client = {
-					ip: remoteIp,
-					port: remotePort
-				};
-			}
-			// check for client IP and port
-			if (sessionData.client.ip !== remoteIp || sessionData.client.port !== remotePort) {
-				logger.error(
-					'invalid client IP address/port number detected:',
-					remoteIp + ':' + remotePort,
-					'session:', res.sessionId
-				);
-				return next('InvalidClient');
-			}
-			// update session and move on
-			sessionData.ttl = now + options.ttl;
-			sessionData.seq = res.seq;
-			if (sessionData.seq > 0xffffffff) {
-				sessionData.seq = 0;
-			}
-			set(res.sessionId, sessionData, function (error) {
+			_socketSessionValidation(res, remoteIp, remotePort, sessionData, function (error) {
 				if (error) {
 					return next(error);
 				}
-				socketSessionDecrypt(ce, res, sessionData, next);
+				set(res.sessionId, sessionData, function (error) {
+					if (error) {
+						return next(error);
+					}
+					socketSessionDecrypt(ce, res, sessionData, next);
+				});
 			});
 		});
 		return;
 	}
-
 	logger.warn('get is using default in-memory storage: Not for production');
-
 	mem.get(res.sessionId, function (error, sess) {
 		if (error) {
 			logger.error('session not found:', res.sessionId);
 			return next(error);
 		}
-		logger.verbose('seq:', res.sessionId, res.seq, '>', sess.seq);
-		if (res.seq <= sess.seq) {
-			// we do NOT allow incoming seq that is smaller or the same as stored in the session
-			// this is to prevent duplicated command execution
-			logger.error(
-				'invalid seq for session', res.sessionId,
-				'incoming seq:', res.seq, 'must be greater then', sess.seq
-			);
-			return next(new Error('InvalidSeq'));
-		}
-		// handle initial handshake to keep the client IP and port in the session
-		if (!sess.client) {
-			logger.info(
-				'handling initial handshake from:',
-				remoteIp + ':' + remotePort,
-				'session:', res.sessionId
-			);
-			sess.client = {
-				ip: remoteIp,
-				port: remotePort
-			};
-		}
-		// check for client IP and port
-		if (sess.client.ip !== remoteIp || sess.client.port !== remotePort) {
-			logger.error(
-				'invalid client IP address/port number detected:',
-				remoteIp + ':' + remotePort,
-				'session:', res.sessionId
-			);
-			return next('InvalidClient');
-		}
-		// update session and move on
-		sess.seq = res.seq;
-		if (sess.seq > 0xffffffff) {
-			sess.seq = 0;
-		}
-		mem.set(res.sessionId, sess, function (error) {
+		_socketSessionValidation(res, remoteIp, remotePort, sess, function (error) {
 			if (error) {
 				return next(error);
 			}
-			socketSessionDecrypt(ce, res, sess, next);
+			mem.set(res.sessionId, sess, function (error) {
+				if (error) {
+					return next(error);
+				}
+				socketSessionDecrypt(ce, res, sess, next);
+			});
 		});
 	});
 }
 
+// get rid of the code redundancy in secketSessionValidation
+// modifies sess object to be updated
+function _socketSessionValidation(res, remoteIp, remotePort, sess, next) {
+	if (!sess) {
+		logger.error('session not found:', res.sessionId);
+		return next(new Error('SessionNotFound'));
+	}
+	logger.verbose('seq:', res.sessionId, res.seq, '>', sess.seq);
+	if (res.seq <= sess.seq) {
+		// we do NOT allow incoming seq that is smaller or the same as stored in the session
+		// this is to prevent duplicated command execution
+		logger.error(
+			'invalid seq for session', res.sessionId,
+			'incoming seq:', res.seq, 'must be greater then', sess.seq
+		);
+		return next(new Error('InvalidSeq'));
+	}
+	// check session TTL
+	var now = Date.now();
+	if (sess.ttl <= now) {
+		logger.error(
+			'session ID has expired:',
+			res.sessionId, sess.ttl + ' <= ' + now
+		);
+		return next(new Error('SessionExpired'));
+	}
+	// handle initial handshake to keep the client IP and port in the session
+	if (!sess.client) {
+		logger.info(
+			'handling initial handshake from:',
+			remoteIp + ':' + remotePort,
+			'session:', res.sessionId
+		);
+		sess.client = {
+			ip: remoteIp,
+			port: remotePort
+		};
+	}
+	// check for client IP and port
+	if (sess.client.ip !== remoteIp || sess.client.port !== remotePort) {
+		logger.error(
+			'invalid client IP address/port number detected:',
+			remoteIp + ':' + remotePort,
+			'session:', res.sessionId
+		);
+		return next('InvalidClient');
+	}
+	// update session and move on
+	sess.seq = res.seq;
+	if (sess.seq > 0xffffffff) {
+		sess.seq = 0;
+	}
+	next();
+}
+
 function socketSessionDecrypt(ce, res, sess, next) {
+
 	var decrypted = ce.decrypt(
 		sess.cipher.cipherKey,
 		sess.cipher.cipherNonce,
