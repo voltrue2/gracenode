@@ -322,6 +322,8 @@ Just like HTTP server, UDP server has hooks to commands.
 
 When a command with hooks are called, all hooks for that command will be executed BEFORE the command handler.
 
+**NOTE**: Hooks can be registered by `command names` also.
+
 ```javascript
 var gn = require('gracenode');
 var commandId = 1;

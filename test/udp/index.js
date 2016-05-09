@@ -62,14 +62,14 @@ describe('gracenode.udp', function () {
 	it('can register UDP command + hook and handle message from client and revieve message from server w/o session + encryption', function (done) {
 		var clientMsg = 'Hello';
 		var serverMsg = 'Echo';
-		gn.udp.hook(1, function (state, next) {
-			state.hookPassed = true;
-			next();
-		});
 		gn.udp.command(1, 'command1', function (state) {
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
 			state.send(serverMsg);
+		});
+		gn.udp.hook('command1', function (state, next) {
+			state.hookPassed = true;
+			next();
 		});
 		simpleClient.receiver(function (msg) {
 			assert.equal(msg, serverMsg);

@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### UDP and RPC hooks can now be registered by command names as we as command IDs
+
 #### Basic C# test clients build scripts support Mac OS
 
 #### Session validation for UDP and RPC minor improvments

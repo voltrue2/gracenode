@@ -21,6 +21,20 @@ module.exports.define = function (cmdId, cmdName, handler) {
 	};
 };
 
+module.exports.getIdsByNames = function (names) {
+	if (!Array.isArray(names)) {
+		names = [names];
+	}
+	for (var id in commands) {
+		var index = names.indexOf(commands[id].name);
+		if (index !== -1) {
+			// replace command name with its command ID
+			names[index] = id;
+		}
+	}
+	return names;
+};
+
 module.exports.route = function (packet) {
 
 	if (!packet) {

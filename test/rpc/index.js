@@ -97,7 +97,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookPassed, true);
 			cb({ message: serverMsg });
 		});
-		gn.rpc.hook(cid, function (state, next) {
+		gn.rpc.hook('command' + cid, function (state, next) {
 			state.hookPassed = true;
 			next();
 		});
