@@ -18,7 +18,7 @@ gn.config({
 	},
 	rpc: {
 		host: '0.0.0.0',
-		portRange: [9876, 9880]
+		portRange: [9880]
 	}
 });
 

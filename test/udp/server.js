@@ -8,7 +8,8 @@ gn.config({
 		port: 7979
 	},
 	udp: {
-		portRange: [7980, 7990]
+		portRange: [7980]
+		//portRange: [7980, 7990]
 	},
 	log: {
 		color: true,

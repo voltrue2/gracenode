@@ -138,11 +138,18 @@ module.exports.setup = function (cb) {
 		gn.stop(error);
 	};
 
-	for (var p = config.portRange[0]; p <= config.portRange[1]; p++) {
+	var pend = config.portRange[1] || config.portRange[0];
+
+	for (var p = config.portRange[0]; p <= pend; p++) {
 		ports.push(p);
 	}
 
-	logger.verbose('port range is', config.portRange[0], 'to', config.portRange[1]);
+	logger.verbose(
+		'port range is',
+		config.portRange[0],
+		'to',
+		pend
+	);
 
 	listen();
 };

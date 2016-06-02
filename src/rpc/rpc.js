@@ -66,12 +66,13 @@ module.exports.setup = function (cb) {
 	var ports = [];
 	var portIndex = 0;
 	var boundPort;
+	var pend = config.portRange[1] || config.portRange[0];
 
-	for (var p = config.portRange[0]; p <= config.portRange[1]; p++) {
+	for (var p = config.portRange[0]; p <= pend; p++) {
 		ports.push(p);
 	}
 
-	logger.verbose('port range is', config.portRange[0], 'to', config.portRange[1]);
+	logger.verbose('port range is', config.portRange[0], 'to', pend);
 
 	var done = function () {
 		// RPC server is now successfully bound and listening
