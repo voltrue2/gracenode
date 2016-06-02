@@ -172,6 +172,10 @@ module.exports.command = function (cmdId, commandName, handler) {
 
 // assign a command hook function
 module.exports.hook = function (cmdIdList, handler) {
+	if (typeof cmdIdList === 'function') {
+		hooks.add(cmdIdList);
+		return;
+	}
 	// cmdIdList can contain command names instead of command IDs
 	cmdIdList = router.getIdsByNames(cmdIdList);
 	hooks.add(cmdIdList, handler);

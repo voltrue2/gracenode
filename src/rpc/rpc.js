@@ -51,10 +51,10 @@ module.exports.setup = function (cb) {
 		return cb();
 	}
 	
-	if (!Array.isArray(config.portRange) || config.portRange.length < 2) {
+	if (!Array.isArray(config.portRange) || config.portRange.length < 1) {
 		logger.error(
 			'incorrect port range',
-			'(must be an array of 2 elements from smallest to biggest):',
+			'(must be an array of 1 elements from smallest to biggest):',
 			config.portRange
 		);
 		throw new Error('<PORT_RANGE_FOR_RPC_SERVER_INCORRECT>');
@@ -179,6 +179,10 @@ module.exports.command = function (cmdId, commandName, handler) {
 
 // assign a command hook function
 module.exports.hook = function (cmdIdList, handler) {
+	if (typeof cmdIdList === 'function') {
+		hooks.add(cmdIdList);
+		return;
+	}
 	// cmdIdList can contain command names instead of command IDs
 	cmdIdList = router.getIdsByNames(cmdIdList);
 	hooks.add(cmdIdList, handler);
