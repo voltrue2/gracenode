@@ -39,7 +39,7 @@ function testCommand1(state) {
 }
 
 function handleAuth(req, res) {
-	var data = 'session data';
+	var data = { data: 'session data' };
 	gn.session.setHTTPSession(req, res, data, function (error) {
 		if (error) {
 			return res.error(error);

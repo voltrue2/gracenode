@@ -49,10 +49,10 @@ module.exports.setup = function (cb) {
 		config.address = '0.0.0.0';
 	}
 
-	if (!Array.isArray(config.portRange) || config.portRange.length < 2) {
+	if (!Array.isArray(config.portRange) || config.portRange.length < 1) {
 		logger.error(
 			'incorrect port range',
-			'(must be an array of 2 elements from smallest to biggest):',
+			'(must be an array of 1 elements from smallest to biggest):',
 			config.portRange
 		);
 		throw new Error('<PORT_RANGE_FOR_UDP_SERVER_INCORRECT>');
