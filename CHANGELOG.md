@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.14
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix: UDP and RPC command hooks .hook() now handles an array of command IDs/command names correctly
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.13
 
 ## Added

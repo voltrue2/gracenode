@@ -48,11 +48,20 @@ describe('gracenode.udp', function () {
 		});
 	});
 
+	it('can register a hook function to multiple commands', function () {
+		gn.udp.hook([0, 1], function many(state, next) {
+			state.hookToMany = true;
+			next();
+		});
+	});
+
 	it('can register UDP command and handle message from client and revieve message from server w/o session + encryption', function (done) {
 		var clientMsg = 'Hello';
 		var serverMsg = 'Echo';
 		gn.udp.command(0, 'command0', function (state) {
 			assert.equal(state.payload.message, clientMsg);
+			assert.equal(state.hookToMany, true);
+			assert.equal(state.hookToAll, true);
 			state.send(serverMsg);
 		});
 		simpleClient.receiver(function (msg) {
@@ -73,6 +82,7 @@ describe('gracenode.udp', function () {
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
 			assert.equal(state.hookToAll, true);
+			assert.equal(state.hookToMany, true);
 			state.send(serverMsg);
 		});
 		gn.udp.hook('command1', function (state, next) {

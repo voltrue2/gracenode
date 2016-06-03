@@ -23,7 +23,7 @@ module.exports.add = function (cmdIdList, handler) {
 		if (!hooks[cmdIdList[i]]) {
 			hooks[cmdIdList[i]] = [];
 		}
-		hooks[cmdIdList].push(handler);
+		hooks[cmdIdList[i]].push(handler);
 	}
 };
 

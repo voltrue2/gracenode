@@ -49,6 +49,13 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can register a hook function to multiple commands', function () {
+		gn.rpc.hook([0, 10], function many(state, next) {
+			state.hookToMany = true;
+			next();
+		});
+	});
+
 	it('can start client', function (done) {
 		client = new Client();
 		client.start('localhost', portOne, done);
@@ -60,6 +67,7 @@ describe('gracenode.rpc', function () {
 		var cid = 0;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.hookToAll, true);
+			assert.equal(state.hookToMany, true);
 			assert.equal(state.payload.message, clientMsg);
 			cb({ message: serverMsg });
 		});
@@ -79,6 +87,7 @@ describe('gracenode.rpc', function () {
 		var cid = 10;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.hookToAll, true);
+			assert.equal(state.hookToMany, true);
 			assert.equal(state.payload.message, clientMsg);
 			cb({ message: serverMsg });
 			setTimeout(function () {
