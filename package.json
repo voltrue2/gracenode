@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "A node.js framework for real-time application with extendable modules for quick and clean evelopment.",
-	"version": "3.0.12",
+	"version": "3.0.13",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",

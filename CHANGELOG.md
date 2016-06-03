@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.13
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix: UDP and RPC server handles single port correctly given in the configuration
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.12
 
 ## Added
@@ -13,6 +39,22 @@ None
 #### UDP server an now run with one port number instead of minimum of 2 port numbers
 
 #### Bug fix: UDP and RPC .hook() can now register a hook function to all commands by passing a hook function only
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
 
 ## Version 3.0.11
 
