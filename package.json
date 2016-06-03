@@ -16,7 +16,7 @@
 		"jshint": "2.8.0",
 		"gracelog": "0.6.3",
 		"aeterno": "0.6.3",
-		"cluster-mode": "1.0.0",
+		"cluster-mode": "1.0.1",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
 		"cookies": "0.5.1"
