@@ -400,7 +400,9 @@ describe('gracenode.render', function () {
 		var data = {
 			title: 'Daemon',
 			one: 1,
-			today: 1449470110863
+			today: function getToday() {
+				return 1449470110863;
+			}
 		};
 		gn.render.func('getDate', function (val) {
 			return 'Mon Dec 07 2015 15:35:10 GMT+0900 (JST)';
@@ -412,14 +414,6 @@ describe('gracenode.render', function () {
 		var expected = fs.readFileSync(__dirname + '/expected/func', 'utf8');
 		assert.equal(expected, rendered);
 	});
-
-	/*
-	it('can render w/ invalid logics and more', function () {
-		var rendered = gn.render('/gn');
-		var expected = fs.readFileSync(__dirname + '/expected/gn', 'utf8');
-		assert.equal(expected, rendered);
-	});
-	*/
 
 	it('can render w/ invalid logics', function () {
 		var rendered = gn.render('/bad');

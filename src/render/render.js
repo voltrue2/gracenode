@@ -439,6 +439,10 @@ function applyVars(content, vars, varTags) {
 			continue;
 		}
 
+		if (typeof value === 'function') {
+			value = value();
+		}
+
 		var replacer = varMap[varTag] || new RegExp(varTag, 'g');
 		content = content.replace(replacer, value);
 	}

@@ -103,6 +103,23 @@ The above examples will result in `{{myCar}}` being replaced by `{ myCar: 'BMW' 
 <div>BMW</div>
 ```
 
+### Pass a function as a variable
+
+You may also pass a `function` as a variable to your template. The function **MUST** return some type of value.
+
+The returned value of the function will be embedded as a dynamic variable.
+
+Example:
+```javascript
+var data = {
+	name: 'Bach',
+	timestamp: function () {
+		return Date.now();
+	}
+};
+gracenode.render('path/to/template', data);
+```
+
 ## Custom Registered Functions
 
 Render allows user custom functions to be registered and used in render templates.

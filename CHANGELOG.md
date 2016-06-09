@@ -2,6 +2,42 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.0.16
+
+## Added
+
+None
+
+## Changed
+
+#### Render can pass a function as a dynamic variable to be
+
+Example:
+```javascript
+var data = {
+	greeting: 'Hello',
+	today: function () {
+		return Date.now();
+	}
+};
+gracenode.render('/path/to/my/template', data);
+```
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.0.15
 
 ## Added
