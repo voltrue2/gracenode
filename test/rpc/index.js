@@ -3,9 +3,11 @@ var request = require('../src/request');
 var assert = require('assert');
 var gn = require('../../src/gracenode');
 var Client = require('./simpleClient');
+var UdpClient = require('../lib/udpclient');
 var portOne = 9877;
 var portTwo = 9880;
 var httpPort = 9899;
+var udpPort = 7980;
 
 var client;
 var cipher;
@@ -31,6 +33,10 @@ describe('gracenode.rpc', function () {
 					timeout: 2000,
 					checkFrequency: 1000
 				}
+			},
+			udp: {
+				address: '127.0.0.1',
+				portRange: [ udpPort ]
 			}
 		});
 		gn.start(done);
@@ -153,6 +159,7 @@ describe('gracenode.rpc', function () {
 
 	it('can setup session + encryption for RPC and HTTP enpoint for authentication', function () {
 		gn.session.useRPCSession();
+		gn.session.useUDPSession();
 		gn.http.post('/rpcauth', function (req, res) {
 			gn.session.setHTTPSession(req, res, { msg: 'session data' }, function (error) {
 				assert.equal(error, null);
@@ -317,6 +324,23 @@ describe('gracenode.rpc', function () {
 		cipher.seq += 1;
 		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
 			assert.equal(error, null);
+		});
+	});
+
+	it('can send UDP packet that shares the same session as RPC', function (next) {
+		gn.udp.command(1000, 'rpcAndUdp', function (state) {
+			assert.equal(state.payload.hello, 'Yay');
+			state.send({ message: 'Woot' });
+		});
+		var udpClient = new UdpClient('127.0.0.1', udpPort);
+		udpClient.secure(sessionId, cipher);
+		udpClient.receiveOnce(function (msg) {
+			assert.equal(msg.message, 'Woot');
+			next();
+		});
+		udpClient.send({
+			command: 1000,
+			hello: 'Yay'
 		});
 	});
 
@@ -512,4 +536,5 @@ describe('gracenode.rpc', function () {
 		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
 		});
 	});
+
 });
