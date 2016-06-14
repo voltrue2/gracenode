@@ -500,7 +500,7 @@ describe('gracenode.rpc', function () {
 
 	it ('can start another connection', function (done) {
 		client = new Client();	
-		client.start('localhost', portOne, done);
+		client.start('127.0.0.1', portOne, done);
 	});
 
 	it('try session highjack (use session ID for different connection) and be rejected from the server', function (done) {

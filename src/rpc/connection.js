@@ -262,6 +262,7 @@ Connection.prototype._handleError = function (error) {
 Connection.prototype._handleDecrypt = function (data, cb) {
 	this.cryptoEngine.decrypt(
 		data,
+		'RPC',
 		this.sock.remoteAddress,
 		this.sock.remotePort,
 		cb

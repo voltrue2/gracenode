@@ -195,24 +195,30 @@ function handleMessage(buff, rinfo) {
 	if (cryptoEngine.decrypt) {
 		logger.info('using decryption for incoming message');
 		var info = module.exports.info();
-		cryptoEngine.decrypt(buff, info.host, info.port, function (error, sessId, seq, sessData, decrypted) {
-			if (error) {
-				// this is also the same as session failure
-				logger.error('decryption of message failed:', error);
-				dispatchOnError(new Error('DecryptionFailed'), rinfo);
-				return;
+		cryptoEngine.decrypt(
+			buff,
+			'UDP',
+			info.host,
+			info.port,
+			function (error, sessId, seq, sessData, decrypted) {
+				if (error) {
+					// this is also the same as session failure
+					logger.error('decryption of message failed:', error);
+					dispatchOnError(new Error('DecryptionFailed'), rinfo);
+					return;
+				}
+				// assumes the message text to be a JSON
+				var msg = JSON.parse(decrypted.toString());
+				logger.verbose(
+					'decrypted message:',
+					'(session ID:' + sessId + ')',
+					'(seq:' + seq + ')',
+					msg
+				);
+				// route and execute command
+				executeCmd(sessId, seq, sessData, msg, rinfo);
 			}
-			// assumes the message text to be a JSON
-			var msg = JSON.parse(decrypted.toString());
-			logger.verbose(
-				'decrypted message:',
-				'(session ID:' + sessId + ')',
-				'(seq:' + seq + ')',
-				msg
-			);
-			// route and execute command
-			executeCmd(sessId, seq, sessData, msg, rinfo);
-		});
+		);
 		return;				
 	}
 

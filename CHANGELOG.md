@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### UDP and RPC session can now be shared
+
 #### Render can pass a function as a dynamic variable to be
 
 Example:
