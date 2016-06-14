@@ -22,6 +22,21 @@ var data = {
 };
 gracenode.render('/path/to/my/template', data);
 ```
+
+#### UDP and RPC encryption and decryption now uses Buffer class as node.js v6.0+ (still support older node version also)
+
+<a href="https://nodejs.org/dist/latest-v6.x/docs/api/buffer.html#buffer_new_buffer_str_encoding" target="_blank">https://nodejs.org/dist/latest-v6.x/docs/api/buffer.html#buffer_new_buffer_str_encoding</a>
+
+```javascript
+
+// v6.0+
+Buffer.from(str, 'base64');
+
+// older node version
+new Buffer(str, 'base64');
+
+````
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
