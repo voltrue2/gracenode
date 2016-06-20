@@ -1,5 +1,6 @@
 'use strict';
 
+var async = require('../../lib/async');
 var gn = require('../gracenode');
 var dgram = require('dgram');
 // UDP router
@@ -248,6 +249,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 	logger.info(
 		'command routing resolved:',
 		'command', cmd.id, cmd.name,
+		'command handlers', cmd.handlers,
 		'session ID', sessionId,
 		'seq', seq
 	);
@@ -275,8 +277,38 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 			dispatchOnError(error, rinfo);
 			return;
 		}
-		cmd.handler(state);
+		executeCommands(cmd, state);
 	});
+}
+
+function executeCommands(cmd, state) {
+	var id = cmd.id;
+	var name = cmd.name;
+	var handlers = cmd.handlers;
+	var done = function (error) {
+		if (error) {
+			logger.error(
+				'command(s) executed with an error:',
+				error
+			);
+			return;
+		}
+		logger.verbose(
+			'command(s) exeuted: (' + id + ':' + name + ')',
+			'state:',
+			state
+		);
+	};
+	async.eachSeries(handlers, function (handler, next) {
+		logger.info(
+			'executing command:',
+			'(' + id + ':' + name + ')',
+			(handler.name || 'anonymous'),
+			'state:',
+			state
+		);
+		handler(state, next);
+	}, done);
 }
 
 function send(state, msg) {

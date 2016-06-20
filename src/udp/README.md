@@ -316,6 +316,8 @@ gn.udp.command(commandId, commandName, function (state) {
 });
 ```
 
+**NOTE:** You may register **multiple** command handlers to the same command ID and name to be executed one after another.
+
 ### Command Hooks
 
 Just like HTTP server, UDP server has hooks to commands.

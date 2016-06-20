@@ -55,6 +55,40 @@ describe('gracenode.udp', function () {
 		});
 	});
 
+	it('can register multiple command handlres', function (done) {
+		gn.udp.command(4000, 'manyHandlers', function one(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.inc = 1;
+			next();
+		});
+		gn.udp.command(4000, 'manyHandlers', function two(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.inc += 1;
+			next();
+		});
+		gn.udp.command(4000, 'manyHandlers', function three(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.inc += 1;
+			next();
+		});
+		gn.udp.command(4000, 'manyHandlers', function four(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.send({ inc: state.inc, message: 'Hello' });
+			next();
+		});
+		simpleClient.receiver(function (msg) {
+			msg = JSON.parse(msg);
+			assert.equal(msg.inc, 3);
+			assert.equal(msg.message, 'Hello');
+			done();
+		});
+		var data = {
+			command: 4000,
+			message: 'Hello'
+		};
+		simpleClient.sender(portOne, data);
+	});
+
 	it('can register UDP command and handle message from client and revieve message from server w/o session + encryption', function (done) {
 		var clientMsg = 'Hello';
 		var serverMsg = 'Echo';
