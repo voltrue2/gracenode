@@ -8,7 +8,11 @@ This is a list of manually mantained changes and updates for each version.
 
 None
 
-#### UDP can now register multiple command handlers to the same command ID and name.
+## Changed
+
+#### UDP can now register multiple command handlers to the same command ID and name
+
+#### HTTP can now register multiple request handlers to the same URL
 
 ## Deprecated
 

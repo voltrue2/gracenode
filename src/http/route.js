@@ -49,7 +49,7 @@ exports.find = function (method, fullpath) {
 		path: res.route.path,
 		query: parseQuery(queryList),
 		params: parseParams(paramList, res.route.paramNames),
-		handler: res.route.handler,
+		handlers: res.route.handlers,
 		hooks: res.route.hooks,
 		readBody: res.route.readBody
 	};

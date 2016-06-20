@@ -218,7 +218,7 @@ function requestHandler(req, res) {
 			return;
 		}
 		reqHandlerLog(req);
-		parsed.handler(req, resp);
+		executeHandlers(parsed.handlers, req, resp);
 	};
 
 	var handleHook = function (hook, next) {
@@ -264,12 +264,23 @@ function requestHandler(req, res) {
 		// no hooks
 		if (!parsed.hooks.length) {
 			reqHandlerLog(req);
-			parsed.handler(req, resp);
+			executeHandlers(parsed.handlers, req, resp);
 			return;
 		}
 
 		// execute hooks -> request handler
 		async.eachSeries(parsed.hooks, handleHook, hookDone);
+	});
+}
+
+function executeHandlers(handlers, req, resp) {
+	async.eachSeries(handlers, function (handler, next) {
+		logger.verbose('Handling request:', req.url, (handler.name || 'Anonymous'));
+		handler(req, resp, next);
+	}, function (error) {
+		if (error) {
+			return resp.error(error);
+		}
 	});
 }
 

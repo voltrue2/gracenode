@@ -87,7 +87,7 @@ exports.getRoute = function (method, path) {
 			route: {
 				path: fast.path,
 				paramNames: [],
-				handler: fast.handler,
+				handlers: fast.handlers,
 				hooks: fast.hooks,
 				readBody: fast.readBody,
 				sensitive: fast.sensitive
@@ -104,10 +104,14 @@ exports.getRoute = function (method, path) {
 
 function addToFastRoutes(method, path, handler, opt) {
 	var key = !opt.sensitive ? path.toLowerCase() : path;
+	if (fastroutes[method][key]) {
+		fastroutes[method][key].handlers.push(handler);
+		return;
+	}
 	fastroutes[method][key] = {
 		path: path,
 		paramNames: null,
-		handler: handler,
+		handlers: [ handler ],
 		hooks: hooks.findHooks(path),
 		readBody: opt.readBody,
 		sensitive: opt.sensitive
@@ -124,6 +128,21 @@ function addToRoutes(method, path, handler, opt, conv) {
 	if (!routes[method][lkey]) {
 		routes[method][lkey] = [];
 	}
+	// try to see if there's a same path already registered
+	if (routes[method][key].length) {
+		// since javascript passes around reference to route route object,
+		// do alone will update for lowercase and all routes
+		var success = updateDupRegistry(
+			routes[method][key],
+			method,
+			path,
+			key,
+			handler
+		);
+		if (success) {
+			return;
+		}
+	}
 	var regex = opt.sensitive ? new RegExp(conv.pmatch) : new RegExp(conv.pmatch, 'i');
 	var route = {
 		path: path.replace(PARAM_REGEX, ''),
@@ -131,7 +150,7 @@ function addToRoutes(method, path, handler, opt, conv) {
 		regex: regex,
 		extract: conv.extract,
 		paramNames: getParamNames(path),
-		handler: handler,
+		handlers: [ handler ],
 		hooks: hooks.findHooks(path),
 		readBody: opt.readBody
 	};
@@ -147,6 +166,18 @@ function addToRoutes(method, path, handler, opt, conv) {
 	allroutes[method].sort(function (a, b) {
 		return b.pattern.length - a.pattern.length;
 	});
+}
+
+function updateDupRegistry(list, method, path, key, handler) {
+	var regPath = path.replace(PARAM_REGEX, '');
+	for (var i = 0, len = list.length; i < len; i++) {
+		var item = list[i];
+		if (item.path === regPath) {
+			list[i].handlers.push(handler);
+			return true;
+		}
+	}
+	return false;
 }
 
 function searchFastRoute(method, path) {

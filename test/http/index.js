@@ -1589,6 +1589,35 @@ describe('gracenode.http', function () {
 		});
 	});
 
+	it('can register multiple handlers for the same route', function (done) {
+		gn.http.get('/more/than/{number:num}/handler', function one(req, res, next) {
+			req.args.inc = 1;
+			req.args.num = req.params.num;
+			next();
+		});
+		gn.http.get('/more/than/{number:num}/handler', function two(req, res, next) {
+			req.args.inc += 1;
+			req.args.num += req.params.num;
+			next();
+		});
+		gn.http.get('/more/than/{number:num}/handler', function three(req, res) {
+			req.args.inc += 1;
+			req.args.num += req.params.num;
+			res.json({ inc: req.args.inc, num: req.args.num });
+		});
+		var opt = gn.lib.deepCopy(options);
+		opt.headers = {
+			cookie: 'sessionid=' + testData.sessionid + ';'
+		};
+		request.GET(http + '/more/than/1/handler', {}, opt, function (error, res, st) {
+			assert.equal(error, null);
+			assert.equal(st, 200);
+			assert.equal(res.inc, 3);
+			assert.equal(res. num, 3);
+			done();
+		});
+	});
+
 	it('can delete session w/ built-in session (cookie + one time session ID) for HTTP', function (done) {
 		gn.http.post('/logout10/', function (req, res) {
 			gn.session.delHTTPSession(req, res, function (error) {

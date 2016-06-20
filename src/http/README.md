@@ -59,11 +59,13 @@ You must register endpoint routes in order to setup your REST server with `grace
 ## GET
 
 ```javascript
-gracenode.http.get('/example', function (req, res) {
+gracenode.http.get('/example', function (req, res, next) {
 	// respond as JSON
 	res.json({ say: 'hello' });
 });
 ```
+
+**NOTE:** If you register more than 1 request handler for the same endpoint URL, you **MUST** call `next();` to move on to next handler just like request hooks.
 
 ### Define URL parameters
 
@@ -86,7 +88,7 @@ The above request URL will be routed to the handler of `GET /example/{name}`.
 To access `{name}`:
 
 ```
-exports.exampleHandler = function (req, res) {
+exports.exampleHandler = function (req, res, next) {
 	// Kevin
 	var name = req.params.name;
 };
@@ -218,7 +220,7 @@ Object that holds URL parameters.
 Example Request: `GET /example/animal/info/cat`.
 
 ```javascript
-gracenode.http.get('/example/{category}/info/{name}', function (req, res) {
+gracenode.http.get('/example/{category}/info/{name}', function (req, res, next) {
 	// animal
 	var category = req.params.category;
 	// cat
@@ -240,7 +242,7 @@ Returns a cookie object.
 How to set a cookie data
 
 ```javascript
-gracenode.http.login('/login', function (req, res) {
+gracenode.http.login('/login', function (req, res, next) {
 	// do some loging operations here
 	var cookies = req.cookies();
 	cookies.set('sessionId', sessionId);
@@ -251,7 +253,7 @@ gracenode.http.login('/login', function (req, res) {
 How to get a cookie data
 
 ```javascript
-gracenode.http.get('/example', function (req, res) {
+gracenode.http.get('/example', function (req, res, next) {
 	var cookies = req.cookies();
 	var sessionId = cookies.get('session');
 });
@@ -268,7 +270,7 @@ Object that holds response headers.
 **To Set Response Headers**:
 
 ```javascript
-gracenode.http.post('/example', function (req, res) {
+gracenode.http.post('/example', function (req, res, next) {
 	// set a custom header
 	res.headers.sessionId = 'xxxx';
 	// respond
