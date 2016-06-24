@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### RPC can now register multiple command handlers to the same command ID and name
+
 #### UDP can now register multiple command handlers to the same command ID and name
 
 #### HTTP can now register multiple request handlers to the same URL

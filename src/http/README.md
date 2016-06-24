@@ -67,6 +67,25 @@ gracenode.http.get('/example', function (req, res, next) {
 
 **NOTE:** If you register more than 1 request handler for the same endpoint URL, you **MUST** call `next();` to move on to next handler just like request hooks.
 
+## Register multiple handlers for the same endpoint
+
+You may also register more than 1 handlers to an enpoint.
+
+```javascript
+gracenode.http.get('/awesome', function (req, res, next) {
+	// first handler
+	next();
+});
+gracenode.http.get('/awesome', function (req, res, next) {
+	// second handler
+	next();
+});
+gracenode.http.get('/awesome', function (req, res, next) {
+	// last handler
+	res.json({...});
+});
+```
+
 ### Define URL parameters
 
 `gracenode.http` allows you to define parameters in the request URLs.

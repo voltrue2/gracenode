@@ -283,6 +283,27 @@ gn.udp.command(commandId, commandName, function (state) {
 });
 ```
 
+## Register multiple handlers for the same command ID
+
+You may also register more than 1 command handler to a command ID.
+
+```javascript
+var gn = require('gracenode');
+var commandId = 1;
+var commandName = 'mycommand';
+gn.udp.command(commandId, commandName, function (state, next) {
+	// first handler
+	next();
+});
+gn.udp.command(commandId, commandName, function (state, next) {
+	// second handler
+	next();
+});
+gn.udp.command(commandId, commandName, function (state, next) {
+	// last handler
+});
+```
+
 ### state object
 
 Command handler functions will have `state` object passed.

@@ -86,6 +86,37 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can register multiple handlers for a command', function (done) {
+		gn.rpc.command(4000, 'multiple', function one(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.inc = 1;
+			next();
+		});
+		gn.rpc.command(4000, 'multiple', function two(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.inc += 1;
+			next();
+		});
+		gn.rpc.command(4000, 'multiple', function three(state, next) {
+			assert.equal(state.hookToAll, true);
+			state.inc += 1;
+			next();
+		});
+		gn.rpc.command(4000, 'multiple', function four(state, cb) {
+			assert.equal(state.hookToAll, true);
+			state.inc += 1;
+			cb({ inc: state.inc, message: state.payload.message });
+		});
+		client.recvOnce(function (data) {
+			assert.equal(data.inc, 4);
+			assert.equal(data.message, 'hello');
+			done();
+		});
+		client.send(4000, 0, { message: 'hello' }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
 	it('can register command and handle it and push to cleint after 100msec w/o secure connection', function (done) {
 		var clientMsg = 'Hello';
 		var serverMsg = 'Echo';

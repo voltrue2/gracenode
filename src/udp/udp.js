@@ -300,7 +300,7 @@ function executeCommands(cmd, state) {
 		);
 	};
 	async.eachSeries(handlers, function (handler, next) {
-		logger.info(
+		logger.verbose(
 			'executing command:',
 			'(' + id + ':' + name + ')',
 			(handler.name || 'anonymous'),

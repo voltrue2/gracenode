@@ -391,23 +391,38 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			};
 			write(error, msg, cmd, status, cb);
 			return;
-		}	
-		// execute command handler
-		cmd.handler(state, function (res, status, options) {
-			// move on: we do not pass error as we want to handle the res of the commands
-			var error = null;
-			if (res instanceof Error) {
-				error = res;
-				if (!status) {
-					// default error response status
-					status = parser.STATUS_CODE.BAD_REQ;
+		}
+		var res;
+		var options;
+		var finalize = function (error) {
+			if (error) {
+				return write(error, error, cmd, status, options, cb);
+			}
+			write(null, res, cmd, status, options, cb);
+		};
+		async.eachSeries(cmd.handlers, function (handler, next) {
+			that.logger.verbose('execute command handler (command:' + cmd.id + ')');	
+			handler(state, function (_res, _status, _options) {
+				var error = null;
+				if (_res instanceof Error) {
+					error = _res;
+					if (!_status) {
+						// default error response status
+						_status = parser.STATUS_CODE.BAD_REQ;
+					}
+					status = _status;
+					options = _options;
+					return next(error);
 				}
-			}
-			if (!status) {
-				// default response status
-				status = parser.STATUS_CODE.OK;
-			}
-			write(error, res, cmd, status, options, cb);
-		});
+				if (!status) {
+					// default response status
+					_status = parser.STATUS_CODE.OK;
+				}
+				res = _res;
+				status = _status;
+				options = _options;
+				next();		
+			});
+		}, finalize);
 	});
 }

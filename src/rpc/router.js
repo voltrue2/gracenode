@@ -12,12 +12,21 @@ module.exports.setup = function () {
 
 module.exports.define = function (cmdId, cmdName, handler) {
 	if (commands[cmdId]) {
-		throw new Error('<RPC_COMMAND_ALREADY_DEFINED>:' + cmdId + '(' + cmdName + ')');
+		if (cmdName !== commands[cmdId].name) {
+			logger.error(
+				'command name does not match for command ' + cmdId + ':',
+				cmdName,
+				commands[cmdId].name,
+				'"' + cmdName + '" is ignored'
+			);
+		}
+		commands[cmdId].handlers.push(handler);
+		return;
 	}
 	commands[cmdId] = {
 		id: cmdId,
 		name: cmdName,
-		handler: handler
+		handlers: [ handler ]
 	};
 };
 
@@ -51,6 +60,7 @@ module.exports.route = function (packet) {
 	logger.info(
 		'command routing resolved:',
 		packet.command, cmd.name,
+		'handlers:', cmd.handlers,
 		'(seq:' + packet.seq + ')'
 	);
 
@@ -61,7 +71,7 @@ module.exports.route = function (packet) {
 	return {
 		id: cmd.id,
 		name: cmd.name,
-		handler: cmd.handler,
+		handlers: cmd.handlers,
 		hooks: getHookExec(cmd.id, cmd.name, hookList)
 	};
 };

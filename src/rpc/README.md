@@ -480,6 +480,28 @@ gn.rpc.command(commandId, commandName, function (state, cb) {
 });
 ```
 
+## Register multiple command handlers for the same command ID
+
+You may register more than  one handler to a command.
+
+```javascript
+var gn = require('gracenode');
+var commandId = 1;
+var commandName = 'mycommand';
+gn.rpc.command(commandId, commandName, function (state, cb, next) {
+	// the first handler
+	next();
+});
+gn.rpc.command(commandId, commandName, function (state, cb, next) {
+	// the second handler
+	next();
+});
+gn.rpc.command(commandId, commandName, function (state, cb) {
+	// last handler
+	cb();
+});
+```
+
 ### state object
 
 Command handler functions will have `state` object and `callback` function passed.
