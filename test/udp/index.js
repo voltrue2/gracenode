@@ -41,6 +41,7 @@ describe('gracenode.udp', function () {
 		var info = gn.udp.info();
 		assert(info.host);
 		assert(info.port);
+		assert(info.address);
 	});
 
 	it('can register a hook function to all commands', function () {

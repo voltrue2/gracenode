@@ -32,6 +32,7 @@ var connectionInfo = {
 
 module.exports.info = function () {
 	return {
+		address: connectionInfo.address,
 		host: connectionInfo.host,
 		port: connectionInfo.port
 	};
