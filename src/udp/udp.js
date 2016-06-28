@@ -120,7 +120,8 @@ module.exports.setup = function (cb) {
 		
 		var info = server.address();
 
-		connectionInfo.host = info.address;
+		connectionInfo.address = info.address;
+		connectionInfo.host = config.address;
 		connectionInfo.port = info.port;
 
 		logger.info('UDP server started at', info.address + ':' + info.port);
@@ -417,13 +418,13 @@ function findAddrMap() {
 		ipv4: [],
 		ipv6: []
 	};
-	for (var key in neti) {
-		var list = neti[key];
+	for (var interfaceName in neti) {
+		var list = neti[interfaceName];
 		for (var i = 0, len = list.length; i < len; i++) {
 			var fam = list[i].family.toLowerCase();
 			var addr = list[i].address;
 			if (fam === IPv6 && addr.indexOf(IPV6_ADDR_PREFIX) === 0) {
-				map.ipv6.push(addr);
+				map.ipv6.push(addr + '%' + interfaceName);
 			} else if (fam === IPv4) {
 				map.ipv4.push(addr);
 			}
