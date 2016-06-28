@@ -69,7 +69,7 @@ In order to utilize commands, the TCP packet sent from the client must meet the 
 
 **Protocol version**:
 
-|Value|Type             |Commant     |
+|Value|Type             |Comment     |
 |:---:|:---------------:|:----------:|
 |0    |RPC              |            |
 |0x50 |Proxy Protocol v1|            |

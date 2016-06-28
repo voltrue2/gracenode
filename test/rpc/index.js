@@ -12,7 +12,7 @@ var udpPort = 7980;
 var client;
 var cipher;
 var sessionId;
-var addr = '::0';
+var addr = '127.0.0.1';
 var udpAddr = '::0';
 
 describe('gracenode.rpc', function () {

@@ -57,7 +57,7 @@ describe('gracenode.udp', function () {
 		});
 	});
 
-	it('can register multiple command handlres', function (done) {
+	it('can register multiple command handlers', function (done) {
 		gn.udp.command(4000, 'manyHandlers', function one(state, next) {
 			assert.equal(state.hookToAll, true);
 			state.inc = 1;
