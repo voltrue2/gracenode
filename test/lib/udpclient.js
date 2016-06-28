@@ -7,7 +7,11 @@ var dgram = require('dgram');
 function UdpClient(serverAddr, serverPort) {
 	this._serverAddr = serverAddr;
 	this._serverPort = serverPort;
-	this._client = dgram.createSocket('udp4');
+	var ver = 'udp4';
+	if (serverAddr === '::0' || serverAddr.indexOf('fe80') === 0) {
+		ver = 'udp6';
+	}
+	this._client = dgram.createSocket(ver);
 	this._ce = null;
 	this._sid = null;
 	this._cipher = null;

@@ -2,6 +2,43 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.2.0
+
+## Added
+
+None
+
+## Changed
+
+#### UDP server supports IPv6
+
+To use IPv6, use the following configuration:
+
+```
+var gracenode = require('gracenode');
+gracenode.config({
+	// if you give IPv6 address, this is not required
+	version: 'IPv6',
+	address: 'fe80xxxxx' or '::0' for all address
+});
+```
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.1.0
 
 ## Added

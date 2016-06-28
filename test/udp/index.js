@@ -6,6 +6,7 @@ var simpleClient = require('./simpleClient');
 var portOne = 7980;
 var portTwo = 7981;
 var httpPort = 7982;
+var addr = '::0';
 
 var cipher;
 var sessionId;
@@ -25,6 +26,7 @@ describe('gracenode.udp', function () {
 				level: '>= verbose'
 			},
 			udp: {
+				address: addr,
 				portRange: [portOne, portTwo]
 			},
 			http: {

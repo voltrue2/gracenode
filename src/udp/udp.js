@@ -1,5 +1,6 @@
 'use strict';
 
+var neti = require('os').networkInterfaces();
 var async = require('../../lib/async');
 var gn = require('../gracenode');
 var dgram = require('dgram');
@@ -9,7 +10,12 @@ var router = require('./router');
 var hooks = require('./hooks');
 
 var PORT_IN_USE = 'EADDRINUSE';
+var UDP_VER = 'udp4';
+var IPv6 = 'ipv6';
+var IPv4 = 'ipv4';
+var IPV6_ADDR_PREFIX = 'fe80';
 
+var ipv6 = false;
 var logger;
 var config;
 var server;
@@ -45,10 +51,29 @@ module.exports.setup = function (cb) {
 		return cb();
 	}
 	
-	if (!config.address) {
-		logger.info('UDP server will listen to all address: 0.0.0.0');
-		config.address = '0.0.0.0';
+	var addrMap = findAddrMap();
+	logger.info('Available Addresses:', addrMap);	
+
+	if (config.version && config.version.toLowerCase() === IPv6) {
+		ipv6 = true;
+		UDP_VER = 'udp6';
 	}
+
+	if (!config.address) {
+		if (ipv6) {
+			config.address = '::0';
+		} else {
+			config.address = '0.0.0.0';
+		}
+		logger.info('UDP server is binding to address:', config.address);
+	}
+
+	if (isIPv6()) {
+		ipv6 = true;
+		UDP_VER = 'udp6';
+	}
+
+	logger.info('UDP server is using:', UDP_VER);
 
 	if (!Array.isArray(config.portRange) || config.portRange.length < 1) {
 		logger.error(
@@ -113,7 +138,7 @@ module.exports.setup = function (cb) {
 		var port = ports[portIndex];
 		logger.verbose('binding to:', config.address + ':' + port);
 		// create UDP server
-		server = dgram.createSocket('udp4');
+		server = dgram.createSocket(UDP_VER);
 		server.on('error', handleError);
 		server.on('listening', done);
 		server.bind({
@@ -381,4 +406,28 @@ function send(state, msg) {
 		state.clientAddress,
 		sent
 	);
+}
+
+function isIPv6() {
+	return config.address === '::0' || config.address.indexOf(IPV6_ADDR_PREFIX) === 0;
+}
+
+function findAddrMap() {
+	var map = {
+		ipv4: [],
+		ipv6: []
+	};
+	for (var key in neti) {
+		var list = neti[key];
+		for (var i = 0, len = list.length; i < len; i++) {
+			var fam = list[i].family.toLowerCase();
+			var addr = list[i].address;
+			if (fam === IPv6 && addr.indexOf(IPV6_ADDR_PREFIX) === 0) {
+				map.ipv6.push(addr);
+			} else if (fam === IPv4) {
+				map.ipv4.push(addr);
+			}
+		}
+	}
+	return map;
 }

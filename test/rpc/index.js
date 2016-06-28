@@ -12,6 +12,8 @@ var udpPort = 7980;
 var client;
 var cipher;
 var sessionId;
+var addr = '::1';
+var udpAddr = '::0';
 
 describe('gracenode.rpc', function () {
 	
@@ -27,7 +29,7 @@ describe('gracenode.rpc', function () {
 				port: httpPort
 			},
 			rpc: {
-				host: 'localhost',
+				host: addr,
 				portRange: [ portOne, portTwo ],
 				heartbeat: {
 					timeout: 2000,
@@ -35,7 +37,7 @@ describe('gracenode.rpc', function () {
 				}
 			},
 			udp: {
-				address: '127.0.0.1',
+				address: udpAddr,
 				portRange: [ udpPort ]
 			}
 		});
@@ -64,7 +66,7 @@ describe('gracenode.rpc', function () {
 
 	it('can start client', function (done) {
 		client = new Client();
-		client.start('localhost', portOne, done);
+		client.start(addr, portOne, done);
 	});
 
 	it('can register command and handle it w/o secure connection', function (done) {
@@ -504,7 +506,7 @@ describe('gracenode.rpc', function () {
 	it('can reconnect', function (done) {
 		client.stop(function () {
 			client = new Client();
-			client.start('localhost', portOne, done);
+			client.start(addr, portOne, done);
 		});
 	});
 
@@ -521,7 +523,7 @@ describe('gracenode.rpc', function () {
 	it('can reconnect', function (done) {
 		client.stop(function () {
 			client = new Client();
-			client.start('localhost', portOne, done);
+			client.start(addr, portOne, done);
 		});
 	});
 
@@ -555,7 +557,7 @@ describe('gracenode.rpc', function () {
 
 	it ('can start another connection', function (done) {
 		client = new Client();	
-		client.start('127.0.0.1', portOne, done);
+		client.start(addr, portOne, done);
 	});
 
 	it('try session highjack (use session ID for different connection) and be rejected from the server', function (done) {

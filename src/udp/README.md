@@ -25,6 +25,19 @@ In order to start the UDP server, you will need to provide the following configu
 }
 ```
 
+## IPv6 Support
+
+**gracenode** UDP server can support IPv6 by using `UDP6`.
+
+In order to use `UDP6`, use the following configuration:
+
+```
+udp: {
+	// all IPv6 address
+	address: '::0'
+}
+```
+
 ## How to start UDP server
 
 When you provide the above configurations and call `gracenode.start`, UDP server will automatically start.
