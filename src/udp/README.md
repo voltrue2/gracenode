@@ -33,6 +33,7 @@ In order to use `UDP6`, use the following configuration:
 
 ```
 udp: {
+	version: 'IPv6',
 	// all IPv6 address
 	address: '::0'
 }
