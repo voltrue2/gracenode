@@ -1,5 +1,6 @@
 'use strict';
 
+var transport = require('../../lib/transport');
 var gn = require('../../src/gracenode');
 var ce = new gn.lib.CryptoEngine();
 var dgram = require('dgram');
@@ -9,19 +10,27 @@ client.on('error', function (error) {
 	throw new Error(error);
 });
 
-exports.sender = function (port, msg, cb) {
-	var buff;
-	if (msg instanceof Buffer) {
-		buff = msg;
-	} else {
-		buff = new Buffer(JSON.stringify(msg));
-	}
+exports.useBinary = function () {
+	transport.use('binary');
+};
+
+exports.useJson = function () {
+	transport.use('json');
+};
+
+exports.sender = function (port, command, seq, msg, cb) {
+	var buff = transport.createRequest(command, seq, msg);
 	client.send(buff, 0, buff.length, port, 'localhost', cb);
 };
 
 exports.receiver = function (cb) {
 	client.once('message', function (buff) {
-		cb(buff.toString());
+		var payload = transport.parse(buff).payload.toString();
+		try {
+			cb(JSON.parse(payload));
+		} catch (e) {
+			cb(payload);
+		}
 	});
 };
 
@@ -34,11 +43,16 @@ exports.secureReceiver = function (cipher, cb) {
 			cipher.seq,
 			buff
 		);
-		cb(null, decrypted);
+		var payload = transport.parse(decrypted).payload.toString();
+		try {
+			cb(JSON.parse(payload));
+		} catch (e) {
+			cb(payload);
+		}
 	});
 };
 
-exports.secureSender = function (port, sid, cipher, msg, cb) {
+exports.secureSender = function (port, sid, cipher, command, seq, msg, cb) {
 	var uuid = gn.lib.uuid.create(sid);
 	var session = new Buffer(16 + 4);
 	uuid.toBytes().copy(session, 0, 0, uuid.getByteLength());
@@ -51,5 +65,5 @@ exports.secureSender = function (port, sid, cipher, msg, cb) {
 		JSON.stringify(msg)
 	);
 	var payload = Buffer.concat([session, encrypted]);
-	exports.sender(port, payload, cb);
+	exports.sender(port, command, seq || 0, payload, cb);
 };

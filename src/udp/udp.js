@@ -1,6 +1,7 @@
 'use strict';
 
 var neti = require('os').networkInterfaces();
+var transport = require('../../lib/transport');
 var async = require('../../lib/async');
 var gn = require('../gracenode');
 var dgram = require('dgram');
@@ -50,6 +51,11 @@ module.exports.setup = function (cb) {
 
 	if (!config || !config.portRange) {
 		return cb();
+	}
+
+	// set transport protocol
+	if (config.protocol) {
+		transport.use(config.protocol);
 	}
 	
 	var addrMap = findAddrMap();
@@ -220,11 +226,21 @@ function handleMessage(buff, rinfo) {
 
 	logger.verbose('message received:', server.address(), buff, 'from:', rinfo);
 
+	var parsed = transport.parse(buff);
+	if (parsed instanceof Error) {
+		logger.error(parsed);
+		dispatchOnError(parsed);
+		return;
+	}
+
+	logger.verbose('parsed packet :', parsed);
+
 	if (cryptoEngine.decrypt) {
 		logger.info('using decryption for incoming message');
 		var info = module.exports.info();
+		var toDecrypt = transport.isJson() ? buff : parsed.payload;
 		cryptoEngine.decrypt(
-			buff,
+			toDecrypt,
 			'UDP',
 			info.host,
 			info.port,
@@ -235,27 +251,21 @@ function handleMessage(buff, rinfo) {
 					dispatchOnError(new Error('DecryptionFailed'), rinfo);
 					return;
 				}
-				// assumes the message text to be a JSON
-				var msg = JSON.parse(decrypted.toString());
 				logger.verbose(
 					'decrypted message:',
 					'(session ID:' + sessId + ')',
 					'(seq:' + seq + ')',
-					msg
+					decrypted
 				);
+				parsed.payload = decrypted;
 				// route and execute command
-				executeCmd(sessId, seq, sessData, msg, rinfo);
+				executeCmd(sessId, seq, sessData, parsed, rinfo);
 			}
 		);
 		return;				
 	}
 
-	// assumes the message text is a JSON
-	var msgText = JSON.parse(buff.toString());
-
-	logger.verbose('message:', msgText);
-
-	executeCmd(null, null, null, msgText, rinfo);
+	executeCmd(null, null, null, parsed, rinfo);
 }
 
 function dispatchOnError(error, rinfo) {
@@ -281,15 +291,22 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		'seq', seq
 	);
 
+	var payload;
+	try {
+		payload = JSON.parse(msg.payload);
+	} catch (e) {
+		payload = msg.payload;
+	}
+
 	var state = {
 		sessionId: sessionId,
 		seq: seq,
 		session: sessionData,
 		clientAddress: rinfo.address,
 		clientPort: rinfo.port,
-		payload: msg,
-		send: function (msg) {
-			send(state, msg);
+		payload: payload,
+		send: function (msg, status) {
+			send(state, msg, status);
 		}
 	};
 
@@ -338,10 +355,13 @@ function executeCommands(cmd, state) {
 	}, done);
 }
 
-function send(state, msg) {
-
-	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
-		msg = JSON.stringify(msg);
+function send(state, msg, status) {
+	// consider this as a reply
+	if (status !== undefined) {
+		msg = transport.createReply(status, state.seq || 0, msg);
+	} else {
+		// otherwise push
+		msg = transport.createPush(msg);
 	}
 
 	var sent = function (error) {
@@ -360,7 +380,8 @@ function send(state, msg) {
 		}
 		logger.info(
 			'UDP packet sent to:',
-			state.clientAddress + ':' + state.clientPort
+			state.clientAddress + ':' + state.clientPort,
+			msg
 		);
 	};
 
@@ -398,12 +419,10 @@ function send(state, msg) {
 		});
 		return;
 	}
-
-	var data = new Buffer(msg);
 	server.send(
-		data,
+		msg,
 		0,
-		data.length,
+		msg.length,
 		state.clientPort,
 		state.clientAddress,
 		sent

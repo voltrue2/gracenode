@@ -6,6 +6,8 @@ The **gracenode** UDP server can optionally use built-in session/encyption to se
 
 **STABILITY**: This feature is still unstable and subjected to changes in the future.
 
+**30/06/2016**: As of version `3.3.0`, the packet protocol is now `binary` not `JSON`.
+
 ## Access
 
 `gracenode.udp`
@@ -51,17 +53,66 @@ UDP server communicates with `UTF-8` plain text `JSON` messages.
 
 **gracenode** UDP server handles incoming packets with `commands`.
 
+The protocol used for commands is `binary`.
+
 Commands are pre-defined handler functions that process incoming UDP packets.
 
 In order to utilize commands, the UDP message sent from the client must meet the following structure:
 
-```
-{
-	command: [command ID in integer]
-}
-```
-
 As shown above, `command` property is a required field, but the message from the client can contain anything as long as there is `command` proerty with valid command ID.
+
+### Binary Protocol
+
+#### Request Packet Structure
+
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 16 Big Endian|Command ID           |
+|Byte Offset 6 |uint 16 Big Endian|**Sequence**         |
+|Byte Offset 8 |                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
+
+**Protocol Version**: Currently protocol version is 0.
+
+#### Reply Packet Structure
+
+UDP server can also push packets as response to command requests.
+
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 8            |**Reply Flag**       |
+|Byte Offset 5 |uint 8            |**Status**           |
+|Byte Offset 6 |uint 16 Big Endian|Sequence             |
+|Byte Offset 8 |                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
+
+**Protocol Version**: Currently protocol version is 0.
+
+**Reply Flag** The value is `0x01`.
+
+**Status** The value of Status can be manually set by the application.
+
+#### Push Packet Structure
+
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 8            |**Push Flag**        |
+|Byte Offset 5 |uint 8            |**Status**           |
+|Byte Offset 6 |uint 16 Big Endian|**Sequence**         |
+|Byte Offset 8 |                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
+
+**Protocol Version**: Currently protocol version is 0.
+
+**Push Flag** The value is `0x0`.
+
+**Status** The value of Status for push packets is always `0x0`.
 
 ### Encryption and Decryption
 

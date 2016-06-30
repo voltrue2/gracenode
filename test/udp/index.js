@@ -26,6 +26,7 @@ describe('gracenode.udp', function () {
 				level: '>= verbose'
 			},
 			udp: {
+				protocol: 'binary',
 				address: addr,
 				portRange: [portOne, portTwo]
 			},
@@ -80,16 +81,14 @@ describe('gracenode.udp', function () {
 			next();
 		});
 		simpleClient.receiver(function (msg) {
-			msg = JSON.parse(msg);
 			assert.equal(msg.inc, 3);
 			assert.equal(msg.message, 'Hello');
 			done();
 		});
 		var data = {
-			command: 4000,
 			message: 'Hello'
 		};
-		simpleClient.sender(portOne, data);
+		simpleClient.sender(portOne, 4000, 0, data);
 	});
 
 	it('can register UDP command and handle message from client and revieve message from server w/o session + encryption', function (done) {
@@ -106,10 +105,9 @@ describe('gracenode.udp', function () {
 			done();
 		});
 		var data = {
-			command: 0,
 			message: clientMsg
 		};
-		simpleClient.sender(portOne, data);
+		simpleClient.sender(portOne, 0, 0, data);
 	});
 
 	it('can register UDP command + hook and handle message from client and revieve message from server w/o session + encryption', function (done) {
@@ -131,10 +129,9 @@ describe('gracenode.udp', function () {
 			done();
 		});
 		var data = {
-			command: 1,
 			message: clientMsg
 		};
-		simpleClient.sender(portOne, data);
+		simpleClient.sender(portOne, 1, 0, data);
 	});
 
 	it('can set up session + encryption/decryption for UDP server and HTTP authentication endpoint', function () {
@@ -156,7 +153,6 @@ describe('gracenode.udp', function () {
 		var clientMsg = 'Safe';
 		var serverMsg = 'Safe ehco';
 		var data = {
-			command: 2,
 			message: clientMsg
 		};
 		gn.udp.command(2, 'command2', function (state) {
@@ -177,9 +173,8 @@ describe('gracenode.udp', function () {
 				seq: res.cipher.seq
 			};
 			cipher.seq += 1;
-			simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
-				simpleClient.secureReceiver(cipher, function (error, msg) {
-					assert.equal(error, null);
+			simpleClient.secureSender(portOne, sessionId, cipher, 2, res.cipher.seq, data, function () {
+				simpleClient.secureReceiver(cipher, function (msg) {
 					assert.equal(msg, serverMsg);
 					done();
 				});
@@ -191,7 +186,6 @@ describe('gracenode.udp', function () {
 		var clientMsg = 'Safe';
 		var serverMsg = 'Safe ehco';
 		var data = {
-			command: 3,
 			message: clientMsg
 		};
 		gn.udp.hook(3, function (state, next) {
@@ -217,9 +211,8 @@ describe('gracenode.udp', function () {
 				seq: res.cipher.seq
 			};
 			cipher.seq += 1;
-			simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
-				simpleClient.secureReceiver(cipher, function (error, msg) {
-					assert.equal(error, null);
+			simpleClient.secureSender(portOne, sessionId, cipher, 3, res.cipher.seq, data, function () {
+				simpleClient.secureReceiver(cipher, function (msg) {
 					assert.equal(msg, serverMsg);
 					done();
 				});
@@ -249,7 +242,6 @@ describe('gracenode.udp', function () {
 		var clientMsg = 'Safe';
 		var serverMsg = 'Safe ehco';
 		var data = {
-			command: 4,
 			message: clientMsg
 		};
 		var max = 10;
@@ -278,9 +270,8 @@ describe('gracenode.udp', function () {
 			};
 			var send = function () {
 				cipher.seq += 1;
-				simpleClient.secureSender(portOne, sessionId, cipher, data, function () {
-					simpleClient.secureReceiver(cipher, function (error, msg) {
-						assert.equal(error, null);
+				simpleClient.secureSender(portOne, sessionId, cipher, 4, res.cipher.seq, data, function () {
+					simpleClient.secureReceiver(cipher, function (msg) {
 						assert.equal(msg, serverMsg);
 						if (count < max) {
 							count++;

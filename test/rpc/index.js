@@ -3,7 +3,7 @@ var request = require('../src/request');
 var assert = require('assert');
 var gn = require('../../src/gracenode');
 var Client = require('./simpleClient');
-var UdpClient = require('../lib/udpclient');
+var udpCli = require('../udp/simpleClient');
 var portOne = 9877;
 var portTwo = 9880;
 var httpPort = 9899;
@@ -16,6 +16,9 @@ var addr = '127.0.0.1';
 var udpAddr = '::0';
 
 describe('gracenode.rpc', function () {
+
+	//udpCli.useJson();
+	udpCli.useBinary();
 	
 	it('can setup RPC server', function (done) {
 		gn.config({
@@ -37,6 +40,7 @@ describe('gracenode.rpc', function () {
 				}
 			},
 			udp: {
+				//protocol: 'json',
 				address: udpAddr,
 				portRange: [ udpPort ]
 			}
@@ -365,15 +369,20 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.payload.hello, 'Yay');
 			state.send({ message: 'Woot' });
 		});
-		var udpClient = new UdpClient('127.0.0.1', udpPort);
-		udpClient.secure(sessionId, cipher);
-		udpClient.receiveOnce(function (msg) {
+		udpCli.secureReceiver(cipher, function (msg) {
 			assert.equal(msg.message, 'Woot');
 			next();
 		});
-		udpClient.send({
-			command: 1000,
-			hello: 'Yay'
+		cipher.seq += 1;
+		udpCli.secureSender(
+			udpPort,
+			sessionId,
+			cipher,
+			1000,
+			cipher.seq,
+			{ command: 1000, hello: 'Yay' },
+		function (error) {
+			assert.equal(error, null);
 		});
 	});
 

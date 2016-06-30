@@ -2,6 +2,35 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+# Version 3.3.0
+
+## Added
+
+None
+
+## Changed
+
+#### UDP server hanged its packet protocol to binary from JSON
+
+This change is a breaking change.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+
 ## Version 3.2.0
 
 ## Added

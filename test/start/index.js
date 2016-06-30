@@ -1,7 +1,10 @@
 var path = require('../lib/path');
 var exec = require('child_process').exec;
 var assert = require('assert');
-var test = function (type, expected, given) {
+var test = function (type, expected, given, ignorePattern) {
+	if (expected && typeof expected === 'string' && expected.match(ignorePattern)) {
+		return;
+	}
 	try {
 		assert[type](expected, given);
 	} catch (e) {
@@ -22,7 +25,7 @@ describe('start gracenode', function () {
 	it('can successfully start without bootstrapping modules', function (done) {
 		runApp(run, function (error, out, err) {
 			test('equal', error, null);
-			test('equal', err, '');
+			test('equal', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -30,7 +33,7 @@ describe('start gracenode', function () {
 	it('can successfully start with a module', function (done) {
 		runApp(run + ' withConf ../modules/withConf', function (error, out, err) {
 			test('equal', error, null);
-			test('equal', err, '');
+			test('equal', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -38,7 +41,7 @@ describe('start gracenode', function () {
 	it('can successfully start with 2 modules', function (done) {
 		runApp(run + ' withConf ../modules/withConf withSetup ../modules/withSetup', function (error, out, err) {
 			test('equal', error, null);
-			test('equal', err, '');
+			test('equal', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -46,7 +49,7 @@ describe('start gracenode', function () {
 	it('can successfully start with staticdata module bootstrapped', function (done) {
 		runApp(custom, function (error, out, err) {
 			test('equal', error, null);
-			test('equal', err, '');
+			test('equal', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -54,7 +57,7 @@ describe('start gracenode', function () {
 	it('can bootstrap a module with a hypen in its name and convert it to camel case', function (done) {
 		runApp(run + ' with-hyphen ../modules/with-hyphen', function (error, out, err) {
 			test('equal', error, null);
-			test('equal', err, '');
+			test('equal', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -62,7 +65,7 @@ describe('start gracenode', function () {
 	it('can fail to start for missing config', function (done) {
 		runApp(run + ' withConfig ../modules/withConf', function (error, out, err) {
 			test('notEqual', error, null);
-			test('notEqual', err, '');
+			test('notEqual', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -70,7 +73,7 @@ describe('start gracenode', function () {
 	it('can fail to start', function (done) {
 		runApp(run + ' foo /boo/', function (error, out, err) {
 			test('notEqual', error, null);
-			test('notEqual', err, '');
+			test('notEqual', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -78,7 +81,7 @@ describe('start gracenode', function () {
 	it('can fail to start with 2 modules with the same name', function (done) {
 		runApp(run + ' withConf ../modules/withConf withConf ../modules/withSetup', function (error, out, err) {
 			test('notEqual', error, null);
-			test('notEqual', err, '');
+			test('notEqual', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -86,7 +89,7 @@ describe('start gracenode', function () {
 	it('can fail to start with 2 modules with the same path', function (done) {
 		runApp(run + ' withConf ../modules/withConf withSetup ../modules/withConf', function (error, out, err) {
 			test('notEqual', error, null);
-			test('notEqual', err, '');
+			test('notEqual', err, '', /<warn>/);
 			done();
 		});
 	});
@@ -94,7 +97,7 @@ describe('start gracenode', function () {
 	it('can successfully start in cluster mode', function (done) {
 		runApp(run + ' withConf ../modules/withConf withSetup ../modules/withSetup cluster', function (error, out, err) {
 			test('equal', error, null);
-			test('equal', err, '');
+			test('equal', err, '', /<warn>/);
 			done();
 		});
 	});
