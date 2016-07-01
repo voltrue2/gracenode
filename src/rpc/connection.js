@@ -5,6 +5,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var gn = require('../gracenode');
 var Packet = require('../../lib/packet');
+var transport = require('../../lib/transport');
 // this is not HTTP router
 var router = require('./router');
 
@@ -359,7 +360,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 		});
 	};
 	var state = {
-		STATUS: parser.STATUS_CODE,
+		STATUS: transport.STATUS,
 		set: function (key, val) {
 			that.data[key] = val;
 		},

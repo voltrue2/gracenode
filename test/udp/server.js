@@ -35,8 +35,14 @@ function testHook1(state, next) {
 }
 
 function testCommand1(state) {
-	console.log('command', state.payload);
-	state.send({ message: 'Echo', payload: state.payload });
+	console.log('command', state.payload.toString());
+	state.send(
+		{
+			message: 'Echo',
+			payload: state.payload
+		},
+		state.status.OK
+	);
 }
 
 function handleAuth(req, res) {

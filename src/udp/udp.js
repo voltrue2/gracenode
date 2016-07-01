@@ -299,6 +299,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 	}
 
 	var state = {
+		status: transport.STATUS,
 		sessionId: sessionId,
 		seq: seq,
 		session: sessionData,
