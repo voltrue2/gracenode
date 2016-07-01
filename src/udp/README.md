@@ -378,11 +378,12 @@ Command handler functions will have `state` object passed.
 ```
 {
 	status: {
-		OK: 200,
-		BAD_REQ: 400,
-		NOT_FOUND: 404,
-		SERVER_ERR: 500,
-		UNAVAILABLE: 503,
+		OK: 1,
+		BAD_REQ: 2,
+		NOT_FOUND: 3,
+		FORBIDDEN: 4,
+		SERVER_ERR: 5,
+		UNAVAILABLE: 6,
 		UNKNOWN: 99
 	},
 	sessionId: [session ID] or null,

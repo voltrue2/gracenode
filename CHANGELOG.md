@@ -2,6 +2,39 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+# Version 3.4.0
+
+## Added
+
+## Added
+
+#### C# Cient class added
+
+`client/cs/Packet.cs` and `client/cs/Crypto.cs` have been added.
+
+These classes handle `UDP` and `RPC` packet protocol.
+
+## Changed
+
+#### UDP status values changed
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+
 # Version 3.3.0
 
 ## Added

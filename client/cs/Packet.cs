@@ -190,12 +190,12 @@ namespace PacketProtocol {
 
 	public class Status {
 
-		public const int OK = 200;
-		public const int BAD_REQ = 400;
-		public const int FORBIDDEN = 401;
-		public const int NOT_FOUND = 404;
-		public const int SERVER_ERR = 500;
-		public const int UNAVAILABLE = 503;
+		public const int OK = 1;
+		public const int BAD_REQ = 2;
+		public const int FORBIDDEN = 3;
+		public const int NOT_FOUND = 4;
+		public const int SERVER_ERR = 5;
+		public const int UNAVAILABLE = 6;
 		public const int UNKNOWN = 99;
 		
 	}
