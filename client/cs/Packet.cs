@@ -197,6 +197,27 @@ namespace PacketProtocol {
 		public const int SERVER_ERR = 5;
 		public const int UNAVAILABLE = 6;
 		public const int UNKNOWN = 99;
+
+		public static string GetMessage(int code) {
+			switch (code) {
+				case 1:
+					return "OK";
+				case 2:
+					return "Bad Request";
+				case 3:
+					return "Forbidden";
+				case 4:
+					return "Command Not Found";
+				case 5:
+					return "Server Error";
+				case 6:
+					return "Unavailable";
+				case 99:
+					return "Unknown";
+				default:
+					return "Undefined Error";
+			}
+		}
 		
 	}
 
