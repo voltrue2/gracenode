@@ -96,6 +96,18 @@ UDP server can also push packets as response to command requests.
 
 **Status** The value of Status can be manually set by the application.
 
+**Status**
+
+|Value |Meaning      |
+|:----:|:-----------:|
+|1     |OK           |
+|2     |Bad Request  |
+|3     |Forbidden    |
+|4     |Not Found    |
+|5     |Server Error |
+|6     |Unavailable  |
+|99    |Unknown      |
+
 #### Push Packet Structure
 
 |Offset        |Size              |Meaning              |

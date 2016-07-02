@@ -265,7 +265,7 @@ function handleMessage(buff, rinfo) {
 		return;				
 	}
 
-	executeCmd(null, null, null, parsed, rinfo);
+	executeCmd(null, parsed.seq, null, parsed, rinfo);
 }
 
 function dispatchOnError(error, rinfo) {
@@ -307,7 +307,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		clientPort: rinfo.port,
 		payload: payload,
 		send: function (msg, status) {
-			send(state, msg, status);
+			send(state, msg, seq, status);
 		}
 	};
 
@@ -356,10 +356,10 @@ function executeCommands(cmd, state) {
 	}, done);
 }
 
-function send(state, msg, status) {
+function send(state, msg, seq, status) {
 	// consider this as a reply
 	if (status !== undefined) {
-		msg = transport.createReply(status, state.seq || 0, msg);
+		msg = transport.createReply(status, seq || 0, msg);
 	} else {
 		// otherwise push
 		msg = transport.createPush(msg);
