@@ -25,11 +25,12 @@ exports.sender = function (port, command, seq, msg, cb) {
 
 exports.receiver = function (cb) {
 	client.once('message', function (buff) {
-		var payload = transport.parse(buff).payload.toString();
+		var parsed = transport.parse(buff);
+		var payload = parsed.payload.toString();
 		try {
-			cb(JSON.parse(payload));
+			cb(JSON.parse(payload), parsed.seq);
 		} catch (e) {
-			cb(payload);
+			cb(payload, parsed.seq);
 		}
 	});
 };
@@ -43,11 +44,12 @@ exports.secureReceiver = function (cipher, cb) {
 			cipher.seq,
 			buff
 		);
-		var payload = transport.parse(decrypted).payload.toString();
+		var parsed = transport.parse(decrypted);
+		var payload = parsed.payload.toString();
 		try {
-			cb(JSON.parse(payload));
+			cb(JSON.parse(payload), parsed.seq);
 		} catch (e) {
-			cb(payload);
+			cb(payload, parsed.seq);
 		}
 	});
 };

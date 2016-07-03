@@ -81,7 +81,6 @@ describe('gracenode.udp', function () {
 			next();
 		});
 		simpleClient.receiver(function (msg) {
-			console.log('>>>>>>>>>>>>', msg);
 			assert.equal(msg.inc, 3);
 			assert.equal(msg.message, 'Hello');
 			done();
@@ -285,5 +284,21 @@ describe('gracenode.udp', function () {
 			send();
 		});
 	});
-	
+
+	it('can sync seq w/ push', function (done) {
+		cipher.seq += 1;
+		sendSeq = cipher.seq;
+		var time = Date.now();
+		gn.udp.command(55, 'sync', function sync(state) {
+			state.send({ sync: state.payload.sync });
+		});
+		simpleClient.secureReceiver(cipher, function (msg, seq) {
+			assert.equal(msg.sync, time);
+			assert.equal(seq, sendSeq);
+			done();
+		});
+		simpleClient.secureSender(portOne, sessionId, cipher, 55, sendSeq, { sync: time }, function () {
+			
+		});
+	});
 });
