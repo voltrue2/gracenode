@@ -362,7 +362,7 @@ function send(state, msg, seq, status) {
 		msg = transport.createReply(status, seq || 0, msg);
 	} else {
 		// otherwise push
-		msg = transport.createPush(msg);
+		msg = transport.createPush(seq || 0, msg);
 	}
 
 	var sent = function (error) {

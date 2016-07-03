@@ -12,6 +12,8 @@ None
 
 #### UDP/TCP transport packet bug fix parsing seq using the same offset as command
 
+#### UDP push packets uses seq
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()

@@ -81,6 +81,7 @@ describe('gracenode.udp', function () {
 			next();
 		});
 		simpleClient.receiver(function (msg) {
+			console.log('>>>>>>>>>>>>', msg);
 			assert.equal(msg.inc, 3);
 			assert.equal(msg.message, 'Hello');
 			done();
