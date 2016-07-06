@@ -420,6 +420,7 @@ function send(state, msg, seq, status) {
 		});
 		return;
 	}
+
 	server.send(
 		msg,
 		0,

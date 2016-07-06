@@ -26,7 +26,6 @@ describe('gracenode.udp', function () {
 				level: '>= verbose'
 			},
 			udp: {
-				protocol: 'binary',
 				address: addr,
 				portRange: [portOne, portTwo]
 			},

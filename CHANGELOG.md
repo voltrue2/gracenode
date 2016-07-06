@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### .stop() call trace is added to logs when application calls .stop()
+
 #### UDP/TCP transport packet bug fix parsing seq using the same offset as command
 
 #### UDP push packets uses seq

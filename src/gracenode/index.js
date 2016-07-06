@@ -147,9 +147,12 @@ exports.start = function (cb) {
 };
 
 exports.stop = function (error) {
+	var trace = new Error('Stop Call Trace');
 	if (error) {
+		logger.error(trace.stack);
 		logger.error('.stop() has been invoked:', error);
 	} else {
+		logger.info(trace.stack);
 		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
