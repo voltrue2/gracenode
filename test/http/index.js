@@ -5,6 +5,8 @@ var pre = '../server/controller';
 var assert = require('assert');
 var request = require('../src/request');
 var gn = require('../../src/gracenode');
+//var ip = '::0';
+var ip = '127.0.0.1';
 var http = 'http://localhost:' + port + dummy; 
 var options = {
 	gzip: true
@@ -58,7 +60,7 @@ describe('gracenode.http', function () {
 				level: '>= verbose'
 			},
 			http: {
-				host: 'localhost',
+				host: ip,
 				port: port
 			}
 		});

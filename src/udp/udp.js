@@ -35,7 +35,8 @@ module.exports.info = function () {
 	return {
 		address: connectionInfo.address,
 		host: connectionInfo.host,
-		port: connectionInfo.port
+		port: connectionInfo.port,
+		family: connectionInfo.family
 	};
 };
 
@@ -130,8 +131,9 @@ module.exports.setup = function (cb) {
 		connectionInfo.address = info.address;
 		connectionInfo.host = config.address;
 		connectionInfo.port = info.port;
-
-		logger.info('UDP server started at', info.address + ':' + info.port);
+		connectionInfo.family = info.family;
+		
+		logger.info('UDP server started at', info.address + ':' + info.port, connectionInfo.family);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));
 		logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
 

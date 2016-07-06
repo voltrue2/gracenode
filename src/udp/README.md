@@ -336,11 +336,11 @@ public class Crypto {
 
 #### .info()
 
-Returns an object of listening host/IP address and port.
+Returns an object of listening host/IP address, port, and family.
 
 ```
 var info = gracenode.udp.info();
-console.log(info.host, info.port);
+console.log(info.host, info.port, info.family);
 ```
 
 ### Command ID

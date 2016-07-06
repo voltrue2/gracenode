@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### HTTP, UDP, and RPC added address family to .info()
+
 #### .stop() call trace is added to logs when application calls .stop()
 
 #### UDP/TCP transport packet bug fix parsing seq using the same offset as command

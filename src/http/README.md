@@ -52,6 +52,21 @@ gn.start(function () {
 
 **NOTE**: Once you give `port` and `host`, **gracenode** will automatically start the HTTP server while `gracenode.start()`.
 
+## Server Information
+
+### .info()
+
+The function returns the following object:
+
+```
+{
+	host: 'Configuration host',
+	address: 'Address that the server is bound',
+	port: 'Port that the server is bound',
+	family: 'Used address family'
+}
+```
+
 ## Register endpoints
 
 You must register endpoint routes in order to setup your REST server with `gracenode.http`.

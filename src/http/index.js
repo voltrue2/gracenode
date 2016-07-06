@@ -16,6 +16,7 @@ var config;
 var server;
 var trailingSlash = false;
 var errorMap = {};
+var connectionInfo = {};
 
 var STATIC_PARAM = '{static:staticfile}';
 
@@ -32,6 +33,15 @@ exports.config = function (configIn) {
 	route.setup();
 	request.setup();
 	response.setup();
+};
+
+exports.info = function () {
+	return {
+		host: connectionInfo.host,
+		address: connectionInfo.address,
+		port: connectionInfo.port,
+		family: connectionInfo.family
+	};	
 };
 
 exports.get = function (path, handler, opt) {
@@ -106,13 +116,18 @@ exports.error = function (status, func) {
 };
 
 exports.setup = function (cb) {
-	//route.setup();
 	server = http.createServer(requestHandler);
 	server.on('listening', function () {
+		var info = server.address();
 		logger.info(
 			'HTTP server router started:',
-			config.host + ':' + config.port
+			config.host + ':' + config.port,
+			info
 		);
+		connectionInfo.host = config.host;
+		connectionInfo.address = info.address;
+		connectionInfo.port = info.port;
+		connectionInfo.family = info.family.toLowerCase();
 		cb();
 	});
 	server.on('error', function (error) {

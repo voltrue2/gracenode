@@ -795,11 +795,11 @@ gn.rpc.onKilled(function (connectionId, connection) {
 
 ### .info()
 
-Returns an object of listening host/IP address and port.
+Returns an object of listening host/IP address, port, and family.
 
 ```
 var info = gracenode.rpc.info();
-console.log(info.host, info.port);
+console.log(info.host, info.port, family);
 ```
 
 ## Connection Error and Timeout

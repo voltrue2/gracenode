@@ -25,13 +25,16 @@ var HEARTBEAT = {
 };
 var connectionInfo = {
 	host: null,
-	port: null
+	port: null,
+	family: null
 };
 
 module.exports.info = function () {
 	return {
+		address: connectionInfo.address,
 		host: connectionInfo.host,
-		port: connectionInfo.port
+		port: connectionInfo.port,
+		family: connectionInfo.family
 	};
 };
 
@@ -101,8 +104,11 @@ module.exports.setup = function (cb) {
 			server.close(next);
 		});
 
+		var info = server.address();
+		connectionInfo.address = info.address;
 		connectionInfo.host = config.host;
 		connectionInfo.port = boundPort;
+		connectionInfo.family = info.family;
 
 		// if heartbeat is required, set it up here now
 		if (gn.getConfig('rpc.heartbeat')) {
@@ -121,7 +127,7 @@ module.exports.setup = function (cb) {
 			}
 		}	
 
-		logger.info('RPC server started at', config.host + ':' + boundPort);
+		logger.info('RPC server started at', config.host + ':' + boundPort, connectionInfo.family);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));
 		logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
 
