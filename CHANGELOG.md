@@ -2,13 +2,15 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 3.4.1
+## Version 3.4.2
 
 ## Added
 
 None
 
 ## Changed
+
+#### gracenode.lib.transport added
 
 #### HTTP, UDP, and RPC added address family to .info()
 

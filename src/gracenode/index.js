@@ -12,6 +12,7 @@ var lint = requireInternal('../lint');
 var session = requireInternal('../session');
 var async = requireInternal('../../lib/async');
 var pkg = requireInternal('../../package.json');
+var transport = requireInternal('../../lib/transport');
 
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
@@ -130,6 +131,10 @@ exports.start = function (cb) {
 			if (error) {
 				return exports.stop(error);
 			}
+
+			// setup
+			transport.setup();
+
 			var time = Date.now() - start;
 			logger.info(
 				'node.js <' + process.version + '>',

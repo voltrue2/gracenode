@@ -25,12 +25,17 @@ exports.sender = function (port, command, seq, msg, cb) {
 
 exports.receiver = function (cb) {
 	client.once('message', function (buff) {
+		var payload;
 		var parsed = transport.parse(buff);
-		var payload = parsed.payload.toString();
+		if (Buffer.isBuffer(parsed.payload)) {
+			payload = parsed.payload.toString();
+		} else {
+			payload = parsed.payload;
+		}
 		try {
-			cb(JSON.parse(payload), parsed.seq);
+			cb(JSON.parse(payload), parsed.seq || 0);
 		} catch (e) {
-			cb(payload, parsed.seq);
+			cb(payload, parsed.seq || 0);
 		}
 	});
 };
@@ -44,12 +49,17 @@ exports.secureReceiver = function (cipher, cb) {
 			cipher.seq,
 			buff
 		);
+		var payload;
 		var parsed = transport.parse(decrypted);
-		var payload = parsed.payload.toString();
+		if (Buffer.isBuffer(parsed.payload)) {
+			payload = parsed.payload.toString();
+		} else {
+			payload = parsed.payload;
+		}
 		try {
-			cb(JSON.parse(payload), parsed.seq);
+			cb(JSON.parse(payload), parsed.seq || 0);
 		} catch (e) {
-			cb(payload, parsed.seq);
+			cb(payload, parsed.seq || 0);
 		}
 	});
 };
