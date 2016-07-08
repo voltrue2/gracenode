@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### UDP and RPC encryption from server does not require seq
+
 #### Corrected README.md
 
 ## Deprecated

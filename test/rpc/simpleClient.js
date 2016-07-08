@@ -70,7 +70,8 @@ Client.prototype.recv = function (cb) {
 					cipher.cipherKey,
 					cipher.cipherNonce,
 					cipher.macKey,
-					seq,
+					// packet from server does not care about seq
+					0,
 					packet.payload
 				).toString();
 			} else {
@@ -114,7 +115,8 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
 				cipher.cipherKey,
 				cipher.cipherNonce,
 				cipher.macKey,
-				cipher.seq,
+				// packet from server does not care about seq
+				0,
 				parsed[0].payload
 			);
 			that.logger.debug('client received encrypted:', decrypted.toString());

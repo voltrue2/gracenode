@@ -314,7 +314,8 @@ function socketSessionEncryption(state, msg, next) {
 		sess.cipher.cipherKey,
 		sess.cipher.cipherNonce,
 		sess.cipher.macKey,
-		state.seq,
+		// push and response packet does not need to keep seq
+		0,
 		msg
 	);
 	next(null, encrypted);

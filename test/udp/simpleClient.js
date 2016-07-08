@@ -46,7 +46,8 @@ exports.secureReceiver = function (cipher, cb) {
 			cipher.cipherKey,
 			cipher.cipherNonce,
 			cipher.macKey,
-			cipher.seq,
+			// packet from server does not care about seq
+			0,
 			buff
 		);
 		var payload;

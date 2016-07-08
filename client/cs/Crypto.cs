@@ -117,7 +117,9 @@ public class Crypto {
 		byte[] eBytes = ByteSlice(payload, seqSize, payload.Length - serverHmac.Length);
 		byte[] dBytes = new byte[eBytes.Length];
 
-		Ctr(_sequence, eBytes, dBytes, 0);
+		//Ctr(_sequence, eBytes, dBytes, 0);
+		// packet from server does not require seq so the first arg (seq) is 0
+		Ctr(0, eBytes, dBytes, 0);
 
 		return dBytes;	
 	}
