@@ -1432,18 +1432,18 @@ Creates a UUID object from `input`.
 
 `input` can be a UUID string, UUID binary, or UUID object.
 
-#### gracenode.lib.transport.createRequest(commandId {number}, sequence {number}, data {object})
+#### gracenode.lib.packet.createRequest(commandId {number}, sequence {number}, data {object})
 
 Creates a binary packet of fixed format for a command request used in `UDP` and `RPC`.
 
-#### gracenode.lib.transport.createReply(status {number}, sequence {number}, data {object})
+#### gracenode.lib.packet.createReply(status {number}, sequence {number}, data {object})
 
 Creates a binary packet of fixed format for a reply (to a command request) used in `UDP` and `RPC`.
 
-#### gracenode.lib.transport.createPush(sequence {number}, data {object})
+#### gracenode.lib.packet.createPush(sequence {number}, data {object})
 
 Creates a binary packet of fixed format for a push message from server used in `UDP` and `RPC`.
 
-#### gracenode.lib.transport.parse(packet {buffer})
+#### gracenode.lib.packet.parse(packet {buffer})
 
 Parses a binary packet used in `UDP` and `RPC` to an object.
