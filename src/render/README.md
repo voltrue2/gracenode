@@ -107,14 +107,35 @@ The above examples will result in `{{myCar}}` being replaced by `{ myCar: 'BMW' 
 
 You may also pass a `function` as a variable to your template. The function **MUST** return some type of value.
 
+It is very useful when you need to have complex logic to render templates.
+
 The returned value of the function will be embedded as a dynamic variable.
 
 Example:
+
 ```javascript
 var data = {
 	name: 'Bach',
-	timestamp: function () {
-		return Date.now();
+	listOfMusic: function () {
+		var html = '';
+		for (var i = 0, len = listOfBachMusic.length; i < len; i++) {
+			var item = listOfBachMusic[i];
+			switch (item.genre) {
+				case 'choir':
+				html += '<li class="' + item.genre + ' choir-color">' + item.name + '</li>';
+				break;
+				case 'orchestra':
+				html += '<li class="' + item.genre + ' orchestra-color">' + item.name + '</li>';
+				break;
+				case 'organ':
+				html += '<li class="' + item.genre + ' organ-color">' + item.name + '</li>';		
+				break;
+				default:
+				// do nothing show nothing
+				break;
+			}
+		}
+		return html;
 	}
 };
 gracenode.render('path/to/template', data);
