@@ -1,6 +1,6 @@
 {
 	"name": "gracenode",
-	"description": "A node.js framework for real-time application with extendable modules for quick and clean evelopment.",
+	"description": "A node.js framework for real-time applications such as games with extendable modules for quick and clean evelopment.",
 	"version": "3.4.3",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
@@ -86,7 +86,8 @@
 		"tcp",
 		"render",
 		"template",
-		"rest"	
+		"rest",
+		"game"
 	],
 	"license": "MIT"
 }
