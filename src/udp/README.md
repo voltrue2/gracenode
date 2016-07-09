@@ -47,7 +47,7 @@ When you provide the above configurations and call `gracenode.start`, UDP server
 
 ## UDP Message Packet
 
-UDP server communicates with `UTF-8` plain text `JSON` messages.
+UDP server communicates with binary packet. The format is explained below at **Binary Protocol** section.
 
 ## Commands
 
