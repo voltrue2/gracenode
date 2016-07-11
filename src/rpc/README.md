@@ -16,6 +16,8 @@ RPC server can optionally use built-in session/encryption for secure data transm
 rpc: {
 	host: [host name],
 	portRange: [ [port to start from], [port to end with] ],
+	// or pass one port number instead of portRange, RPC server will bind to incremented port number in cluster mode
+	port: [ port number ]
 	maxPayloadSize: [optional] // default is 8000 bytes,
 	heartbeat: [optional] { timeout: [milliseconds], checkFrequency: [milliseconds] }
 }

@@ -21,6 +21,8 @@ In order to start the UDP server, you will need to provide the following configu
 	udp: {
 		// UDP server will attempt to bind between the two port numbers given here
 		portRange: [[port to start from], [port to end with]],
+		// or pass one port insead. The server will bind to incremented port number in cluster mode
+		port: [ port number ],
 		// this is optional and by default it binds to 0.0.0.0 to listen to all addresses
 		address: [address to bind to]
 	}

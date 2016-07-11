@@ -28,7 +28,8 @@ describe('gracenode.udp', function () {
 			udp: {
 				//protocol: 'json',
 				address: addr,
-				portRange: [portOne, portTwo]
+				//portRange: [portOne, portTwo]
+				port: portOne
 			},
 			http: {
 				host: 'localhost',

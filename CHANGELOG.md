@@ -2,6 +2,37 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.4
+
+## Added
+
+None
+
+## Changed
+
+#### UDP configuration now support port
+
+#### UDP multiple command registration name check bug fixed
+
+#### RPC configuration now supports port
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+
 ## Version 3.4.3
 
 ## Added

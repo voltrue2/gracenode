@@ -12,7 +12,7 @@ module.exports.setup = function () {
 
 module.exports.define = function (cmdId, cmdName, handler) {
 	if (commands[cmdId]) {
-		if (cmdName !== commands[cmdId]) {
+		if (cmdName !== commands[cmdId].name) {
 			logger.error(
 				'command name does not match for command ' + cmdId + ':',
 				cmdName,

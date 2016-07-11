@@ -15,6 +15,7 @@ var UDP_VER = 'udp4';
 var IPv6 = 'ipv6';
 var IPv4 = 'ipv4';
 var IPV6_ADDR_PREFIX = 'fe80';
+var LAST_RANGE = 1000;
 
 var ipv6 = false;
 var logger;
@@ -48,6 +49,13 @@ module.exports.setup = function (cb) {
 		return gn.stop(new Error(
 			'UDP server does not support node.js version: ' + process.version
 		));
+	}
+
+	if (config && config.port) {
+		config.portRange = [
+			config.port,
+			config.port + LAST_RANGE
+		];
 	}
 
 	if (!config || !config.portRange) {

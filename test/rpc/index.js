@@ -33,7 +33,8 @@ describe('gracenode.rpc', function () {
 			},
 			rpc: {
 				host: addr,
-				portRange: [ portOne, portTwo ],
+				port: portOne,
+				//portRange: [ portOne, portTwo ],
 				heartbeat: {
 					timeout: 2000,
 					checkFrequency: 1000

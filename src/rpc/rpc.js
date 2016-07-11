@@ -23,6 +23,7 @@ var HEARTBEAT = {
 	ID: 911,
 	NAME: 'heartbeat'
 };
+var LAST_RANGE = 1000;
 var connectionInfo = {
 	host: null,
 	port: null,
@@ -49,6 +50,13 @@ module.exports.setup = function (cb) {
 	}
 
 	protocol.setup(gn);
+
+	if (config && config.port) {
+		config.portRange = [
+			config.port,
+			config.port + LAST_RANGE
+		];
+	}
 
 	if (!config || !config.host || !config.portRange) {
 		return cb();
