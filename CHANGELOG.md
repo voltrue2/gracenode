@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### Decryption error handling no longer throws an error. Instead it returns and error
+
 #### UDP configuration now support port
 
 #### UDP multiple command registration name check bug fixed

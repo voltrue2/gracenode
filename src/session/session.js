@@ -304,6 +304,14 @@ function socketSessionDecrypt(ce, res, sess, next) {
 		res.seq,
 		res.payload
 	);
+	if (decrypted instanceof Error) {
+		logger.error(
+			'session decryption failed;', decrypted,
+			'session ID:', res.sessionId,
+			sess
+		);
+		return next(decrypted);
+	}
 	next(null, res.sessionId, res.seq, sess, decrypted);
 }
 
