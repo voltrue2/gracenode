@@ -92,8 +92,8 @@ namespace PacketProtocol {
 			return packet;
 		}
 
-		public static Dictionary<string, object> Parse(byte[] packet) {
-			Dictionary<string, object> parsed = new Dictionary<string, object>();
+		public static ParsedPacketData Parse(byte[] packet) {
+			ParsedPacketData parsed = new ParsedPacketData();
 			// read protocol version
 			byte[] ver = new byte[Packet.UINT32_SIZE];
 			Buffer.BlockCopy(
@@ -104,7 +104,12 @@ namespace PacketProtocol {
 				Packet.UINT8_SIZE
 			);
 			uint version = BitConverter.ToUInt32(ver, 0);
-			parsed.Add("version", version);
+			parsed.Version = version;
+			if (version != VER0) {
+				// invalid packet
+				parsed.Invalid = true;
+				return parsed;
+			}
 			// read payload size
 			byte[] plen = new byte[Packet.UINT32_SIZE];
 			Buffer.BlockCopy(
@@ -117,7 +122,11 @@ namespace PacketProtocol {
 			// array reverse for big endian conversion
 			Array.Reverse(plen);
 			uint payloadSize = BitConverter.ToUInt32(plen, 0);
-			parsed.Add("payloadSize", payloadSize);
+			parsed.PayloadSize = payloadSize;
+			if (payloadSize > packet.Length) {
+				parsed.Invalid = true;
+				return parsed;
+			}
 			// read reply flag
 			byte[] rflag = new byte[Packet.UINT32_SIZE];
 			Buffer.BlockCopy(
@@ -132,7 +141,7 @@ namespace PacketProtocol {
 			if (replyFlag == 0x01) {
 				isReply = true;
 			}
-			parsed.Add("isReply", isReply);
+			parsed.IsReply = isReply;
 			// read status
 			byte[] stat = new byte[Packet.UINT32_SIZE];
 			Buffer.BlockCopy(
@@ -143,7 +152,7 @@ namespace PacketProtocol {
 				Packet.UINT8_SIZE
 			);
 			uint status = BitConverter.ToUInt32(stat, 0);
-			parsed.Add("status", status);
+			parsed.Status = status;
 			// read sequence
 			byte[] sequence = new byte[Packet.UINT16_SIZE];
 			Buffer.BlockCopy(
@@ -156,7 +165,7 @@ namespace PacketProtocol {
 			// array reverse for big endian conversion
 			Array.Reverse(sequence);
 			uint seq = BitConverter.ToUInt16(sequence, 0);
-			parsed.Add("seq", seq);
+			parsed.Seq = seq;
 			// read payload
 			byte[] payload = new byte[payloadSize];
 			Buffer.BlockCopy(
@@ -166,7 +175,7 @@ namespace PacketProtocol {
 				0,
 				(int)payloadSize
 			);
-			parsed.Add("payload", payload);
+			parsed.Payload = payload;
 			// read stop
 			byte[] mstop = new byte[Packet.UINT32_SIZE];
 			Buffer.BlockCopy(
@@ -180,12 +189,23 @@ namespace PacketProtocol {
 			Array.Reverse(mstop);
 			uint stop = BitConverter.ToUInt32(mstop, 0);
 			if (stop != Packet.MSTOP) {
-				throw new Exception("InvalidStopSymbolInPacket");
+				parsed.Invalid = true;
+				return parsed;
 			}
 			// done
 			return parsed;
 		}	
 
+	}
+
+	public class ParsedPacketData {
+		public bool Invalid = false;
+		public uint Version { get; set; }
+		public uint PayloadSize { get; set; }
+		public bool IsReply { get; set; }
+		public uint Status { get; set; }
+		public uint Seq { get; set; }
+		public byte[] Payload { get; set; }
 	}
 
 	public class Status {
@@ -197,27 +217,6 @@ namespace PacketProtocol {
 		public const int SERVER_ERR = 5;
 		public const int UNAVAILABLE = 6;
 		public const int UNKNOWN = 99;
-
-		public static string GetMessage(int code) {
-			switch (code) {
-				case 1:
-					return "OK";
-				case 2:
-					return "Bad Request";
-				case 3:
-					return "Forbidden";
-				case 4:
-					return "Command Not Found";
-				case 5:
-					return "Server Error";
-				case 6:
-					return "Unavailable";
-				case 99:
-					return "Unknown";
-				default:
-					return "Undefined Error";
-			}
-		}
 		
 	}
 
