@@ -12,7 +12,7 @@ None
 
 #### UDP can now change the max packet size
 
-#### Dependency cluster-mode version updated to 1.0.3
+#### Dependency cluster-mode version updated to 1.1.0
 
 ## Deprecated
 
