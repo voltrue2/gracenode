@@ -26,9 +26,8 @@ describe('gracenode.udp', function () {
 				level: '>= verbose'
 			},
 			udp: {
-				//protocol: 'json',
+				maxPacketSize: 1000,
 				address: addr,
-				//portRange: [portOne, portTwo]
 				port: portOne
 			},
 			http: {

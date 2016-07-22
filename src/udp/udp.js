@@ -66,6 +66,13 @@ module.exports.setup = function (cb) {
 	if (config.protocol) {
 		transport.use(config.protocol);
 	}
+
+	// change default max size for packets
+	if (config.maxPacketSize) {
+		transport.setMaxSize(config.maxPacketSize);
+	}
+
+	logger.info('Max packet size:', transport.getMaxPacketSize());
 	
 	var addrMap = findAddrMap();
 	logger.info('Available Addresses:', addrMap);	

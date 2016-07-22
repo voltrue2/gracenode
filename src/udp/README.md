@@ -19,6 +19,8 @@ In order to start the UDP server, you will need to provide the following configu
 ```
 {
 	udp: {
+		// change the default max packet size allowed from clients: Default is 8000 (8KB)
+		maxPacketSize: 1000,
 		// UDP server will attempt to bind between the two port numbers given here
 		portRange: [[port to start from], [port to end with]],
 		// or pass one port insead. The server will bind to incremented port number in cluster mode
