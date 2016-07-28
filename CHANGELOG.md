@@ -2,6 +2,36 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.7
+
+## Added
+
+None
+
+## Changed
+
+#### RPC state object added command
+
+#### RPC reply packet removed comand (reply packet cannot have command b/c reply flag is at the same offset) 
+
+#### RPC corrected auto-status for reply
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.6
 
 ## Added
@@ -27,6 +57,8 @@ Please use `gracenode.http` instead.
 ## Removed
 
 None
+
+***
 
 ## Version 3.4.5
 

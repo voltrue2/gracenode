@@ -528,6 +528,9 @@ Command handler functions will have `state` object and `callback` function passe
 		// UNKNOWN
 		UNKNOWN: 99
 	},
+	command: [command ID],
+	// connection.id is a unique ID for each connection
+	connection: [connection object],
 	payload: [payload data],
 	// set a key/value for this TCP connection to remember
 	set: [function],

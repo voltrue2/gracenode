@@ -246,6 +246,27 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can access command ID from state object in the handler', function (done) {
+		var clientMsg = 'Secure Hello';
+		var serverMsg = 'Secure Echo';
+		var cid = 3;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			assert.equal(state.command, cid);
+			assert.equal(state.hookToAll, true);
+			assert.equal(state.payload.message, clientMsg);
+			cb({ message: serverMsg, command: state.command });
+		});
+		client.recvOnceSecure(cipher, function (data) {
+			assert.equal(data.message, serverMsg);
+			assert.equal(data.command, cid);
+			done();
+		});
+		cipher.seq += 1;
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
 	it('can handle secure command + hook w/ session', function (done) {
 		var clientMsg = 'Secure Hello';
 		var serverMsg = 'Secure Echo';
