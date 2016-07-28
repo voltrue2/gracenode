@@ -258,7 +258,7 @@ function handleMessage(buff, rinfo) {
 		var toDecrypt = transport.isJson() ? buff : parsed.payload;
 		cryptoEngine.decrypt(
 			toDecrypt,
-			'UDP',
+			gn.session.PROTO.UDP,
 			info.host,
 			info.port,
 			function (error, sessId, seq, sessData, decrypted) {

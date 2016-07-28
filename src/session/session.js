@@ -20,8 +20,14 @@ var using = {
 var inMemStorage = {};
 var setup = false;
 var SESSION_ID_NAME = 'sessionid';
+var PROTO = {
+	RPC: 'RPC',
+	UDP: 'UDP'
+};
 
 mem.setDuration(options.ttl);
+
+module.exports.PROTO = PROTO;
 
 module.exports.setup = function () {
 	logger = gn.log.create('session');
@@ -146,6 +152,18 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 			data.cipher = createSocketCipher();
 			req.args.cipher = data.cipher;
 		}
+		if (using.udp && using.rpc) {
+			logger.verbose('Session:', PROTO.RPC + id, PROTO.UDP + id);
+			// when we share the same session for RPC and UDP, we create 2 separate sessions
+			set(PROTO.RPC + id, data, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				set(PROTO.UDP + id, data, cb);
+			});
+			return;
+		}
+		logger.verbose('Session:', id);
 		return set(id, data, cb);
 	}
 
@@ -156,6 +174,25 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 		sessionData.cipher = createSocketCipher();
 		req.args.cipher = sessionData.cipher;
 	}
+	if (using.udp && using.rpc) {
+		// when we share the same session for RPC and UDP, we create 2 separate sessions
+		logger.verbose('session:', PROTO.RPC + id, PROTO.UDP + id);
+		mem.set(PROTO.RPC + id, sessionData, function (error) {
+			if (error) {
+				return cb(error);
+			}
+			mem.set(PROTO.UDP + id, sessionData, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				req.args.sessionId = id;
+				req.args.session = sessionData;
+				cb();
+			});
+		});
+		return;
+	}
+	logger.verbose('session:', id);
 	mem.set(id, sessionData, function (error) {
 		if (error) {
 			return cb(error);
@@ -184,21 +221,39 @@ module.exports.delHTTPSession = function (req, res, cb) {
 
 	if (del) {
 		logger.verbose('custom delete is defined');
+		if (using.udp && using.rpc) {
+			del(PROTO.RPC, function (error) {
+				if (error) {
+					return cb(error);
+				}
+				del(PROTO.UDP, cb);
+			});
+			return;
+		}
 		return del(id, cb);
 	}
 
 	logger.warn('del is using default in-memory storage: Not for production');
-
+	if (using.udp && using.rpc) {
+		mem.del(PROTO.RPC, function (error) {
+			if (error) {
+				return cb(error);
+			}
+			mem.del(PROTO.UDP, cb);
+		});
+		return;
+	}
 	mem.del(id, cb);
 };
 
 function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 	var ce = new gn.lib.CryptoEngine();
 	var res = ce.getSessionIdAndPayload(packet);
-	logger.verbose('validating socket session:', res.sessionId, sockType, remoteIp, remotePort);
+	var sid = (using.udp && using.rpc) ? sockType + res.sessionId : res.sessionId;
+	logger.verbose('validating socket session:', sid, sockType, remoteIp, remotePort);
 	if (get && set) {
 		logger.verbose('custom getter is defined');
-		get(res.sessionId, function (error, sessionData) {
+		get(sid, function (error, sessionData) {
 			if (error) {
 				return next(error);
 			}
@@ -206,7 +261,7 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 				if (error) {
 					return next(error);
 				}
-				set(res.sessionId, sessionData, function (error) {
+				set(sid, sessionData, function (error) {
 					if (error) {
 						return next(error);
 					}
@@ -217,16 +272,16 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 		return;
 	}
 	logger.warn('get is using default in-memory storage: Not for production');
-	mem.get(res.sessionId, function (error, sess) {
+	mem.get(sid, function (error, sess) {
 		if (error) {
-			logger.error('session not found:', res.sessionId);
+			logger.error('session not found:', sid);
 			return next(error);
 		}
 		_socketSessionValidation(res, sockType, remoteIp, remotePort, sess, function (error) {
 			if (error) {
 				return next(error);
 			}
-			mem.set(res.sessionId, sess, function (error) {
+			mem.set(sid, sess, function (error) {
 				if (error) {
 					return next(error);
 				}

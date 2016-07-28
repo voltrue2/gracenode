@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.9
+
+## Added
+
+None
+
+## Changed
+
+#### UDP and RPC uses 2 separate sessions internally when used together to avoid race condition of seq
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.8
 
 ## Added
