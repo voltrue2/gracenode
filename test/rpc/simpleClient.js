@@ -3,7 +3,7 @@
 var gn = require('../../src/gracenode');
 var ce = new gn.lib.CryptoEngine();
 var net = require('net');
-var PacketParser = require('../../lib/packet');
+var transport = gn.lib.packet;
 var packetParser;
 
 var portCount = 0;
@@ -11,7 +11,7 @@ var logger;
 
 function Client() {
 	this.logger = gn.log.create();
-	this.parser = new PacketParser(logger);
+	this.parser = new transport.Stream();
 	this.client = new net.Socket();
 }
 
@@ -34,7 +34,8 @@ Client.prototype.send = function (commandId, seq, msg, cb) {
 	
 	this.logger.debug('client sending', commandId, seq, msg);
 
-	var packet = this.parser.createReq(commandId, seq, msg);
+	//var packet = this.parser.createReq(commandId, seq, msg);
+	var packet = transport.createRequest(commandId, seq, msg);
 	this.client.write(packet, cb);
 
 };
@@ -43,6 +44,7 @@ Client.prototype.recvOnce = function (cb) {
 	var that = this;
 	this.client.once('data', function (packet) {
 		that.client.removeAllListeners('close');
+		//var parsed = that.parser.parse(packet);
 		var parsed = that.parser.parse(packet);
 		that.logger.debug('client received:', JSON.parse(parsed[0].payload));
 		cb(JSON.parse(parsed[0].payload));
@@ -57,7 +59,8 @@ Client.prototype.recv = function (cb) {
 	var seq = cipher.seq;
 	var that = this;
 	this.client.on('data', function (buffer) {
-		var packets = that.parser.parse(buffer);
+		//var packets = that.parser.parse(buffer);
+		var packets = transport.parse(buffer);
 		for (var i = 0, len = packets.length; i < len; i++) {
 			var packet = packets[i];
 			if (!packet) {

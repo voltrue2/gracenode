@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.6
+
+## Added
+
+None
+
+## Changed
+
+#### RPC now uses the same transport module as UDP
+
+#### transport module now added .getStatus()
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
 ## Version 3.4.5
 
 ## Added

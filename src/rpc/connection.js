@@ -4,7 +4,6 @@ var async = require('../../lib/async');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var gn = require('../gracenode');
-var Packet = require('../../lib/packet');
 var transport = require('../../lib/transport');
 // this is not HTTP router
 var router = require('./router');
@@ -26,7 +25,8 @@ function Connection(connId, sock, options) {
 		'RPC.connection ID:' + connId + '][server=' + this.self + ' client=' + this.from
 	);
 
-	this.packetParser = new Packet(gn.log.create('RPC.packetParser'));
+	//this.packetParser = new Packet(gn.log.create('RPC.packetParser'));
+	this.parser = new transport.Stream();
 
 	var that = this;
 
@@ -106,14 +106,13 @@ Connection.prototype.kill = function (error) {
 Connection.prototype._handleData = function (packet) {
 	this.logger.verbose('packet received');
 
-	var parsed = this.packetParser.parse(packet);
+	var parsed = this.parser.parse(packet);
 
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
 	}
 
 	var that = this;
-	var parser = that.packetParser;
 	var done = function (error) {
 		if (error) {
 			return that.kill(error);		
@@ -135,7 +134,7 @@ Connection.prototype._handleData = function (packet) {
 		}
 	
 		if (!that.cryptoEngine.decrypt) {
-			return that._routeAndExec(parser, parsedData, null, next);
+			return that._routeAndExec(parsedData, null, next);
 		}
 		that.logger.info('using decryption for incoming packet');
 		that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
@@ -148,13 +147,13 @@ Connection.prototype._handleData = function (packet) {
 				data: sdata
 			};
 			parsedData.payload = decrypted;
-			that._routeAndExec(parser, parsedData, sessionData, next);
+			that._routeAndExec(parsedData, sessionData, next);
 		});
 	}, done);
 };
 
 // private called from ._handleData()
-Connection.prototype._routeAndExec = function (parser, parsedData, sessionData, next) {
+Connection.prototype._routeAndExec = function (parsedData, sessionData, next) {
 	var cmd = router.route(parsedData);
 	
 	if (!cmd) {
@@ -172,10 +171,10 @@ Connection.prototype._routeAndExec = function (parser, parsedData, sessionData, 
 			if (error) {
 				return next(error);
 			}
-			var notFound = parser.createReply(
-				parser.STATUS_CODE.NOT_FOUND,
-				parsedData.seq,
-				data
+			var notFound = transport.createReply(
+				transport.STATUS.NOT_FOUND,
+				0,
+				data			
 			);
 			if (notFound instanceof Error) {
 				return next(notFound);
@@ -217,7 +216,7 @@ Connection.prototype._push = function (state, payload, cb) {
 			return cb(error);
 		}
 		that.logger.info('push from server:', payload);
-		var pushPacket = that.packetParser.createPush(data);
+		var pushPacket = transport.createPush(0, data);
 		that._write(pushPacket, true, cb);
 	});
 };
@@ -293,7 +292,7 @@ Connection.prototype._setupHeartbeat = function (heartbeat) {
 };
 
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
-	var parser = that.packetParser; 
+	//var parser = that.packetParser; 
 	var write = function (error, res, cmd, status, options, cb) {
 
 		if (error) {
@@ -331,10 +330,17 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				'(seq:' + parsedData.seq + ')',
 				'(status:' + status + ')'
 			);
+			/*
 			var replyPacket = parser.createReply(
 				parser.status(res),
 				parsedData.seq,
 				data
+			);
+			*/
+			var replyPacket = transport.createReply(
+				transport.getStatus(res),
+				0,
+				data				
 			);
 			if (replyPacket instanceof Error) {
 				that.logger.error(replyPacket);
@@ -384,7 +390,8 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	cmd.hooks(state, function (error, status) {
 		if (error) {
 			if (!status) {
-				status = parser.STATUS_CODE.BAD_REQ;
+				//status = parser.STATUS_CODE.BAD_REQ;
+				status = transport.STATUS.BAD_REQ;
 			}
 			var msg = {
 				message: error.message,
@@ -409,7 +416,8 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 					error = _res;
 					if (!_status) {
 						// default error response status
-						_status = parser.STATUS_CODE.BAD_REQ;
+						//_status = parser.STATUS_CODE.BAD_REQ;
+						_status = transport.STATUS.BAD_REQ;
 					}
 					status = _status;
 					options = _options;
@@ -417,7 +425,8 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				}
 				if (!status) {
 					// default response status
-					_status = parser.STATUS_CODE.OK;
+					//_status = parser.STATUS_CODE.OK;
+					_status = transport.STATUS.BAD_REQ;
 				}
 				res = _res;
 				status = _status;

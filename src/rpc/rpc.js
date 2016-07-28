@@ -15,7 +15,6 @@ var cryptoEngine = {
 	encrypt: null,
 	decrypt: null
 };
-var connId = 0;
 
 var PORT_IN_USE = 'EADDRINUSE';
 var TIMEOUT_FOR_CLOSE = 5000;
@@ -263,6 +262,7 @@ function handleConn(sock) {
 		cryptoEngine: cryptoEngine
 	};
 
+	var connId = gn.lib.uuid.v4().toString();
 	var conn = new Connection(connId, sock, opt);
 	
 	if (cryptoEngine) {
@@ -282,6 +282,4 @@ function handleConn(sock) {
 	logger.info('new TCP connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort);
 
 	conns[connId] = conn;
-	
-	connId += 1;
 }
