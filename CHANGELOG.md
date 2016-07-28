@@ -2,6 +2,33 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.8
+
+## Added
+
+None
+
+## Changed
+
+#### BREAKING Bug fix: v3.4.7 broke UDP command handler
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+
 ## Version 3.4.7
 
 ## Added
