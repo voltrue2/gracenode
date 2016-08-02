@@ -93,6 +93,21 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can send an error response w/ default status bad request 2', function (done) {
+		var cid = 333;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb(new Error('boo'));
+		});
+		client.recvOnce(function (data, status) {
+			assert.equal(data.message, 'boo');
+			assert.equal(status, 2);
+			done();
+		});
+		client.send(cid, 0, {}, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
 	it('can register multiple handlers for a command', function (done) {
 		gn.rpc.command(4000, 'multiple', function one(state, next) {
 			assert.equal(state.hookToAll, true);

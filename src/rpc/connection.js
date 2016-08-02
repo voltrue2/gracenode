@@ -293,18 +293,25 @@ Connection.prototype._setupHeartbeat = function (heartbeat) {
 };
 
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
-	var write = function (error, res, cmd, status, options, cb) {
+	var write = function (_error, res, cmd, status, options, cb) {
 
-		if (error) {
+		if (_error) {
 			that.logger.error(
 				'command response as error:',
-				cmd.id, cmd.name, error.message,
+				cmd.id, cmd.name, _error.message,
 				'(seq:' + parsedData.seq + ')',
 				'(status:' + status + ')'
 			);
 			res = {
-				message: error.message
+				message: _error.message
 			};
+		} else {
+			that.logger.info(
+				'command response:',
+				cmd.id, cmd.name, res,
+				'(seq:' + parsedData.seq + ')',
+				'(status:' + status + ')'
+			);
 		}
 
 		if (typeof res !== 'object' || res === null) {
@@ -324,14 +331,8 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				}
 				return;
 			}
-			that.logger.info(
-				'command response:',
-				cmd.id, cmd.name, res,
-				'(seq:' + parsedData.seq + ')',
-				'(status:' + status + ')'
-			);
 			var replyPacket = transport.createReply(
-				transport.getStatus(res),
+				status,
 				parsedData.seq,
 				data
 			);

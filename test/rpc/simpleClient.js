@@ -47,7 +47,7 @@ Client.prototype.recvOnce = function (cb) {
 		//var parsed = that.parser.parse(packet);
 		var parsed = that.parser.parse(packet);
 		that.logger.debug('client received:', JSON.parse(parsed[0].payload));
-		cb(JSON.parse(parsed[0].payload));
+		cb(JSON.parse(parsed[0].payload), parsed[0].status);
 	});
 	this.client.once('close', function () {
 		cb(new Error('closed'));
