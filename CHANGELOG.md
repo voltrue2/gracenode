@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.10
+
+## Added
+
+None
+
+## Changed
+
+#### Updated dependency version gracelog v0.6.4
+
+#### Session improved some logging
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.9
 
 ## Added

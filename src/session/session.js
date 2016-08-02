@@ -295,15 +295,15 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 // modifies sess object to be updated
 function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, next) {
 	if (!sess) {
-		logger.error('session not found:', res.sessionId);
+		logger.error('session not found:', sockType + res.sessionId);
 		return next(new Error('SessionNotFound'));
 	}
-	logger.verbose('seq:', res.sessionId, res.seq, '>', sess.seq);
+	logger.verbose('seq:', sockType + res.sessionId, res.seq, '>', sess.seq);
 	if (res.seq <= sess.seq) {
 		// we do NOT allow incoming seq that is smaller or the same as stored in the session
 		// this is to prevent duplicated command execution
 		logger.error(
-			'invalid seq for session', res.sessionId,
+			'invalid seq for session', sockType + res.sessionId,
 			'incoming seq:', res.seq, 'must be greater then', sess.seq
 		);
 		return next(new Error('InvalidSeq'));
@@ -313,7 +313,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 	if (sess.ttl <= now) {
 		logger.error(
 			'session ID has expired:',
-			res.sessionId, sess.ttl + ' <= ' + now
+			sockType + res.sessionId, sess.ttl + ' <= ' + now
 		);
 		return next(new Error('SessionExpired'));
 	}
@@ -326,7 +326,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 			'handling initial handshake from:',
 			sockType,
 			remoteIp,
-			'session:', res.sessionId
+			'session:', sockType + res.sessionId
 		);
 		sess.client[sockType] = {
 			ip: remoteIp,
@@ -339,7 +339,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 			'invalid client IP address detected:',
 			sockType,
 			remoteIp,
-			'session:', res.sessionId
+			'session:', sockType + res.sessionId
 		);
 		return next('InvalidClient');
 	}
