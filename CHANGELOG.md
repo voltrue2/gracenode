@@ -12,6 +12,8 @@ None
 
 #### Updated dependency version gracelog v0.6.4
 
+#### Updated dependency version aeterno v0.6.4
+
 #### Session improved some logging
 
 ## Deprecated
