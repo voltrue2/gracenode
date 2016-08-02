@@ -418,7 +418,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				}
 				if (!status) {
 					// default response status
-					_status = transport.STATUS.BAD_REQ;
+					_status = transport.STATUS.OK;
 				}
 				res = _res;
 				status = _status;

@@ -93,6 +93,21 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can send a response w/ default status OK 1', function (done) {
+		var cid = 332;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			cb({ message: 'hello' });
+		});
+		client.recvOnce(function (data, status) {
+			assert.equal(data.message, 'hello');
+			assert.equal(status, 1);
+			done();
+		});
+		client.send(cid, 0, {}, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
 	it('can send an error response w/ default status bad request 2', function (done) {
 		var cid = 333;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
