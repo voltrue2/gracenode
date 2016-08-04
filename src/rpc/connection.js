@@ -302,9 +302,9 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				'(seq:' + parsedData.seq + ')',
 				'(status:' + status + ')'
 			);
-			res = {
-				message: _error.message
-			};
+			if (_error && _error.message) {
+				res = { message: _error.message };
+			}
 		} else {
 			that.logger.info(
 				'command response:',
