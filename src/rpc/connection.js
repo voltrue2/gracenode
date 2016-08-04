@@ -295,10 +295,10 @@ Connection.prototype._setupHeartbeat = function (heartbeat) {
 function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var write = function (_error, res, cmd, status, options, cb) {
 
-		if (_error) {
+		if (_error || status > 1) {
 			that.logger.error(
 				'command response as error:',
-				cmd.id, cmd.name, _error.message,
+				cmd.id, cmd.name, _error,
 				'(seq:' + parsedData.seq + ')',
 				'(status:' + status + ')'
 			);
@@ -319,9 +319,6 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				message: res
 			};
 		}
-	
-		// response status
-		res.code = status;
 
 		that._prepareWrite(state, res, function (error, data) {
 			if (error) {
@@ -416,7 +413,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 					options = _options;
 					return next(error);
 				}
-				if (!status) {
+				if (!_status) {
 					// default response status
 					_status = transport.STATUS.OK;
 				}

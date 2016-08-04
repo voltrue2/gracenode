@@ -17,7 +17,6 @@ var udpAddr = '::0';
 
 describe('gracenode.rpc', function () {
 
-	//udpCli.useJson();
 	udpCli.useBinary();
 	
 	it('can setup RPC server', function (done) {
@@ -53,6 +52,13 @@ describe('gracenode.rpc', function () {
 		var info = gn.rpc.info();
 		assert(info.host);
 		assert(info.port);
+	});
+
+	it('can set custom formatting function for heartbeat', function () {
+		gn.rpc.setHeartbeatResponseFormat(function (data) {
+			data.formatted = true;
+			return data;
+		});
 	});
 
 	it('can register a hook function to all commands', function () {
@@ -529,6 +535,7 @@ describe('gracenode.rpc', function () {
 	it('can send client heartbeat', function (done) {
 		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, 'heartbeat');
+			assert.equal(data.formatted, true);
 			assert(data.serverTime);
 			done();
 		});
@@ -607,6 +614,7 @@ describe('gracenode.rpc', function () {
 	it('can send a heartbeat from the new authenticated connection', function (done) {
 		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, 'heartbeat');
+			assert.equal(data.formatted, true);
 			assert(data.serverTime);
 			done();
 		});

@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.13
+
+## Added
+
+#### RPC added .setHeartbeatResponseFormat(format [function])
+
+`.setHeartbeatResponseFormat()` allows you to send custom heartbeat response data to the client.
+
+## Changed
+
+#### RPC response status default has been corrected for errors
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.12
 
 ## Added

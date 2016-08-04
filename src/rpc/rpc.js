@@ -15,6 +15,7 @@ var cryptoEngine = {
 	encrypt: null,
 	decrypt: null
 };
+var formatFunction;
 
 var PORT_IN_USE = 'EADDRINUSE';
 var TIMEOUT_FOR_CLOSE = 5000;
@@ -249,12 +250,26 @@ module.exports.getConnectionById = function (id) {
 	return conns[id] || null;
 };
 
+module.exports.setHeartbeatResponseFormat = function (_formatFunction) {
+	if (typeof _formatFunction !== 'function') {
+		throw new Error('RPCHeartbeatFormatFunctionMustBeAFunction');
+	}
+	formatFunction = _formatFunction;
+};
+
 function handleHeartbeat(state, cb) {
 	state.connection.heartbeatTime = Date.now();
-	cb({
+	var res = {
 		message: 'heartbeat',
 		serverTime: state.connection.heartbeatTime
-	});
+	};
+	if (formatFunction) {
+		var formatted = formatFunction(res);
+		if (formatted) {
+			res = formatted;
+		}
+	}
+	cb(res);
 }
 
 function handleConn(sock) {

@@ -772,6 +772,20 @@ gn.rpc.hook([1, 2], function (state, next) {
 });
 ```
 
+### .setHeartbeatResponseFormat(format [function])
+
+Allows you to register a custom response data format function for heartbeat.
+
+**Example:**
+
+```javascript
+gracenode.rpc.setHeartbeatResponseFormat(function () {
+	var buf = new Buffer(9);
+	buf.write('heartbeat');
+	return buf;
+});
+```
+
 ### .onClosed(handler [function])
 
 Call this to register on connection close handler function.
