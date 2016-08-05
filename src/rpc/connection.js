@@ -14,6 +14,9 @@ function Connection(connId, sock, options) {
 	EventEmitter.call(this);
 	// this.data is accessible from command controller functions
 	// can also be used to identify the connection from outside
+	this.parser = new transport.Stream();
+	var that = this;
+	this.connected = true;
 	this.cryptoEngine = options.cryptoEngine || null;
 	this.data = {};
 	this.id = connId;
@@ -24,11 +27,6 @@ function Connection(connId, sock, options) {
 	this.logger = gn.log.create(
 		'RPC.connection ID:' + connId + '][server=' + this.self + ' client=' + this.from
 	);
-
-	//this.packetParser = new Packet(gn.log.create('RPC.packetParser'));
-	this.parser = new transport.Stream();
-
-	var that = this;
 
 	// RPC events
 	this.sock.on('data', function (packet) {
@@ -83,6 +81,7 @@ Connection.prototype.close = function () {
 	}
 
 	// this will invoke 'end event'
+	this.connected = false;
 	this.sock.end();
 	this.emit('close');
 };
@@ -97,6 +96,7 @@ Connection.prototype.kill = function (error) {
 		return;
 	}
 	// this is a hard kill connection
+	this.connected = false;
 	this.sock.destroy();
 	this.sock = null;
 	this.emit('kill');
@@ -275,6 +275,10 @@ Connection.prototype._setupHeartbeat = function (heartbeat) {
 	var that = this;
 	var checker = function () {
 		setTimeout(function () {
+			if (!that.connected) {
+				that.logger.verbose('heartbeat check has stopped b/c connection has been lost');
+				return;
+			}
 			var now = Date.now();
 			that.logger.verbose(
 				'heartbeat check > now and last heartbeat:',
