@@ -63,6 +63,7 @@ describe('gracenode.rpc', function () {
 
 	it('can register a hook function to all commands', function () {
 		gn.rpc.hook(function all(state, next) {
+			state.payload = JSON.parse(state.payload);
 			state.hookToAll = true;
 			next();
 		});

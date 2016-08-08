@@ -373,7 +373,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 		},
 		command: cmd.id,
 		connection: that,
-		payload: JSON.parse(parsedData.payload)
+		payload: parsedData.payload
 	};
 
 	if (sessionData) {
