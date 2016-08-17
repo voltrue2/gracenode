@@ -7,6 +7,7 @@ var gn = require('../gracenode');
 var transport = require('../../lib/transport');
 // this is not HTTP router
 var router = require('./router');
+var logger = gn.log.create('RPC.connection');
 
 module.exports = Connection;
 
@@ -24,9 +25,7 @@ function Connection(connId, sock, options) {
 	this.heartbeatTime = 0;
 	this.self = (this.sock) ? this.sock.localAddress + ':' + this.sock.localPort : 'UNKNOWN';
 	this.from = (this.sock) ? this.sock.remoteAddress + ':' + this.sock.remotePort : 'UNKNOWN';
-	this.logger = gn.log.create(
-		'RPC.connection ID:' + connId + '][server=' + this.self + ' client=' + this.from
-	);
+	this.name = '{' + 'RPC.CID:' + connId + '|server=' + this.self + '|client=' + this.from + '}';
 
 	// RPC events
 	this.sock.on('data', function (packet) {
@@ -42,7 +41,7 @@ function Connection(connId, sock, options) {
 		that.close();
 	});
 	this.sock.on('timeout', function () {
-		that.logger.error('TCP connection timed out');
+		logger.error(that.name, 'TCP connection timed out');
 		that.close();
 	});
 
@@ -55,13 +54,14 @@ function Connection(connId, sock, options) {
 		}
 		*/
 		that._setupHeartbeat(gn.getConfig('rpc.heartbeat'));
-		this.logger.info(
+		logger.info(
+			this.name,
 			'RPC server requires client heartbeat at every',
 			gn.getConfig('rpc.heartbeat').timeout, 'msec'
 		);
 	}
 
-	this.logger.info('RPC connection ready: (connection ID:' + this.id + ')');
+	logger.info(this.name, 'RPC connection ready: (connection ID:' + this.id + ')');
 }
 
 util.inherits(Connection, EventEmitter);
@@ -73,10 +73,10 @@ Connection.prototype.useCryptoEngine = function (engine) {
 // public
 Connection.prototype.close = function () {
 	
-	this.logger.info('RPC connection close');
+	logger.info(this.name, 'RPC connection close');
 
 	if (!this.sock) {
-		this.logger.warn('RPC socket has already been gone:');
+		logger.warn(this.name, 'RPC socket has already been gone:');
 		return;
 	}
 
@@ -89,10 +89,10 @@ Connection.prototype.close = function () {
 // public
 Connection.prototype.kill = function (error) {
 	if (error) {
-		this.logger.error('RPC connection kill', error);
+		logger.error(this.name, 'RPC connection kill', error);
 	}
 	if (!this.sock) {
-		this.logger.warn('RPC socket has already been gone before .kill');
+		logger.warn(this.name, 'RPC socket has already been gone before .kill');
 		return;
 	}
 	// this is a hard kill connection
@@ -104,7 +104,7 @@ Connection.prototype.kill = function (error) {
 
 // private
 Connection.prototype._handleData = function (packet) {
-	this.logger.verbose('packet received');
+	logger.verbose(this.name, 'packet received');
 
 	var parsed = this.parser.parse(packet);
 
@@ -123,7 +123,7 @@ Connection.prototype._handleData = function (packet) {
 			}
 			return item.command;
 		});
-		that.logger.info('all incoming commands handled:', list.join(','));
+		logger.info(that.name, 'all incoming commands handled:', list.join(','));
 	};
 
 	// route to commands and execute each command handler
@@ -136,7 +136,7 @@ Connection.prototype._handleData = function (packet) {
 		if (!that.cryptoEngine.decrypt) {
 			return that._routeAndExec(parsedData, null, next);
 		}
-		that.logger.info('using decryption for incoming packet');
+		logger.info(that.name, 'using decryption for incoming packet');
 		that._handleDecrypt(parsedData.payload, function (error, sid, seq, sdata, decrypted) {
 			if (error) {
 				return next(error);
@@ -186,7 +186,8 @@ Connection.prototype._routeAndExec = function (parsedData, sessionData, next) {
 		return;
 	}
 
-	this.logger.info(
+	logger.info(
+		this.name,
 		'command routing resolved:',
 		'command:', cmd.id, cmd.name,
 		'(seq:' + parsedData.seq + ')'
@@ -200,13 +201,13 @@ Connection.prototype._write = function (data, notError, cb) {
 	if (this.sock) {
 		this.sock.write(data, 'UTF-8', cb);
 		if (notError) {
-			this.logger.info('command response sent:', 'size:', data.length + ' bytes');
+			logger.info(this.name, 'command response sent:', 'size:', data.length + ' bytes');
 		} else {
-			this.logger.error('error command response sent:', 'size:', data.length + ' bytes');
+			logger.error(this.name, 'error command response sent:', 'size:', data.length + ' bytes');
 		}
 		return;
 	}
-	this.logger.warn('TCP socket is gone');
+	logger.warn(this.name, 'TCP socket is gone');
 };
 
 // private/public: this will be called from command handlers 
@@ -216,7 +217,7 @@ Connection.prototype._push = function (state, payload, cb) {
 		if (error) {
 			return cb(error);
 		}
-		that.logger.info('push from server:', payload);
+		logger.info(that.name, 'push from server:', payload);
 		var pushPacket = transport.createPush(0, data);
 		that._write(pushPacket, true, cb);
 	});
@@ -226,14 +227,14 @@ Connection.prototype._push = function (state, payload, cb) {
 Connection.prototype._prepareWrite = function (state, payload, cb) {
 
 	if (this.cryptoEngine.encrypt) {
-		this.logger.info('using encryption for secure transmission:', payload);
+		logger.info(this.name, 'using encryption for secure transmission:', payload);
 		if (typeof payload === 'object' && !(payload instanceof Buffer)) {
 			payload = JSON.stringify(payload);
 		}
 		var that = this;
 		this.cryptoEngine.encrypt(state, payload, function (error, encrypted) {
 			if (error) {
-				that.logger.error('encryption failed:', payload);
+				logger.error(that.name, 'encryption failed:', payload);
 				return cb(error);
 			}
 			cb(null, encrypted);
@@ -247,14 +248,14 @@ Connection.prototype._prepareWrite = function (state, payload, cb) {
 
 // private
 Connection.prototype._handleEnd = function () {
-	this.logger.info('TCP connection ended by client');
+	logger.info(this.name, 'TCP connection ended by client');
 	// this event is followed by close event
 	// Connection class will catch close event and call this.close()
 };
 
 // private
 Connection.prototype._handleError = function (error) {
-	this.logger.error('TCP connection error detected:', error);
+	logger.error(this.name, 'TCP connection error detected:', error);
 	// this event is followed by close event
 	// Connection class will catch close event and call this.close()
 };
@@ -276,16 +277,17 @@ Connection.prototype._setupHeartbeat = function (heartbeat) {
 	var checker = function () {
 		setTimeout(function () {
 			if (!that.connected) {
-				that.logger.verbose('heartbeat check has stopped b/c connection has been lost');
+				logger.verbose(that.name, 'heartbeat check has stopped b/c connection has been lost');
 				return;
 			}
 			var now = Date.now();
-			that.logger.verbose(
+			logger.verbose(
+				that.name,
 				'heartbeat check > now and last heartbeat:',
 				now, that.heartbeatTime
 			);
 			if (now - that.heartbeatTime >= heartbeat.timeout) {
-				that.logger.error('heartbeat timeout and disconnecting');
+				logger.error(that.name, 'heartbeat timeout and disconnecting');
 				that.close();
 				that.emit('heartbeatTimeout');
 				return;
@@ -300,7 +302,8 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 	var write = function (_error, res, cmd, status, options, cb) {
 
 		if (_error || status > 1) {
-			that.logger.error(
+			logger.error(
+				that.name,
 				'command response as error:',
 				cmd.id, cmd.name, _error,
 				'(seq:' + parsedData.seq + ')',
@@ -310,7 +313,8 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				res = { message: _error.message };
 			}
 		} else {
-			that.logger.info(
+			logger.info(
+				that.name,
 				'command response:',
 				cmd.id, cmd.name, res,
 				'(seq:' + parsedData.seq + ')',
@@ -326,7 +330,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 
 		that._prepareWrite(state, res, function (error, data) {
 			if (error) {
-				that.logger.error(error);
+				logger.error(that.name, error);
 				if (typeof cb === 'function') {
 					return cb(error);
 				}
@@ -338,7 +342,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 				data
 			);
 			if (replyPacket instanceof Error) {
-				that.logger.error(replyPacket);
+				logger.error(that.name, replyPacket);
 				if (typeof cb === 'function') {
 					return cb(error);
 				}
@@ -404,7 +408,7 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			write(null, res, cmd, status, options, cb);
 		};
 		async.eachSeries(cmd.handlers, function (handler, next) {
-			that.logger.verbose('execute command handler (command:' + cmd.id + ')');	
+			logger.verbose(that.name, 'execute command handler (command:' + cmd.id + ')');	
 			handler(state, function (_res, _status, _options) {
 				var error = null;
 				if (_res instanceof Error) {

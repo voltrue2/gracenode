@@ -12,6 +12,8 @@ None
 
 #### Removed connection map from RPC to avoid memory leak
 
+#### RPC improved per connection logging to use less memory
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
