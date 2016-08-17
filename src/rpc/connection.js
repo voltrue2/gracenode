@@ -7,9 +7,13 @@ var gn = require('../gracenode');
 var transport = require('../../lib/transport');
 // this is not HTTP router
 var router = require('./router');
-var logger = gn.log.create('RPC.connection');
+var logger;
 
-module.exports = Connection;
+module.exports.setup = function () {
+	logger = gn.log.create('RPC.connection');
+};
+
+module.exports.Connection = Connection;
 
 function Connection(connId, sock, options) {
 	EventEmitter.call(this);

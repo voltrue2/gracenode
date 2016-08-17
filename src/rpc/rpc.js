@@ -3,7 +3,7 @@
 var net = require('net');
 var gn = require('../gracenode');
 
-var Connection = require('./connection');
+var connection = require('./connection');
 var router = require('./router');
 var hooks = require('./hooks');
 var protocol = require('../../lib/packet/protocol');
@@ -43,6 +43,8 @@ module.exports.info = function () {
 module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
+
+	connection.setup();
 
 	if (!gn.isSupportedVersion()) {
 		return gn.stop(new Error(
@@ -246,7 +248,7 @@ function handleConn(sock) {
 	};
 
 	var connId = gn.lib.uuid.v4().toString();
-	var conn = new Connection(connId, sock, opt);
+	var conn = new connection.Connection(connId, sock, opt);
 	
 	emitter.once('close', function () {
 		conn.close();
