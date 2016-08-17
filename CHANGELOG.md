@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.17
+
+## Added
+
+None
+
+## Changed
+
+#### Removed connection map from RPC to avoid memory leak
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.16
 
 ## Added

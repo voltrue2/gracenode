@@ -7,10 +7,11 @@ var Connection = require('./connection');
 var router = require('./router');
 var hooks = require('./hooks');
 var protocol = require('../../lib/packet/protocol');
+var events = require('events');
+var emitter = new events.EventEmitter(); 
 
 var logger;
 var config;
-var conns = {};
 var cryptoEngine = {
 	encrypt: null,
 	decrypt: null
@@ -97,9 +98,7 @@ module.exports.setup = function (cb) {
 			);
 
 			// instruct all connections to close
-			for (var id in conns) {
-				conns[id].close();
-			}
+			emitter.emit('close');
 
 			// set up time out if connections do not close within the time, it hard closes
 			setTimeout(next, TIMEOUT_FOR_CLOSE);
@@ -203,32 +202,6 @@ module.exports.hook = function (cmdIdList, handler) {
 	hooks.add(cmdIdList, handler);
 };
 
-// get the connection map of this process
-module.exports.getAllConnections = function () {
-	var map = {};
-	for (var id in conns) {
-		map[id] = conns[id];
-	}
-	return map;
-};
-
-// get a connection by connection.data object
-// values of data object is to be controlled by command controller functions
-// valList can be an array
-// TODO: probably not too smart with the loop of all connections...
-module.exports.getConnectionsByData = function (key, valList) {
-	if (!Array.isArray(valList)) {
-		valList = [valList];
-	}
-	var list = [];
-	for (var id in conns) {
-		if (valList.indexOf(conns[id].data[key]) !== -1) {
-			list.push(list);
-		}
-	}
-	return list;
-};
-
 module.exports.onClosed = function (func) {
 	module.exports._onClosed = func;
 };
@@ -243,11 +216,6 @@ module.exports._onClosed = function () {
 
 module.exports._onKilled = function () {
 
-};
-
-// get a connection by connection ID
-module.exports.getConnectionById = function (id) {
-	return conns[id] || null;
 };
 
 module.exports.setHeartbeatResponseFormat = function (_formatFunction) {
@@ -280,21 +248,23 @@ function handleConn(sock) {
 	var connId = gn.lib.uuid.v4().toString();
 	var conn = new Connection(connId, sock, opt);
 	
+	emitter.once('close', function () {
+		conn.close();
+	});
+	
 	if (cryptoEngine) {
 		conn.useCryptoEngine(cryptoEngine);
 	}
 
 	conn.on('close', function () {
 		module.exports._onClosed(this.id, this);
-		delete conns[this.id];
+		conn = null;
 	});
 
 	conn.on('kill', function () {
 		module.exports._onKilled(this.id, this);
-		delete conns[this.id];
+		conn = null;
 	});
 
 	logger.info('new TCP connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort);
-
-	conns[connId] = conn;
 }
