@@ -76,6 +76,7 @@ Connection.prototype.useCryptoEngine = function (engine) {
 
 // public
 Connection.prototype.close = function () {
+	this.connected = false;
 	
 	logger.info(this.name, 'RPC connection close');
 
@@ -85,7 +86,6 @@ Connection.prototype.close = function () {
 	}
 
 	// this will invoke 'end event'
-	this.connected = false;
 	this.sock.end();
 	this.emit('close');
 };
@@ -197,7 +197,7 @@ Connection.prototype._routeAndExec = function (parsedData, sessionData, next) {
 		'(seq:' + parsedData.seq + ')'
 	);
 	
-	executeCmd(this, cmd, parsedData, sessionData, next);	
+	this._executeCmd(cmd, parsedData, sessionData, next);	
 };
 
 // private
@@ -302,7 +302,8 @@ Connection.prototype._setupHeartbeat = function (heartbeat) {
 	checker();
 };
 
-function executeCmd(that, cmd, parsedData, sessionData, cb) {
+Connection.prototype._executeCmd = function (cmd, parsedData, sessionData, cb) {
+	var that = this;
 	var write = function (_error, res, cmd, status, options, cb) {
 
 		if (_error || status > 1) {
@@ -436,4 +437,4 @@ function executeCmd(that, cmd, parsedData, sessionData, cb) {
 			});
 		}, finalize);
 	});
-}
+};

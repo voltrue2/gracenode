@@ -78,6 +78,7 @@ module.exports.route = function (packet) {
 
 function getHookExec(cmdId, cmdName, hookList) {
 	var exec = function (state, cb) {
+		logger.verbose('execute hooks:', hookList);
 		async.eachSeries(hookList, function (hook, next) {
 			logger.info(
 				'execute command hook (' + cmdId + ':' + cmdName + '):',

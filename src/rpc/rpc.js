@@ -3,7 +3,8 @@
 var net = require('net');
 var gn = require('../gracenode');
 
-var connection = require('./connection');
+//var connection = require('./connection');
+var connhandler = require('./connhandler');
 var router = require('./router');
 var hooks = require('./hooks');
 var protocol = require('../../lib/packet/protocol');
@@ -45,7 +46,8 @@ module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
-	connection.setup();
+	//connection.setup();
+	connhandler.setup();
 
 	if (!gn.isSupportedVersion()) {
 		return gn.stop(new Error(
@@ -227,10 +229,9 @@ module.exports.setHeartbeatResponseFormat = function (_formatFunction) {
 };
 
 function handleHeartbeat(state, cb) {
-	state.connection.heartbeatTime = Date.now();
 	var res = {
 		message: 'heartbeat',
-		serverTime: state.connection.heartbeatTime
+		serverTime: Date.now()
 	};
 	if (formatFunction) {
 		var formatted = formatFunction(res);
@@ -247,6 +248,7 @@ function handleConn(sock) {
 		cryptoEngine: cryptoEngine
 	};
 
+	/*
 	var connId = gn.lib.uuid.v4().toString();
 	var conn = new connection.Connection(connId, sock, opt);
 	
@@ -278,6 +280,21 @@ function handleConn(sock) {
 		conn.close();
 		return;
 	}
+	*/
+	var conn = connhandler.create(sock, opt);
+	if (cryptoEngine) {
+		conn.useCryptoEngine(cryptoEngine);
+	}
+	conn.on('clear', function (killed) {
+		if (conn) {
+			if (killed) {
+				module.exports._onKilled(conn.id);
+			} else {
+				module.exports._onClosed(conn.id);
+			}
+		}
+		conn = null;
+	});
 
-	logger.info('new TCP connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort);
+	logger.info('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
 }

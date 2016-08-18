@@ -274,6 +274,9 @@ describe('gracenode.rpc', function () {
 			cb({ message: serverMsg });
 		});
 		client.recvOnceSecure(cipher, function (data) {
+			
+			console.log('----', data);
+
 			assert.equal(data.message, serverMsg);
 			done();
 		});
