@@ -253,7 +253,7 @@ function handleMessage(buff, rinfo) {
 	logger.verbose('parsed packet :', parsed);
 
 	if (cryptoEngine.decrypt) {
-		logger.info('using decryption for incoming message');
+		logger.verbose('using decryption for incoming message');
 		var info = module.exports.info();
 		var toDecrypt = transport.isJson() ? buff : parsed.payload;
 		cryptoEngine.decrypt(
@@ -396,7 +396,7 @@ function send(state, msg, seq, status) {
 			};
 			return dispatchOnError(error, rinfo);
 		}
-		logger.info(
+		logger.verbose(
 			'UDP packet sent to:',
 			state.clientAddress + ':' + state.clientPort,
 			msg
@@ -404,7 +404,7 @@ function send(state, msg, seq, status) {
 	};
 
 	if (cryptoEngine.encrypt) {
-		logger.info('using encryption for server push message');
+		logger.verbose('using encryption for server push message');
 		cryptoEngine.encrypt(state, msg, function (error, encrypted) {
 			if (error) {
 				logger.error(
@@ -419,7 +419,7 @@ function send(state, msg, seq, status) {
 				};
 				return dispatchOnError(new Error('EncryptionFailed'), rinfo2);
 			}
-			logger.info(
+			logger.verbose(
 				'send UDP packet to client:',
 				'session ID seq message',
 				state.sessionId,
