@@ -3,8 +3,7 @@
 var net = require('net');
 var gn = require('../gracenode');
 
-//var connection = require('./connection');
-var connhandler = require('./connhandler');
+var connection = require('./connection');
 var router = require('./router');
 var hooks = require('./hooks');
 var protocol = require('../../lib/packet/protocol');
@@ -46,8 +45,7 @@ module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
-	//connection.setup();
-	connhandler.setup();
+	connection.setup();
 
 	if (!gn.isSupportedVersion()) {
 		return gn.stop(new Error(
@@ -247,41 +245,7 @@ function handleConn(sock) {
 	var opt = {
 		cryptoEngine: cryptoEngine
 	};
-
-	/*
-	var connId = gn.lib.uuid.v4().toString();
-	var conn = new connection.Connection(connId, sock, opt);
-	
-	emitter.once('close', function () {
-		if (conn) {
-			conn.close();
-		}
-	});
-	
-	if (cryptoEngine) {
-		conn.useCryptoEngine(cryptoEngine);
-	}
-
-	conn.on('close', function () {
-		module.exports._onClosed(this.id);
-		conn = null;
-	});
-
-	conn.on('kill', function () {
-		module.exports._onKilled(this.id);
-		conn = null;
-	});
-	
-	if (shutdown) {
-		logger.warn(
-			'RPC server is shutting down and does not accept new TCP connection:',
-			'connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort
-		);
-		conn.close();
-		return;
-	}
-	*/
-	var conn = connhandler.create(sock, opt);
+	var conn = connection.create(sock, opt);
 	if (cryptoEngine) {
 		conn.useCryptoEngine(cryptoEngine);
 	}

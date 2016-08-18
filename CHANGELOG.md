@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.22
+
+## Added
+
+None
+
+## Changed
+
+#### RPC connhandler renamed to connection
+
+#### RPC Connection instance removed crypt (it was typeo of crypto)
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.21
 
 ## Added
