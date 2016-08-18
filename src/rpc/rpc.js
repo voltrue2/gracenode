@@ -17,6 +17,7 @@ var cryptoEngine = {
 	decrypt: null
 };
 var formatFunction;
+var shutdown = false;
 
 var PORT_IN_USE = 'EADDRINUSE';
 var TIMEOUT_FOR_CLOSE = 5000;
@@ -93,22 +94,20 @@ module.exports.setup = function (cb) {
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
 		gn.onExit(function RPCShutdown(next) {
+			shutdown = true;
 			logger.info(
 				'RPC server closing',
 				config.host + ':' + boundPort,
 				'waiting for all open connections to close...'
 			);
-
 			// instruct all connections to close
 			emitter.emit('close');
-
 			// set up time out if connections do not close within the time, it hard closes
 			setTimeout(next, TIMEOUT_FOR_CLOSE);
 			logger.info(
 				'RPC server will forcefully close if all connections do not close in',
 				TIMEOUT_FOR_CLOSE, 'msc'
 			);
-
 			// stop accepting new connections and shutdown when all connections are closed
 			server.close(next);
 		});
@@ -243,6 +242,7 @@ function handleHeartbeat(state, cb) {
 }
 
 function handleConn(sock) {
+
 	var opt = {
 		cryptoEngine: cryptoEngine
 	};
@@ -267,6 +267,15 @@ function handleConn(sock) {
 		module.exports._onKilled(this.id, this);
 		conn = null;
 	});
+	
+	if (shutdown) {
+		logger.warn(
+			'RPC server is shutting down and does not accept new TCP connection:',
+			'connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort
+		);
+		conn.close();
+		return;
+	}
 
 	logger.info('new TCP connection (id:' + connId + ') from:', sock.remoteAddress + ':' + sock.remotePort);
 }
