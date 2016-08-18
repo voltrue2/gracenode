@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.20
+
+## Added
+
+None
+
+## Changed
+
+#### RPC shutdown race condition bug fix
+
+#### RPC onClose() and onKill() callbacks no longer pass instance of connection
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.19
 
 ## Added

@@ -251,7 +251,9 @@ function handleConn(sock) {
 	var conn = new connection.Connection(connId, sock, opt);
 	
 	emitter.once('close', function () {
-		conn.close();
+		if (conn) {
+			conn.close();
+		}
 	});
 	
 	if (cryptoEngine) {
@@ -259,12 +261,12 @@ function handleConn(sock) {
 	}
 
 	conn.on('close', function () {
-		module.exports._onClosed(this.id, this);
+		module.exports._onClosed(this.id);
 		conn = null;
 	});
 
 	conn.on('kill', function () {
-		module.exports._onKilled(this.id, this);
+		module.exports._onKilled(this.id);
 		conn = null;
 	});
 	
