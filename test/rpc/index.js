@@ -10,6 +10,7 @@ var httpPort = 9899;
 var udpPort = 7980;
 
 var client;
+var client2;
 var cipher;
 var sessionId;
 var addr = '127.0.0.1';
@@ -626,17 +627,54 @@ describe('gracenode.rpc', function () {
 	});
 
 	it ('can start another connection', function (done) {
-		client = new Client();	
-		client.start(addr, portOne, done);
+		client2 = new Client();	
+		client2.start(addr, portOne, done);
 	});
 
 	it('try session highjack (use session ID for different connection) and be rejected from the server', function (done) {
-		client.recvOnceSecure(cipher, function (data) {
+		client2.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, 'closed');
-			done();
+			client.stop(done);
 		});
 		cipher.seq += 1;
-		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+		client2.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {});
+	});
+
+	it('Can RPC server detect a client that disappears', function (done) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+			assert.equal(error, null);
+			assert(res.cipher);
+			assert(res.sessionId);
+			cipher = {
+				cipherKey: new Buffer(res.cipher.cipherKey),
+				cipherNonce: new Buffer(res.cipher.cipherNonce),
+				macKey: new Buffer(res.cipher.macKey),
+				seq: res.cipher.seq
+			};
+			sessionId = res.sessionId;
+			var rogue = new Client();
+			rogue.start(addr, portOne, function (error) {
+				assert.equal(error, null);
+				gn.rpc.onClosed(function () {
+					gn.rpc.onClosed(null);
+					done();
+				});
+				var hb = function () {
+					try {
+						cipher.seq += 1;
+						rogue.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function () {
+							setTimeout(hb, 500);
+						});
+					} catch (e) {
+						setTimeout(hb, 500);
+					}
+				};
+				hb();
+				setTimeout(function () {
+					console.log('client crash');
+					rogue.client = null;
+				}, 1000);
+			});
 		});
 	});
 

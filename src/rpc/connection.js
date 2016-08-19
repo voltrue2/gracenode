@@ -28,7 +28,7 @@ function Connection(sock, options) {
 	this.parser = new transport.Stream();
 	this.crypto = options.cryptoEngine || null;
 	this.connected = true;
-	this.name = '{RPC:' + this.id + '|' + you + '}';
+	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
 	this.heartbeatTime = Date.now();
 	this.sock.on('data', function (packet) {
 		that._data(packet);
@@ -38,6 +38,7 @@ function Connection(sock, options) {
 	});
 	this.sock.on('error', function (error) {
 		logger.error(that.name, 'TCP connection error detected:', error);
+		that.kill(error);
 	});
 	this.sock.on('close', function () {
 		that.close();
@@ -48,13 +49,14 @@ function Connection(sock, options) {
 		}
 		that.close(new Error('TCP connection timeout'));
 	});
-	logger.info(this.name, 'RPC connection requires heartbeat at every', heartbeat.timeout, 'msec');
+	logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeat.timeout, 'msec');
 	var checker = function () {
 		if (!that.connected) {
 			return;
 		}
 		if (Date.now() - that.heartbeatTime >= heartbeat.timeout) {
 			that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+			return;
 		}
 		setTimeout(checker, heartbeat.checkFrequency);
 	};
@@ -98,6 +100,7 @@ Connection.prototype._data = function (packet) {
 		return this.kill(parsed);
 	}
 	this.heartbeatTime = Date.now();
+	logger.verbose(this.name, 'update heartbeat time:', this.heartbeatTime);
 	var done = function (error) {
 		if (error) {
 			return that.kill(error);

@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.4.23
+
+## Added
+
+None
+
+## Changed
+
+#### RPC server shutdown will forcefully close TCP connections from the server
+
+#### RPC uint test improved
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.22
 
 ## Added

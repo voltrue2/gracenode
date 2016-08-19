@@ -252,12 +252,22 @@ function handleConn(sock) {
 	conn.on('clear', function (killed) {
 		if (conn) {
 			if (killed) {
-				module.exports._onKilled(conn.id);
+				if (typeof module.exports._onKilled === 'function') {
+					module.exports._onKilled(conn.id);
+				}
 			} else {
-				module.exports._onClosed(conn.id);
+				if (typeof module.exports._onClosed === 'function') {
+					module.exports._onClosed(conn.id);
+				}
 			}
 		}
 		conn = null;
+	});
+	emitter.once('close', function () {
+		if (conn) {
+			logger.info('server is shutting down: close TCP connection (id:' + conn.id + ')');
+			conn.close();
+		}
 	});
 
 	logger.info('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);

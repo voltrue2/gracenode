@@ -34,7 +34,6 @@ Client.prototype.send = function (commandId, seq, msg, cb) {
 	
 	this.logger.debug('client sending', commandId, seq, msg);
 
-	//var packet = this.parser.createReq(commandId, seq, msg);
 	var packet = transport.createRequest(commandId, seq, msg);
 	this.client.write(packet, cb);
 
@@ -44,7 +43,6 @@ Client.prototype.recvOnce = function (cb) {
 	var that = this;
 	this.client.once('data', function (packet) {
 		that.client.removeAllListeners('close');
-		//var parsed = that.parser.parse(packet);
 		var parsed = that.parser.parse(packet);
 		that.logger.debug('client received:', JSON.parse(parsed[0].payload));
 		cb(JSON.parse(parsed[0].payload), parsed[0].status);
