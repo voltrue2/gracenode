@@ -1,12 +1,13 @@
 'use strict';
 
 var gn = require('../../src/gracenode');
+var logger;
 
 gn.config({
 	log: {
 		color: true,
 		console: true,
-		level: '>= verbose'
+		level: '>= warn'
 	},
 	cluster: {
 		max: process.argv[2] || 0,
@@ -27,12 +28,12 @@ gn.session.sessionDuration(100000);
 gn.session.useRPCSession();
 console.log('Starting RPC server in secure mode');
 
-gn.cluster.on('message', function (msg) {
-	console.log('cluster message sync:', msg);
+gn.cluster.on('message', function (/*msg*/) {
+	//console.log('cluster message sync:', msg);
 });
 
 gn.rpc.command(1, 'test1', function (state, cb) {
-	console.log('we have data:', state.payload);
+	//console.log('we have data:', state.payload);
 	var workers = gn.cluster.getWorkers();
 	for (var id in workers) {
 		gn.cluster.send(id, { message: Date.now() });
@@ -41,16 +42,28 @@ gn.rpc.command(1, 'test1', function (state, cb) {
 });
 
 gn.rpc.hook(function all(state, next) {
-	console.log('hook got called!');
+	//console.log('hook got called!');
 	next();
 });
 
 gn.rpc.hook(1, function hookForOne(state, next) {
-	console.log('hook for one');
+	//console.log('hook for one');
 	next();
 });
 
-gn.start();
+gn.start(function () {
+	logger = gn.log.create('rpc.server');
+	var initSize = process.memoryUsage().heapUsed;
+	var prevSize = initSize;
+	logger.warn('used memory heap size', initSize);
+	var dump = function () {
+		var currentSize = process.memoryUsage().heapUsed;
+		logger.warn('used memory heap size', currentSize, currentSize - prevSize, currentSize - initSize);
+		prevSize = currentSize;
+		setTimeout(dump, 1000 * 60);
+	};
+	setTimeout(dump, 1000 * 60);
+});
 
 function handleAuth(req, res) {
         var data = { message: 'session data' };

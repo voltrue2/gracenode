@@ -6,7 +6,8 @@ var Client = require('./simpleClient');
 var domain = 'http://127.0.0.1:7979';
 var command = 1;
 var loop = 100;
-var users = 10;
+var users = 4;
+var finishedBot = 0;
 var logger;
 
 gn.config({
@@ -21,13 +22,28 @@ gn.config({
 });
 gn.start(function () {
 	logger = gn.log.create('bot');
+	start();
+});
+
+function start() {
+	logger.info('--- start ---');
+	finishedBot = 0;
 	for (var i = 0; i < users; i++) {
 		var bot = new Bot();
 		bot.start();
 	}
-});
+}
+
+function finished() {
+	finishedBot += 1;
+	logger.info('bot finished:', finishedBot + '/' + users);
+	if (finishedBot === users) {
+		start();	
+	}
+}
 
 function Bot() {
+	logger.info('bot starting');
 	this.sid = null;
 	this.seq = 0;
 	this.host = null;
@@ -62,10 +78,9 @@ Bot.prototype.connect = function () {
 		if (error) {
 			return logger.error(error);
 		}
-		var infinite = 0;
 		var count = 0;
 		var msg = new Buffer(300);
-		logger.info('start sending packet', loop, 'times: repeat', infinite);
+		logger.info('start sending packet', loop, 'times');
 		var send = function () {
 			if (count < loop) {
 				count += 1;
@@ -75,10 +90,8 @@ Bot.prototype.connect = function () {
 					setTimeout(send, 200);
 				});
 			} else {
-				infinite += 1;
-				logger.info('done -> repeat:', infinite);
-				count = 0;
-				send();
+				logger.info('repeat');
+				client.stop(finished);
 			}
 		};
 		send();

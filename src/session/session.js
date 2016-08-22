@@ -167,7 +167,7 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 		return set(id, data, cb);
 	}
 
-	logger.warn('set is using default in-memory storage: Not for production');
+	logger.verbose('set is using default in-memory storage: Not for production');
 	
 	if (using.udp || using.rpc) {
 		sessionData.seq = 0;
@@ -271,7 +271,7 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 		});
 		return;
 	}
-	logger.warn('get is using default in-memory storage: Not for production');
+	logger.verbose('get is using default in-memory storage: Not for production');
 	mem.get(sid, function (error, sess) {
 		if (error) {
 			logger.error('session not found:', sid);
