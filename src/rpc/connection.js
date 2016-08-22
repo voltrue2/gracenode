@@ -49,18 +49,20 @@ function Connection(sock, options) {
 		}
 		that.close(new Error('TCP connection timeout'));
 	});
-	logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeat.timeout, 'msec');
-	var checker = function () {
-		if (!that.connected) {
-			return;
-		}
-		if (Date.now() - that.heartbeatTime >= heartbeat.timeout) {
-			that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
-			return;
-		}
-		setTimeout(checker, heartbeat.checkFrequency);
-	};
-	checker();
+	if (heartbeat) {
+		logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeat.timeout, 'msec');
+		var checker = function () {
+			if (!that.connected) {
+				return;
+			}
+			if (Date.now() - that.heartbeatTime >= heartbeat.timeout) {
+				that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+				return;
+			}
+			setTimeout(checker, heartbeat.checkFrequency);
+		};
+		checker();
+	}
 }
 
 utils.inherits(Connection, EventEmitter);

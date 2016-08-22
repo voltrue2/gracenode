@@ -4,10 +4,6 @@ var gn = require('../../src/gracenode');
 var ce = new gn.lib.CryptoEngine();
 var net = require('net');
 var transport = gn.lib.packet;
-var packetParser;
-
-var portCount = 0;
-var logger;
 
 function Client() {
 	this.logger = gn.log.create();
@@ -54,7 +50,7 @@ Client.prototype.recvOnce = function (cb) {
 };
 
 Client.prototype.recv = function (cb) {
-	var seq = cipher.seq;
+	var seq = 0;
 	var that = this;
 	this.client.on('data', function (buffer) {
 		//var packets = that.parser.parse(buffer);
@@ -66,19 +62,7 @@ Client.prototype.recv = function (cb) {
 			}
 			seq += 1;
 			that.logger.debug('recv seq:', seq);
-			if (cipher) {
-				packet = ce.decrypt(
-					cipher.cipherKey,
-					cipher.cipherNonce,
-					cipher.macKey,
-					// packet from server does not care about seq
-					0,
-					packet.payload
-				).toString();
-			} else {
-				packet = packet.payload;
-
-			}
+			packet = packet.payload;
 			try {
 				cb(JSON.parse(packet));
 			} catch (e) {

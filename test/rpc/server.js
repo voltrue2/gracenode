@@ -13,11 +13,11 @@ gn.config({
 		sync: process.argv[3] === 'true' ? true : false
 	},
 	http: {
-		host: '0.0.0.0',
+		host: '127.0.0.1',
 		port: 7979
 	},
 	rpc: {
-		host: '0.0.0.0',
+		host: '127.0.0.1',
 		portRange: [9880]
 	}
 });
@@ -58,10 +58,11 @@ function handleAuth(req, res) {
                 if (error) {
                         return res.error(error);
                 }
+		var info = gn.rpc.info();
                 res.json({
                         sessionId: req.args.sessionId,
-                        host: '0.0.0.0',
-                        port: 7980,
+                        host: info.host,
+                        port: info.port,
                         cipherData: req.args.cipher
                 });
         });

@@ -5,7 +5,6 @@ var gn = require('../../src/gracenode');
 var Client = require('./simpleClient');
 var udpCli = require('../udp/simpleClient');
 var portOne = 9877;
-var portTwo = 9880;
 var httpPort = 9899;
 var udpPort = 7980;
 
@@ -250,7 +249,7 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can be authenticated by HTTP endpoint', function (done) {
-		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
 			assert.equal(error, null);
 			assert(res.cipher);
 			assert(res.sessionId);
@@ -441,7 +440,7 @@ describe('gracenode.rpc', function () {
 			1000,
 			cipher.seq,
 			{ command: 1000, hello: 'Yay' },
-		function (error) {
+		function () {
 			//assert.equal(error, null);
 		});
 	});
@@ -558,7 +557,7 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can be re-authenticated by HTTP endpoint', function (done) {
-		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
 			assert.equal(error, null);
 			assert(res.cipher);
 			assert(res.sessionId);
@@ -598,7 +597,7 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can be re-authenticated by HTTP endpoint', function (done) {
-		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
 			assert.equal(error, null);
 			assert(res.cipher);
 			assert(res.sessionId);
@@ -637,11 +636,11 @@ describe('gracenode.rpc', function () {
 			client.stop(done);
 		});
 		cipher.seq += 1;
-		client2.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {});
+		client2.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function () {});
 	});
 
 	it('Can RPC server detect a client that disappears', function (done) {
-		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res, st) {
+		request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
 			assert.equal(error, null);
 			assert(res.cipher);
 			assert(res.sessionId);

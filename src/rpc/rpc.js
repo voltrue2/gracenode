@@ -45,6 +45,9 @@ module.exports.setup = function (cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
+	// this is to increase the number of listener limit
+	emitter.setMaxListeners(1000);
+
 	connection.setup();
 
 	if (!gn.isSupportedVersion()) {
@@ -246,10 +249,17 @@ function handleConn(sock) {
 		cryptoEngine: cryptoEngine
 	};
 	var conn = connection.create(sock, opt);
+	var close = function () {
+		if (conn) {
+			logger.info('server is shutting down: close TCP connection (id:' + conn.id + ')');
+			conn.close();
+		}
+	};
 	if (cryptoEngine) {
 		conn.useCryptoEngine(cryptoEngine);
 	}
 	conn.on('clear', function (killed) {
+		emitter.removeListener('close', close);
 		if (conn) {
 			if (killed) {
 				if (typeof module.exports._onKilled === 'function') {
@@ -263,12 +273,7 @@ function handleConn(sock) {
 		}
 		conn = null;
 	});
-	emitter.once('close', function () {
-		if (conn) {
-			logger.info('server is shutting down: close TCP connection (id:' + conn.id + ')');
-			conn.close();
-		}
-	});
+	emitter.once('close', close);
 
 	logger.info('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
 }
