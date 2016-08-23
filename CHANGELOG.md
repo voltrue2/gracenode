@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### Improved overall logging verbosity
+
 #### RPC bot added for more thorough tests
 
 ## Deprecated
