@@ -56,7 +56,7 @@ module.exports.route = function (packet) {
 
 	var hookList = hooks.findByCmdId(packet.command);
 
-	logger.info('command hooks:', hookList);
+	logger.debug('command hooks:', hookList);
 
 	return {
 		id: cmd.id,
@@ -69,7 +69,7 @@ module.exports.route = function (packet) {
 function getHookExec(cmdId, cmdName, hookList) {
 	var exec = function (state, cb) {
 		async.eachSeries(hookList, function (hook, next) {
-			logger.info(
+			logger.debug(
 				'execute command hook (' + cmdId + ':' + cmdName + '):',
 				(hook.name || 'anonymous')
 			);

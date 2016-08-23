@@ -147,7 +147,7 @@ Connection.prototype._routeAndExec = function (parsedData, sess, cb) {
 	if (!cmd) {
 		return this._errorResponse(parsedData, sess, cb);
 	}
-	logger.info(
+	logger.debug(
 		this.name,
 		'command routing resolved:',
 		'command:', cmd.id, cmd.name,
@@ -249,7 +249,7 @@ Connection.prototype.__write = function (error, data, cb) {
 	if (error) {
 		logger.error(this.name, 'error response:', error, 'size:', data.length, 'bytes');
 	} else {
-		logger.info(this.name, 'response:', data.length, 'bytes');
+		logger.debug(this.name, 'response:', data.length, 'bytes');
 	}
 	this.sock.write(data, 'UTF-8', cb);
 };
@@ -261,7 +261,7 @@ Connection.prototype.__push = function (data, cb) {
 		}
 		return cb();
 	}
-	logger.info(this.name, 'push from server:', data.length, 'bytes');
+	logger.debug(this.name, 'push from server:', data.length, 'bytes');
 	this.sock.write(data, 'UTF-8', cb);
 };
 
