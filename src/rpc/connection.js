@@ -35,6 +35,7 @@ function Connection(sock, options) {
 	});
 	this.sock.on('end', function () {
 		logger.info(that.name, 'TCP connection ended by client');
+		that.close();
 	});
 	this.sock.on('error', function (error) {
 		logger.error(that.name, 'TCP connection error detected:', error);
@@ -72,16 +73,16 @@ Connection.prototype.useCryptoEngine = function (engine) {
 };
 
 Connection.prototype.close = function (error) {
-	if (error) {
-		logger.error(this.name, 'TCP connection closed by error:', error);
-	} else {
-		logger.info(this.name, 'TCP connection closed');
-	}
 	if (this.sock) {
 		try {
 			this.sock.end();
 		} catch (e) {
 			logger.error('socket end failed:', e);	
+		}
+		if (error) {
+			logger.error(this.name, 'TCP connection closed by error:', error);
+		} else {
+			logger.info(this.name, 'TCP connection closed');
 		}
 	}
 	this._clear();

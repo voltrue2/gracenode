@@ -14,6 +14,8 @@ None
 
 #### RPC socket exceptions are caught properly on close, destory, and removal of listeners
 
+#### RPC server closes sockets on end event also
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()

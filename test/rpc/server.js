@@ -7,7 +7,7 @@ gn.config({
 	log: {
 		color: true,
 		console: true,
-		level: '>= warn'
+		level: '>= info'
 	},
 	cluster: {
 		max: process.argv[2] || 0,
