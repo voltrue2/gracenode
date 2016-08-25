@@ -152,7 +152,7 @@ Connection.prototype._decrypt = function (parsedData, cb) {
 };
 
 Connection.prototype._routeAndExec = function (parsedData, sess, cb) {
-	var cmd = router.route(parsedData);
+	var cmd = router.route(this.name, parsedData);
 	if (!cmd) {
 		return this._errorResponse(parsedData, sess, cb);
 	}

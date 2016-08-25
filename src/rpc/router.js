@@ -44,20 +44,21 @@ module.exports.getIdsByNames = function (names) {
 	return names;
 };
 
-module.exports.route = function (packet) {
+module.exports.route = function (name, packet) {
 
 	if (!packet) {
 		return null;
 	}
 
 	if (commands[packet.command] === undefined) {
-		logger.error('command handler not found for ', packet.command, packet);
+		logger.error(name, 'command handler not found for ', packet.command, packet);
 		return null;	
 	}
 	
 	var cmd = commands[packet.command];
 	
 	logger.info(
+		name,
 		'command routing resolved:',
 		packet.command, cmd.name,
 		'handlers:', cmd.handlers,
@@ -66,7 +67,7 @@ module.exports.route = function (packet) {
 
 	var hookList = hooks.findByCmdId(packet.command);
 
-	logger.debug('command hooks:', hookList, '(seq:' + packet.seq + ')');
+	logger.debug(name, 'command hooks:', hookList, '(seq:' + packet.seq + ')');
 
 	return {
 		id: cmd.id,
