@@ -426,26 +426,34 @@ function send(state, msg, seq, status) {
 				state.seq,
 				msg
 			);
-			server.send(
-				encrypted,
-				0,
-				encrypted.length,
-				state.clientPort,
-				state.clientAddress,
-				sent
-			);
+			try {
+				server.send(
+					encrypted,
+					0,
+					encrypted.length,
+					state.clientPort,
+					state.clientAddress,
+					sent
+				);
+			} catch (e) {
+				logger.error('send failed:', e);
+			}
 		});
 		return;
 	}
 
-	server.send(
-		msg,
-		0,
-		msg.length,
-		state.clientPort,
-		state.clientAddress,
-		sent
-	);
+	try {
+		server.send(
+			msg,
+			0,
+			msg.length,
+			state.clientPort,
+			state.clientAddress,
+			sent
+		);
+	} catch (e) {
+		logger.error('send failed:', e);
+	}
 }
 
 function isIPv6() {

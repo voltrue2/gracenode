@@ -10,6 +10,10 @@ None
 
 ## Changed
 
+#### UDP send packet exception is now caught
+
+#### Dependency gracelog version updated
+
 #### RPC routing logging minor improvements
 
 ## Deprecated
