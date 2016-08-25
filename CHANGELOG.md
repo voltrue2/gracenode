@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.25
+
+## Added
+
+None
+
+## Changed
+
+#### RPC wirtting to a socket error is now caught properly and passed as an error to the callback
+
+#### RPC socket exceptions are caught properly on close, destory, and removal of listeners
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.4.24
 
 ## Added

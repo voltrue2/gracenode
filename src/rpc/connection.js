@@ -78,7 +78,11 @@ Connection.prototype.close = function (error) {
 		logger.info(this.name, 'TCP connection closed');
 	}
 	if (this.sock) {
-		this.sock.end();
+		try {
+			this.sock.end();
+		} catch (e) {
+			logger.error('socket end failed:', e);	
+		}
 	}
 	this._clear();
 };
@@ -90,7 +94,11 @@ Connection.prototype.kill = function (error) {
 		} else {
 			logger.info(this.name, 'TCP connection killed from server');
 		}
-		this.sock.destroy();
+		try {
+			this.sock.destroy();
+		} catch (e) {
+			logger.error('socket destory failed:', e);
+		}
 	}
 	this._clear(true);
 };
@@ -251,7 +259,15 @@ Connection.prototype.__write = function (error, data, cb) {
 	} else {
 		logger.debug(this.name, 'response:', data.length, 'bytes');
 	}
-	this.sock.write(data, 'UTF-8', cb);
+	try {
+		this.sock.write(data, 'UTF-8', cb);
+	} catch (e) {
+		if (typeof cb === 'function') {
+			cb(e);
+		} else {
+			logger.error('writting to the socket (response) failed:', e);
+		}
+	}
 };
 
 Connection.prototype.__push = function (data, cb) {
@@ -262,7 +278,15 @@ Connection.prototype.__push = function (data, cb) {
 		return cb();
 	}
 	logger.debug(this.name, 'push from server:', data.length, 'bytes');
-	this.sock.write(data, 'UTF-8', cb);
+	try {
+		this.sock.write(data, 'UTF-8', cb);
+	} catch (e) {
+		if (typeof cb === 'function') {
+			cb(e);
+		} else {
+			logger.error('writting to the socket (push) failed:', e);
+		}
+	}
 };
 
 Connection.prototype._encrypt = function (state, msg, cb) {
@@ -280,8 +304,10 @@ Connection.prototype._encrypt = function (state, msg, cb) {
 
 Connection.prototype._clear = function (killed) {
 	this.connected = false;
-	this.sock.removeAllListeners();
-	this.sock = null;
+	if (this.sock) {
+		this.sock.removeAllListeners();
+		this.sock = null;
+	}
 	this.parser = null;
 	this.opt = null;
 	this.emit('clear', killed);
