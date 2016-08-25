@@ -2,6 +2,60 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.28
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency gracelog version updated
+
+to v0.6.7
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+## Version 3.5.27
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency gracelog version updated
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.26
 
 ## Added
