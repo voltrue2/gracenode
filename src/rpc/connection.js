@@ -174,9 +174,36 @@ Connection.prototype._errorResponse = function (parsedData, sess, cb) {
 Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 	var that = this;
 	var state = createState(this.id, parsedData, sess);
+	// server push
 	state.send = function (payload) {
 		that._push(state, payload);
 	};
+	// server response (if you need to use this to pretend as a response)
+	state.respond = function (payload, status, options) {
+		var error = null;
+		if (payload instanceof Error) {
+			payload = payload.message;
+			error = payload;
+		}
+		if (!status) {
+			if (error) {
+				status = state.STATUS.BAD_REQ;
+			} else {
+				status = state.STATUS.OK;
+			}
+		}
+		that._write(error, state, status, parsedData.seq, payload, function () {
+			if (options) {
+				if (options.closeAfterReply) {
+					return that.close();
+				}
+				if (options.killAfterReply) {
+					return that.kill();
+				}
+			}
+		});
+	};
+	// execute hooks before the handler(s)
 	cmd.hooks(state, function (error, status) {
 		if (error) {
 			var msg = {
@@ -190,6 +217,7 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 		var res;
 		var options;
 		var done = function (error) {
+			// respond to client
 			that._write(error, state, status, parsedData.seq, res, function (error) {
 				if (options) {
 					if (options.closeAfterReply) {
@@ -210,7 +238,7 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 						_status = transport.STATUS.BAD_REQ;
 					}
 					status = _status;
-					res = { message: _res.message };
+					res = _res.message;
 					return next(_res);
 				}
 				if (!_status) {
@@ -323,6 +351,7 @@ function createState(id, parsedData, sess) {
 		sessionId: null,
 		seq: null,
 		session: null,
+		respond: null,
 		send: null
 	};
 	if (sess) {

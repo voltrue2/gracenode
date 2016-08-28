@@ -40,8 +40,14 @@ Client.prototype.recvOnce = function (cb) {
 	this.client.once('data', function (packet) {
 		that.client.removeAllListeners('close');
 		var parsed = that.parser.parse(packet);
-		that.logger.debug('client received:', JSON.parse(parsed[0].payload));
-		cb(JSON.parse(parsed[0].payload), parsed[0].status);
+		var value = parsed[0].payload;
+		try {
+			value = JSON.parse(parsed[0].payload);
+		} catch (e) {
+			// do nothing
+		}
+		that.logger.debug('client received:', parsed, value);
+		cb(value, parsed[0].status);
 	});
 	this.client.once('close', function () {
 		cb(new Error('closed'));
@@ -53,7 +59,6 @@ Client.prototype.recv = function (cb) {
 	var seq = 0;
 	var that = this;
 	this.client.on('data', function (buffer) {
-		//var packets = that.parser.parse(buffer);
 		var packets = transport.parse(buffer);
 		for (var i = 0, len = packets.length; i < len; i++) {
 			var packet = packets[i];
@@ -95,6 +100,7 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
 	this.client.once('data', function (packet) {
 		that.client.removeAllListeners('close');
 		var parsed = that.parser.parse(packet);
+		var value;
 		try {
 			var decrypted = ce.decrypt(
 				cipher.cipherKey,
@@ -105,9 +111,16 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
 				parsed[0].payload
 			);
 			that.logger.debug('client received encrypted:', decrypted.toString());
-			cb(JSON.parse(decrypted.toString()));
+			value = decrypted.toString();
 		} catch (e) {
 			cb(e);
+		}
+		that.logger.debug('secure receive:', parsed);
+		try {
+			value = JSON.parse(value);
+			cb(value);
+		} catch (e) {
+			cb(value);
 		}
 	});
 	this.client.once('close', function () {

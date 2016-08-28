@@ -536,8 +536,10 @@ Command handler functions will have `state` object and `callback` function passe
 	set: [function],
 	// get key/value that has been "set" by state.set()
 	get: [function],
-	// send packet to connected client
+	// send packet as a push to connected client
 	send: [function],
+	// send packet as a response to connected client: same as callback
+	respond: [function],
 	// if session and encryption/decryption is used
 	sessionId: [session ID],
 	// if session and encryption/decryption is used

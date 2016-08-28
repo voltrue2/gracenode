@@ -121,7 +121,7 @@ describe('gracenode.rpc', function () {
 			cb(new Error('boo'));
 		});
 		client.recvOnce(function (data, status) {
-			assert.equal(data.message, 'boo');
+			assert.equal(data.toString(), 'boo');
 			assert.equal(status, 2);
 			done();
 		});
@@ -279,6 +279,32 @@ describe('gracenode.rpc', function () {
 		});
 		cipher.seq += 1;
 		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: clientMsg }, function (error) {
+			assert.equal(error, null);
+		});
+	});
+
+	it('can respond using respond() instead of callback', function (done) {
+		var msg = 'I am your father!';
+		var cid = 111;
+		var count = 0;
+		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
+			assert.equal(state.hookToAll, true);
+			assert.equal(state.payload.message, msg);
+			var res = { message: msg };
+			cb(res);
+			setTimeout(function () {
+				state.respond(res);
+			}, 50);
+		});
+		client.recvOnceSecure(cipher, function (data) {
+			assert.equal(data.message, msg);
+			client.recvOnceSecure(cipher, function (data) {
+				assert.equal(data.message, msg);
+				done();
+			});
+		});
+		cipher.seq += 1;
+		client.sendSecure(sessionId, cipher, cid, cipher.seq, { message: msg }, function (error) {
 			assert.equal(error, null);
 		});
 	});
@@ -453,7 +479,7 @@ describe('gracenode.rpc', function () {
 			cb(new Error(errMsg), state.STATUS.BAD_REQ);
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data.toString(), errMsg);
 			done();
 		});
 		cipher.seq += 1;
@@ -470,7 +496,7 @@ describe('gracenode.rpc', function () {
 			cb(new Error(errMsg), state.STATUS.FORBIDDEN);
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data, errMsg);
 			done();
 		});
 		cipher.seq += 1;
@@ -488,7 +514,7 @@ describe('gracenode.rpc', function () {
 			cb(new Error(errMsg), state.STATUS.NOT_FOUND);
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data, errMsg);
 			done();
 		});
 		cipher.seq += 1;
@@ -506,7 +532,7 @@ describe('gracenode.rpc', function () {
 			cb(new Error(errMsg), state.STATUS.ERROR);
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data, errMsg);
 			done();
 		});
 		cipher.seq += 1;
@@ -524,7 +550,7 @@ describe('gracenode.rpc', function () {
 			cb(new Error(errMsg), state.STATUS.UNAVAILABLE);
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data, errMsg);
 			done();
 		});
 		cipher.seq += 1;
