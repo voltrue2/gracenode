@@ -224,7 +224,7 @@ describe('gracenode.rpc', function () {
 			next(new Error('HookError'));
 		});
 		client.recvOnce(function (data) {
-			assert.equal(data.message, 'HookError');
+			assert.equal(data, 'HookError');
 			done();
 		});
 		client.send(cid, 2, { message: clientMsg }, function (error) {
@@ -286,7 +286,6 @@ describe('gracenode.rpc', function () {
 	it('can respond using respond() instead of callback', function (done) {
 		var msg = 'I am your father!';
 		var cid = 111;
-		var count = 0;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, msg);
@@ -369,7 +368,7 @@ describe('gracenode.rpc', function () {
 			next(new Error(errMsg));
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data, errMsg);
 			done();
 		});
 		cipher.seq += 1;
@@ -440,7 +439,7 @@ describe('gracenode.rpc', function () {
 		var errMsg = 'NOT_FOUND';
 		var cid = 5000;
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data.message, errMsg);
+			assert.equal(data, errMsg);
 			done();
 		});
 		cipher.seq += 1;

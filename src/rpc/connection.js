@@ -167,7 +167,7 @@ Connection.prototype._routeAndExec = function (parsedData, sess, cb) {
 
 Connection.prototype._errorResponse = function (parsedData, sess, cb) {
 	var state = createState(this.id, parsedData, sess);
-	var msg = { message: 'NOT_FOUND' };
+	var msg = 'NOT_FOUND';
 	this._write(new Error('NOT_FOUND'), state, state.STATUS.NOT_FOUND, state.seq, msg, cb);
 };
 
@@ -206,9 +206,7 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 	// execute hooks before the handler(s)
 	cmd.hooks(state, function (error, status) {
 		if (error) {
-			var msg = {
-				message: error.message
-			};
+			var msg = error.message;
 			if (!status) {
 				status = transport.STATUS.BAD_REQ;
 			}

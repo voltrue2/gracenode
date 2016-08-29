@@ -2,6 +2,32 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+# Version 3.5.30
+
+## Added
+
+None
+
+## Changed
+
+#### RPC default errors such as NOT_FOUND etc now has a string message instead of stringified JSON 
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.29
 
 ## Added
