@@ -1,6 +1,6 @@
 'use strict';
 
-exports.fmt = function (name, val) {
+exports.fmt = function __httpUtilFmt(name, val) {
 	if (name === 'url') {
 		val = decodeURI(val);
 	}

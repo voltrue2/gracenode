@@ -56,7 +56,7 @@ var map = {
 	'x-flv': vd
 };
 
-module.exports.get = function (fileType) {
+module.exports.get = function __httpMimeGet(fileType) {
 	// mime type exception handler
 	fileType = checkTypeException(fileType);
 	var prefix = map[fileType] || null;
@@ -66,12 +66,12 @@ module.exports.get = function (fileType) {
 	return prefix + fileType;
 };
 
-module.exports.getFromPath = function (path) {
+module.exports.getFromPath = function __httpMimeGetFromPath(path) {
 	var ext = path.substring(path.lastIndexOf('.') + 1);
 	return module.exports.get(ext);
 };
 
-module.exports.is = function (headers, fileType) {
+module.exports.is = function __httpMimeIs(headers, fileType) {
 	if (headers && headers['content-type']) {
 		if (headers['content-type'].indexOf(fileType) !== -1) {
 			return true;

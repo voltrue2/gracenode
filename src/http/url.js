@@ -5,7 +5,7 @@ var STAT = '/{static:staticfile}';
 var PAT = '([^\\/]+?)';
 var LPAT = '(?:\/(?=$))?$';
 
-exports.convert = function (path, sensitive) {
+exports.convert = function __httpUrlCovert(path, sensitive) {
 	var staticPath = path.indexOf(STAT);
 	if (!path.match(REP) && staticPath === -1) {
 		// fast routing: no URL parameters
@@ -54,6 +54,6 @@ exports.convert = function (path, sensitive) {
 	};
 };
 
-exports.match = function (path, regex) {
+exports.match = function __httpUrlMatch(path, regex) {
 	return regex.exec(path);
 };

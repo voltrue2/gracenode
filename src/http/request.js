@@ -7,11 +7,11 @@ var util = require('./util');
 var gn = require('../gracenode');
 var logger;
 
-exports.setup = function () {
+exports.setup = function __httpRequestSetup() {
 	logger = gn.log.create('HTTP.request');
 };
 
-exports.getReqBody = function (read, req, cb) {
+exports.getReqBody = function __httpRequestGetRequestBody(read, req, cb) {
 	if (!read) {
 		// we do not read request body of GET by default
 		return cb(null, {});
@@ -20,10 +20,10 @@ exports.getReqBody = function (read, req, cb) {
 		return readMultipartBody(req, cb);
 	}
 	var body = '';
-	req.on('data', function (data) {
+	req.on('data', function __httpRequestGetRequestBodyOnData(data) {
 		body += data;
 	});
-	req.on('end', function () {
+	req.on('end', function __httpRequestGetRequestOnEnd() {
 		var data = readRequestBody(req.url, req.headers, body);
 		if (req.method === 'GET' || req.method === 'HEAD') {
 			for (var key in data) {
@@ -38,14 +38,14 @@ exports.getReqBody = function (read, req, cb) {
 		);
 		cb(null, data);
 	});
-	req.on('error', function (error) {
+	req.on('error', function __httpRequestGetRequestOnError(error) {
 		cb(error);
 	});	
 };
 
 function readMultipartBody(req, cb) {
 	var form = new multiparty.Form();
-	form.parse(req, function (error, fields, files) {
+	form.parse(req, function __httpRequestReadMultipartBodyOnFormParse(error, fields, files) {
 		if (error) {
 			return cb(error);
 		}

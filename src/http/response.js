@@ -24,7 +24,7 @@ var REDIRECT_STATUS_LIST = [
 ];
 var DEFAULT_ERROR_STATUS = 400;
 
-exports.setup = function () {
+exports.setup = function __httpResponseSetup() {
 	logger = gn.log.create('HTTP.response');
 };
 
@@ -45,15 +45,15 @@ function Response(req, res, errorMap) {
 	}
 }
 
-Response.prototype.onClose = function (func) {
+Response.prototype.onClose = function __httpResponseOnClose(func) {
 	this._res.on('close', func);
 };
 
-Response.prototype.gzip = function (bool) {
+Response.prototype.gzip = function __httpResponseGzip(bool) {
 	this._gzip = bool;
 };
 
-Response.prototype.error = function (error, status) {
+Response.prototype.error = function __httpResponseError(error, status) {
 	var data = {};
 	if (error instanceof Error) {
 		data.message = error.message;
@@ -71,30 +71,30 @@ Response.prototype.error = function (error, status) {
 	this._send(JSON.stringify(data), status);
 };
 
-Response.prototype.json = function (data, status) {
+Response.prototype.json = function __httpResponseJson(data, status) {
 	this.headers['Content-Type'] = 'application/json; charset=UTF-8';
 	this._send(JSON.stringify(data), status);
 };
 
-Response.prototype.html = function (data, status) {
+Response.prototype.html = function __httpResponseHtml(data, status) {
 	this.headers['Content-Type'] = 'text/html; charset=UTF-8';
 	this._send(data, status);
 };
 
-Response.prototype.text = function (data, status) {
+Response.prototype.text = function __httpResponseText(data, status) {
 	this.headers['Content-Type'] = 'text/plain; charset=UTF-8';
 	this._send(data, status);
 };
 
-Response.prototype.data = function (data, status) {
+Response.prototype.data = function __httpResponseData(data, status) {
 	this._send(data, status);
 };
 
-Response.prototype.download = function (dataOrPath, status) {
+Response.prototype.download = function __httpResponseDownload(dataOrPath, status) {
 	if (typeof dataOrPath === 'string') {
 		// path
 		var that = this;
-		fs.readFile(dataOrPath, function (error, data) {
+		fs.readFile(dataOrPath, function __httpResponseDownloadOnReadFile(error, data) {
 			if (error) {
 				// forced 404 error
 				that.error(error, 404);
@@ -113,7 +113,7 @@ Response.prototype.download = function (dataOrPath, status) {
 	this._send(dataOrPath, status);
 };
 
-Response.prototype.file = function (path, status) {
+Response.prototype.file = function __httpResponseFile(path, status) {
 	if (this._sent) {
 		logger.warn(
 			'Cannot send response more than once:',
@@ -123,7 +123,7 @@ Response.prototype.file = function (path, status) {
 		return;
 	}
 	var that = this;
-	fs.stat(path, function (error, stats) {
+	fs.stat(path, function __httpResponseFileOnStat(error, stats) {
 		if (error) {
 			// forced 404 error
 			that.error(error, 404);
@@ -136,7 +136,7 @@ Response.prototype.file = function (path, status) {
 			return  send(that._req, that._res, that.headers, 'Not Modified', 'utf8', 304);
 		}
 		that.headers['Last-Modified'] = new Date(stats.mtime).toUTCString();
-		fs.readFile(path, function (error, data) {
+		fs.readFile(path, function __httpResponseFileOnStatOnReadFile(error, data) {
 			if (error) {
 				// forced 404 error
 				that.error(error, 404);
@@ -155,7 +155,7 @@ Response.prototype.file = function (path, status) {
 	});
 };
 
-Response.prototype.stream = function (path) {
+Response.prototype.stream = function __httpResponseStream(path) {
 	if (this._sent) {
 		logger.warn(
 			'Cannot send response more than once:',
@@ -166,7 +166,7 @@ Response.prototype.stream = function (path) {
 	}
 	this._sent = true;
 	var that = this;
-	fs.stat(path, function (error, stat) {
+	fs.stat(path, function __httpResponseStreamOnStat(error, stat) {
 		if (error) {
 			// forced 404 error
 			that.error(error, 404);
@@ -202,7 +202,7 @@ Response.prototype.stream = function (path) {
 	});	
 };
 
-Response.prototype.redirect = function (path, status) {
+Response.prototype.redirect = function __httpResponseRedirect(path, status) {
 	status = status || DEFAULT_REDIRECT_STATUS;
 	if (REDIRECT_STATUS_LIST.indexOf(status) === -1) {
 		// invalid status code for redirect log here
@@ -212,7 +212,7 @@ Response.prototype.redirect = function (path, status) {
 	this._send('', status);
 };
 
-Response.prototype._send = function (data, status) {
+Response.prototype._send = function __httpResponseSend(data, status) {
 	if (this._sent) {
 		logger.warn(
 			'Cannot send response more than once:',
@@ -244,7 +244,7 @@ Response.prototype._send = function (data, status) {
 		'<gzip>', this._gzip,
 		'<data>', data
 	);
-	gzip(this._gzip, data, function (error, zipped, size, dataType) {
+	gzip(this._gzip, data, function __httpResponseSendOnGzip(error, zipped, size, dataType) {
 		if (error) {
 			// forced 500 error
 			that.error(error, 500);
@@ -258,7 +258,7 @@ Response.prototype._send = function (data, status) {
 	});
 };
 
-Response.prototype._isAcceptedEncoding = function (enc) {
+Response.prototype._isAcceptedEncoding = function __httpResponseIsAcceptedEncoding(enc) {
 	var hd = this._req.headers;
 	var list = hd['accept-encoding'] || hd['Accept-Encoding'];
 	if (!list) {
@@ -277,7 +277,7 @@ function gzip(mustGzip, data, cb) {
 	if (!mustGzip) {
 		return cb(null, data, Buffer.byteLength(data), 'UTF-8');
 	}
-	zlib.gzip(data, function (error, zipped) {
+	zlib.gzip(data, function __httpResponseGzipOnGzip(error, zipped) {
 		if (error) {
 			return cb(error);
 		}

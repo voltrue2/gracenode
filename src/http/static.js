@@ -2,7 +2,7 @@
 
 var gn = require('../gracenode');
 
-module.exports.handle = function (dir) {
+module.exports.handle = function _httpStaticHandle(dir) {
 	var handler = new Handler(dir);
 	var func = function (req, res) {
 		handler.handle.apply(handler, [req, res]);
@@ -16,7 +16,7 @@ function Handler(dir) {
 	this._tailSlash = this._dir[this._dir.length - 1];
 }
 
-Handler.prototype.handle = function (req, res) {
+Handler.prototype.handle = function __httpStaticHandlerHandle(req, res) {
 	var filename = req.params.staticfile;
 	var len = filename.length - 1;
 	if (filename[len] === '/') {

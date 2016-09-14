@@ -6,13 +6,13 @@ var mapping = require('./mapping');
 
 var logger;
 
-exports.setup = function () {
+exports.setup = function __httpRouteSetup() {
 	logger = gn.log.create('HTTP.route');
 	mapping.setup();
 	hooks.setup();
 };
 
-exports.define = function (method, path, handler, opt) {
+exports.define = function __httpRouteDefine(method, path, handler, opt) {
 	if (typeof handler !== 'function') {
 		throw new Error(
 			'InvalidRouteHandler: ' +
@@ -23,11 +23,11 @@ exports.define = function (method, path, handler, opt) {
 	mapping.add(method, path, handler, opt);
 };
 
-exports.hook = function (path, handler) {
+exports.hook = function __httpRouteHook(path, handler) {
 	mapping.hook(path, handler);
 };
 
-exports.find = function (method, fullpath) {
+exports.find = function __httpRouteFind(method, fullpath) {
 	// head is treated as get
 	method = method === 'HEAD' ? 'GET' : method;
 	// extract path
