@@ -27,7 +27,7 @@ var ERROR = {
 	NOT_SUPPORTED: 'NOT_SUPPORTED'
 };
 
-exports.config = function (configIn) {
+exports.config = function __httpConfig(configIn) {
 	logger = gn.log.create('HTTP');
 	config = configIn;
 	route.setup();
@@ -35,7 +35,7 @@ exports.config = function (configIn) {
 	response.setup();
 };
 
-exports.info = function () {
+exports.info = function __httpInfo() {
 	return {
 		host: connectionInfo.host,
 		address: connectionInfo.address,
@@ -44,31 +44,31 @@ exports.info = function () {
 	};	
 };
 
-exports.get = function (path, handler, opt) {
+exports.get = function __httpGet(path, handler, opt) {
 	route.define('GET', path, handler, opt);
 };
 
-exports.post = function (path, handler, opt) {
+exports.post = function __httpPost(path, handler, opt) {
 	route.define('POST', path, handler, opt);
 };
 
-exports.head = function (path, handler, opt) {
+exports.head = function __httpHead(path, handler, opt) {
 	route.define('HEAD', path, handler, opt);
 };
 
-exports.put = function (path, handler, opt) {
+exports.put = function __httpPut(path, handler, opt) {
 	route.define('PUT', path, handler, opt);
 };
 
-exports.delete = function (path, handler, opt) {
+exports.delete = function __httpDelete(path, handler, opt) {
 	route.define('DELETE', path, handler, opt);
 };
 
-exports.patch = function (path, handler, opt) {
+exports.patch = function __httpPatch(path, handler, opt) {
 	route.define('PATCH', path, handler, opt);
 };
 
-exports.static = function (path, dirList, opt) {
+exports.static = function __httpStatic(path, dirList, opt) {
 	if (path[path.length - 1] !== '/') {
 		path += '/';
 	}
@@ -94,15 +94,15 @@ exports.static = function (path, dirList, opt) {
 	}
 };
 
-exports.forceTrailingSlash = function () {
+exports.forceTrailingSlash = function __httpForceTrailingSlash() {
 	trailingSlash = true;
 };
 
-exports.hook = function (path, func) {
+exports.hook = function __httHook(path, func) {
 	route.hook(path, func);
 };
 
-exports.error = function (status, func) {
+exports.error = function __httpError(status, func) {
 	if (errorMap[status]) {
 		if (logger) {
 			logger.error('Error handler already registerd for', status);
@@ -115,9 +115,9 @@ exports.error = function (status, func) {
 	errorMap[status] = func;
 };
 
-exports.setup = function (cb) {
+exports.setup = function __httpSetup(cb) {
 	server = http.createServer(requestHandler);
-	server.on('listening', function () {
+	server.on('listening', function __onHttpSetupListening() {
 		var info = server.address();
 		logger.info(
 			'HTTP server router started:',
@@ -130,14 +130,14 @@ exports.setup = function (cb) {
 		connectionInfo.family = info.family.toLowerCase();
 		cb();
 	});
-	server.on('error', function (error) {
+	server.on('error', function __onHttpSetupError(error) {
 		logger.fatal(
 			'HTTP server router failed to start:',
 			(config.host + ':' + config.port)
 		);
 		cb(error);
 	});
-	gn.onExit(function HTTPShutdown(next) {
+	gn.onExit(function __httpOnExit(next) {
 		try {
 			logger.info('Stopping HTTP server...');
 			server.close();
@@ -212,7 +212,7 @@ function requestHandler(req, res) {
 	}
 
 	// listener on unexpected connection termination
-	res.on('close', function () {
+	res.on('close', function __onRequestHandlerClose() {
 		logger.error(
 			'Connection closed unexpectedly:',
 			util.fmt('url', req.method + ' ' + req.url),
@@ -223,7 +223,7 @@ function requestHandler(req, res) {
 		);		
 	});
 
-	var hookDone = function (error, statusCode) {
+	var hookDone = function __onRequestHandlerHookDone(error, statusCode) {
 		if (error) {
 			// error response 400
 			if (!statusCode) {
@@ -236,14 +236,14 @@ function requestHandler(req, res) {
 		executeHandlers(parsed.handlers, req, resp);
 	};
 
-	var handleHook = function (hook, next) {
+	var handleHook = function __onRequestHandlerHandleHook(hook, next) {
 		logger.verbose(
 			'Execute request hook for',
 			util.fmt('url', req.method + ' ' + req.url),
 			util.fmt('id', req.id),
 			util.fmt('hook name', (hook.name || 'anonymous'))
 		);
-		hook(req, resp, function (error, statusCode) {
+		hook(req, resp, function __onRequestHandlerOnHook(error, statusCode) {
 			if (error) {
 				logger.error(
 					'Request hook error:',
@@ -266,7 +266,7 @@ function requestHandler(req, res) {
 	// request URL parameters
 	req.params = parsed.params;
 	// extract request body
-	request.getReqBody(parsed.readBody, req, function (error, body) {
+	request.getReqBody(parsed.readBody, req, function __onRequestHandlerOnGetRequestBody(error, body) {
 		if (error) {
 			// 500
 			resp.error(error, 500);
@@ -289,10 +289,10 @@ function requestHandler(req, res) {
 }
 
 function executeHandlers(handlers, req, resp) {
-	async.eachSeries(handlers, function (handler, next) {
+	async.eachSeries(handlers, function __onExecuteHandlersHandle(handler, next) {
 		logger.verbose('Handling request:', req.url, (handler.name || 'Anonymous'));
 		handler(req, resp, next);
-	}, function (error) {
+	}, function __onExecuteHandlersDone(error) {
 		if (error) {
 			return resp.error(error);
 		}
@@ -300,7 +300,7 @@ function executeHandlers(handlers, req, resp) {
 }
 
 function createCookieGetter(req, res) {
-	return function () {
+	return function __createCookieGetterInternal() {
 		return new Cookies(req, res);
 	};
 }

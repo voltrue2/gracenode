@@ -7,11 +7,11 @@ var HOOK_REG = /\/{(.*?)}/g;
 var logger;
 var hooks = {};
 
-exports.setup = function () {
+exports.setup = function __httpSetup() {
 	logger = gn.log.create('HTTP.hooks');
 };
 
-exports.hook = function (path, func) {
+exports.hook = function __httpHook(path, func) {
 	// root exception
 	if (path === '/') {
 		if (!hooks.hasOwnProperty(path)) {
@@ -45,7 +45,7 @@ exports.hook = function (path, func) {
 	}
 };
 
-exports.updateHooks = function (fastRoutes, routes, allroutes) {
+exports.updateHooks = function __updateHooks(fastRoutes, routes, allroutes) {
 	for (var method in routes) {
 		// fast routes
 		var map = fastRoutes[method];
@@ -67,7 +67,7 @@ exports.updateHooks = function (fastRoutes, routes, allroutes) {
 	}
 };
 
-exports.findHooks = function (key) {
+exports.findHooks = function __findHooks(key) {
 	var matchedHooks = [];
 	for (var path in hooks) {
 		if (path === '/') {

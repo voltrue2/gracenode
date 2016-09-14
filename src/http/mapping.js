@@ -43,16 +43,16 @@ var fastroutes = {
 	PATCH: {}
 };
 
-exports.setup = function () {
+exports.setup = function __mappingSetup() {
 	logger = gn.log.create('HTTP.mapping');
 };
 
-exports.hook = function (path, handler) {
+exports.hook = function __mappingHook(path, handler) {
 	hooks.hook(path, handler);
 	hooks.updateHooks(fastroutes, routes, allroutes);
 };
 
-exports.add = function (method, path, handler, opt) {
+exports.add = function __mappingAdd(method, path, handler, opt) {
 	// head is treated as get
 	method = method === 'HEAD' ? 'GET' : method;
 	// always leading slash
@@ -78,7 +78,7 @@ exports.add = function (method, path, handler, opt) {
 	addToRoutes(method, path, handler, opt, converted);
 };
 
-exports.getRoute = function (method, path) {
+exports.getRoute = function __mappingGetRoute(method, path) {
 	// try fast route first
 	var fast = searchFastRoute(method, path);
 	if (fast) {
@@ -156,14 +156,14 @@ function addToRoutes(method, path, handler, opt, conv) {
 	};
 	routes[method][key].push(route);
 	// re-order route list from long uri to short uri
-	routes[method][key].sort(function (a, b) {
+	routes[method][key].sort(function __mappingAddToRoutesRoutesSort(a, b) {
 		return b.pattern.length - a.pattern.length;
 	});
 	routes[method][lkey] = routes[method][key];
 	// add the route to all routes also
 	allroutes[method].push(route);
 	// re-order all routes
-	allroutes[method].sort(function (a, b) {
+	allroutes[method].sort(function __mappingAddToRoutesAllRoutesSort(a, b) {
 		return b.pattern.length - a.pattern.length;
 	});
 }
