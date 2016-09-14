@@ -3,7 +3,7 @@
 var gn = require('../gracenode/');
 var config = {};
 
-exports.load = function (configObj) {
+exports.load = function configLoad(configObj) {
 	for (var i in configObj) {
 		if (!config.hasOwnProperty(i)) {
 			config[i] = configObj[i];
@@ -14,7 +14,7 @@ exports.load = function (configObj) {
 };
 
 // dotted notation is supported
-exports.get = function (propName) {
+exports.get = function configGet(propName) {
 	if (!propName) {
 		return gn.lib.cloneObj(config);
 	}

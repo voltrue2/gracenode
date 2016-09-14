@@ -6,11 +6,11 @@ var IGNORE = 'repl';
 
 findTopmostParent();
 
-exports.getTopmostParent = function () {
+exports.getTopmostParent = function getTopmostParent() {
 	return topmostParent ? topmostParent.filename : null;
 };
 
-exports.getParent = function () {
+exports.getParent = function getParent() {
 	return parent ? parent.filename : null;
 };
 
