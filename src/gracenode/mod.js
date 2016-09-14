@@ -18,7 +18,7 @@ var logger;
 var pathList = [];
 var pending = {};
 
-exports.use = function modUse(name, pathOrMod, options) {
+exports.use = function __modUse(name, pathOrMod, options) {
 	if (pending[name]) {
 		throw er.create(
 			ER.DUP_NAME, name +
@@ -46,14 +46,14 @@ exports.use = function modUse(name, pathOrMod, options) {
 	pathList.push(pathOrMod);
 };
 
-exports.start = function modStart(gn, configMap, onExit, cb) {
+exports.start = function __modStart(gn, configMap, onExit, cb) {
 	logger = log.create('module');
 	var keys = Object.keys(pending);
-	var handle = function onModStartHandle(key, next) {
+	var handle = function __onModStartHandle(key, next) {
 		var start = Date.now();
 		var item = pending[key];
 		if (typeof item.path !== 'string') {
-			setupMod(configMap, onExit, key, item.path, function onsetupMod(error) {
+			setupMod(configMap, onExit, key, item.path, function __onsetupMod(error) {
 				if (error) {
 					return next(error);
 				}
@@ -72,7 +72,7 @@ exports.start = function modStart(gn, configMap, onExit, cb) {
 		}
 		logger.verbose('Bootstrapping a module:', key, item.path);
 		start = Date.now();
-		fs.exists(item.path, function onModExists(exists) {
+		fs.exists(item.path, function __onModExists(exists) {
 			if (!exists) {
 				return next(
 					er.create(
@@ -83,26 +83,26 @@ exports.start = function modStart(gn, configMap, onExit, cb) {
 			var mod = require(item.path);
 			// if custom .config() is present, override/add it
 			if (typeof item.config === 'function') {
-				mod.configCustom = function modConfigCustom(configIn) {
+				mod.configCustom = function __modConfigCustom(configIn) {
 					item.config.apply(mod, [configIn]);
 				};
 				logger.verbose('Custom', key + '.config() found');
 			}
 			// if custom .setup(<callback>) is present, override/add it
 			if (typeof item.setup === 'function') {
-				mod.setupCustom = function modSetupCustom(cb) {
+				mod.setupCustom = function __modSetupCustom(cb) {
 					item.setup.apply(mod, [cb]);
 				};
 				logger.verbose('Custom', key + '.setup(<callback>) found');
 			}
 			// if custom .exit(<callback>) is present, override/add it
 			if (typeof item.exit === 'function') {
-				mod.exitCustom = function modExitCustom(cb) {
+				mod.exitCustom = function __modExitCustom(cb) {
 					item.exit.apply(mod, [cb]);
 				};
 				logger.verbose('Custom', key + '.exit(<callback>) found');
 			}
-			setupMod(configMap, onExit, key, mod, function onSetupCustomMod(error) {
+			setupMod(configMap, onExit, key, mod, function __onSetupCustomMod(error) {
 				if (error) {
 					return next(error);
 				}
@@ -119,7 +119,7 @@ exports.start = function modStart(gn, configMap, onExit, cb) {
 			});
 		});
 	};
-	var done = function modStartDone(error) {
+	var done = function __modStartDone(error) {
 		pathList = [];
 		pending = {};
 		if (error) {
@@ -143,7 +143,7 @@ function setupMod(configMap, onExit, key, mod, cb) {
 		logger.verbose(key + '.exit(<callback>) has been assigned to process exit:', key);
 		onExit(func);
 	}
-	readModConfig(configMap, key, mod, function onReadModConfig(error) {
+	readModConfig(configMap, key, mod, function __onReadModConfig(error) {
 		if (error) {
 			return cb(error);
 		}

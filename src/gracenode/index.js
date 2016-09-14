@@ -55,27 +55,27 @@ exports.udp = requireInternal('../udp');
 
 exports.cluster = cluster;
 
-exports.getRootPath = function gnGetRootPath() {
+exports.getRootPath = function __gnGetRootPath() {
 	return rootPath;
 };
 
-exports.require = function gnRequire(path) {
+exports.require = function __gnRequire(path) {
 	return require(exports.getRootPath() + path);
 };
 
-exports.config = function gnConfig(obj) {
+exports.config = function __gnConfig(obj) {
 	config.load(obj);
 };
 
-exports.getConfig = function gnGetConfig(name) {
+exports.getConfig = function __gnGetConfig(name) {
 	return config.get(name);
 };
 
-exports.onExit = function gnOnExit(taskFunc, runOnMaster) {
+exports.onExit = function __gnOnExit(taskFunc, runOnMaster) {
 	cluster.addShutdownTask(taskFunc, (runOnMaster) ? true : false);
 };
 
-exports.onException = function gnOnException(func) {
+exports.onException = function __gnOnException(func) {
 	if (typeof func !== 'function') {
 		throw new Error('InvalidOnExceptionCallback:' + func);
 	}
@@ -83,7 +83,7 @@ exports.onException = function gnOnException(func) {
 };
 
 // deprecated backward compatibility alias
-exports.registerShutdownTask = function gnRegisterShutdownTask(name, func) {
+exports.registerShutdownTask = function __gnRegisterShutdownTask(name, func) {
 	var e = new Error('WARNING');
 	logger.warn(
 		'.registerShutdownTask() has been deprecated and should not be used.',
@@ -94,23 +94,23 @@ exports.registerShutdownTask = function gnRegisterShutdownTask(name, func) {
 };
 
 // add module name and path to be bootstrapped by .start()
-exports.use = function gnUse(name, path, options) { 
+exports.use = function __gnUse(name, path, options) { 
 	if (typeof path === 'string') {
 		path = rootPath + path;
 	}
 	mod.use(name, path, options);
 };
 
-exports.isMaster = function gnIsMaster() {
+exports.isMaster = function __gnIsMaster() {
 	return cluster.isMaster();
 };
 
-exports.isCluster = function gnIsCluster() {
+exports.isCluster = function __gnIsCluster() {
 	return cluster.isCluster();
 };
 
 // call this when everything is ready
-exports.start = function gnStart(cb) {
+exports.start = function __gnStart(cb) {
 	var start = Date.now();
 	applyConfig();
 	aeterno.run(function aeternoRun() {
@@ -127,7 +127,7 @@ exports.start = function gnStart(cb) {
 			startRPC,
 			startMod
 		];
-		var done = function startDone(error) {
+		var done = function __startDone(error) {
 			if (error) {
 				return exports.stop(error);
 			}
@@ -151,7 +151,7 @@ exports.start = function gnStart(cb) {
 	});
 };
 
-exports.stop = function gnStop(error) {
+exports.stop = function __gnStop(error) {
 	var trace = new Error('Stop Call Trace');
 	if (error) {
 		logger.error(trace.stack);
@@ -163,7 +163,7 @@ exports.stop = function gnStop(error) {
 	cluster.stop(error);
 };
 
-exports.isSupportedVersion = function gnIsSupportedVersion() {
+exports.isSupportedVersion = function __gnIsSupportedVersion() {
 	return isSupportedVersion;
 };
 
@@ -212,7 +212,7 @@ function applyConfig() {
 
 function setup(cb) {
 	process.chdir(rootPath);
-	process.on('uncaughtException', function onUncaughtException(error) {
+	process.on('uncaughtException', function __onUncaughtException(error) {
 		if (!ready) {
 			exports.stop(error);
 		} else {
@@ -238,7 +238,7 @@ function execLint(cb) {
 		return cb();
 	}
 	logger.info('Lint application code');
-	lint(exports.getRootPath(), config.get('lint.ignore'), function onLint(error) {
+	lint(exports.getRootPath(), config.get('lint.ignore'), function __onLint(error) {
 		if (error && config.get('lint.strict')) {
 			return cb(error);
 		}
@@ -261,7 +261,7 @@ function execOnExceptions(error) {
 }
 
 function startCluster(cb) {
-	cluster.start(clusterConfig, function clusterStarted() {
+	cluster.start(clusterConfig, function __clusterStarted() {
 		if (cluster.isCluster()) {
 			log.setPrefix(
 				(cluster.isMaster() ? 'MASTER' : 'WORKER') +
@@ -274,7 +274,7 @@ function startCluster(cb) {
 }
 
 function setupLog(cb) {
-	canWrite(config.get('log') || {}, function setupLogDone(error) {
+	canWrite(config.get('log') || {}, function __setupLogDone(error) {
 		if (error) {
 			return cb(
 				new Error(
@@ -294,11 +294,11 @@ function canWrite(conf, cb) {
 		cb();
 		return;
 	}
-	fs.exists(conf.file, function logExists(exists) {
+	fs.exists(conf.file, function __logExists(exists) {
 		if (!exists) {
 			return cb(new Error(ER.LOG_DIR_NOT_FOUND + ' ' + conf.file));
 		}
-		fs.open(conf.file, 'w', function canOpenLogFile(error, fd) {
+		fs.open(conf.file, 'w', function __canOpenLogFile(error, fd) {
 			if (error) {
 				var err = null;
 				switch (error.code) {
@@ -317,7 +317,7 @@ function canWrite(conf, cb) {
 				}
 				return cb(err);
 			}
-			fs.close(fd, function closeLogFile(error) {
+			fs.close(fd, function __closeLogFile(error) {
 				if (error) {
 					return cb(error);
 				}
@@ -329,9 +329,9 @@ function canWrite(conf, cb) {
 
 function setupLogCleaner(cb) {
 	logger.info('Setting up logging cleaner on exit');
-	cluster.onExit(function clusterOnExit(next) {
+	cluster.onExit(function __clusterOnExit(next) {
 		logger.verbose('Cleaning up logging before exit');
-		log.forceFlush(function onLogForceFlush() {
+		log.forceFlush(function __onLogForceFlush() {
 			log.clean(next);
 		});
 	});
@@ -339,7 +339,7 @@ function setupLogCleaner(cb) {
 }
 
 function startMod(cb) {
-	mod.start(exports, config.get(), exports.onExit, function onModStart(error) {
+	mod.start(exports, config.get(), exports.onExit, function __onModStart(error) {
 		if (error) {
 			return cb(error);
 		}
@@ -352,7 +352,7 @@ function setupRender(cb) {
 		logger.info('Pre-render template files in', renderConf);
 		var start = Date.now();
 		render.config(renderConf.path, renderConf.cacheSize);
-		render.setup(function onRenderSetup(error) {
+		render.setup(function __onRenderSetup(error) {
 			if (error) {
 				return cb(error);
 			}
