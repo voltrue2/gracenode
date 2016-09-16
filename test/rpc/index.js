@@ -65,6 +65,8 @@ describe('gracenode.rpc', function () {
 		gn.rpc.hook(function all(state, next) {
 			state.payload = JSON.parse(state.payload);
 			state.hookToAll = true;
+			assert(state.clientAddress);
+			assert(state.clientPort);
 			next();
 		});
 	});

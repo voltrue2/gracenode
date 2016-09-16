@@ -168,12 +168,16 @@ Connection.prototype._routeAndExec = function (parsedData, sess, cb) {
 Connection.prototype._errorResponse = function (parsedData, sess, cb) {
 	var state = createState(this.id, parsedData, sess);
 	var msg = 'NOT_FOUND';
+	state.clientAddress = this.sock.remoteAddress;
+	state.clientPort = this.sock.remotePort;
 	this._write(new Error('NOT_FOUND'), state, state.STATUS.NOT_FOUND, state.seq, msg, cb);
 };
 
 Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 	var that = this;
 	var state = createState(this.id, parsedData, sess);
+	state.clientAddress = this.sock.remoteAddress;
+	state.clientPort = this.sock.remotePort;
 	// server push
 	state.send = function (payload) {
 		that._push(state, payload);
@@ -346,6 +350,8 @@ function createState(id, parsedData, sess) {
 		command: parsedData.command,
 		payload: parsedData.payload,
 		connId: id,
+		clientAddress: null,
+		clientPort: null,
 		sessionId: null,
 		seq: null,
 		session: null,
