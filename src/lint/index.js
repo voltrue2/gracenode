@@ -2,8 +2,8 @@
 
 var linter = require('./linter');
 
-module.exports = function (path, ignorelist, cb) {
-	linter.start(path, ignorelist, function (error) {
+module.exports = function __lintIndex(path, ignorelist, cb) {
+	linter.start(path, ignorelist, function __lintIndexOnStart(error) {
 		if (error) {
 			return cb(error);
 		}

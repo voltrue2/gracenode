@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.31
+
+## Added
+
+None
+
+## Changed
+
+#### UDP session fixed using incorrect remote address and remote port
+
+#### Naming ananymous functions (WIP)
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 # Version 3.5.30
 
 ## Added

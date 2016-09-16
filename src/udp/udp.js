@@ -254,13 +254,12 @@ function handleMessage(buff, rinfo) {
 
 	if (cryptoEngine.decrypt) {
 		logger.verbose('using decryption for incoming message');
-		var info = module.exports.info();
 		var toDecrypt = transport.isJson() ? buff : parsed.payload;
 		cryptoEngine.decrypt(
 			toDecrypt,
 			gn.session.PROTO.UDP,
-			info.host,
-			info.port,
+			rinfo.address,
+			rinfo.port,
 			function (error, sessId, seq, sessData, decrypted) {
 				if (error) {
 					// this is also the same as session failure
