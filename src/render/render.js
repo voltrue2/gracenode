@@ -58,18 +58,18 @@ endif }}
 endfor }}
 */
 
-exports.getAllPaths = function () {
+exports.getAllPaths = function __renderGetAllPaths() {
 	return loader.getAllPaths();
 };
 
-exports.prerender = function (content) {
+exports.prerender = function __renderPrerender(content) {
 	// remove line breaks and tabs
 	content = content.replace(REG.LB, LB);
 	content = content.replace(REG.TB, TB);
 	return extract(content);
 };
 
-exports.render = function (path, vars) {
+exports.render = function __renderRender(path, vars) {
 	if (!vars) {
 		vars = {};
 	}
@@ -631,7 +631,7 @@ function handleFor(content, tag, conditions, vars, varTags) {
 	var iterateContent = conditions.iterate;
 	var loop = true;
 	var iterated = '';
-	var replacer = function (str) {
+	var replacer = function __renderHandleForReplacer(str) {
 		var replaced = str.replace('.' + startVar, '.' + start);
 		varTags[replaced] = replaced.replace(REG.VARS, '').replace(REG.IFV, '');
 		return replaced;
@@ -684,7 +684,7 @@ function handleForEach(content, tag, data, vars, varTags) {
 		return content.replace(tag, '');
 	}
 	var iterated = '';
-	var replacer = function (str) {
+	var replacer = function __renderHandleForEachReplacer(str) {
 		var replaced = str.replace('.' + keyName, '.' + key);
 		varTags[replaced] = replaced.replace(REG.VARS, '').replace(REG.IFV, '');
 		return replaced;

@@ -15,21 +15,21 @@ var CLIENT_PATHS = [
 	'/../../client/js/html/render.js'
 ];
 
-exports.getClient = function () {
+exports.getClient = function __renderLoaderGetClient() {
 	return client;
 };
 
-exports.load = function (path, cb) {
+exports.load = function __renderLoaderLoad(path, cb) {
 	logger = gn.log.create('render.loader');
 	dirpath = path;
 	load(path, exports.loadClient(cb));
 };
 
-exports.loadClient = function (cb) {
+exports.loadClient = function __renderLoaderLoadClient(cb) {
 	var root = getClientPath();
 	return function () {
-		async.eachSeries(CLIENT_PATHS, function (path, next) {
-			fs.readFile(root + path, 'utf8', function (error, data) {
+		async.eachSeries(CLIENT_PATHS, function __renderLoaderLoadClientEach(path, next) {
+			fs.readFile(root + path, 'utf8', function __renderLoaderLoaClientReadFile(error, data) {
 				if (error) {
 					return next(error);
 				}
@@ -40,7 +40,7 @@ exports.loadClient = function (cb) {
 	};
 };
 
-exports.getAllPaths = function () {
+exports.getAllPaths = function __renderLoadederGetAllPaths() {
 	var paths = [];
 	for (var path in loaded) {
 		paths.push(path);
@@ -48,7 +48,7 @@ exports.getAllPaths = function () {
 	return paths;
 };
 
-exports.getLoadedByPath = function (path) {
+exports.getLoadedByPath = function __renderLoaderGetLoadedByPath(path) {
 	if (loaded[path]) {
 		return loaded[path];
 	}
@@ -60,23 +60,23 @@ function getClientPath() {
 }
 
 function load(path, cb) {
-	fs.stat(path, function (error, stats) {
+	fs.stat(path, function __renderLoaderLoadStat(error, stats) {
 		if (error) {
 			return cb(error);
 		}
 		if (stats.isDirectory()) {
-			fs.readdir(path, function (error, list) {
+			fs.readdir(path, function __renderLoaderLoadReaddir(error, list) {
 				if (error) {
 					return cb(error);
 				}
 				path = path + ((path[path.length - 1] !== '/') ? '/' : '');
-				async.each(list, function (file, next) {
+				async.each(list, function __renderLoaderLoadReaddirEach(file, next) {
 					load(path + file, next);
 				}, cb);
 			});
 			return;
 		}
-		fs.readFile(path, 'utf8', function (error, content) {
+		fs.readFile(path, 'utf8', function __renderLoaderReadFile(error, content) {
 			if (error) {
 				return cb(error);
 			}

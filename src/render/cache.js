@@ -6,13 +6,13 @@ var cacheMap = {};
 var cache = [];
 var cacheSize = 0;
 
-exports.setMemSize = function (mem) {
+exports.setMemSize = function __renderCacheSetMemSize(mem) {
 	memSize = mem;
 };
 
 // ttl is in ms for how long it should last
 // exmaple if the cache needs to last for 24 hours, then ttl = 8640000
-exports.set = function (data, rendered, ttl) {
+exports.set = function __renderCacheSet(data, rendered, ttl) {
 	var size = Buffer.byteLength(rendered);
 	if (cacheSize + size > memSize) {
 		discard((cacheSize + size) - memSize);
@@ -34,7 +34,7 @@ exports.set = function (data, rendered, ttl) {
 	cacheSize += Buffer.byteLength(rendered);
 };
 
-exports.get = function (data) {
+exports.get = function __renderCacheGet(data) {
 	discard(0);
 	var key = createKey(data);
 	var index = cacheMap[key];

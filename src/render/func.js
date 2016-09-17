@@ -3,7 +3,7 @@
 var FUNC = /\((.*?)\)/;
 var map = {};
 
-exports.add = function (name, func) {
+exports.add = function __renderFuncAdd(name, func) {
 	if (typeof func !== 'function') {
 		throw new Error('CannotRegisterNonFunction: ' + name);
 	}
@@ -11,7 +11,7 @@ exports.add = function (name, func) {
 };
 
 // if the variable is using registered function, find it
-exports.getFunc = function (value) {
+exports.getFunc = function __renderFuncGetFunc(value) {
 	var match = value.match(FUNC);
 	if (match) {
 		var name = value.replace(match[0], '');

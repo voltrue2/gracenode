@@ -11,7 +11,7 @@ var func = require('./func');
 var logger;
 var pathPrefix = '';
 
-exports.config = function (path, cacheSize) {
+exports.config = function __renderIndexConfig(path, cacheSize) {
 	logger = gn.log.create('render');
 	pathPrefix = path;
 	if (cacheSize !== undefined) {
@@ -19,14 +19,14 @@ exports.config = function (path, cacheSize) {
 	}
 };
 
-exports.setup = function (cb) {
+exports.setup = function __renderIndexSetup(cb) {
 	if (!pathPrefix) {
 		return cb(new Error('RenderMissingPath'));
 	}
 	loader.load(pathPrefix, cb);	
 };
 
-exports.render = function (path, vars, cacheTtl) {
+exports.render = function __renderIndexRender(path, vars, cacheTtl) {
 	if (cacheTtl === undefined) {
 		cacheTtl = DEFAULT_TTL;
 	}
@@ -44,10 +44,10 @@ exports.render = function (path, vars, cacheTtl) {
 	return render.render(path, vars);
 };
 
-exports.render.getAllPaths = function () {
+exports.render.getAllPaths = function __renderIndexGetAllPaths() {
 	return render.getAllPaths();
 };
 
-exports.render.func = function (name, handler) {
+exports.render.func = function __renderIndexFunc(name, handler) {
 	func.add(name, handler);
 };
