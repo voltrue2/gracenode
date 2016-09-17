@@ -12,30 +12,30 @@ function Lint(files, ignorelist) {
 	this._ignorelist = ignorelist || [];
 	this._errors = [];
 	this._opt = {};
-	this._opt.reporter = function (results) {
+	this._opt.reporter = function __lintLinterLintReporter(results) {
 		that._reporter(results);
 	};
 	print.setup();
 	print.useColor();
 }
 
-Lint.prototype.run = function (cb) {
+Lint.prototype.run = function __lintLinterLintRun(cb) {
 	var that = this;
 	var tasks = [
-		function (next) {
+		function __lintLinterRunPrep(next) {
 			that._prepare(next);
 		},
-		function (next) {
+		function __lintLinterRunValidate(next) {
 			that._validate(next);
 		},
-		function (next) {
+		function __lintLinterRunReport(next) {
 			that._reportResults(next);
 		}
 	];
 	async.series(tasks, cb);
 };
 
-Lint.prototype._reporter = function (results) {
+Lint.prototype._reporter = function __lintLinterLintReporter(results) {
 	for (var i = 0, len = results.length; i < len; i++) {
 		var res = results[i];
 		if (res.error) {
@@ -44,13 +44,13 @@ Lint.prototype._reporter = function (results) {
 	}
 };
 
-Lint.prototype._prepare = function (cb) {
+Lint.prototype._prepare = function __lintLinterPrepare(cb) {
 	var that = this;
-	var done = function (error) {
+	var done = function __lintLinterPrepareDone(error) {
 		if (error) {
 			return cb(error);
 		}
-		that._files = that._files.filter(function (item) {
+		that._files = that._files.filter(function __lintLinterPrepareFile(item) {
 			for (var i = 0, len = that._ignorelist.length; i < len; i++) {
 				var ignore = that._ignorelist[i];
 				if (item.indexOf(ignore) !== -1) {
@@ -66,13 +66,13 @@ Lint.prototype._prepare = function (cb) {
 		cb();
 	};
 	
-	async.forEach(this._list, function (path, next) {
-		files.walkDir(path, function (error, list) {
+	async.forEach(this._list, function __lintLinterPrepareEach(path, next) {
+		files.walkDir(path, function __lintLinterPrepareWalkDirRes(error, list) {
 			if (error) {
 				return next(error);
 			}
 
-			list = list.map(function (item) {
+			list = list.map(function __lintLinterPrepareListMap(item) {
 				return item.file;
 			});
 			that._files = that._files.concat(list);
@@ -81,16 +81,16 @@ Lint.prototype._prepare = function (cb) {
 	}, done);
 };
 
-Lint.prototype._validate = function (cb) {
+Lint.prototype._validate = function __lintLinterValidate(cb) {
 	var that = this;
-	async.forEach(this._files, function (item, next) {
+	async.forEach(this._files, function __lintLinterValidateEach(item, next) {
 		that._opt.args = [item];
 		jshintcli.run(that._opt);
 		next();
 	}, cb);
 };
 
-Lint.prototype._reportResults = function (cb) {
+Lint.prototype._reportResults = function __lintLinterReportRes(cb) {
 
 	var errorCount = 0;
 	var errorFiles = [];

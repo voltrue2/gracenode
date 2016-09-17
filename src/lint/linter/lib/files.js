@@ -4,7 +4,7 @@ var fs = require('fs');
 var NODE_MODULES = 'node_modules';
 
 // returns a single-dimension array of all files with full paths in the given directory path
-module.exports.walkDir = function (path, cb) {
+module.exports.walkDir = function __lintLinterFilesWalkDir(path, cb) {
 	var res = [];
 	var pending = 0;
 	var eachWalk = function (error, results) {

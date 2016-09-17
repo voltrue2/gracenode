@@ -15,15 +15,15 @@ var useColor = false;
 
 var gn = require('../../../gracenode');
 
-exports.setup = function () {
+exports.setup = function __lintLinterPrintSetup() {
 	logger = gn.log.create('lint');
 };
 
-exports.useColor = function () {
+exports.useColor = function __lintLinterUseColor() {
 	useColor = true;
 };
 
-exports.out = function () {
+exports.out = function __lintLinterPrintOut() {
 	if (!gn._isLogging || !gn.log.isEnabled('verbose')) {
 		return;
 	}
@@ -34,7 +34,7 @@ exports.out = function () {
 	logger.verbose(str);
 };
 
-exports.error = function () {
+exports.error = function __lintLinterPrintError() {
 	var str = '';
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		if (arguments[i] instanceof Error) {
@@ -47,7 +47,7 @@ exports.error = function () {
 	logger.error(str);
 };
 
-exports.verbose = function () {
+exports.verbose = function __lintLinterPrintVerbose() {
 	if (!gn._isLogging || !gn.log.isEnabled('verbose')) {
 		return;
 	}
@@ -58,27 +58,27 @@ exports.verbose = function () {
 	logger.verbose(color(str, COLORS.BROWN));
 };
 
-exports.n = function (msg) {
+exports.n = function __lintLinterPrintN(msg) {
 	return color(msg, COLORS.GREY);
 };
 
-exports.r = function (msg) {
+exports.r = function __lintLinterPrintR(msg) {
 	return color(msg, COLORS.RED);
 };
 
-exports.g = function (msg) {
+exports.g = function __lintLinterPrintG(msg) {
 	return color(msg, COLORS.GREEN);
 };
 
-exports.b = function (msg) {
+exports.b = function __lintLinterPrintB(msg) {
 	return color(msg, COLORS.DARK_BLUE);
 };
 
-exports.y = function (msg) {
+exports.y = function __lintLinterPrintY(msg) {
 	return color(msg, COLORS.BROWN);
 };
 
-exports.p = function (msg) {
+exports.p = function __lintLInterPrintP(msg) {
 	return color(msg, COLORS.PURPLE);
 };
 
