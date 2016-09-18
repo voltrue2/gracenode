@@ -6,11 +6,11 @@ var hooks = require('./hooks');
 var commands = {};
 var logger;
 
-module.exports.setup = function () {
+module.exports.setup = function __udpRouterSetup() {
 	logger = gn.log.create('UDP.router');
 };
 
-module.exports.define = function (cmdId, cmdName, handler) {
+module.exports.define = function __udpRouterDefine(cmdId, cmdName, handler) {
 	if (commands[cmdId]) {
 		if (cmdName !== commands[cmdId].name) {
 			logger.error(
@@ -30,7 +30,7 @@ module.exports.define = function (cmdId, cmdName, handler) {
 	};
 };
 
-module.exports.getIdsByNames = function (names) {
+module.exports.getIdsByNames = function __udpRouterGetIdsByNames(names) {
 	if (!Array.isArray(names)) {
 		names = [names];
 	}
@@ -44,7 +44,7 @@ module.exports.getIdsByNames = function (names) {
 	return names;
 };
 
-module.exports.route = function (packet) {
+module.exports.route = function __udpRouterRoute(packet) {
 	if (commands[packet.command] === undefined) {
 		logger.error('command handler not found for ', packet.command, packet);
 		return null;	
@@ -67,8 +67,8 @@ module.exports.route = function (packet) {
 };
 
 function getHookExec(cmdId, cmdName, hookList) {
-	var exec = function (state, cb) {
-		async.eachSeries(hookList, function (hook, next) {
+	var exec = function __udpRouterGetHookExecExec(state, cb) {
+		async.eachSeries(hookList, function __udpRouterGetHookExecEach(hook, next) {
 			logger.debug(
 				'execute command hook (' + cmdId + ':' + cmdName + '):',
 				(hook.name || 'anonymous')

@@ -32,7 +32,7 @@ var connectionInfo = {
 	port: null
 };
 
-module.exports.info = function () {
+module.exports.info = function __udpInfo() {
 	return {
 		address: connectionInfo.address,
 		host: connectionInfo.host,
@@ -41,7 +41,7 @@ module.exports.info = function () {
 	};
 };
 
-module.exports.setup = function (cb) {
+module.exports.setup = function __udpSetup(cb) {
 	logger = gn.log.create('UDP');
 	config = gn.getConfig('udp');
 
@@ -114,7 +114,7 @@ module.exports.setup = function (cb) {
 	var portIndex = 0;
 	var boundPort;
 
-	var done = function () {
+	var done = function __udpSetupDone() {
 		// UDP server is now successfully bound and listening
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
@@ -154,7 +154,7 @@ module.exports.setup = function (cb) {
 
 		cb();
 	};
-	var listen = function () {
+	var listen = function __udpSetupListen() {
 		
 		if (server) {
 			server.close();
@@ -173,7 +173,7 @@ module.exports.setup = function (cb) {
 			exclusive: true
 		});
 	};
-	var handleError = function (error) {
+	var handleError = function __udpHandleError(error) {
 		if (error.code === PORT_IN_USE) {
 			// try next port in range
 			var badPort = ports[portIndex];
@@ -205,18 +205,18 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
-module.exports.onError = function (cb) {
+module.exports.onError = function __udpOnError(cb) {
 	onErrorHandler = cb;
 };
 
-module.exports.useEncryption = function (encrypt) {
+module.exports.useEncryption = function __udpUseEncryption(encrypt) {
 	if (typeof encrypt !== 'function') {
 		throw new Error('EncryptMustBeFunction');
 	}
 	cryptoEngine.encrypt = encrypt;
 };
 
-module.exports.useDecryption = function (decrypt) {
+module.exports.useDecryption = function __udpUseDecryption(decrypt) {
 	if (typeof decrypt !== 'function') {
 		throw new Error('DecryptMustBeFunction');
 	}
@@ -224,12 +224,12 @@ module.exports.useDecryption = function (decrypt) {
 };
 
 // assign a handler function to a command
-module.exports.command = function (cmdId, commandName, handler) {
+module.exports.command = function __udpCommand(cmdId, commandName, handler) {
 	router.define(cmdId, commandName, handler);
 };
 
 // assign a command hook function
-module.exports.hook = function (cmdIdList, handler) {
+module.exports.hook = function __udpHook(cmdIdList, handler) {
 	if (typeof cmdIdList === 'function') {
 		hooks.add(cmdIdList);
 		return;
@@ -260,7 +260,13 @@ function handleMessage(buff, rinfo) {
 			gn.session.PROTO.UDP,
 			rinfo.address,
 			rinfo.port,
-			function (error, sessId, seq, sessData, decrypted) {
+			function __udpHandleMessageOnDecrypt(
+					error,
+					sessId,
+					seq,
+					sessData,
+					decrypted
+				) {
 				if (error) {
 					// this is also the same as session failure
 					logger.error('decryption of message failed:', error);
@@ -322,12 +328,12 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		clientAddress: rinfo.address,
 		clientPort: rinfo.port,
 		payload: payload,
-		send: function (msg, status) {
+		send: function __udpSend(msg, status) {
 			send(state, msg, seq, status);
 		}
 	};
 
-	cmd.hooks(state, function (error) {
+	cmd.hooks(state, function __udpHandleMessageOnHooks(error) {
 		if (error) {
 			logger.error(
 				'command hook error:', error,
@@ -346,7 +352,7 @@ function executeCommands(cmd, state) {
 	var id = cmd.id;
 	var name = cmd.name;
 	var handlers = cmd.handlers;
-	var done = function (error) {
+	var done = function __udpExecuteCommandsDone(error) {
 		if (error) {
 			logger.error(
 				'command(s) executed with an error:',
@@ -360,7 +366,7 @@ function executeCommands(cmd, state) {
 			state
 		);
 	};
-	async.eachSeries(handlers, function (handler, next) {
+	async.eachSeries(handlers, function __udpExecuteCommandEach(handler, next) {
 		logger.verbose(
 			'executing command:',
 			'(' + id + ':' + name + ')',
@@ -381,7 +387,7 @@ function send(state, msg, seq, status) {
 		msg = transport.createPush(seq || 0, msg);
 	}
 
-	var sent = function (error) {
+	var sent = function __udpSendDone(error) {
 		if (error) {
 			logger.error(
 				'sending UDP packet failed:',
@@ -404,7 +410,7 @@ function send(state, msg, seq, status) {
 
 	if (cryptoEngine.encrypt) {
 		logger.verbose('using encryption for server push message');
-		cryptoEngine.encrypt(state, msg, function (error, encrypted) {
+		cryptoEngine.encrypt(state, msg, function __udpOnEncrypt(error, encrypted) {
 			if (error) {
 				logger.error(
 					'encryption of message failed:',

@@ -13,13 +13,13 @@ var data = {};
 var logger;
 var dur;
 
-module.exports.setDuration = function (d) {
+module.exports.setDuration = function __sessMemSetDuration(d) {
 	dur = d;
 };
 
-module.exports.setup = function () {
+module.exports.setup = function __sessMemSetup() {
 	if (gn.isMaster()) {
-		gn.cluster.registerCommand(CMD.GET, function (msg, cb) {
+		gn.cluster.registerCommand(CMD.GET, function __sessMemMasterGet(msg, cb) {
 			removeExpired();
 			var copy = gn.lib.deepCopy(data);
 			var sess = copy[msg.sid];
@@ -30,7 +30,7 @@ module.exports.setup = function () {
 			data[msg.sid].ttl = Date.now() + dur;
 			cb(null, sess.data);
 		});
-		gn.cluster.registerCommand(CMD.SET, function (msg, cb) {
+		gn.cluster.registerCommand(CMD.SET, function __sessMemMasterSet(msg, cb) {
 			removeExpired();
 			data[msg.sid] = {
 				ttl: Date.now() + dur,
@@ -38,7 +38,7 @@ module.exports.setup = function () {
 			};
 			cb();
 		});
-		gn.cluster.registerCommand(CMD.DEL, function (msg, cb) {
+		gn.cluster.registerCommand(CMD.DEL, function __sessMemMasterDel(msg, cb) {
 			removeExpired();
 			if (data[msg.sid]) {
 				delete data[msg.sid];
@@ -49,10 +49,11 @@ module.exports.setup = function () {
 	logger = gn.log.create('session.mem');
 };
 
-module.exports.get = function (id, cb) {
+module.exports.get = function __sessMemGet(id, cb) {
+	logger.warn('(get) using memory storage for session is NOT meant for production');
 	if (gn.isCluster()) {
 		var params = { sid: id };
-		gn.cluster.sendCommand(CMD.GET, params, function (error, res) {
+		gn.cluster.sendCommand(CMD.GET, params, function __sessMemOnGet(error, res) {
 			if (error) {
 				return cb(error);
 			}
@@ -69,7 +70,8 @@ module.exports.get = function (id, cb) {
 	cb(null, data[id].data);
 };
 
-module.exports.set = function (id, sess, cb) {
+module.exports.set = function __sessMemSet(id, sess, cb) {
+	logger.warn('(set) using memory storage for session is NOT meant for production');
 	if (gn.isCluster()) {
 		var params = {
 			sid: id,
@@ -85,7 +87,8 @@ module.exports.set = function (id, sess, cb) {
 	cb();
 };
 
-module.exports.del = function (id, cb) {
+module.exports.del = function __sessMemDel(id, cb) {
+	logger.warn('(del) using memory storage for session is NOT meant for production');
 	if (gn.isCluster()) {
 		var params = {
 			sid: id

@@ -29,7 +29,7 @@ mem.setDuration(options.ttl);
 
 module.exports.PROTO = PROTO;
 
-module.exports.setup = function () {
+module.exports.setup = function __sessSetup() {
 	logger = gn.log.create('session');
 	if (using.http) {
 		logger.info('session for HTTP enabled');
@@ -60,7 +60,7 @@ module.exports.setup = function () {
 	mem.setup();
 };
 
-module.exports.defineSet = function (func) {
+module.exports.defineSet = function __sessDefineSet(func) {
 	if (setup) {
 		logger.warn('.defineSet() should not be called after gracenode.start()');
 	}
@@ -70,7 +70,7 @@ module.exports.defineSet = function (func) {
 	set = func;
 };
 
-module.exports.defineDel = function (func) {
+module.exports.defineDel = function __sessDefineDel(func) {
 	if (setup) {
 		logger.warn('.defineDel() should not be called after gracenode.start()');
 	}
@@ -80,7 +80,7 @@ module.exports.defineDel = function (func) {
 	del = func;
 };
 
-module.exports.defineGet = function (func) {
+module.exports.defineGet = function __sessDefineGet(func) {
 	if (setup) {
 		logger.warn('.defineGet() should not be called after gracenode.start()');
 	}
@@ -90,20 +90,20 @@ module.exports.defineGet = function (func) {
 	get = func;
 };
 
-module.exports.useCookie = function (val) {
+module.exports.useCookie = function __sessUseCookie(val) {
 	options.useCookie = (val === false) ? false : true;
 };
 
-module.exports.oneTimeSessionId = function (val) {
+module.exports.oneTimeSessionId = function __sessOnTimeSessionId(val) {
 	options.oneTime = (val === false) ? false : true;
 };
 
-module.exports.sessionDuration = function (msec) {
+module.exports.sessionDuration = function __sessSessionDurtion(msec) {
 	options.ttl = msec;
 	mem.setDuration(msec);
 };
 
-module.exports.useHTTPSession = function (routes) {
+module.exports.useHTTPSession = function __sessUseHTTPSession(routes) {
 	for (var i = 0, len = routes.length; i < len; i++) {
 		gn.http.hook(routes[i], HTTPSessionValidation);
 	}
@@ -112,13 +112,13 @@ module.exports.useHTTPSession = function (routes) {
 	}
 };
 
-module.exports.useRPCSession = function () {
+module.exports.useRPCSession = function __sessUseRpcSession() {
 	using.rpc = true;
 	gn.rpc.useDecryption(socketSessionValidation);
 	gn.rpc.useEncryption(socketSessionEncryption);
 };
 
-module.exports.useUDPSession = function () {
+module.exports.useUDPSession = function __sessUseUDPSession() {
 	using.udp = true;
 	gn.udp.useDecryption(socketSessionValidation);
 	gn.udp.useEncryption(socketSessionEncryption);
@@ -126,7 +126,7 @@ module.exports.useUDPSession = function () {
 
 // this needs to be manually called in the application
 // typically in login etc
-module.exports.setHTTPSession = function (req, res, sessionData, cb) {
+module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionData, cb) {
 	var uuid = gn.lib.uuid.v4();
 	var id = uuid.toString();
 
@@ -155,7 +155,7 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 		if (using.udp && using.rpc) {
 			logger.verbose('Session:', PROTO.RPC + id, PROTO.UDP + id);
 			// when we share the same session for RPC and UDP, we create 2 separate sessions
-			set(PROTO.RPC + id, data, function (error) {
+			set(PROTO.RPC + id, data, function __sessOnSet(error) {
 				if (error) {
 					return cb(error);
 				}
@@ -177,11 +177,11 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 	if (using.udp && using.rpc) {
 		// when we share the same session for RPC and UDP, we create 2 separate sessions
 		logger.verbose('session:', PROTO.RPC + id, PROTO.UDP + id);
-		mem.set(PROTO.RPC + id, sessionData, function (error) {
+		mem.set(PROTO.RPC + id, sessionData, function __sessOnMemRPCSet(error) {
 			if (error) {
 				return cb(error);
 			}
-			mem.set(PROTO.UDP + id, sessionData, function (error) {
+			mem.set(PROTO.UDP + id, sessionData, function __sessOnMemUDPSet(error) {
 				if (error) {
 					return cb(error);
 				}
@@ -193,7 +193,7 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 		return;
 	}
 	logger.verbose('session:', id);
-	mem.set(id, sessionData, function (error) {
+	mem.set(id, sessionData, function __sessOnMemSet(error) {
 		if (error) {
 			return cb(error);
 		}
@@ -205,7 +205,7 @@ module.exports.setHTTPSession = function (req, res, sessionData, cb) {
 
 // this needs to be manually called in the application
 // typically logout
-module.exports.delHTTPSession = function (req, res, cb) {
+module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 	var id;
 
 	if (options.useCookie) {
@@ -222,7 +222,7 @@ module.exports.delHTTPSession = function (req, res, cb) {
 	if (del) {
 		logger.verbose('custom delete is defined');
 		if (using.udp && using.rpc) {
-			del(PROTO.RPC, function (error) {
+			del(PROTO.RPC, function __sessOnDel(error) {
 				if (error) {
 					return cb(error);
 				}
@@ -233,9 +233,8 @@ module.exports.delHTTPSession = function (req, res, cb) {
 		return del(id, cb);
 	}
 
-	logger.warn('del is using default in-memory storage: Not for production');
 	if (using.udp && using.rpc) {
-		mem.del(PROTO.RPC, function (error) {
+		mem.del(PROTO.RPC, function __sessOnMemRPCDel(error) {
 			if (error) {
 				return cb(error);
 			}
@@ -253,15 +252,21 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 	logger.verbose('validating socket session:', sid, sockType, remoteIp, remotePort);
 	if (get && set) {
 		logger.verbose('custom getter is defined');
-		get(sid, function (error, sessionData) {
+		get(sid, function __sessOnSockValGet(error, sessionData) {
 			if (error) {
 				return next(error);
 			}
-			_socketSessionValidation(res, sockType, remoteIp, remotePort, sessionData, function (error) {
+			_socketSessionValidation(
+				res,
+				sockType,
+				remoteIp,
+				remotePort,
+				sessionData,
+				function __sessOnSockVal(error) {
 				if (error) {
 					return next(error);
 				}
-				set(sid, sessionData, function (error) {
+				set(sid, sessionData, function __sessOnSockValSet(error) {
 					if (error) {
 						return next(error);
 					}
@@ -272,16 +277,22 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 		return;
 	}
 	logger.verbose('get is using default in-memory storage: Not for production');
-	mem.get(sid, function (error, sess) {
+	mem.get(sid, function __sessOnSockValMemGet(error, sess) {
 		if (error) {
 			logger.error('session not found:', sid);
 			return next(error);
 		}
-		_socketSessionValidation(res, sockType, remoteIp, remotePort, sess, function (error) {
+		_socketSessionValidation(
+			res,
+			sockType,
+			remoteIp,
+			remotePort,
+			sess,
+			function __sessOnSockValMem(error) {
 			if (error) {
 				return next(error);
 			}
-			mem.set(sid, sess, function (error) {
+			mem.set(sid, sess, function __sessOnSockValMemSet(error) {
 				if (error) {
 					return next(error);
 				}
@@ -408,7 +419,7 @@ function HTTPSessionValidation(req, res, next) {
 		}
 		// we delete the current session b/c session ID is used once
 		var _next = next;
-		next = function (error) {
+		next = function __sessHTTPSessValNext(error) {
 			if (error) {
 				return _next(error, 401);
 			}
@@ -422,7 +433,7 @@ function HTTPSessionValidation(req, res, next) {
 
 	if (get && set) {
 		logger.verbose('custom getter is defined');
-		get(id, function (error, sessData) {
+		get(id, function __sessHTTPSessValGet(error, sessData) {
 			if (error) {
 				return next(error, 401);
 			}
@@ -449,7 +460,7 @@ function HTTPSessionValidation(req, res, next) {
 
 	logger.warn('get is using default in-memory storage: Not for production');
 
-	mem.get(id, function (error, sess) {
+	mem.get(id, function __sessHTTPSessValMemGet(error, sess) {
 		if (error) {
 			logger.error('session not found by session ID:', id);
 			return next(error, 401);
