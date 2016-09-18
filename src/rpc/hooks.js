@@ -7,7 +7,7 @@ var allHooks = [];
 
 // cmdIdList can be the handler function and handler function can be undefined in that case
 // if cmdIdList is not provided, the handler function is to be hooked to all command functions
-module.exports.add = function (cmdIdList, handler) {
+module.exports.add = function __rpcHooksAdd(cmdIdList, handler) {
 	if (typeof cmdIdList === 'function') {
 		// hook to all command functions
 		allHooks.push(cmdIdList);
@@ -27,7 +27,7 @@ module.exports.add = function (cmdIdList, handler) {
 	}
 };
 
-module.exports.findByCmdId = function (cmdId) {
+module.exports.findByCmdId = function __rpcHooksFindByCmdId(cmdId) {
 	var list = allHooks.concat([]);
 	var matched = hooks[cmdId] || [];
 	return list.concat(matched);	

@@ -9,11 +9,11 @@ var transport = require('../../lib/transport');
 var router = require('./router');
 var logger;
 
-module.exports.setup = function () {
+module.exports.setup = function __rpcConnectionSetup() {
 	logger = gn.log.create('RPC.connection');
 };
 
-module.exports.create = function (sock, options) {
+module.exports.create = function __rpcConnectionCreate(sock, options) {
 	return new Connection(sock, options);	
 };
 
@@ -30,21 +30,21 @@ function Connection(sock, options) {
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
 	this.heartbeatTime = Date.now();
-	this.sock.on('data', function (packet) {
+	this.sock.on('data', function __rpcConnectionOnData(packet) {
 		that._data(packet);
 	});
-	this.sock.on('end', function () {
+	this.sock.on('end', function __rpcConnectionOnEnd() {
 		logger.info(that.name, 'TCP connection ended by client');
 		that.close();
 	});
-	this.sock.on('error', function (error) {
+	this.sock.on('error', function __rpcConnectionOnError(error) {
 		logger.error(that.name, 'TCP connection error detected:', error);
 		that.kill(error);
 	});
-	this.sock.on('close', function () {
+	this.sock.on('close', function __rpcConnectionOnClose() {
 		that.close();
 	});
-	this.sock.on('timeout', function (error) {
+	this.sock.on('timeout', function __rpcConnectionOnTimeout(error) {
 		if (error) {
 			return that.close(error);
 		}
@@ -52,7 +52,7 @@ function Connection(sock, options) {
 	});
 	if (heartbeat) {
 		logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeat.timeout, 'msec');
-		var checker = function () {
+		var checker = function __rpcConnectionHeartbeatChecker() {
 			if (!that.connected) {
 				return;
 			}
@@ -68,11 +68,11 @@ function Connection(sock, options) {
 
 utils.inherits(Connection, EventEmitter);
 
-Connection.prototype.useCryptoEngine = function (engine) {
+Connection.prototype.useCryptoEngine = function __rpcConnectionUseCryptoEngine(engine) {
 	this.crypto = engine;
 };
 
-Connection.prototype.close = function (error) {
+Connection.prototype.close = function __rpcConnectionClose(error) {
 	if (this.sock) {
 		try {
 			this.sock.end();
@@ -88,7 +88,7 @@ Connection.prototype.close = function (error) {
 	this._clear();
 };
 
-Connection.prototype.kill = function (error) {
+Connection.prototype.kill = function __rpcConnectionKill(error) {
 	if (this.sock) {
 		if (error) {
 			logger.error(this.name, 'TCP connection killed from server:', error);
@@ -104,7 +104,7 @@ Connection.prototype.kill = function (error) {
 	this._clear(true);
 };
 
-Connection.prototype._data = function (packet) {
+Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 	var that = this;
 	var parsed = this.parser.parse(packet);
 	if (parsed instanceof Error) {
@@ -112,12 +112,12 @@ Connection.prototype._data = function (packet) {
 	}
 	this.heartbeatTime = Date.now();
 	logger.verbose(this.name, 'update heartbeat time:', this.heartbeatTime);
-	var done = function (error) {
+	var done = function __rpcConnectionDataHandlerDone(error) {
 		if (error) {
 			return that.kill(error);
 		}
 	};
-	async.eachSeries(parsed, function (parsedData, next) {
+	async.eachSeries(parsed, function __rpcConnectionDataHandlerEach(parsedData, next) {
 		if (!parsedData) {
 			return next();
 		}
@@ -125,7 +125,7 @@ Connection.prototype._data = function (packet) {
 	}, done);
 };
 
-Connection.prototype._decrypt = function (parsedData, cb) {
+Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
 	if (this.crypto && this.crypto.decrypt) {
 		var that = this;
 		this.crypto.decrypt(
@@ -133,7 +133,7 @@ Connection.prototype._decrypt = function (parsedData, cb) {
 			gn.session.PROTO.RPC,
 			this.sock.remoteAddress,
 			this.sock.remotePort,
-			function (error, sid, seq, sdata, decrypted) {
+			function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
 				if (error) {
 					return cb(error);
 				}
@@ -151,7 +151,7 @@ Connection.prototype._decrypt = function (parsedData, cb) {
 	this._routeAndExec(parsedData, null, cb);
 };
 
-Connection.prototype._routeAndExec = function (parsedData, sess, cb) {
+Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsedData, sess, cb) {
 	var cmd = router.route(this.name, parsedData);
 	if (!cmd) {
 		return this._errorResponse(parsedData, sess, cb);
@@ -165,7 +165,7 @@ Connection.prototype._routeAndExec = function (parsedData, sess, cb) {
 	this._execCmd(cmd, parsedData, sess, cb);
 };
 
-Connection.prototype._errorResponse = function (parsedData, sess, cb) {
+Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
 	var state = createState(this.id, parsedData, sess);
 	var msg = 'NOT_FOUND';
 	state.clientAddress = this.sock.remoteAddress;
@@ -173,17 +173,17 @@ Connection.prototype._errorResponse = function (parsedData, sess, cb) {
 	this._write(new Error('NOT_FOUND'), state, state.STATUS.NOT_FOUND, state.seq, msg, cb);
 };
 
-Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
+Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData, sess, cb) {
 	var that = this;
 	var state = createState(this.id, parsedData, sess);
 	state.clientAddress = this.sock.remoteAddress;
 	state.clientPort = this.sock.remotePort;
 	// server push
-	state.send = function (payload) {
+	state.send = function __rpcConnectionSend(payload) {
 		that._push(state, payload);
 	};
 	// server response (if you need to use this to pretend as a response)
-	state.respond = function (payload, status, options) {
+	state.respond = function __rpcConnectionRespond(payload, status, options) {
 		var error = null;
 		if (payload instanceof Error) {
 			payload = payload.message;
@@ -196,7 +196,13 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 				status = state.STATUS.OK;
 			}
 		}
-		that._write(error, state, status, parsedData.seq, payload, function () {
+		that._write(
+			error,
+			state,
+			status,
+			parsedData.seq,
+			payload,
+			function __rpcConnectionOnWrite() {
 			if (options) {
 				if (options.closeAfterReply) {
 					return that.close();
@@ -208,7 +214,7 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 		});
 	};
 	// execute hooks before the handler(s)
-	cmd.hooks(state, function (error, status) {
+	cmd.hooks(state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
 			var msg = error.message;
 			if (!status) {
@@ -218,9 +224,15 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 		}
 		var res;
 		var options;
-		var done = function (error) {
+		var done = function __rpcConnectionOnCmdDone(error) {
 			// respond to client
-			that._write(error, state, status, parsedData.seq, res, function (error) {
+			that._write(
+				error,
+				state,
+				status,
+				parsedData.seq,
+				res,
+				function __rpcConnectionOnCmdResponse(error) {
 				if (options) {
 					if (options.closeAfterReply) {
 						return that.close();
@@ -232,8 +244,8 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 				cb(error);
 			});
 		};
-		async.eachSeries(cmd.handlers, function (handler, next) {
-			handler(state, function (_res, _status, _options) {
+		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
+			handler(state, function __rpcConnectionCmdCallback(_res, _status, _options) {
 				options = _options;
 				if (_res instanceof Error) {
 					if (!_status) {
@@ -254,12 +266,12 @@ Connection.prototype._execCmd = function (cmd, parsedData, sess, cb) {
 	});	
 };
 
-Connection.prototype._write = function (_error, state, status, seq, msg, cb) {
+Connection.prototype._write = function __rpcConnectionWrite(_error, state, status, seq, msg, cb) {
 	var that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(state, msg, function (error, data) {
+	this._encrypt(state, msg, function __rpcConnectionOnWriteEncrypt(error, data) {
 		data = transport.createReply(status, seq, data);
 		if (error) {
 			return that.__write(error, data, cb);
@@ -268,12 +280,12 @@ Connection.prototype._write = function (_error, state, status, seq, msg, cb) {
 	});
 };
 
-Connection.prototype._push = function (state, msg, cb) {
+Connection.prototype._push = function __rpcConnectionPush(state, msg, cb) {
 	var that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(state, msg, function (error, data) {
+	this._encrypt(state, msg, function __rpcConnectionOnPushEncrypt(error, data) {
 		if (error) {
 			return cb(error);
 		}
@@ -281,7 +293,7 @@ Connection.prototype._push = function (state, msg, cb) {
 	});
 };
 
-Connection.prototype.__write = function (error, data, cb) {
+Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, cb) {
 	if (!this.sock || !this.connected) {
 		return cb();
 	}
@@ -301,7 +313,7 @@ Connection.prototype.__write = function (error, data, cb) {
 	}
 };
 
-Connection.prototype.__push = function (data, cb) {
+Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 	if (!this.sock || !this.connected) {
 		if (!cb) {
 			return;
@@ -320,9 +332,9 @@ Connection.prototype.__push = function (data, cb) {
 	}
 };
 
-Connection.prototype._encrypt = function (state, msg, cb) {
+Connection.prototype._encrypt = function __rpcConnectionEncrypt(state, msg, cb) {
 	if (this.crypto && this.crypto.encrypt) {
-		this.crypto.encrypt(state, msg, function (error, data) {
+		this.crypto.encrypt(state, msg, function __rpcConnectionOnEncrypt(error, data) {
 			if (error) {
 				return cb(error);
 			}
@@ -333,7 +345,7 @@ Connection.prototype._encrypt = function (state, msg, cb) {
 	cb(null, msg);
 };
 
-Connection.prototype._clear = function (killed) {
+Connection.prototype._clear = function __rpcConnectionClear(killed) {
 	this.connected = false;
 	if (this.sock) {
 		this.sock.removeAllListeners();

@@ -32,7 +32,7 @@ var connectionInfo = {
 	family: null
 };
 
-module.exports.info = function () {
+module.exports.info = function __rpcInfo() {
 	return {
 		address: connectionInfo.address,
 		host: connectionInfo.host,
@@ -41,7 +41,7 @@ module.exports.info = function () {
 	};
 };
 
-module.exports.setup = function (cb) {
+module.exports.setup = function __rpcSetup(cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 
@@ -92,7 +92,7 @@ module.exports.setup = function (cb) {
 
 	logger.verbose('port range is', config.portRange[0], 'to', pend);
 
-	var done = function () {
+	var done = function __rpcSetupDone() {
 		// RPC server is now successfully bound and listening
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
@@ -130,7 +130,7 @@ module.exports.setup = function (cb) {
 			}
 			*/
 			try {
-				router.define(HEARTBEAT.ID, HEARTBEAT.NAME, function (state, cb) {
+				router.define(HEARTBEAT.ID, HEARTBEAT.NAME, function __rpcOnHeartbeat(state, cb) {
 					handleHeartbeat(state, cb);
 				});
 			} catch (e) {
@@ -144,7 +144,7 @@ module.exports.setup = function (cb) {
 
 		cb();
 	};	
-	var listen = function () {
+	var listen = function __rpcListen() {
 		var port = ports[portIndex];
 		logger.verbose('binding to:', config.host + ':' + port);
 		server.listen({
@@ -156,7 +156,7 @@ module.exports.setup = function (cb) {
 	};
 	var server = net.createServer(handleConn);
 	server.on('listening', done);
-	server.on('error', function (error) {
+	server.on('error', function __rpcOnError(error) {
 		if (error.code === PORT_IN_USE) {
 			// try next port in range
 			var badPort = ports[portIndex];
@@ -176,14 +176,14 @@ module.exports.setup = function (cb) {
 	listen();
 };
 
-module.exports.useEncryption = function (encrypt) {
+module.exports.useEncryption = function __rpcUseEncryption(encrypt) {
 	if (typeof encrypt !== 'function') {
 		throw new Error('EncryptMustBeFunction');
 	}
 	cryptoEngine.encrypt = encrypt;
 };
 
-module.exports.useDecryption = function (decrypt) {
+module.exports.useDecryption = function __rpcUseDecryption(decrypt) {
 	if (typeof decrypt !== 'function') {
 		throw new Error('DecryptMustBeFunction');
 	}
@@ -191,12 +191,12 @@ module.exports.useDecryption = function (decrypt) {
 };
 
 // assign a handler function to a command
-module.exports.command = function (cmdId, commandName, handler) {
+module.exports.command = function __rpcCommand(cmdId, commandName, handler) {
 	router.define(cmdId, commandName, handler);	
 };
 
 // assign a command hook function
-module.exports.hook = function (cmdIdList, handler) {
+module.exports.hook = function __rpcHook(cmdIdList, handler) {
 	if (typeof cmdIdList === 'function') {
 		hooks.add(cmdIdList);
 		return;
@@ -206,23 +206,23 @@ module.exports.hook = function (cmdIdList, handler) {
 	hooks.add(cmdIdList, handler);
 };
 
-module.exports.onClosed = function (func) {
+module.exports.onClosed = function __rpcOnClosed(func) {
 	module.exports._onClosed = func;
 };
 
-module.exports.onKilled = function (func) {
+module.exports.onKilled = function __rpcOnKilled(func) {
 	module.exports._onKilled = func;
 };
 
-module.exports._onClosed = function () {
+module.exports._onClosed = function __rpcOnClosedExec() {
 
 };
 
-module.exports._onKilled = function () {
+module.exports._onKilled = function __rpcOnKilledExec() {
 
 };
 
-module.exports.setHeartbeatResponseFormat = function (_formatFunction) {
+module.exports.setHeartbeatResponseFormat = function __rpcSetHeartbeatResFormat(_formatFunction) {
 	if (typeof _formatFunction !== 'function') {
 		throw new Error('RPCHeartbeatFormatFunctionMustBeAFunction');
 	}
@@ -249,7 +249,7 @@ function handleConn(sock) {
 		cryptoEngine: cryptoEngine
 	};
 	var conn = connection.create(sock, opt);
-	var close = function () {
+	var close = function __rpcOnConnClose() {
 		if (conn) {
 			logger.info('server is shutting down: close TCP connection (id:' + conn.id + ')');
 			conn.close();
@@ -258,7 +258,7 @@ function handleConn(sock) {
 	if (cryptoEngine) {
 		conn.useCryptoEngine(cryptoEngine);
 	}
-	conn.on('clear', function (killed) {
+	conn.on('clear', function __rpcOnConnClear(killed) {
 		emitter.removeListener('close', close);
 		if (conn) {
 			if (killed) {

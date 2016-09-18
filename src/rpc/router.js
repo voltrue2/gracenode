@@ -6,11 +6,11 @@ var hooks = require('./hooks');
 var commands = {};
 var logger;
 
-module.exports.setup = function () {
+module.exports.setup = function __rpcRouterSetup() {
 	logger = gn.log.create('RPC.router');
 };
 
-module.exports.define = function (cmdId, cmdName, handler) {
+module.exports.define = function __rpcRouterDefine(cmdId, cmdName, handler) {
 	if (commands[cmdId]) {
 		if (cmdName !== commands[cmdId].name) {
 			logger.error(
@@ -30,7 +30,7 @@ module.exports.define = function (cmdId, cmdName, handler) {
 	};
 };
 
-module.exports.getIdsByNames = function (names) {
+module.exports.getIdsByNames = function __rpcRouterGetIdsByNames(names) {
 	if (!Array.isArray(names)) {
 		names = [names];
 	}
@@ -44,7 +44,7 @@ module.exports.getIdsByNames = function (names) {
 	return names;
 };
 
-module.exports.route = function (name, packet) {
+module.exports.route = function __rpcRouterRoute(name, packet) {
 
 	if (!packet) {
 		return null;
@@ -78,9 +78,9 @@ module.exports.route = function (name, packet) {
 };
 
 function getHookExec(cmdId, cmdName, hookList) {
-	var exec = function (state, cb) {
+	var exec = function __rpcRouterOnExec(state, cb) {
 		logger.verbose('execute hooks:', hookList);
-		async.eachSeries(hookList, function (hook, next) {
+		async.eachSeries(hookList, function __rpcRouterEachHook(hook, next) {
 			logger.debug(
 				'execute command hook (' + cmdId + ':' + cmdName + '):',
 				(hook.name || 'anonymous')
