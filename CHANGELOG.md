@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.33
+
+## Added
+
+None
+
+## Changed
+
+#### RPC kills connection if client port is out of the range of 0 and 65536 as invalid and/or malformed packet
+
+#### All anonymous functions have been named
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.32
 
 ## Added
