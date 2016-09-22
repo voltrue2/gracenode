@@ -243,6 +243,11 @@ function handleMessage(buff, rinfo) {
 
 	logger.verbose('message received:', server.address(), buff, 'from:', rinfo);
 
+	if (rinfo.port <= 0 || rinfo.port > 65536) {
+		logger.error('malformed packet received from invalid port (packet ignored):', rinfo, buff);
+		return;
+	}
+
 	var parsed = transport.parse(buff);
 	if (parsed instanceof Error) {
 		logger.error(parsed);

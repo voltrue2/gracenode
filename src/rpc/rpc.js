@@ -245,7 +245,7 @@ function handleHeartbeat(state, cb) {
 
 function handleConn(sock) {
 
-	if (sock.remotePort <= 0 || sock.remotePort >= 65536) {
+	if (sock.remotePort <= 0 || sock.remotePort > 65536) {
 		logger.error(
 			'invalid and/or malformed incoming TCP packet:',
 			sock.remoteAddress, sock.remotePort,

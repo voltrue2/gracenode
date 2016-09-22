@@ -2,6 +2,22 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.34
+
+## Added
+
+None
+
+## Changed
+
+#### RPC corrected the accepted incoming packet port range
+
+Previously it was considering `65536` to be invalid.
+
+#### UDP added accepted incoming packet port range
+
+The range is `0` > and => `65536`.
+
 ## Version 3.5.33
 
 ## Added
