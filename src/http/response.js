@@ -172,7 +172,7 @@ Response.prototype.stream = function __httpResponseStream(path) {
 			that.error(error, 404);
 			return;
 		}
-		logger.info(
+		logger.debug(
 			'Stream:',
 			util.fmt('url', that._req.method + ' ' + that._req.url),
 			util.fmt('id', that._req.id)
@@ -299,7 +299,7 @@ function send(req, res, headers, data, type, status) {
 	if (req.method === 'HEAD') {
 		// HEAD does not send content
 		if (status < 400) {
-			logger.info(furl, fid, fstatus, ftime);
+			logger.debug(furl, fid, fstatus, ftime);
 		} else {
 			logger.error(furl, fid, fstatus, ftime);
 		}
@@ -309,7 +309,7 @@ function send(req, res, headers, data, type, status) {
 	}
 	// log here and change the level based on status
 	if (status < 400) {
-		logger.info(furl, fid, fstatus, ftime);
+		logger.debug(furl, fid, fstatus, ftime);
 	} else {
 		logger.error(furl, fid, fstatus, ftime);
 	}

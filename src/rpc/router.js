@@ -56,15 +56,6 @@ module.exports.route = function __rpcRouterRoute(name, packet) {
 	}
 	
 	var cmd = commands[packet.command];
-	
-	logger.info(
-		name,
-		'command routing resolved:',
-		packet.command, cmd.name,
-		'handlers:', cmd.handlers,
-		'(seq:' + packet.seq + ')'
-	);
-
 	var hookList = hooks.findByCmdId(packet.command);
 
 	logger.debug(name, 'command hooks:', hookList, '(seq:' + packet.seq + ')');

@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.36
+
+## Added
+
+None
+
+## Changed
+
+#### HTTP, RPC, and UDP logging less verbose
+
+#### RPC command handling added check for socket validity
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.35
 
 ## Added
