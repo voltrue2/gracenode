@@ -57,7 +57,9 @@ function Connection(sock, options) {
 				return;
 			}
 			if (Date.now() - that.heartbeatTime >= heartbeat.timeout) {
-				that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+				if (that.sock) {
+					that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+				}
 				return;
 			}
 			setTimeout(checker, heartbeat.checkFrequency);
@@ -128,6 +130,9 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
 	if (this.crypto && this.crypto.decrypt) {
 		var that = this;
+		if (!this.sock) {
+			return cb(new Error('SocketUnexceptedlyGone'));
+		}
 		this.crypto.decrypt(
 			parsedData.payload,
 			gn.session.PROTO.RPC,
@@ -168,6 +173,9 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
 	var state = createState(this.id, parsedData, sess);
 	var msg = 'NOT_FOUND';
+	if (!this.sock) {
+		return cb(new Error('SocketUnexceptedlyGone'));
+	}
 	state.clientAddress = this.sock.remoteAddress;
 	state.clientPort = this.sock.remotePort;
 	this._write(new Error('NOT_FOUND'), state, state.STATUS.NOT_FOUND, state.seq, msg, cb);
@@ -176,6 +184,9 @@ Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(pars
 Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData, sess, cb) {
 	var that = this;
 	var state = createState(this.id, parsedData, sess);
+	if (!this.sock) {
+		return cb(new Error('SocketUnexceptedlyGone'));
+	}
 	state.clientAddress = this.sock.remoteAddress;
 	state.clientPort = this.sock.remotePort;
 	// server push
