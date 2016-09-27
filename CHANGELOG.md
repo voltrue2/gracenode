@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.37
+
+## Added
+
+None
+
+## Changed
+
+#### Updated dependency jshint version to 2.9.3
+
+#### Updated dev dependency request version to 2.75.0
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.36
 
 ## Added
