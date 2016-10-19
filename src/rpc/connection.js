@@ -161,7 +161,7 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 	if (!cmd) {
 		return this._errorResponse(parsedData, sess, cb);
 	}
-	logger.debug(
+	logger.verbose(
 		this.name,
 		'command routing resolved:',
 		'command:', cmd.id, cmd.name,
@@ -311,7 +311,7 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	if (error) {
 		logger.error(this.name, 'error response:', error, 'size:', data.length, 'bytes');
 	} else {
-		logger.debug(this.name, 'response:', data.length, 'bytes');
+		logger.verbose(this.name, 'response:', data.length, 'bytes');
 	}
 	try {
 		this.sock.write(data, 'UTF-8', cb);
@@ -331,7 +331,7 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 		}
 		return cb();
 	}
-	logger.debug(this.name, 'push from server:', data.length, 'bytes');
+	logger.verbose(this.name, 'push from server:', data.length, 'bytes');
 	try {
 		this.sock.write(data, 'UTF-8', cb);
 	} catch (e) {

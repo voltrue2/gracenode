@@ -393,7 +393,7 @@ Command handler functions will have `state` object passed.
 
 ```
 {
-	status: {
+	STATUS: {
 		OK: 1,
 		BAD_REQ: 2,
 		NOT_FOUND: 3,
@@ -423,13 +423,13 @@ var gn = require('gracenode');
 var commandId = 1;
 var commandName = 'exampleCommand';
 gn.udp.command(commandId, commandName, function (state) {
-	state.send({ message: 'Hello from UDP server' }, state.status.OK);
+	state.send({ message: 'Hello from UDP server' }, state.STATUS.OK);
 });
 ```
 
 **NOTE:** You may register **multiple** command handlers to the same command ID and name to be executed one after another.
 
-**STATUS:** By passing `status` as the 2nd argument to `.send()`, your message becomes a **reply** message to a command request.
+**STATUS:** By passing `STATUS` as the 2nd argument to `.send()`, your message becomes a **reply** message to a command request.
 
 ### Command Hooks
 

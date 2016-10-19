@@ -213,7 +213,7 @@ function searchRoute(method, path) {
 	}
 	var found = searchRouteShortcut(path, list);
 	if (!found) {
-		logger.debug('Route not found for:', path, 'in', list);
+		logger.verbose('Route not found for:', path, 'in', list);
 		return null;
 	}
 	return found;

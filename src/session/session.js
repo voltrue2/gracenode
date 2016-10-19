@@ -131,11 +131,11 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 	var id = uuid.toString();
 
 	if (options.useCookie) {
-		logger.debug('setting session ID to cookies:', id);
+		logger.verbose('setting session ID to cookies:', id);
 		var cookies = req.cookies();
 		cookies.set(SESSION_ID_NAME, id);
 	} else {
-		logger.debug('session session ID to response headers:', id);
+		logger.verbose('session session ID to response headers:', id);
 		res.headers[SESSION_ID_NAME] = id;
 	}
 
@@ -333,7 +333,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		sess.client = {};
 	}
 	if (!sess.client[sockType]) {
-		logger.debug(
+		logger.verbose(
 			'handling initial handshake from:',
 			sockType,
 			remoteIp,

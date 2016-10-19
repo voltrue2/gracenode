@@ -56,7 +56,7 @@ module.exports.route = function __udpRouterRoute(packet) {
 
 	var hookList = hooks.findByCmdId(packet.command);
 
-	logger.debug('command hooks:', hookList);
+	logger.verbose('command hooks:', hookList);
 
 	return {
 		id: cmd.id,
@@ -69,7 +69,7 @@ module.exports.route = function __udpRouterRoute(packet) {
 function getHookExec(cmdId, cmdName, hookList) {
 	var exec = function __udpRouterGetHookExecExec(state, cb) {
 		async.eachSeries(hookList, function __udpRouterGetHookExecEach(hook, next) {
-			logger.debug(
+			logger.verbose(
 				'execute command hook (' + cmdId + ':' + cmdName + '):',
 				(hook.name || 'anonymous')
 			);

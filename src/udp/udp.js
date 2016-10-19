@@ -310,7 +310,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		return;
 	}
 
-	logger.debug(
+	logger.verbose(
 		'command routing resolved:',
 		'command', cmd.id, cmd.name,
 		'command handlers', cmd.handlers,

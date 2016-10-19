@@ -16,6 +16,8 @@ It is very useful to build distributed-network system in real-time.
 
 #### UDP changed state.status to state.STATUS
 
+#### Debug logs are now verbose logs
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
