@@ -18,6 +18,9 @@ install: ## Initial installation
 lint: ## Execute lint against the source code
 	./bin/lint index.js src/ lib/ boilerplate/api
 
+security: ## Executes nsp to against package.json to check security issues
+	nsp check package.json
+
 .PHONY: test
 ifndef log
   log=false
