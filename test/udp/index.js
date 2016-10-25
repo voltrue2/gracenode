@@ -3,10 +3,13 @@ var request = require('../src/request');
 var assert = require('assert');
 var gn = require('../../src/gracenode');
 var simpleClient = require('./simpleClient');
+var transport = require('../../lib/transport');
 var portOne = 7980;
 var portTwo = 7981;
+var portThree = 7983;
 var httpPort = 7982;
-var addr = '::0';
+//var addr = '::0';
+var addr = '127.0.0.1';
 
 var cipher;
 var sessionId;
@@ -300,5 +303,27 @@ describe('gracenode.udp', function () {
 		simpleClient.secureSender(portOne, sessionId, cipher, 55, sendSeq, { sync: time }, function () {
 			
 		});
+	});
+
+	it('can send a server push message to user defined address and port', function (done) {
+		var cli = require('dgram').createSocket('udp4');
+		var MSG = 'HELLO:' + Date.now();
+		cli.on('listening', function () {
+			var info = cli.address();
+			// send server push
+			gn.udp.push(new Buffer(MSG), info.address, info.port, function (error) {
+				assert.equal(error, null);
+			});
+		});
+		cli.on('message', function (msg) {
+			var parsed = transport.parse(msg);
+			assert.equal(parsed.payload.toString(), MSG);
+			done();
+		});
+		cli.bind({
+			address: addr,
+			port: portThree,
+			exclusive: true
+		 });
 	});
 });

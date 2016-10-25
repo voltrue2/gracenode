@@ -14,6 +14,36 @@ It is very useful to build distributed-network system in real-time.
 
 ## Changed
 
+#### UDP added a new method .push(msg, address, port, callback)
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+## Version 3.5.38
+
+## Added
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+## Changed
+
 #### UDP changed state.status to state.STATUS
 
 #### Debug logs are now verbose logs

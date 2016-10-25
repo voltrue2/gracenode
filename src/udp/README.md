@@ -546,6 +546,23 @@ gn.udp.onError(function (error, rinfo) {
 });
 ```
 
+### Send UDP messages to user-specified client
+
+**gracenode** UDP can send messages to user-specified client(s). The sent messages are formatted as push packet.
+
+#### .gracenode.udp.push(message [mixed], address [string], port: [number], callback [*function])
+
+```javascript
+gracenode.udp.push(myPushMessage, myClientAddress, myClientPort, funtion (error) {
+	// message sent
+	if (error) {
+		// oh no...
+	}
+});
+```
+
+***
+
 ## C# Test Client
 
 There is a very baisc test client written in C# in `test/udp/cs/`.

@@ -239,6 +239,12 @@ module.exports.hook = function __udpHook(cmdIdList, handler) {
 	hooks.add(cmdIdList, handler);
 };
 
+// send server push UDP message to user defined address and port
+// msg must be a buffer
+module.exports.push = function (msg, address, port, cb) {
+	serverPush(msg, address, port, cb);
+};
+
 function handleMessage(buff, rinfo) {
 
 	logger.verbose('message received:', server.address(), buff, 'from:', rinfo);
@@ -463,6 +469,19 @@ function send(state, msg, seq, status) {
 		);
 	} catch (e) {
 		logger.error('send failed:', e);
+	}
+}
+
+function serverPush(msg, address, port, cb) {
+	logger.verbose('sending server push to', address, port, msg);
+	try {
+		if (typeof cb !== 'function') {
+			cb = function () {};
+		}
+		msg = transport.createPush(0, msg);
+		server.send(msg, 0, msg.length, port, address, cb);
+	} catch (e) {
+		cb(e);
 	}
 }
 
