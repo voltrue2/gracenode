@@ -311,9 +311,7 @@ describe('gracenode.udp', function () {
 		cli.on('listening', function () {
 			var info = cli.address();
 			// send server push
-			gn.udp.push(new Buffer(MSG), info.address, info.port, function (error) {
-				assert.equal(error, null);
-			});
+			gn.udp.push(new Buffer(MSG), info.address, info.port);
 		});
 		cli.on('message', function (msg) {
 			var parsed = transport.parse(msg);
