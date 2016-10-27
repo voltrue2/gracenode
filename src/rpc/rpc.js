@@ -301,6 +301,13 @@ function handleConn(sock) {
 
 function setupCleanTimedoutConnections() {
 	var clean = function __rpcCleanTimedoutConns() {
+		if (shutdown) {
+			for (var i in connections) {
+				connections[i].kill();
+				delete connections[i];
+			}
+			return;
+		}
 		try {
 			for (var id in connections) {
 				var conn = connections[id];
