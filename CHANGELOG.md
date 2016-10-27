@@ -2,7 +2,37 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 3.5.38
+## Version 3.5.40
+
+## Added
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+## Changed
+
+#### RPC and UDP added shutdown check when trying to send packets to clients
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+## Version 3.5.39
 
 ## Added
 

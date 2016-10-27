@@ -5,6 +5,7 @@ var utils = require('util');
 var gn = require('../gracenode');
 var async = require('../../lib/async');
 var transport = require('../../lib/transport');
+var rpc = require('./rpc');
 // this is not HTTP router
 var router = require('./router');
 var logger;
@@ -305,6 +306,11 @@ Connection.prototype._push = function __rpcConnectionPush(state, msg, cb) {
 };
 
 Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, cb) {
+	
+	if (rpc.shutdown()) {
+		return cb();
+	}
+
 	if (!this.sock || !this.connected) {
 		return cb();
 	}
@@ -325,6 +331,11 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 };
 
 Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
+	
+	if (rpc.shutdown()) {
+		return cb();
+	}
+
 	if (!this.sock || !this.connected) {
 		if (!cb) {
 			return;

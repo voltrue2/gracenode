@@ -41,6 +41,10 @@ module.exports.info = function __rpcInfo() {
 	};
 };
 
+module.exports.shutdown = function () {
+	return shutdown;
+};
+
 module.exports.setup = function __rpcSetup(cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');

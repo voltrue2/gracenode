@@ -22,6 +22,7 @@ var logger;
 var config;
 var server;
 var onErrorHandler;
+var shutdown = false;
 
 var cryptoEngine = {
 	encrypt: null,
@@ -119,6 +120,8 @@ module.exports.setup = function __udpSetup(cb) {
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
 		gn.onExit(function UDPShutdown(next) {
+
+			shutdown = true;
 
 			if (!running) {
 				logger.info(
@@ -390,6 +393,11 @@ function executeCommands(cmd, state) {
 }
 
 function send(state, msg, seq, status) {
+
+	if (shutdown) {
+		return;
+	}
+
 	// consider this as a reply
 	if (status !== undefined) {
 		msg = transport.createReply(status, seq || 0, msg);
@@ -473,6 +481,11 @@ function send(state, msg, seq, status) {
 }
 
 function serverPush(msg, address, port, cb) {
+
+	if (shutdown) {
+		return;
+	}
+
 	logger.verbose('sending server push to', address, port, msg);
 	try {
 		if (typeof cb !== 'function') {
