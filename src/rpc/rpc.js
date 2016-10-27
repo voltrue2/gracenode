@@ -31,6 +31,7 @@ var connectionInfo = {
 	port: null,
 	family: null
 };
+var connections = {};
 
 module.exports.info = function __rpcInfo() {
 	return {
@@ -48,6 +49,7 @@ module.exports.shutdown = function () {
 module.exports.setup = function __rpcSetup(cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
+	config.cleanInterval = config.cleanInterval || 10000;
 
 	// this is to increase the number of listener limit
 	emitter.setMaxListeners(1000);
@@ -97,6 +99,8 @@ module.exports.setup = function __rpcSetup(cb) {
 	logger.verbose('port range is', config.portRange[0], 'to', pend);
 
 	var done = function __rpcSetupDone() {
+		// set up time-based cleaning for timed out connections
+		setupCleanTimedoutConnections();
 		// RPC server is now successfully bound and listening
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
@@ -284,10 +288,33 @@ function handleConn(sock) {
 					module.exports._onClosed(conn.id);
 				}
 			}
+			delete connections[conn.id];
 		}
 		conn = null;
 	});
 	emitter.once('close', close);
 
 	logger.info('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
+
+	connections[conn.id] = conn;
+}
+
+function setupCleanTimedoutConnections() {
+	var clean = function __rpcCleanTimedoutConns() {
+		try {
+			for (var id in connections) {
+				var conn = connections[id];
+				if (conn.isTimedout()) {
+					conn.kill(new Error('TimedOutConnection'));
+					delete connections[id];
+					logger.info('timed out connection cleaned:', conn.id);
+					conn = null;
+				}
+			}
+		} catch (e) {
+			logger.error('clean timed out connections:', e);
+		}
+		setTimeout(clean, config.cleanInterval);
+	};
+	setTimeout(clean, config.cleanInterval);
 }

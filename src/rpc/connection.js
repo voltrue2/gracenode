@@ -9,9 +9,11 @@ var rpc = require('./rpc');
 // this is not HTTP router
 var router = require('./router');
 var logger;
+var heartbeatConf;
 
 module.exports.setup = function __rpcConnectionSetup() {
 	logger = gn.log.create('RPC.connection');
+	heartbeatConf = gn.getConfig('rpc.heartbeat');
 };
 
 module.exports.create = function __rpcConnectionCreate(sock, options) {
@@ -22,7 +24,6 @@ function Connection(sock, options) {
 	EventEmitter.call(this);
 	var you = sock.remoteAddress + ':' + sock.remotePort;
 	var that = this;
-	var heartbeat = gn.getConfig('rpc.heartbeat');
 	this.sock = sock;
 	this.opt = options;
 	this.id = gn.lib.uuid.v4().toString();
@@ -51,25 +52,32 @@ function Connection(sock, options) {
 		}
 		that.close(new Error('TCP connection timeout'));
 	});
-	if (heartbeat) {
-		logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeat.timeout, 'msec');
+	if (heartbeatConf) {
+		logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeatConf.timeout, 'msec');
 		var checker = function __rpcConnectionHeartbeatChecker() {
 			if (!that.connected) {
 				return;
 			}
-			if (Date.now() - that.heartbeatTime >= heartbeat.timeout) {
+			if (that.isTimedout()) {
 				if (that.sock) {
 					that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
 				}
 				return;
 			}
-			setTimeout(checker, heartbeat.checkFrequency);
+			setTimeout(checker, heartbeatConf.checkFrequency);
 		};
 		checker();
 	}
 }
 
 utils.inherits(Connection, EventEmitter);
+
+Connection.prototype.isTimedout = function () {
+	if (Date.now() - this.heartbeatTime >= heartbeatConf.timeout) {
+		return true;
+	}
+	return false;
+};
 
 Connection.prototype.useCryptoEngine = function __rpcConnectionUseCryptoEngine(engine) {
 	this.crypto = engine;
