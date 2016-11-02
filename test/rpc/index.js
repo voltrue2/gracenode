@@ -55,9 +55,13 @@ describe('gracenode.rpc', function () {
 	});
 
 	it('can set custom formatting function for heartbeat', function () {
-		gn.rpc.setHeartbeatResponseFormat(function (data) {
-			data.formatted = true;
-			return data;
+		gn.rpc.setHeartbeatResponseFormat(function () {
+			var data = {
+				serverTime: Date.now(),
+				formatted: true,
+				message: 'heartbeat'
+			};
+			return new Buffer(JSON.stringify(data));
 		});
 	});
 

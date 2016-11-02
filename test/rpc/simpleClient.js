@@ -111,11 +111,11 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
 				parsed[0].payload
 			);
 			that.logger.debug('client received encrypted:', parsed[0].payload, '>>', decrypted);
-			value = decrypted.toString();
+			value = decrypted;
 		} catch (e) {
 			cb(e);
 		}
-		that.logger.debug('secure receive:', parsed);
+		that.logger.debug('secure receive:', parsed, value, typeof value);
 		try {
 			value = JSON.parse(value);
 			cb(value);

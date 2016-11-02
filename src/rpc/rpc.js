@@ -238,17 +238,17 @@ module.exports.setHeartbeatResponseFormat = function __rpcSetHeartbeatResFormat(
 };
 
 function handleHeartbeat(state, cb) {
-	var res = {
+	var res = new Buffer(JSON.stringify({
 		message: 'heartbeat',
 		serverTime: Date.now()
-	};
+	}));
 	if (formatFunction) {
 		var formatted = formatFunction(res);
 		if (formatted) {
 			res = formatted;
 		}
 	}
-	cb(new Buffer(JSON.stringify(res)));
+	cb(res);
 }
 
 function handleConn(sock) {
