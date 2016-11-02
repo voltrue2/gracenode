@@ -181,7 +181,7 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
 	var state = createState(this.id, parsedData, sess);
-	var msg = 'NOT_FOUND';
+	var msg = new Buffer('NOT_FOUND');
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
@@ -236,7 +236,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	// execute hooks before the handler(s)
 	cmd.hooks(state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
-			var msg = error.message;
+			var msg = new Buffer(error.message);
 			if (!status) {
 				status = transport.STATUS.BAD_REQ;
 			}
@@ -272,7 +272,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 						_status = transport.STATUS.BAD_REQ;
 					}
 					status = _status;
-					res = _res.message;
+					res = new Buffer(_res.message);
 					return next(_res);
 				}
 				if (!_status) {
@@ -322,11 +322,13 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	if (!this.sock || !this.connected) {
 		return cb();
 	}
+
 	if (error) {
 		logger.error(this.name, 'error response:', error, 'size:', data.length, 'bytes');
 	} else {
 		logger.verbose(this.name, 'response:', data.length, 'bytes');
 	}
+
 	try {
 		this.sock.write(data, 'UTF-8', cb);
 	} catch (e) {

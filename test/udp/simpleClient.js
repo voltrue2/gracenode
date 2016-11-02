@@ -75,7 +75,7 @@ exports.secureSender = function (port, sid, cipher, command, seq, msg, cb) {
 		cipher.cipherNonce,
 		cipher.macKey,
 		cipher.seq,
-		JSON.stringify(msg)
+		new Buffer(JSON.stringify(msg))
 	);
 	var payload = Buffer.concat([session, encrypted]);
 	exports.sender(port, command, seq || 0, payload, cb);

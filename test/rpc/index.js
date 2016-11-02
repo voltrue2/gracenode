@@ -273,7 +273,7 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, clientMsg);
-			cb({ message: serverMsg });
+			cb(new Buffer(JSON.stringify({ message: serverMsg })));
 		});
 		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
@@ -291,7 +291,7 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, msg);
-			var res = { message: msg };
+			var res = new Buffer(JSON.stringify({ message: msg }));
 			cb(res);
 			setTimeout(function () {
 				state.respond(res);
@@ -318,7 +318,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.command, cid);
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, clientMsg);
-			cb({ message: serverMsg, command: state.command });
+			cb(new Buffer(JSON.stringify({ message: serverMsg, command: state.command })));
 		});
 		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, serverMsg);
@@ -339,7 +339,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
-			cb({ message: serverMsg });
+			cb(new Buffer(JSON.stringify({ message: serverMsg })));
 		});
 		gn.rpc.hook(cid, function (state, next) {
 			state.hookPassed = true;
@@ -364,7 +364,7 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, clientMsg);
 			assert.equal(state.hookPassed, true);
-			cb({ message: serverMsg });
+			cb(new Buffer(JSON.stringify({ message: serverMsg })));
 		});
 		gn.rpc.hook(cid, function (state, next) {
 			next(new Error(errMsg));
@@ -387,9 +387,9 @@ describe('gracenode.rpc', function () {
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload.message, clientMsg);
-			cb({ message: serverMsg });
+			cb(new Buffer(JSON.stringify({ message: serverMsg })));
 			setTimeout(function () {
-				state.send({ message: pushMsg });
+				state.send(new Buffer(JSON.stringify({ message: pushMsg })));
 			}, 100);
 		});
 		client.recvOnceSecure(cipher, function (data) {
@@ -412,11 +412,11 @@ describe('gracenode.rpc', function () {
 		var cid = 31;
 		gn.rpc.command(cid, 'command' + cid, function (state, cb) {
 			assert.equal(state.payload.message, clientMsg);
-			cb({ message: serverMsg });
+			cb(new Buffer(JSON.stringify({ message: serverMsg })));
 			setTimeout(function () {
-				state.send({ message: pushMsg });
+				state.send(new Buffer(JSON.stringify({ message: pushMsg })));
 				setTimeout(function () {
-					state.send({ message: pushMsg });
+					state.send(new Buffer(JSON.stringify({ message: pushMsg })));
 				}, 100);
 			}, 100);
 		});
@@ -453,7 +453,7 @@ describe('gracenode.rpc', function () {
 	it('can send UDP packet that shares the same session as RPC', function (next) {
 		gn.udp.command(1000, 'rpcAndUdp', function (state) {
 			assert.equal(state.payload.hello, 'Yay');
-			state.send({ message: 'Woot' });
+			state.send(new Buffer(JSON.stringify({ message: 'Woot' })));
 		});
 		udpCli.secureReceiver(cipher, function (msg) {
 			assert.equal(msg.message, 'Woot');

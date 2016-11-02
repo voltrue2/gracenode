@@ -248,7 +248,7 @@ function handleHeartbeat(state, cb) {
 			res = formatted;
 		}
 	}
-	cb(res);
+	cb(new Buffer(JSON.stringify(res)));
 }
 
 function handleConn(sock) {

@@ -2,7 +2,7 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 3.5.42
+## Version 3.5.43
 
 ## Added
 
@@ -14,7 +14,7 @@ It is very useful to build distributed-network system in real-time.
 
 ## Changed
 
-#### RPC and UDP encryption/decryption performance improvement 
+#### RPC and UDP encryption/decryption performance improvements (CTR-MODE)
 
 ## Deprecated
 

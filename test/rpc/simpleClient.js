@@ -88,7 +88,7 @@ Client.prototype.sendSecure = function (sid, cipher, commandId, seq, msg, cb) {
 		cipher.cipherNonce,
 		cipher.macKey,
 		seq,
-		JSON.stringify(msg)
+		new Buffer(JSON.stringify(msg))
 	);
 	var payload = Buffer.concat([ session, encrypted ]);
 	this.logger.debug('sender seq:', seq);
@@ -110,7 +110,7 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
 				0,
 				parsed[0].payload
 			);
-			that.logger.debug('client received encrypted:', decrypted.toString());
+			that.logger.debug('client received encrypted:', parsed[0].payload, '>>', decrypted);
 			value = decrypted.toString();
 		} catch (e) {
 			cb(e);
