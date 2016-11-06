@@ -131,16 +131,13 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 	var id = uuid.toString();
 
 	if (options.useCookie) {
-		logger.verbose('setting session ID to cookies:', id);
 		var cookies = req.cookies();
 		cookies.set(SESSION_ID_NAME, id);
 	} else {
-		logger.verbose('session session ID to response headers:', id);
 		res.headers[SESSION_ID_NAME] = id;
 	}
 
 	if (set) {
-		logger.verbose('custom setter is defined');
 		req.args.sessionId = id;
 		req.args.session = sessionData;
 		var data = {
@@ -153,7 +150,6 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 			req.args.cipher = data.cipher;
 		}
 		if (using.udp && using.rpc) {
-			logger.verbose('Session:', PROTO.RPC + id, PROTO.UDP + id);
 			// when we share the same session for RPC and UDP, we create 2 separate sessions
 			set(PROTO.RPC + id, data, function __sessOnSet(error) {
 				if (error) {
@@ -163,11 +159,8 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 			});
 			return;
 		}
-		logger.verbose('Session:', id);
 		return set(id, data, cb);
 	}
-
-	logger.verbose('set is using default in-memory storage: Not for production');
 	
 	if (using.udp || using.rpc) {
 		sessionData.seq = 0;
@@ -176,7 +169,6 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 	}
 	if (using.udp && using.rpc) {
 		// when we share the same session for RPC and UDP, we create 2 separate sessions
-		logger.verbose('session:', PROTO.RPC + id, PROTO.UDP + id);
 		mem.set(PROTO.RPC + id, sessionData, function __sessOnMemRPCSet(error) {
 			if (error) {
 				return cb(error);
@@ -192,7 +184,6 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 		});
 		return;
 	}
-	logger.verbose('session:', id);
 	mem.set(id, sessionData, function __sessOnMemSet(error) {
 		if (error) {
 			return cb(error);
@@ -220,7 +211,6 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 	}
 
 	if (del) {
-		logger.verbose('custom delete is defined');
 		if (using.udp && using.rpc) {
 			del(PROTO.RPC, function __sessOnDel(error) {
 				if (error) {
@@ -249,9 +239,7 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 	var ce = new gn.lib.CryptoEngine();
 	var res = ce.getSessionIdAndPayload(packet);
 	var sid = (using.udp && using.rpc) ? sockType + res.sessionId : res.sessionId;
-	logger.verbose('validating socket session:', sid, sockType, remoteIp, remotePort);
 	if (get && set) {
-		logger.verbose('custom getter is defined');
 		get(sid, function __sessOnSockValGet(error, sessionData) {
 			if (error) {
 				return next(error);
@@ -276,7 +264,7 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 		});
 		return;
 	}
-	logger.verbose('get is using default in-memory storage: Not for production');
+	logger.warn('get is using default in-memory storage: Not for production');
 	mem.get(sid, function __sessOnSockValMemGet(error, sess) {
 		if (error) {
 			logger.error('session not found:', sid);
@@ -309,7 +297,6 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		logger.error('session not found:', sockType + res.sessionId);
 		return next(new Error('SessionNotFound'));
 	}
-	logger.verbose('seq:', sockType + res.sessionId, res.seq, '>', sess.seq);
 	if (res.seq <= sess.seq) {
 		// we do NOT allow incoming seq that is smaller or the same as stored in the session
 		// this is to prevent duplicated command execution
@@ -333,12 +320,6 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		sess.client = {};
 	}
 	if (!sess.client[sockType]) {
-		logger.verbose(
-			'handling initial handshake from:',
-			sockType,
-			remoteIp,
-			'session:', sockType + res.sessionId
-		);
 		sess.client[sockType] = {
 			ip: remoteIp,
 			port: remotePort
@@ -432,7 +413,6 @@ function HTTPSessionValidation(req, res, next) {
 	}
 
 	if (get && set) {
-		logger.verbose('custom getter is defined');
 		get(id, function __sessHTTPSessValGet(error, sessData) {
 			if (error) {
 				return next(error, 401);

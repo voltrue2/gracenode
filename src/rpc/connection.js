@@ -53,7 +53,6 @@ function Connection(sock, options) {
 		that.close(new Error('TCP connection timeout'));
 	});
 	if (heartbeatConf) {
-		logger.verbose(this.name, 'RPC connection requires heartbeat at every', heartbeatConf.timeout, 'msec');
 		var checker = function __rpcConnectionHeartbeatChecker() {
 			if (!that.connected) {
 				return;
@@ -122,7 +121,6 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 		return this.kill(parsed);
 	}
 	this.heartbeatTime = Date.now();
-	logger.verbose(this.name, 'update heartbeat time:', this.heartbeatTime);
 	var done = function __rpcConnectionDataHandlerDone(error) {
 		if (error) {
 			return that.kill(error);
@@ -170,12 +168,6 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 	if (!cmd) {
 		return this._errorResponse(parsedData, sess, cb);
 	}
-	logger.verbose(
-		this.name,
-		'command routing resolved:',
-		'command:', cmd.id, cmd.name,
-		'seq:', parsedData.seq
-	);
 	this._execCmd(cmd, parsedData, sess, cb);
 };
 
@@ -325,8 +317,6 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 
 	if (error) {
 		logger.error(this.name, 'error response:', error, 'size:', data.length, 'bytes');
-	} else {
-		logger.verbose(this.name, 'response:', data.length, 'bytes');
 	}
 
 	try {
@@ -352,7 +342,7 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 		}
 		return cb();
 	}
-	logger.verbose(this.name, 'push from server:', data.length, 'bytes');
+	
 	try {
 		this.sock.write(data, 'UTF-8', cb);
 	} catch (e) {

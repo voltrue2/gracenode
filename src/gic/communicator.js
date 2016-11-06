@@ -1,37 +1,17 @@
 'use strict';
 
+/*
 var neti = require('os').networkInterfaces();
 var transport = require('../../lib/transport');
 var async = require('../../lib/async');
 var gn = require('../gracenode');
 var dgram = require('dgram');
-// UDP router
-var router = require('./router');
-// UDP command hooks
-var hooks = require('./hooks');
 
-var PORT_IN_USE = 'EADDRINUSE';
 var UDP_VER = 'udp4';
-var IPv6 = 'ipv6';
-var IPv4 = 'ipv4';
-var IPV6_ADDR_PREFIX = 'fe80';
-var LAST_RANGE = 1000;
-
-var ipv6 = false;
 var logger;
 var config;
 var server;
-var onErrorHandler;
-var shutdown = false;
-
-var cryptoEngine = {
-	encrypt: null,
-	decrypt: null
-};
-var connectionInfo = {
-	host: null,
-	port: null
-};
+var connectionInfo;
 
 module.exports.info = function __udpInfo() {
 	return {
@@ -43,72 +23,15 @@ module.exports.info = function __udpInfo() {
 };
 
 module.exports.setup = function __udpSetup(cb) {
-	logger = gn.log.create('UDP');
-	config = gn.getConfig('udp');
-
-	if (!gn.isSupportedVersion()) {
-		return gn.stop(new Error(
-			'UDP server does not support node.js version: ' + process.version
-		));
-	}
-
-	if (config && config.port) {
-		config.portRange = [
-			config.port,
-			config.port + LAST_RANGE
-		];
-	}
-
-	if (!config || !config.portRange) {
+	logger = gn.log.create('gic.communicator');
+	config = gn.getConfig('gic');
+	
+	// if address and port are provided, consider gic module to be enabled
+	if (!config || !config.address || !config.port) {
 		return cb();
 	}
 
-	// set transport protocol
-	if (config.protocol) {
-		transport.use(config.protocol);
-	}
-
-	// change default max size for packets
-	if (config.maxPacketSize) {
-		transport.setMaxSize(config.maxPacketSize);
-	}
-
-	logger.info('Max packet size:', transport.getMaxPacketSize());
-	
-	var addrMap = findAddrMap();
-	logger.info('Available Addresses:', addrMap);	
-
-	if (config.version && config.version.toLowerCase() === IPv6) {
-		ipv6 = true;
-		UDP_VER = 'udp6';
-	}
-
-	if (!config.address) {
-		if (ipv6) {
-			config.address = '::0';
-		} else {
-			config.address = '0.0.0.0';
-		}
-		logger.info('UDP server is binding to address:', config.address);
-	}
-
-	if (isIPv6()) {
-		ipv6 = true;
-		UDP_VER = 'udp6';
-	}
-
-	logger.info('UDP server is using:', UDP_VER);
-
-	if (!Array.isArray(config.portRange) || config.portRange.length < 1) {
-		logger.error(
-			'incorrect port range',
-			'(must be an array of 1 elements from smallest to biggest):',
-			config.portRange
-		);
-		throw new Error('<PORT_RANGE_FOR_UDP_SERVER_INCORRECT>');
-	}
-
-	router.setup();
+	// TODO 
 
 	var running = false;
 	var ports = [];
@@ -120,8 +43,6 @@ module.exports.setup = function __udpSetup(cb) {
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
 		gn.onExit(function UDPShutdown(next) {
-
-			shutdown = true;
 
 			if (!running) {
 				logger.info(
@@ -242,13 +163,9 @@ module.exports.hook = function __udpHook(cmdIdList, handler) {
 	hooks.add(cmdIdList, handler);
 };
 
-// send server push UDP message to user defined address and port
-// msg must be a buffer
-module.exports.push = function (msg, address, port, cb) {
-	serverPush(msg, address, port, cb);
-};
-
 function handleMessage(buff, rinfo) {
+
+	logger.verbose('message received:', server.address(), buff, 'from:', rinfo);
 
 	if (rinfo.port <= 0 || rinfo.port > 65536) {
 		logger.error('malformed packet received from invalid port (packet ignored):', rinfo, buff);
@@ -262,7 +179,10 @@ function handleMessage(buff, rinfo) {
 		return;
 	}
 
+	logger.verbose('parsed packet :', parsed);
+
 	if (cryptoEngine.decrypt) {
+		logger.verbose('using decryption for incoming message');
 		var toDecrypt = transport.isJson() ? buff : parsed.payload;
 		cryptoEngine.decrypt(
 			toDecrypt,
@@ -282,6 +202,12 @@ function handleMessage(buff, rinfo) {
 					dispatchOnError(new Error('DecryptionFailed'), rinfo);
 					return;
 				}
+				logger.verbose(
+					'decrypted message:',
+					'(session ID:' + sessId + ')',
+					'(seq:' + seq + ')',
+					decrypted
+				);
 				parsed.payload = decrypted;
 				// route and execute command
 				executeCmd(sessId, seq, sessData, parsed, rinfo);
@@ -308,6 +234,14 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		return;
 	}
 
+	logger.debug(
+		'command routing resolved:',
+		'command', cmd.id, cmd.name,
+		'command handlers', cmd.handlers,
+		'session ID', sessionId,
+		'seq', seq
+	);
+
 	var payload;
 	try {
 		payload = JSON.parse(msg.payload);
@@ -323,8 +257,8 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		clientAddress: rinfo.address,
 		clientPort: rinfo.port,
 		payload: payload,
-		send: function __udpSend(msg, status, cb) {
-			send(state, msg, seq, status, cb);
+		send: function __udpSend(msg, status) {
+			send(state, msg, seq, status);
 		}
 	};
 
@@ -344,6 +278,8 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 }
 
 function executeCommands(cmd, state) {
+	var id = cmd.id;
+	var name = cmd.name;
 	var handlers = cmd.handlers;
 	var done = function __udpExecuteCommandsDone(error) {
 		if (error) {
@@ -353,18 +289,25 @@ function executeCommands(cmd, state) {
 			);
 			return;
 		}
+		logger.verbose(
+			'command(s) exeuted: (' + id + ':' + name + ')',
+			'state:',
+			state
+		);
 	};
 	async.eachSeries(handlers, function __udpExecuteCommandEach(handler, next) {
+		logger.verbose(
+			'executing command:',
+			'(' + id + ':' + name + ')',
+			(handler.name || 'anonymous'),
+			'state:',
+			state
+		);
 		handler(state, next);
 	}, done);
 }
 
-function send(state, msg, seq, status, cb) {
-
-	if (shutdown) {
-		return;
-	}
-
+function send(state, msg, seq, status) {
 	// consider this as a reply
 	if (status !== undefined) {
 		msg = transport.createReply(status, seq || 0, msg);
@@ -385,17 +328,17 @@ function send(state, msg, seq, status, cb) {
 				address: state.clientAddress,
 				port: state.clientPort
 			};
-			if (typeof cb === 'function') {
-				cb(error);
-			}
 			return dispatchOnError(error, rinfo);
 		}
-		if (typeof cb === 'function') {
-			cb();
-		}
+		logger.verbose(
+			'UDP packet sent to:',
+			state.clientAddress + ':' + state.clientPort,
+			msg
+		);
 	};
 
 	if (cryptoEngine.encrypt) {
+		logger.verbose('using encryption for server push message');
 		cryptoEngine.encrypt(state, msg, function __udpOnEncrypt(error, encrypted) {
 			if (error) {
 				logger.error(
@@ -410,6 +353,13 @@ function send(state, msg, seq, status, cb) {
 				};
 				return dispatchOnError(new Error('EncryptionFailed'), rinfo2);
 			}
+			logger.verbose(
+				'send UDP packet to client:',
+				'session ID seq message',
+				state.sessionId,
+				state.seq,
+				msg
+			);
 			try {
 				server.send(
 					encrypted,
@@ -440,23 +390,6 @@ function send(state, msg, seq, status, cb) {
 	}
 }
 
-function serverPush(msg, address, port, cb) {
-
-	if (shutdown) {
-		return;
-	}
-
-	try {
-		if (typeof cb !== 'function') {
-			cb = function () {};
-		}
-		msg = transport.createPush(0, msg);
-		server.send(msg, 0, msg.length, port, address, cb);
-	} catch (e) {
-		cb(e);
-	}
-}
-
 function isIPv6() {
 	return config.address === '::0' || config.address.indexOf(IPV6_ADDR_PREFIX) === 0;
 }
@@ -480,3 +413,4 @@ function findAddrMap() {
 	}
 	return map;
 }
+*/

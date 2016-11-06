@@ -58,8 +58,6 @@ module.exports.route = function __rpcRouterRoute(name, packet) {
 	var cmd = commands[packet.command];
 	var hookList = hooks.findByCmdId(packet.command);
 
-	logger.verbose(name, 'command hooks:', hookList, '(seq:' + packet.seq + ')');
-
 	return {
 		id: cmd.id,
 		name: cmd.name,
@@ -70,12 +68,7 @@ module.exports.route = function __rpcRouterRoute(name, packet) {
 
 function getHookExec(cmdId, cmdName, hookList) {
 	var exec = function __rpcRouterOnExec(state, cb) {
-		logger.verbose('execute hooks:', hookList);
 		async.eachSeries(hookList, function __rpcRouterEachHook(hook, next) {
-			logger.verbose(
-				'execute command hook (' + cmdId + ':' + cmdName + '):',
-				(hook.name || 'anonymous')
-			);
 			hook(state, next);
 		}, cb);
 	};

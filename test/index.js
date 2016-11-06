@@ -28,4 +28,6 @@ if (singleRun !== 'false') {
 	require('./rpc');
 	// test gracenode.render
 	require('./render');
+	// test performance
+	require('./performance');
 }
