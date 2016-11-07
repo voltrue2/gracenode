@@ -366,7 +366,7 @@ function send(state, msg, seq, status, cb) {
 	}
 
 	// consider this as a reply
-	if (status !== undefined) {
+	if (status !== undefined && status !== null) {
 		msg = transport.createReply(status, seq || 0, msg);
 	} else {
 		// otherwise push
