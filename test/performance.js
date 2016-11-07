@@ -8,7 +8,7 @@ describe('gracenode performance tests', function () {
 
 	var cryptoLoop = 10000;
 
-	it('It can run CryptoEngine encrypt and decrypt ' + cryptoLoop + ' times', function () {
+	it('can run CryptoEngine encrypt and decrypt ' + cryptoLoop + ' times', function () {
 		var ce = new CryptoEngine();
 		var uid = uuid.v4().toString();
 		var c = CryptoEngine.createCipher();
@@ -24,7 +24,7 @@ describe('gracenode performance tests', function () {
 		console.log('CryptoEngine encryption and decryption', cryptoLoop, 'times took', (Date.now() - start) + 'ms');
 	});
 
-	it('It can run CryptoEngine static encrypt and static decrypt ' + cryptoLoop + ' times', function () {
+	it('can run CryptoEngine static encrypt and static decrypt ' + cryptoLoop + ' times', function () {
 		var ce = CryptoEngine;
 		var uid = uuid.v4().toString();
 		var c = CryptoEngine.createCipher();
@@ -39,7 +39,7 @@ describe('gracenode performance tests', function () {
 			seq += 1;
 			assert.equal(text.toString(), decrypted.toString());
 		}
-		console.log('CryptoEngine encryption and decryption', cryptoLoop, 'times took', (Date.now() - start) + 'ms');
+		console.log('CryptoEngine static encryption and static decryption', cryptoLoop, 'times took', (Date.now() - start) + 'ms');
 	});
 
 });

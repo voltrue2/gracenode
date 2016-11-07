@@ -248,6 +248,27 @@ module.exports.push = function (msg, address, port, cb) {
 	serverPush(msg, address, port, cb);
 };
 
+// send server push UDP message to multiple users
+// msg must be a buffer
+// list = [ { address, port } { ... } ];
+module.exports.multipush = function (msg, list, cb) {
+	var sender = function __multipushUdpSender () {
+		var dest = list.shift();
+		if (dest) {
+			module.exports.push(msg, dest.address, dest.port, next);
+			return;
+		}
+		// done
+		if (typeof cb === 'function') {
+			cb();
+		}
+	};
+	var next = function __multipushUdpNext() {
+		setImmediate(sender);
+	};
+	next();
+};
+
 function handleMessage(buff, rinfo) {
 
 	if (rinfo.port <= 0 || rinfo.port > 65536) {

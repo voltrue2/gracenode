@@ -546,11 +546,11 @@ gn.udp.onError(function (error, rinfo) {
 });
 ```
 
-### Send UDP messages to user-specified client
+### Send a UDP message to user-specified client
 
-**gracenode** UDP can send messages to user-specified client(s). The sent messages are formatted as push packet.
+**gracenode** UDP can send a message to user-specified client(s). The sent messages are formatted as push packet.
 
-#### .gracenode.udp.push(message [mixed], address [string], port: [number], callback [*function])
+#### gracenode.udp.push(message [buffer], address [string], port: [number], callback [*function])
 
 ```javascript
 gracenode.udp.push(myPushMessage, myClientAddress, myClientPort, funtion (error) {
@@ -558,6 +558,27 @@ gracenode.udp.push(myPushMessage, myClientAddress, myClientPort, funtion (error)
 	if (error) {
 		// oh no...
 	}
+});
+```
+
+***
+
+### Send a UDP message multple user-specified clients
+
+#### .gracenode.udp.multipush(message [buffer], list [array], callback [*function]);
+
+##### list
+
+An array of client address and port: `[ { address: "<address>", port: <port> }, {...} ]`
+
+**gracenode** UDP can also send a message to multiple clients effeciently
+
+```javascript
+gracenode.udp.multipush(message, list, function (error) {
+	if (error) {
+		// oops
+	}
+	// we are done
 });
 ```
 

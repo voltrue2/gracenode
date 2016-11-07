@@ -1,3 +1,4 @@
+var async = require('../../lib/async');
 var logEnabled = require('../arg')('--log');
 var request = require('../src/request');
 var assert = require('assert');
@@ -323,5 +324,41 @@ describe('gracenode.udp', function () {
 			port: portThree,
 			exclusive: true
 		 });
+	});
+
+	it('can send a server push message to multiple user defined address and port', function (done) {
+		var MSG = 'HELLO:' + Date.now();
+		var list = [];
+		var finished = 0;
+		var mport = 3000;
+		var check = function () {
+			if (finished === tasks.length - 1) {
+				done();
+			}
+			finished += 1;
+		};
+		var ready = function () {
+			// send server push
+			gn.udp.multipush(new Buffer(MSG), list);
+		};
+		var createClient = function (next) {
+			var cli = require('dgram').createSocket('udp4');
+			cli.on('listening', function () {
+				list.push(cli.address());
+				next();
+			});
+			cli.on('message', function (msg) {
+				var parsed = transport.parse(msg);
+				assert.equal(parsed.payload.toString(), MSG);
+				check();
+			});
+			cli.bind({
+				address: addr,
+				port: mport++,
+				exclusive: true
+			 });
+		};
+		var tasks = [ createClient, createClient, createClient ];
+		async.series(tasks, ready);
 	});
 });
