@@ -236,7 +236,7 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 };
 
 function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
-	var ce = new gn.lib.CryptoEngine();
+	var ce = gn.lib.CryptoEngine;
 	var res = ce.getSessionIdAndPayload(packet);
 	var sid = (using.udp && using.rpc) ? sockType + res.sessionId : res.sessionId;
 	if (get && set) {
@@ -344,13 +344,12 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 }
 
 function socketSessionDecrypt(ce, res, sess, next) {
-	var decrypted = ce.decrypt(
-		sess.cipher.cipherKey,
-		sess.cipher.cipherNonce,
-		sess.cipher.macKey,
-		res.seq,
-		res.payload
-	);
+	var src = {
+		cipherKey: sess.cipher.cipherKey,
+		cipherNonce: sess.cipher.cipherNonce,
+		macKey: sess.cipher.macKey
+	};
+	var decrypted = ce.decrypt(res.sessionId, src, res.seq, res.payload);
 	if (decrypted instanceof Error) {
 		logger.error(
 			'session decryption failed;', decrypted,
@@ -363,16 +362,15 @@ function socketSessionDecrypt(ce, res, sess, next) {
 }
 
 function socketSessionEncryption(state, msg, next) {
-	var ce = new gn.lib.CryptoEngine();
+	var ce = gn.lib.CryptoEngine;
 	var sess = state.session;
-	var encrypted = ce.encrypt(
-		sess.cipher.cipherKey,
-		sess.cipher.cipherNonce,
-		sess.cipher.macKey,
-		// push and response packet does not need to keep seq
-		0,
-		msg
-	);
+	var src = {
+		cipherKey: sess.cipher.cipherKey,
+		cipherNonce: sess.cipher.cipherNonce,
+		macKey: sess.cipher.macKey,
+	};
+	// seq is 0 b/c server push never needs to care
+	var encrypted = ce.encrypt(sess.sessionId, src, 0, msg);
 	next(null, encrypted);
 }
 

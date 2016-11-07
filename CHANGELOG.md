@@ -18,6 +18,10 @@ It is very useful to build distributed-network system in real-time.
 
 #### RPC, UDP, and session removed verbose loggings
 
+#### CryptoEngine added static methods of encrypt and decrypt: The instantiation has been deprecated
+
+#### CryptoEngine added local memory cache of cipher data
+
 ## Deprecated
 
 #### gracenode.registerShutdownTask()
