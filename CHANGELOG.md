@@ -2,6 +2,23 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.48
+
+## Added
+
+#### gracenode.lib.bsearch() added
+
+`gracenode.lib.bsearch` is a binary search to find an index of an object in an array
+
+```javascript
+// this will search for an object with a key "id = 100"
+var index = gracenode.lib.bsearch(listOfObjects, 'id', 100);
+```
+
+#### gracenode.lib.brange() added
+
+`gracenode.lib.brange` is a fast search to find objects in an array that match between two given values
+
 ## Version 3.5.47
 
 ## Added

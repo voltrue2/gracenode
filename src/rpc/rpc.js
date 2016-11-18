@@ -309,6 +309,33 @@ function setupCleanTimedoutConnections() {
 			return;
 		}
 		try {
+			// we search for start to end so that we iterate 1/2 times!
+			var ids = Object.keys(connections);
+			var left = 0;
+			var right = ids.length - 1;
+			var middle = ids.length / 2 | 0;
+			while (left <= middle && right >= middle) {
+				var conn = connections[ids[left]];
+				if (conn && conn.isTimeout()) {
+					conn.key(new Error('TimedOutConnection'));
+					delete connections[ids[left]];
+					logger.info('timed out connection cleaned:', conn.id);
+					conn = null;
+				}
+				if (left === right) {
+					break;
+				}
+				conn = connections[ids[right]];
+				if (conn && conn.isTimeout()) {
+					conn.key(new Error('TimedOutConnection'));
+					delete connections[ids[right]];
+					logger.info('timed out connection cleaned:', conn.id);
+					conn = null;
+				}
+				left += 1;
+				right -= 1;
+			}
+			/*
 			for (var id in connections) {
 				var conn = connections[id];
 				if (conn.isTimedout()) {
@@ -318,6 +345,7 @@ function setupCleanTimedoutConnections() {
 					conn = null;
 				}
 			}
+			*/
 		} catch (e) {
 			logger.error('clean timed out connections:', e);
 		}

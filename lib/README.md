@@ -1,5 +1,13 @@
 # gracenode.lib
 
+## .bsearch(listOfObjects [array], objectKey [string], value [number])
+
+Performces a binary search on an array of objects.
+
+**NOTE**: The array must be pre-sorted.
+
+## .brange(listOfObjects [array], objectKey [string], valueFrom [number], valueTo [number])
+
 ## .padNumber(num [number], digit [*number])
 
 Returns a padded/none-padded with leading zero string.
