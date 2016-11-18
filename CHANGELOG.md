@@ -19,6 +19,26 @@ var index = gracenode.lib.bsearch(listOfObjects, 'id', 100);
 
 `gracenode.lib.brange` is a fast search to find objects in an array that match between two given values
 
+## Changed
+
+#### RPC timed out connection search performance improved
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.47
 
 ## Added
