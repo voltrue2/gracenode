@@ -2,6 +2,33 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.49
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix: RPC timeout cleaner was calling an invalid function isTimeout instead of isTimedout
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+
 ## Version 3.5.48
 
 ## Added
