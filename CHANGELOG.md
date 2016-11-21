@@ -2,11 +2,49 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.5.50
+
+## Added
+
+None
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+## Changed
+
+#### Bug fix: Starting up logic had syn functions to test logging target directory writable or not
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.49
 
 ## Added
 
 None
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
 
 ## Changed
 
@@ -45,6 +83,12 @@ var index = gracenode.lib.bsearch(listOfObjects, 'id', 100);
 #### gracenode.lib.brange() added
 
 `gracenode.lib.brange` is a fast search to find objects in an array that match between two given values
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
 
 ## Changed
 

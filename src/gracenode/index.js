@@ -300,22 +300,20 @@ function canWrite(conf, cb) {
 		}
 		fs.open(conf.file, 'w', function __canOpenLogFile(error, fd) {
 			if (error) {
-				var err = null;
 				switch (error.code) {
 					case 'EISDIR':
 						// if we can write a file here, it is good to go
-						try {
-							fs.writeFileSync(conf.file + '/.__');
-							fs.unlinkSync(conf.file + '/.__');
-						} catch (e) {
-							err = e;
-						}
-						break;
+						fs.writeFile(conf.file + '/.__', '', function (error) {
+							if (error) {
+								return cb(error);
+							}
+							fs.unlink(conf.file + '/.__', cb);
+						});
+						return;
 					default:
-						err = error; 
-						break;
+						cb(error);
+						return;
 				}
-				return cb(err);
 			}
 			fs.close(fd, function __closeLogFile(error) {
 				if (error) {
