@@ -317,7 +317,7 @@ function setupCleanTimedoutConnections() {
 			while (left <= middle && right >= middle) {
 				var conn = connections[ids[left]];
 				if (conn && conn.isTimedout()) {
-					conn.key(new Error('TimedOutConnection'));
+					conn.kill(new Error('TimedOutConnection'));
 					delete connections[ids[left]];
 					logger.info('timed out connection cleaned:', conn.id);
 					conn = null;
@@ -327,7 +327,7 @@ function setupCleanTimedoutConnections() {
 				}
 				conn = connections[ids[right]];
 				if (conn && conn.isTimedout()) {
-					conn.key(new Error('TimedOutConnection'));
+					conn.kill(new Error('TimedOutConnection'));
 					delete connections[ids[right]];
 					logger.info('timed out connection cleaned:', conn.id);
 					conn = null;
