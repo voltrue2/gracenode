@@ -101,7 +101,7 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 Connection.prototype.kill = function __rpcConnectionKill(error) {
 	if (this.sock) {
 		if (error) {
-			logger.error(this.name, 'TCP connection killed from server:', error);
+			logger.error(this.name, 'TCP connection killed from server:', error.message);
 		} else {
 			logger.info(this.name, 'TCP connection killed from server');
 		}
