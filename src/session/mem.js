@@ -3,11 +3,9 @@
 // in memory session storage using cluster-mode to support multi workers
 var gn = require('../gracenode');
 
-var CMD = {
-	GET: '__sget__',
-	SET: '__sset__',
-	DEL: '__sdel__'
-};
+const CMD_GET = '__sget__';
+const CMD_SET = '__sset__';
+const CMD_DEL = '__sdel__';
 
 var data = {};
 var logger;
@@ -19,7 +17,7 @@ module.exports.setDuration = function __sessMemSetDuration(d) {
 
 module.exports.setup = function __sessMemSetup() {
 	if (gn.isMaster()) {
-		gn.cluster.registerCommand(CMD.GET, function __sessMemMasterGet(msg, cb) {
+		gn.cluster.registerCommand(CMD_GET, function __sessMemMasterGet(msg, cb) {
 			removeExpired();
 			var copy = gn.lib.deepCopy(data);
 			var sess = copy[msg.sid];
@@ -30,7 +28,7 @@ module.exports.setup = function __sessMemSetup() {
 			data[msg.sid].ttl = Date.now() + dur;
 			cb(null, sess.data);
 		});
-		gn.cluster.registerCommand(CMD.SET, function __sessMemMasterSet(msg, cb) {
+		gn.cluster.registerCommand(CMD_SET, function __sessMemMasterSet(msg, cb) {
 			removeExpired();
 			data[msg.sid] = {
 				ttl: Date.now() + dur,
@@ -38,7 +36,7 @@ module.exports.setup = function __sessMemSetup() {
 			};
 			cb();
 		});
-		gn.cluster.registerCommand(CMD.DEL, function __sessMemMasterDel(msg, cb) {
+		gn.cluster.registerCommand(CMD_DEL, function __sessMemMasterDel(msg, cb) {
 			removeExpired();
 			if (data[msg.sid]) {
 				delete data[msg.sid];
@@ -53,7 +51,7 @@ module.exports.get = function __sessMemGet(id, cb) {
 	logger.warn('(get) using memory storage for session is NOT meant for production');
 	if (gn.isCluster()) {
 		var params = { sid: id };
-		gn.cluster.sendCommand(CMD.GET, params, function __sessMemOnGet(error, res) {
+		gn.cluster.sendCommand(CMD_GET, params, function __sessMemOnGet(error, res) {
 			if (error) {
 				return cb(error);
 			}
@@ -77,7 +75,7 @@ module.exports.set = function __sessMemSet(id, sess, cb) {
 			sid: id,
 			data: sess
 		};
-		return gn.cluster.sendCommand(CMD.SET, params, cb);
+		return gn.cluster.sendCommand(CMD_SET, params, cb);
 	}
 	removeExpired();
 	data[id] = {
@@ -93,7 +91,7 @@ module.exports.del = function __sessMemDel(id, cb) {
 		var params = {
 			sid: id
 		};
-		return gn.cluster.sendCommand(CMD.DEL, params, cb);
+		return gn.cluster.sendCommand(CMD_DEL, params, cb);
 	}
 	removeExpired();
 	if (data[id]) {

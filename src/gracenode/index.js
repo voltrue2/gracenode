@@ -23,11 +23,8 @@ var onExceptions = [];
 var ready = false;
 var isSupportedVersion = true;
 
-var ER = {
-	NOT_WRITABLE: '<NOT_WRITABLE>',
-	INVALID_LOG_PATH: '<INVALID_LOG_PATH>',
-	LOG_DIR_NOT_FOUND: '<LOG_DIR_NOT_FOUND>'
-};
+const ER_NOT_WRITABLE = '<NOT_WRITABLE>';
+const ER_LOG_DIR_NOT_FOUND = '<LOG_DIR_NOT_FOUND>';
 
 // internal use only (src/lint)
 exports._isLogging = false;
@@ -278,7 +275,7 @@ function setupLog(cb) {
 		if (error) {
 			return cb(
 				new Error(
-					ER.NOT_WRITABLE + ' ' +
+					ER_NOT_WRITABLE + ' ' +
 					config.get('log.file') + ' ' +
 					error.message
 				)
@@ -296,7 +293,7 @@ function canWrite(conf, cb) {
 	}
 	fs.exists(conf.file, function __logExists(exists) {
 		if (!exists) {
-			return cb(new Error(ER.LOG_DIR_NOT_FOUND + ' ' + conf.file));
+			return cb(new Error(ER_LOG_DIR_NOT_FOUND + ' ' + conf.file));
 		}
 		fs.open(conf.file, 'w', function __canOpenLogFile(error, fd) {
 			if (error) {

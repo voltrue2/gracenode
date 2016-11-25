@@ -10,13 +10,13 @@ var router = require('./router');
 // UDP command hooks
 var hooks = require('./hooks');
 
-var PORT_IN_USE = 'EADDRINUSE';
-var UDP_VER = 'udp4';
-var IPv6 = 'ipv6';
-var IPv4 = 'ipv4';
-var IPV6_ADDR_PREFIX = 'fe80';
-var LAST_RANGE = 1000;
+const PORT_IN_USE = 'EADDRINUSE';
+const IPv6 = 'ipv6';
+const IPv4 = 'ipv4';
+const IPV6_ADDR_PREFIX = 'fe80';
+const LAST_RANGE = 1000;
 
+var udpVersion = 'udp4';
 var ipv6 = false;
 var logger;
 var config;
@@ -80,7 +80,7 @@ module.exports.setup = function __udpSetup(cb) {
 
 	if (config.version && config.version.toLowerCase() === IPv6) {
 		ipv6 = true;
-		UDP_VER = 'udp6';
+		udpVersion = 'udp6';
 	}
 
 	if (!config.address) {
@@ -94,10 +94,10 @@ module.exports.setup = function __udpSetup(cb) {
 
 	if (isIPv6()) {
 		ipv6 = true;
-		UDP_VER = 'udp6';
+		udpVersion = 'udp6';
 	}
 
-	logger.info('UDP server is using:', UDP_VER);
+	logger.info('UDP server is using:', udpVersion);
 
 	if (!Array.isArray(config.portRange) || config.portRange.length < 1) {
 		logger.error(
@@ -166,7 +166,7 @@ module.exports.setup = function __udpSetup(cb) {
 		var port = ports[portIndex];
 		logger.verbose('binding to:', config.address + ':' + port);
 		// create UDP server
-		server = dgram.createSocket(UDP_VER);
+		server = dgram.createSocket(udpVersion);
 		server.on('error', handleError);
 		server.on('listening', done);
 		server.bind({

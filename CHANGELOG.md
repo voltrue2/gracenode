@@ -16,6 +16,10 @@ It is very useful to build distributed-network system in real-time.
 
 ## Changed
 
+#### Minimum supported version of node.js has changed from 0.12.0 to 4.0.0
+
+#### Overall performance improvements by switching to minimum support version
+
 #### RPC connection kill by error log removed stack trace
 
 ## Deprecated

@@ -19,12 +19,10 @@ var cryptoEngine = {
 var formatFunction;
 var shutdown = false;
 
-var PORT_IN_USE = 'EADDRINUSE';
-var TIMEOUT_FOR_CLOSE = 5000;
-var HEARTBEAT = {
-	ID: 911,
-	NAME: 'heartbeat'
-};
+const PORT_IN_USE = 'EADDRINUSE';
+const TIMEOUT_FOR_CLOSE = 5000;
+const HEARTBEAT_ID =  911;
+const HEARTBEAT_NAME = 'heartbeat';
 var LAST_RANGE = 1000;
 var connectionInfo = {
 	host: null,
@@ -138,7 +136,7 @@ module.exports.setup = function __rpcSetup(cb) {
 			}
 			*/
 			try {
-				router.define(HEARTBEAT.ID, HEARTBEAT.NAME, function __rpcOnHeartbeat(state, cb) {
+				router.define(HEARTBEAT_ID, HEARTBEAT_NAME, function __rpcOnHeartbeat(state, cb) {
 					handleHeartbeat(state, cb);
 				});
 			} catch (e) {

@@ -19,15 +19,16 @@ var using = {
 // development use only by default: this does NOT support cluster mode
 var inMemStorage = {};
 var setup = false;
-var SESSION_ID_NAME = 'sessionid';
-var PROTO = {
-	RPC: 'RPC',
-	UDP: 'UDP'
-};
+const SESSION_ID_NAME = 'sessionid';
+const PROTO_RPC = 'RPC';
+const PROTO_UDP = 'UDP';
 
 mem.setDuration(options.ttl);
 
-module.exports.PROTO = PROTO;
+module.exports.PROTO = {
+	RPC: PROTO_RPC,
+	UDP: PROTO_UDP
+};
 
 module.exports.setup = function __sessSetup() {
 	logger = gn.log.create('session');
@@ -151,11 +152,11 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 		}
 		if (using.udp && using.rpc) {
 			// when we share the same session for RPC and UDP, we create 2 separate sessions
-			set(PROTO.RPC + id, data, function __sessOnSet(error) {
+			set(PROTO_RPC + id, data, function __sessOnSet(error) {
 				if (error) {
 					return cb(error);
 				}
-				set(PROTO.UDP + id, data, cb);
+				set(PROTO_UDP + id, data, cb);
 			});
 			return;
 		}
@@ -169,11 +170,11 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 	}
 	if (using.udp && using.rpc) {
 		// when we share the same session for RPC and UDP, we create 2 separate sessions
-		mem.set(PROTO.RPC + id, sessionData, function __sessOnMemRPCSet(error) {
+		mem.set(PROTO_RPC + id, sessionData, function __sessOnMemRPCSet(error) {
 			if (error) {
 				return cb(error);
 			}
-			mem.set(PROTO.UDP + id, sessionData, function __sessOnMemUDPSet(error) {
+			mem.set(PROTO_UDP + id, sessionData, function __sessOnMemUDPSet(error) {
 				if (error) {
 					return cb(error);
 				}
@@ -212,11 +213,11 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 
 	if (del) {
 		if (using.udp && using.rpc) {
-			del(PROTO.RPC, function __sessOnDel(error) {
+			del(PROTO_RPC, function __sessOnDel(error) {
 				if (error) {
 					return cb(error);
 				}
-				del(PROTO.UDP, cb);
+				del(PROTO_UDP, cb);
 			});
 			return;
 		}
@@ -224,11 +225,11 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 	}
 
 	if (using.udp && using.rpc) {
-		mem.del(PROTO.RPC, function __sessOnMemRPCDel(error) {
+		mem.del(PROTO_RPC, function __sessOnMemRPCDel(error) {
 			if (error) {
 				return cb(error);
 			}
-			mem.del(PROTO.UDP, cb);
+			mem.del(PROTO_UDP, cb);
 		});
 		return;
 	}

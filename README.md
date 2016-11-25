@@ -8,7 +8,7 @@ A node.js framework for real-time applications.
 
 ## Node.js Version
 
-Version `0.12.10` or above.
+Version `4.0.0` or above.
 
 ## What gracenode does
 
