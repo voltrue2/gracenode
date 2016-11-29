@@ -359,6 +359,96 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can send a batched commands and handle them all', function (done) {
+		var msg = 'Batched hello';
+		var cid1 = 8881;
+		var cid2 = 8882;
+		var cid3 = 8883;
+		var cid4 = 8884;
+		gn.rpc.hook([ cid1, cid2, cid3, cid4 ], function (state, next) {
+			state.hookPassed = true;
+			next();
+		});
+		gn.rpc.command(cid1, 'command' + cid1, function (state, cb) {
+			var m = msg + ':1';
+			assert.equal(state.hookToAll, true);
+			assert.equal(state.payload, m);
+			assert.equal(state.hookPassed, true);
+			console.log('response', cid1, m);
+			cb(new Buffer(m));
+		});
+		gn.rpc.command(cid2, 'command' + cid2, function (state, cb) {
+			var m = msg + ':2';
+			assert.equal(state.hookToAll, true);
+			assert.equal(state.payload, m);
+			assert.equal(state.hookPassed, true);
+			console.log('response', cid2, m);
+			cb(new Buffer(m));
+		});
+		gn.rpc.command(cid3, 'command' + cid3, function (state, cb) {
+			var m = msg + ':3';
+			assert.equal(state.hookToAll, true);
+			assert.equal(state.payload, m);
+			assert.equal(state.hookPassed, true);
+			console.log('response', cid3, m);
+			cb(new Buffer(m));
+		});
+		gn.rpc.command(cid4, 'command' + cid4, function (state, cb) {
+			var m = msg + ':4';
+			assert.equal(state.hookToAll, true);
+			assert.equal(state.payload, m);
+			assert.equal(state.hookPassed, true);
+			console.log('response', cid4, m);
+			cb(new Buffer(m));
+		});
+		cipher.seq += 1;
+		client.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function (error) {
+			assert.equal(error, null);
+			var caught = 0;
+			var finished = false;
+			var seen = [];
+			client.recvSecure(cipher, function (data) {
+				if (data && data.message === 'heartbeat') {
+					return;
+				}
+				var m = data.toString();
+				if (seen.indexOf(m) === -1 && m === msg + ':1') {
+					caught += 1;
+					seen.push(m);
+				} else if (seen.indexOf(m) === -1 && m === msg + ':2') {
+					caught += 1;
+					seen.push(m);
+				} else if (seen.indexOf(m) === -1 && m === msg + ':3') {
+					caught += 1;
+					seen.push(m);
+				} else if (seen.indexOf(m) === -1 && m === msg + ':4') {
+					caught += 1;
+					seen.push(m);
+				} else {
+					throw new Error(data.toString());
+				}
+				console.log('received >>>>', data.toString(), 'count', caught, 'seen', seen);
+				if (caught === 4 && !finished) {
+					console.log('done!!');
+					finished = true;
+					client.clearRecv();
+					done();
+				}
+			});
+			var dataList = [
+				{ command: cid1, seq: cipher.seq += 1, payload: msg + ':1' },
+				{ command: cid2, seq: cipher.seq += 1, payload: msg + ':2' },
+				{ command: cid3, seq: cipher.seq += 1, payload: msg + ':3' },
+				{ command: cid4, seq: cipher.seq += 1, payload: msg + ':4' }
+			];
+			console.log('sending', dataList);
+			client.batchSendSecure(sessionId, cipher, dataList, function (error) {
+				assert.equal(error, null);
+			});
+		});
+		
+	});
+
 	it('can fail secure command hook w/ session', function (done) {
 		var clientMsg = 'Secure Hello';
 		var serverMsg = 'Secure Echo';
@@ -374,7 +464,7 @@ describe('gracenode.rpc', function () {
 			next(new Error(errMsg));
 		});
 		client.recvOnceSecure(cipher, function (data) {
-			assert.equal(data, errMsg);
+			assert.equal(data.toString(), errMsg);
 			done();
 		});
 		cipher.seq += 1;

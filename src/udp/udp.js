@@ -283,35 +283,30 @@ function handleMessage(buff, rinfo) {
 		return;
 	}
 
-	if (cryptoEngine.decrypt) {
-		var toDecrypt = transport.isJson() ? buff : parsed.payload;
-		cryptoEngine.decrypt(
-			toDecrypt,
-			gn.session.PROTO.UDP,
-			rinfo.address,
-			rinfo.port,
-			function __udpHandleMessageOnDecrypt(
-					error,
-					sessId,
-					seq,
-					sessData,
-					decrypted
-				) {
+	var pudp = gn.session.PROTO.UDP;
+	var dec = cryptoEngine.decrypt;
+	var addr = rinfo.address;
+	var port = rinfo.port;
+	async.eachSeries(parsed.payloads, function __udpHandleMessageEach(payloadData, next) {
+		if (dec) {
+			var toDecrypt = transport.isJson() ? buff : payloadData.payload;
+			dec(toDecrypt, pudp, addr, port, function (error, sid, seq, sdata, dec) {
 				if (error) {
 					// this is also the same as session failure
 					logger.error('decryption of message failed:', error);
 					dispatchOnError(new Error('DecryptionFailed'), rinfo);
 					return;
 				}
-				parsed.payload = decrypted;
+				payloadData.payload = dec;
 				// route and execute command
-				executeCmd(sessId, seq, sessData, parsed, rinfo);
-			}
-		);
-		return;				
-	}
-
-	executeCmd(null, parsed.seq, null, parsed, rinfo);
+				executeCmd(sid, seq, sdata, payloadData, rinfo);
+				next();
+			});
+			return;
+		}
+		executeCmd(null, payloadData.seq, null, payloadData, rinfo);
+		next();
+	}, function () {});
 }
 
 function dispatchOnError(error, rinfo) {

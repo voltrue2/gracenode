@@ -251,7 +251,7 @@ Response.prototype._send = function __httpResponseSend(data, status) {
 			return;	
 		}
 		that.headers['Content-Length'] = size;
-		if (dataType === 'string') {
+		if (dataType === 'UTF-8') {
 			that.headers['Content-Encoding'] = 'UTF-8';
 		}
 		send(that._req, that._res, that.headers, zipped, dataType, status);

@@ -27,15 +27,15 @@ exports.receiver = function (cb) {
 	client.once('message', function (buff) {
 		var payload;
 		var parsed = transport.parse(buff);
-		if (Buffer.isBuffer(parsed.payload)) {
-			payload = parsed.payload.toString();
+		if (Buffer.isBuffer(parsed.payloads[0].payload)) {
+			payload = parsed.payloads[0].payload.toString();
 		} else {
-			payload = parsed.payload;
+			payload = parsed.payloads[0].payload;
 		}
 		try {
-			cb(JSON.parse(payload), parsed.seq || 0);
+			cb(JSON.parse(payload), parsed.payloads[0].seq || 0);
 		} catch (e) {
-			cb(payload, parsed.seq || 0);
+			cb(payload, parsed.payloads[0].seq || 0);
 		}
 	});
 };
@@ -52,15 +52,15 @@ exports.secureReceiver = function (cipher, cb) {
 		);
 		var payload;
 		var parsed = transport.parse(decrypted);
-		if (Buffer.isBuffer(parsed.payload)) {
-			payload = parsed.payload.toString();
+		if (Buffer.isBuffer(parsed.payloads[0].payload)) {
+			payload = parsed.payloads[0].payload.toString();
 		} else {
-			payload = parsed.payload;
+			payload = parsed.payloads[0].payload;
 		}
 		try {
-			cb(JSON.parse(payload), parsed.seq || 0);
+			cb(JSON.parse(payload), parsed.payloads[0].seq || 0);
 		} catch (e) {
-			cb(payload, parsed.seq || 0);
+			cb(payload, parsed.payloads[0].seq || 0);
 		}
 	});
 };

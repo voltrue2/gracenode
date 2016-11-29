@@ -130,7 +130,7 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 		if (!parsedData) {
 			return next();
 		}
-		that._decrypt(parsedData, next);	
+		that._decrypt(parsedData, next);
 	}, done);
 };
 

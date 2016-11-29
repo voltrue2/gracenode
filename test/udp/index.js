@@ -316,7 +316,7 @@ describe('gracenode.udp', function () {
 		});
 		cli.on('message', function (msg) {
 			var parsed = transport.parse(msg);
-			assert.equal(parsed.payload.toString(), MSG);
+			assert.equal(parsed.payloads[0].payload.toString(), MSG);
 			done();
 		});
 		cli.bind({
@@ -349,7 +349,7 @@ describe('gracenode.udp', function () {
 			});
 			cli.on('message', function (msg) {
 				var parsed = transport.parse(msg);
-				assert.equal(parsed.payload.toString(), MSG);
+				assert.equal(parsed.payloads[0].payload.toString(), MSG);
 				check();
 			});
 			cli.bind({
