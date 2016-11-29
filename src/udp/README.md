@@ -67,7 +67,7 @@ As shown above, `command` property is a required field, but the message from the
 
 ### Binary Protocol
 
-#### Request Packet Structure
+#### Request Packet Structure With Protocol Version 0
 
 |Offset        |Size              |Meaning              |
 |:------------:|:----------------:|:-------------------:|
@@ -78,7 +78,34 @@ As shown above, `command` property is a required field, but the message from the
 |Byte Offset 8 |                  |Payload              |
 |              |uint 32 Big Endian|**Magic Stop Symbol**|
 
-**Protocol Version**: Currently protocol version is 0.
+### Request Packet Structure With Protocol Version 2
+
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 8            |**Protocol Version** |
+|Byte Offset 0 |uint 32 Big Endian|Payload Size         |
+|Byte Offset 4 |uint 8            |Command Count        |
+|Byte Offset 5 |                  |Payload              |
+|              |uint 32 Big Endian|**Magic Stop Symbol**|
+
+#### Protocol Version 2 Payload Structure
+
+Payload is a list of commands and their payload
+
+|Offset        |Size              |Meaning              |
+|:------------:|:----------------:|:-------------------:|
+|Byte Offset 0 |uint 32 Big Endian|Size of payload      |
+|Byte Offset 4 |uint 16 Big Endian|Payload command      |
+|Byte Offset 6 |uint 16 Big Endian|Payload sequence     |
+
+**Protocol version**:
+
+|Value|Type             |Comment          |
+|:---:|:---------------:|:---------------:|
+|0x00 |RPC Version 0    |Single Command   |
+|0x63 |RPC Version 2    |Multiple Commands|
+|0x50 |Proxy Protocol v1|                 |
+|0x0d |Proxy Protocol v2|Not Suppoted     |
 
 #### Reply Packet Structure
 
@@ -93,8 +120,6 @@ UDP server can also push packets as response to command requests.
 |Byte Offset 6 |uint 16 Big Endian|Sequence             |
 |Byte Offset 8 |                  |Payload              |
 |              |uint 32 Big Endian|**Magic Stop Symbol**|
-
-**Protocol Version**: Currently protocol version is 0.
 
 **Reply Flag** The value is `0x01`.
 
