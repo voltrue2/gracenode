@@ -2,11 +2,11 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version43.5.0
+## Version 3.5.0
 
 ## Added
 
-#### (WIP) RPC and UDP added a new protocol: version 10 to allow batched commands
+#### RPC and UDP added a new protocol: version 10 to allow batched commands
 
 #### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
 

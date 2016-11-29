@@ -374,7 +374,6 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload, m);
 			assert.equal(state.hookPassed, true);
-			console.log('response', cid1, m);
 			cb(new Buffer(m));
 		});
 		gn.rpc.command(cid2, 'command' + cid2, function (state, cb) {
@@ -382,7 +381,6 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload, m);
 			assert.equal(state.hookPassed, true);
-			console.log('response', cid2, m);
 			cb(new Buffer(m));
 		});
 		gn.rpc.command(cid3, 'command' + cid3, function (state, cb) {
@@ -390,7 +388,6 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload, m);
 			assert.equal(state.hookPassed, true);
-			console.log('response', cid3, m);
 			cb(new Buffer(m));
 		});
 		gn.rpc.command(cid4, 'command' + cid4, function (state, cb) {
@@ -398,7 +395,6 @@ describe('gracenode.rpc', function () {
 			assert.equal(state.hookToAll, true);
 			assert.equal(state.payload, m);
 			assert.equal(state.hookPassed, true);
-			console.log('response', cid4, m);
 			cb(new Buffer(m));
 		});
 		cipher.seq += 1;
@@ -427,9 +423,7 @@ describe('gracenode.rpc', function () {
 				} else {
 					throw new Error(data.toString());
 				}
-				console.log('received >>>>', data.toString(), 'count', caught, 'seen', seen);
 				if (caught === 4 && !finished) {
-					console.log('done!!');
 					finished = true;
 					client.clearRecv();
 					done();
@@ -441,7 +435,6 @@ describe('gracenode.rpc', function () {
 				{ command: cid3, seq: cipher.seq += 1, payload: msg + ':3' },
 				{ command: cid4, seq: cipher.seq += 1, payload: msg + ':4' }
 			];
-			console.log('sending', dataList);
 			client.batchSendSecure(sessionId, cipher, dataList, function (error) {
 				assert.equal(error, null);
 			});
