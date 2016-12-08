@@ -108,7 +108,7 @@ exports.isCluster = function __gnIsCluster() {
 
 // call this when everything is ready
 exports.start = function __gnStart(cb) {
-	var start = Date.now();
+	const start = Date.now();
 	applyConfig();
 	aeterno.run(function aeternoRun() {
 		var tasks = [
@@ -165,10 +165,10 @@ exports.isSupportedVersion = function __gnIsSupportedVersion() {
 };
 
 function applyConfig() {
-	var logConf = config.get('log');
-	var clusterConf = config.get('cluster');
-	var httpPort = config.get('http.port') || config.get('router.port');
-	var httpHost = config.get('http.host') || config.get('router.host');
+	const logConf = config.get('log');
+	const clusterConf = config.get('cluster');
+	const httpPort = config.get('http.port') || config.get('router.port');
+	const httpHost = config.get('http.host') || config.get('router.host');
 	var isLogging = false;
 	if (config.get('lint.enable') === false) {
 		ignoreLint = true;
@@ -217,8 +217,8 @@ function setup(cb) {
 		}
 		execOnExceptions(error);
 	});
-	var gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
-	var currentV = parseFloat(process.version.replace('v', ''));
+	const gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
+	const currentV = parseFloat(process.version.replace('v', ''));
 	if (gnReqVersion > currentV) {
 		logger.warn(
 			'gracenode requires', pkg.engine.engine,
@@ -304,7 +304,10 @@ function canWrite(conf, cb) {
 							if (error) {
 								return cb(error);
 							}
-							fs.unlink(conf.file + '/.__', cb);
+							fs.unlink(conf.file + '/.__', function () {
+								// we ignore error here...
+								cb();
+							});
 						});
 						return;
 					default:
@@ -345,7 +348,7 @@ function startMod(cb) {
 function setupRender(cb) {
 	if (renderConf) {
 		logger.info('Pre-render template files in', renderConf);
-		var start = Date.now();
+		const start = Date.now();
 		render.config(renderConf.path, renderConf.cacheSize);
 		render.setup(function __onRenderSetup(error) {
 			if (error) {
@@ -365,8 +368,8 @@ function setupSession(cb) {
 }
 
 function startHTTP(cb) {
-	var host = config.get('http.host') || config.get('router.host');
-	var port = config.get('http.port') || config.get('router.port');
+	const host = config.get('http.host') || config.get('router.host');
+	const port = config.get('http.port') || config.get('router.port');
 	if (!cluster.isMaster() && host && port) {
 		exports.http.setup(cb);
 		return;

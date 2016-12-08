@@ -1,9 +1,9 @@
-var app = 'application/';
-var aud = 'audio/';
-var tx = 'text/';
-var img = 'image/';
-var vd = 'video/';
-var map = {
+const app = 'application/';
+const aud = 'audio/';
+const tx = 'text/';
+const img = 'image/';
+const vd = 'video/';
+const map = {
 	'atom+xml': app,
 	'ecmascript': app,
 	'EDI-X12': app,
@@ -59,7 +59,7 @@ var map = {
 module.exports.get = function __httpMimeGet(fileType) {
 	// mime type exception handler
 	fileType = checkTypeException(fileType);
-	var prefix = map[fileType] || null;
+	const prefix = map[fileType] || null;
 	if (!prefix) {
 		return '';
 	}
@@ -67,7 +67,7 @@ module.exports.get = function __httpMimeGet(fileType) {
 };
 
 module.exports.getFromPath = function __httpMimeGetFromPath(path) {
-	var ext = path.substring(path.lastIndexOf('.') + 1);
+	const ext = path.substring(path.lastIndexOf('.') + 1);
 	return module.exports.get(ext);
 };
 

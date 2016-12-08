@@ -1,12 +1,12 @@
 'use strict';
 
-var REP = /{(.*?)}/g;
-var STAT = '/{static:staticfile}';
-var PAT = '([^\\/]+?)';
-var LPAT = '(?:\/(?=$))?$';
+const REP = /{(.*?)}/g;
+const STAT = '/{static:staticfile}';
+const PAT = '([^\\/]+?)';
+const LPAT = '(?:\/(?=$))?$';
 
 exports.convert = function __httpUrlCovert(path, sensitive) {
-	var staticPath = path.indexOf(STAT);
+	const staticPath = path.indexOf(STAT);
 	if (!path.match(REP) && staticPath === -1) {
 		// fast routing: no URL parameters
 		path = sensitive ? path.toLowerCase() : path;
@@ -31,7 +31,7 @@ exports.convert = function __httpUrlCovert(path, sensitive) {
 		match = path.replace(REP, '[^\/]*[^\/]');
 		ext = path.replace(REP, PAT);
 	}
-	var lindex = ext.lastIndexOf(PAT);
+	const lindex = ext.lastIndexOf(PAT);
 	if (lindex !== -1) {
 		if (ext[ext.length - 1] === '/') {
 			ext = ext.substring(0, ext.length - 1);

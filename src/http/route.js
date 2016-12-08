@@ -31,7 +31,7 @@ exports.find = function __httpRouteFind(method, fullpath) {
 	// head is treated as get
 	method = method === 'HEAD' ? 'GET' : method;
 	// extract path
-	var queryIndex = fullpath.indexOf('?');
+	const queryIndex = fullpath.indexOf('?');
 	var queryList = [];
 	var path = fullpath;
 	if (queryIndex !== -1) {
@@ -70,7 +70,7 @@ function getParamList(matched) {
 function parseQuery(list) {
 	var query = {};
 	for (var i = 0, len = list.length; i < len; i++) {
-		var sep = list[i].split('=');
+		const sep = list[i].split('=');
 		query[sep[0]] = typecast(sep[1]);
 	}
 	return query;
@@ -129,7 +129,7 @@ function cast(type, value) {
 			}
 			return parseFloat(val, 10);
 		case 'bool':
-			var bool = val.toLowerCase();
+			const bool = val.toLowerCase();
 			if (bool !== 'true' && bool !== 'false') {
 				throw new Error('InvalidBool: ' + val);
 			}
@@ -139,7 +139,7 @@ function cast(type, value) {
 		default:
 			if (type instanceof RegExp) {
 				// data type is regex
-				var pass = type.test(val);
+				const pass = type.test(val);
 				if (!pass) {
 					throw Error('InvalidParameterTypeByRegExp: ' + val);
 				}

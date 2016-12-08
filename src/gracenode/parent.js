@@ -2,7 +2,7 @@
 
 var parent = module.parent;
 var topmostParent;
-var IGNORE = 'repl';
+const IGNORE = 'repl';
 
 findTopmostParent();
 

@@ -18,7 +18,7 @@ function Handler(dir) {
 
 Handler.prototype.handle = function __httpStaticHandlerHandle(req, res) {
 	var filename = req.params.staticfile;
-	var len = filename.length - 1;
+	const len = filename.length - 1;
 	if (filename[len] === '/') {
 		filename = filename.substring(0, len);
 	}

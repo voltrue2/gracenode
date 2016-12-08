@@ -5,10 +5,10 @@ var hooks = require('./hooks');
 var gn = require('../gracenode');
 var logger;
 
-var PARAM_NAME_REGEX = /{(.*?)}/g;
-var PARAM_REGEX = /\/{(.*?)}/g;
-var BRACE_REGEX = /({|})/g;
-var TYPES = [
+const PARAM_NAME_REGEX = /{(.*?)}/g;
+const PARAM_REGEX = /\/{(.*?)}/g;
+const BRACE_REGEX = /({|})/g;
+const TYPES = [
 	'string',
 	'number',
 	'bool',
@@ -103,7 +103,7 @@ exports.getRoute = function __mappingGetRoute(method, path) {
 };
 
 function addToFastRoutes(method, path, handler, opt) {
-	var key = !opt.sensitive ? path.toLowerCase() : path;
+	const key = !opt.sensitive ? path.toLowerCase() : path;
 	if (fastroutes[method][key]) {
 		fastroutes[method][key].handlers.push(handler);
 		return;
@@ -120,11 +120,11 @@ function addToFastRoutes(method, path, handler, opt) {
 
 function addToRoutes(method, path, handler, opt, conv) {
 	// add to routes
-	var key = getRouteKey(path);
+	const key = getRouteKey(path);
 	if (!routes[method][key]) {
 		routes[method][key] = [];
 	}
-	var lkey = key.toLowerCase();
+	const lkey = key.toLowerCase();
 	if (!routes[method][lkey]) {
 		routes[method][lkey] = [];
 	}
@@ -132,7 +132,7 @@ function addToRoutes(method, path, handler, opt, conv) {
 	if (routes[method][key].length) {
 		// since javascript passes around reference to route route object,
 		// do alone will update for lowercase and all routes
-		var success = updateDupRegistry(
+		const success = updateDupRegistry(
 			routes[method][key],
 			method,
 			path,
@@ -169,7 +169,7 @@ function addToRoutes(method, path, handler, opt, conv) {
 }
 
 function updateDupRegistry(list, method, path, key, handler) {
-	var regPath = path.replace(PARAM_REGEX, '');
+	const regPath = path.replace(PARAM_REGEX, '');
 	for (var i = 0, len = list.length; i < len; i++) {
 		var item = list[i];
 		if (item.path === regPath) {
@@ -193,7 +193,7 @@ function searchFastRoute(method, path) {
 		return map[path];
 	}
 	// try case insensitive
-	var lpath = path.toLowerCase();
+	const lpath = path.toLowerCase();
 	var match = map[lpath];
 	if (match && match.sensitive) {
 		return null;
@@ -206,7 +206,7 @@ function searchRoute(method, path) {
 		logger.error(method, 'not supported');
 		return null;
 	}
-	var key = getRouteKey(path);
+	const key = getRouteKey(path);
 	var list = routes[method][key];
 	if (!list) {
 		return searchAllRoutes(method, path);

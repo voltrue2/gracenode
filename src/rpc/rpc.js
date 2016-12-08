@@ -23,7 +23,7 @@ const PORT_IN_USE = 'EADDRINUSE';
 const TIMEOUT_FOR_CLOSE = 5000;
 const HEARTBEAT_ID =  911;
 const HEARTBEAT_NAME = 'heartbeat';
-var LAST_RANGE = 1000;
+const LAST_RANGE = 1000;
 var connectionInfo = {
 	host: null,
 	port: null,
@@ -88,7 +88,7 @@ module.exports.setup = function __rpcSetup(cb) {
 	var ports = [];
 	var portIndex = 0;
 	var boundPort;
-	var pend = config.portRange[1] || config.portRange[0];
+	const pend = config.portRange[1] || config.portRange[0];
 
 	for (var p = config.portRange[0]; p <= pend; p++) {
 		ports.push(p);
@@ -121,7 +121,7 @@ module.exports.setup = function __rpcSetup(cb) {
 			server.close(next);
 		});
 
-		var info = server.address();
+		const info = server.address();
 		connectionInfo.address = info.address;
 		connectionInfo.host = config.host;
 		connectionInfo.port = boundPort;
@@ -151,7 +151,7 @@ module.exports.setup = function __rpcSetup(cb) {
 		cb();
 	};	
 	var listen = function __rpcListen() {
-		var port = ports[portIndex];
+		const port = ports[portIndex];
 		logger.verbose('binding to:', config.host + ':' + port);
 		server.listen({
 			port: port,

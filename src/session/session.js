@@ -128,8 +128,8 @@ module.exports.useUDPSession = function __sessUseUDPSession() {
 // this needs to be manually called in the application
 // typically in login etc
 module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionData, cb) {
-	var uuid = gn.lib.uuid.v4();
-	var id = uuid.toString();
+	const uuid = gn.lib.uuid.v4();
+	const id = uuid.toString();
 
 	if (options.useCookie) {
 		var cookies = req.cookies();
@@ -239,7 +239,7 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 	var ce = gn.lib.CryptoEngine;
 	var res = ce.getSessionIdAndPayload(packet);
-	var sid = (using.udp && using.rpc) ? sockType + res.sessionId : res.sessionId;
+	const sid = (using.udp && using.rpc) ? sockType + res.sessionId : res.sessionId;
 	if (get && set) {
 		get(sid, function __sessOnSockValGet(error, sessionData) {
 			if (error) {
@@ -308,7 +308,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		return next(new Error('InvalidSeq'));
 	}
 	// check session TTL
-	var now = Date.now();
+	const now = Date.now();
 	if (sess.ttl <= now) {
 		logger.error(
 			'session ID has expired:',
@@ -388,7 +388,7 @@ function HTTPSessionValidation(req, res, next) {
 	}
 
 	if (options.oneTime) {
-		var prevId = id;
+		const prevId = id;
 		newId = gn.lib.uuid.v4().toString();
 		// update the session ID in response headers
 		if (!options.useCookie) {

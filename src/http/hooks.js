@@ -27,9 +27,9 @@ exports.hook = function __httpHook(path, func) {
 		}
 		return;
 	}
-	var headingSlash = path[0] === '/' ? '' : '/';
+	const headingSlash = path[0] === '/' ? '' : '/';
 	var hookPath = headingSlash + path.replace(HOOK_REG, '');
-	var len = hookPath.length - 1;
+	const len = hookPath.length - 1;
 	hookPath = (hookPath[len] === '/') ? hookPath.substring(0, len) : hookPath;
 	// add the hook function to exact match
 	if (!hooks.hasOwnProperty(hookPath)) {
@@ -74,8 +74,8 @@ exports.findHooks = function __findHooks(key) {
 			matchedHooks = matchedHooks.concat(hooks[path]);
 			continue;
 		}
-		var index = key.indexOf(path);
-		var lastChar = key[path.length];
+		const index = key.indexOf(path);
+		const lastChar = key[path.length];
 		if (index === 0 && (lastChar === '/' || lastChar === undefined)) {
 			matchedHooks = matchedHooks.concat(hooks[path]);
 		}

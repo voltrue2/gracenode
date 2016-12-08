@@ -101,7 +101,7 @@ module.exports.del = function __sessMemDel(id, cb) {
 };
 
 function removeExpired() {
-	var now = Date.now();
+	const now = Date.now();
 	for (var id in data) {
 		if (now >= data[id].ttl) {
 			logger.verbose('session expired:', id, now, '>=', data[id].ttl);

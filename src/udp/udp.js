@@ -144,7 +144,7 @@ module.exports.setup = function __udpSetup(cb) {
 		running = true;
 		server.on('message', handleMessage);
 		
-		var info = server.address();
+		const info = server.address();
 
 		connectionInfo.address = info.address;
 		connectionInfo.host = config.address;
@@ -163,7 +163,7 @@ module.exports.setup = function __udpSetup(cb) {
 			server.close();
 		}
 
-		var port = ports[portIndex];
+		const port = ports[portIndex];
 		logger.verbose('binding to:', config.address + ':' + port);
 		// create UDP server
 		server = dgram.createSocket(udpVersion);
@@ -179,7 +179,7 @@ module.exports.setup = function __udpSetup(cb) {
 	var handleError = function __udpHandleError(error) {
 		if (error.code === PORT_IN_USE) {
 			// try next port in range
-			var badPort = ports[portIndex];
+			const badPort = ports[portIndex];
 			logger.verbose('port is in use:', badPort);
 			portIndex += 1;
 			if (!ports[portIndex]) {
@@ -192,7 +192,7 @@ module.exports.setup = function __udpSetup(cb) {
 		gn.stop(error);
 	};
 
-	var pend = config.portRange[1] || config.portRange[0];
+	const pend = config.portRange[1] || config.portRange[0];
 
 	for (var p = config.portRange[0]; p <= pend; p++) {
 		ports.push(p);
@@ -285,8 +285,8 @@ function handleMessage(buff, rinfo) {
 
 	var pudp = gn.session.PROTO.UDP;
 	var dec = cryptoEngine.decrypt;
-	var addr = rinfo.address;
-	var port = rinfo.port;
+	const addr = rinfo.address;
+	const port = rinfo.port;
 	async.eachSeries(parsed.payloads, function __udpHandleMessageEach(payloadData, next) {
 		if (dec) {
 			var toDecrypt = transport.isJson() ? buff : payloadData.payload;
@@ -397,7 +397,7 @@ function send(state, msg, seq, status, cb) {
 				'to:', state.clientAddress + ':' +
 				state.clientPort
 			);
-			var rinfo = {
+			const rinfo = {
 				address: state.clientAddress,
 				port: state.clientPort
 			};
@@ -420,7 +420,7 @@ function send(state, msg, seq, status, cb) {
 					state.seq,
 					error
 				);
-				var rinfo2 = {
+				const rinfo2 = {
 					address: state.clientAddress,
 					port: state.clientPort
 				};
@@ -485,8 +485,8 @@ function findAddrMap() {
 	for (var interfaceName in neti) {
 		var list = neti[interfaceName];
 		for (var i = 0, len = list.length; i < len; i++) {
-			var fam = list[i].family.toLowerCase();
-			var addr = list[i].address;
+			const fam = list[i].family.toLowerCase();
+			const addr = list[i].address;
 			if (fam === IPv6 && addr.indexOf(IPV6_ADDR_PREFIX) === 0) {
 				map.ipv6.push(addr + '%' + interfaceName);
 			} else if (fam === IPv4) {

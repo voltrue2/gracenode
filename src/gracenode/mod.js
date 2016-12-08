@@ -5,14 +5,11 @@ var async = require('../../lib/async');
 var log = require('gracelog');
 var er = require('./error');
 
-var ER = {
-	DUP_NAME: 'DUPLICATE_MODULE_NAME',
-	DUP_PATH: 'DUPLICATE_MODULE_PATH',
-	LOAD_ERR: 'MODULE_LOAD_ERROR',
-	MOD_NOT_FOUND: 'MODULE_NOT_FOUND',
-	MISSING_CONFIG_FUNC: 'MISSING_CONFIG_FUNCTION',
-	MISSING_CONFIG: 'MISSING_CONFIG'
-};
+const E_DUP_NAME = 'DUPLICATE_MODULE_NAME';
+const E_DUP_PATH = 'DUPLICATE_MODULE_PATH';
+const E_MOD_NOT_FOUND = 'MODULE_NOT_FOUND';
+const E_MISSING_CONFIG_FUNC = 'MISSING_CONFIG_FUNCTION';
+const E_MISSING_CONFIG = 'MISSING_CONFIG';
 
 var logger;
 var pathList = [];
@@ -21,7 +18,7 @@ var pending = {};
 exports.use = function __modUse(name, pathOrMod, options) {
 	if (pending[name]) {
 		throw er.create(
-			ER.DUP_NAME, name +
+			E_DUP_NAME, name +
 			': ' +
 			'[' + pathOrMod + '] & ' +
 			'[' + pending[name].path + ']'
@@ -29,7 +26,7 @@ exports.use = function __modUse(name, pathOrMod, options) {
 	}
 	if (pathList.indexOf(pathOrMod) !== -1) {
 		throw er.create(
-			ER.DUP_PATH, name +
+			E_DUP_PATH, name +
 			': ' +
 			((typeof pathOrMod !== 'string') ? '[module object]' : pathOrMod)
 		);
@@ -57,7 +54,7 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 				if (error) {
 					return next(error);
 				}
-				var modName = createModName(key);
+				const modName = createModName(key);
 				gn.mod[modName] = item.path;
 				logger.info(
 					'Bootstrapped a module:',
@@ -76,7 +73,7 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 			if (!exists) {
 				return next(
 					er.create(
-						ER.MOD_NOT_FOUND, key + ': ' + item.path
+						E_MOD_NOT_FOUND, key + ': ' + item.path
 					)
 				);
 			}
@@ -106,7 +103,7 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 				if (error) {
 					return next(error);
 				}
-				var modName = createModName(key);
+				const modName = createModName(key);
 				gn.mod[modName] = mod;
 				logger.info(
 					'Bootstrapped a module:',
@@ -168,9 +165,9 @@ function readModConfig(configMap, key, mod, cb) {
 		key + '.config():', (func ? true : false)
 	);
 	if (config && !func) {
-		return cb(er.create(ER.MISSING_CONFIG_FUNC, key));
+		return cb(er.create(E_MISSING_CONFIG_FUNC, key));
 	} else if (!config && func) {
-		return cb(er.create(ER.MISSING_CONFIG, key));
+		return cb(er.create(E_MISSING_CONFIG, key));
 	} else if (!config && !func) {
 		return cb();
 	}

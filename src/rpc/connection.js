@@ -22,7 +22,7 @@ module.exports.create = function __rpcConnectionCreate(sock, options) {
 
 function Connection(sock, options) {
 	EventEmitter.call(this);
-	var you = sock.remoteAddress + ':' + sock.remotePort;
+	const you = sock.remoteAddress + ':' + sock.remotePort;
 	var that = this;
 	this.sock = sock;
 	this.opt = options;

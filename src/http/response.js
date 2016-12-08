@@ -8,21 +8,21 @@ var util = require('./util');
 var gn = require('../gracenode');
 var logger;
 
-var DEFAULT_HEADERS = {
+const DEFAULT_HEADERS = {
 	'Cache-Control': 'no-cache, must-revalidate',
 	'Connection': 'Keep-Alive',
 	'Content-Encoding': 'gzip',
 	'Pragma': 'no-cache', // for old client that does not support cache-control header
 	'Vary': 'Accept-Encoding'
 };
-var DEFAULT_STATUS = 200;
-var DEFAULT_REDIRECT_STATUS = 302;
-var REDIRECT_STATUS_LIST = [
+const DEFAULT_STATUS = 200;
+const DEFAULT_REDIRECT_STATUS = 302;
+const REDIRECT_STATUS_LIST = [
 	302,
 	303, // for GET
 	307 // for 307 keeping the original request type
 ];
-var DEFAULT_ERROR_STATUS = 400;
+const DEFAULT_ERROR_STATUS = 400;
 
 exports.setup = function __httpResponseSetup() {
 	logger = gn.log.create('HTTP.response');
@@ -100,7 +100,7 @@ Response.prototype.download = function __httpResponseDownload(dataOrPath, status
 				that.error(error, 404);
 				return;
 			}
-			var filename = dataOrPath.substring(dataOrPath.lastIndexOf('/') + 1); 
+			const filename = dataOrPath.substring(dataOrPath.lastIndexOf('/') + 1); 
 			that.headers['Content-Disposition'] = 'attachment; filename=' + filename;
 			that.headers['Content-Type'] = mime.getFromPath(dataOrPath);
 			that.headers['Content-Length'] = data.length;
@@ -177,16 +177,16 @@ Response.prototype.stream = function __httpResponseStream(path) {
 			util.fmt('url', that._req.method + ' ' + that._req.url),
 			util.fmt('id', that._req.id)
 		);
-		var type = mime.getFromPath(path);
-		var total = stat.size;
+		const type = mime.getFromPath(path);
+		const total = stat.size;
 		if (that._req.headers.range) {
-			var range = that._req.headers.range;
-			var parts = range.replace(/bytes=/, '').split('-');
-			var partialStart = parts[0];
-			var partialEnd = parts[1];
-			var start = parseInt(partialStart, 10);
-			var end = partialEnd ? parseInt(partialEnd, 10) : total - 1;
-			var chunkSize = (end - start) + 1;
+			const range = that._req.headers.range;
+			const parts = range.replace(/bytes=/, '').split('-');
+			const partialStart = parts[0];
+			const partialEnd = parts[1];
+			const start = parseInt(partialStart, 10);
+			const end = partialEnd ? parseInt(partialEnd, 10) : total - 1;
+			const chunkSize = (end - start) + 1;
 			var rstream = fs.createReadStream(path, { start: start, end: end });
 			that._res.writeHead(206, {
 				'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
@@ -290,11 +290,11 @@ function send(req, res, headers, data, type, status) {
 	// setup response headers
 	res.writeHead(status || DEFAULT_STATUS, headers);
 	// request execution time
-	var time = Date.now() - req.startTime;
-	var furl = util.fmt('url', req.method + ' ' + req.url);
-	var fid = util.fmt('id', req.id);
-	var fstatus = util.fmt('status', status);
-	var ftime = util.fmt('time', time + 'ms');
+	const time = Date.now() - req.startTime;
+	const furl = util.fmt('url', req.method + ' ' + req.url);
+	const fid = util.fmt('id', req.id);
+	const fstatus = util.fmt('status', status);
+	const ftime = util.fmt('time', time + 'ms');
 	// respond
 	if (req.method === 'HEAD') {
 		// HEAD does not send content

@@ -18,14 +18,9 @@ var trailingSlash = false;
 var errorMap = {};
 var connectionInfo = {};
 
-var STATIC_PARAM = '{static:staticfile}';
-
-var ERROR = {
-	NOT_FOUND: 'NOT_FOUND',
-	INTERNAL: 'INTERNAL_ERROR',
-	BAD_REQUEST: 'BAD_REQUEST',
-	NOT_SUPPORTED: 'NOT_SUPPORTED'
-};
+const STATIC_PARAM = '{static:staticfile}';
+const E_NOT_FOUND = 'NOT_FOUND';
+const E_ALREADY_REGISTERD = 'ALREADY_REGISTERD';
 
 exports.config = function __httpConfig(configIn) {
 	logger = gn.log.create('HTTP');
@@ -84,7 +79,7 @@ exports.static = function __httpStatic(path, dirList, opt) {
 			item += '/';
 		}
 		// exact same path as defined
-		var filepath = path + item + STATIC_PARAM;
+		const filepath = path + item + STATIC_PARAM;
 		exports.get(filepath, staticRouter.handle(dirList[i]), opt);
 		// treat the given path as document root
 		if (len === 1) {
@@ -107,7 +102,7 @@ exports.error = function __httpError(status, func) {
 		if (logger) {
 			logger.error('Error handler already registerd for', status);
 		}
-		throw new Error('ERROR_ALREADY_REGISTERD');
+		throw new Error(E_ALREADY_REGISTERD);
 	}
 	if (logger) {
 		logger.info('Error handler registered for:', status, '[' + (func.name || 'anonymous') + ']');
@@ -169,10 +164,10 @@ exports.setup = function __httpSetup(cb) {
 function requestHandler(req, res) {
 	
 	if (trailingSlash) {
-		var uriComponents = req.url.split('?');
-		var uri = uriComponents[0];
-		var queries = uriComponents[1] ? '?' + uriComponents[1] : '';
-		var trailing = uri.substring(uri.length - 1);
+		const uriComponents = req.url.split('?');
+		const uri = uriComponents[0];
+		const queries = uriComponents[1] ? '?' + uriComponents[1] : '';
+		const trailing = uri.substring(uri.length - 1);
 		if (trailing !== '/') {
 			logger.verbose(
 				'Enforcing trailing slash on',
@@ -190,8 +185,8 @@ function requestHandler(req, res) {
 	// set start time
 	req.startTime = Date.now();
 
+	const method = req.method;
 	var parsed;
-	var method = req.method;
 	var resp = new Response(req, res, errorMap);
 	try {
 		parsed = route.find(method, req.url);
@@ -200,14 +195,14 @@ function requestHandler(req, res) {
 		resp.error(error, 400);
 		return;
 	}
-	var furl = util.fmt('url', req.method + ' ' + req.url);
-	var fid = util.fmt('id', req.id);
+	const furl = util.fmt('url', req.method + ' ' + req.url);
+	const fid = util.fmt('id', req.id);
 	logger.info('Request Resolved:', furl, fid);
 	logger.verbose('Resolved Request:', furl, fid, parsed, req.headers);
 
 	if (parsed === null) {
 		// 404
-		resp.error(new Error(ERROR.NOT_FOUND), 404);
+		resp.error(new Error(E_NOT_FOUND), 404);
 		return;	
 	}
 
