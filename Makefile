@@ -32,4 +32,5 @@ ifndef group
   group=false
 endif
 test: ## Execute all unit tests. Optionally you can run: make test [single=boilerplate|start|dev|server|express|daemon|http|udp|rpc|render] [group= comma separated test names] [log=true]
+	./bin/lint index.js src/ lib/ boilerplate/api
 	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 50000 --log=$(log) --single=$(single) --group=$(group)

@@ -36,7 +36,7 @@ function Connection(sock, options) {
 		that._data(packet);
 	});
 	this.sock.on('end', function __rpcConnectionOnEnd() {
-		logger.info(that.name, 'TCP connection ended by client');
+		logger.debug(that.name, 'TCP connection ended by client');
 		that.close();
 	});
 	this.sock.on('error', function __rpcConnectionOnError(error) {
@@ -92,7 +92,7 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 		if (error) {
 			logger.error(this.name, 'TCP connection closed by error:', error);
 		} else {
-			logger.info(this.name, 'TCP connection closed');
+			logger.debug(this.name, 'TCP connection closed');
 		}
 	}
 	this._clear();
@@ -103,7 +103,7 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 		if (error) {
 			logger.error(this.name, 'TCP connection killed from server:', error.message);
 		} else {
-			logger.info(this.name, 'TCP connection killed from server');
+			logger.debug(this.name, 'TCP connection killed from server');
 		}
 		try {
 			this.sock.destroy();

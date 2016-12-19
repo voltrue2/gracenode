@@ -197,7 +197,7 @@ function requestHandler(req, res) {
 	}
 	const furl = util.fmt('url', req.method + ' ' + req.url);
 	const fid = util.fmt('id', req.id);
-	logger.info('Request Resolved:', furl, fid);
+	logger.debug('Request Resolved:', furl, fid);
 	logger.verbose('Resolved Request:', furl, fid, parsed, req.headers);
 
 	if (parsed === null) {

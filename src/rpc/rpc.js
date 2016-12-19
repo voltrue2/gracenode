@@ -292,7 +292,7 @@ function handleConn(sock) {
 	});
 	emitter.once('close', close);
 
-	logger.info('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
+	logger.debug('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
 
 	connections[conn.id] = conn;
 }
@@ -317,7 +317,7 @@ function setupCleanTimedoutConnections() {
 				if (conn && conn.isTimedout()) {
 					conn.kill(new Error('TimedOutConnection'));
 					delete connections[ids[left]];
-					logger.info('timed out connection cleaned:', conn.id);
+					logger.debug('timed out connection cleaned:', conn.id);
 					conn = null;
 				}
 				if (left === right) {
@@ -327,23 +327,12 @@ function setupCleanTimedoutConnections() {
 				if (conn && conn.isTimedout()) {
 					conn.kill(new Error('TimedOutConnection'));
 					delete connections[ids[right]];
-					logger.info('timed out connection cleaned:', conn.id);
+					logger.debug('timed out connection cleaned:', conn.id);
 					conn = null;
 				}
 				left += 1;
 				right -= 1;
 			}
-			/*
-			for (var id in connections) {
-				var conn = connections[id];
-				if (conn.isTimedout()) {
-					conn.kill(new Error('TimedOutConnection'));
-					delete connections[id];
-					logger.info('timed out connection cleaned:', conn.id);
-					conn = null;
-				}
-			}
-			*/
 		} catch (e) {
 			logger.error('clean timed out connections:', e);
 		}

@@ -50,9 +50,9 @@ module.exports.route = function __udpRouterRoute(packet) {
 		return null;	
 	}
 	
-	var cmd = commands[packet.command];
+	const cmd = commands[packet.command];
 
-	var hookList = hooks.findByCmdId(packet.command);
+	const hookList = hooks.findByCmdId(packet.command);
 
 	return {
 		id: cmd.id,
@@ -63,7 +63,7 @@ module.exports.route = function __udpRouterRoute(packet) {
 };
 
 function getHookExec(cmdId, cmdName, hookList) {
-	var exec = function __udpRouterGetHookExecExec(state, cb) {
+	const exec = function __udpRouterGetHookExecExec(state, cb) {
 		async.eachSeries(hookList, function __udpRouterGetHookExecEach(hook, next) {
 			hook(state, next);
 		}, cb);

@@ -252,8 +252,8 @@ module.exports.push = function (msg, address, port, cb) {
 // msg must be a buffer
 // list = [ { address, port } { ... } ];
 module.exports.multipush = function (msg, list, cb) {
-	var sender = function __multipushUdpSender () {
-		var dest = list.shift();
+	const sender = function __multipushUdpSender () {
+		const dest = list.shift();
 		if (dest) {
 			module.exports.push(msg, dest.address, dest.port, next);
 			return;
@@ -263,7 +263,7 @@ module.exports.multipush = function (msg, list, cb) {
 			cb();
 		}
 	};
-	var next = function __multipushUdpNext() {
+	const next = function __multipushUdpNext() {
 		setImmediate(sender);
 	};
 	next();
@@ -283,13 +283,13 @@ function handleMessage(buff, rinfo) {
 		return;
 	}
 
-	var pudp = gn.session.PROTO.UDP;
-	var dec = cryptoEngine.decrypt;
+	const pudp = gn.session.PROTO.UDP;
+	const dec = cryptoEngine.decrypt;
 	const addr = rinfo.address;
 	const port = rinfo.port;
 	async.eachSeries(parsed.payloads, function __udpHandleMessageEach(payloadData, next) {
 		if (dec) {
-			var toDecrypt = transport.isJson() ? buff : payloadData.payload;
+			const toDecrypt = transport.isJson() ? buff : payloadData.payload;
 			dec(toDecrypt, pudp, addr, port, function (error, sid, seq, sdata, dec) {
 				if (error) {
 					// this is also the same as session failure
@@ -316,7 +316,7 @@ function dispatchOnError(error, rinfo) {
 }
 
 function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
-	var cmd = router.route(msg);	
+	const cmd = router.route(msg);	
 	
 	if (!cmd) {
 		logger.error('command not found:', msg);
@@ -360,8 +360,8 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 }
 
 function executeCommands(cmd, state) {
-	var handlers = cmd.handlers;
-	var done = function __udpExecuteCommandsDone(error) {
+	const handlers = cmd.handlers;
+	const done = function __udpExecuteCommandsDone(error) {
 		if (error) {
 			logger.error(
 				'command(s) executed with an error:',
@@ -389,7 +389,7 @@ function send(state, msg, seq, status, cb) {
 		msg = transport.createPush(seq || 0, msg);
 	}
 
-	var sent = function __udpSendDone(error) {
+	const sent = function __udpSendDone(error) {
 		if (error) {
 			logger.error(
 				'sending UDP packet failed:',
