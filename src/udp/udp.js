@@ -289,7 +289,10 @@ function handleMessage(buff, rinfo) {
 	const port = rinfo.port;
 	async.eachSeries(parsed.payloads, function __udpHandleMessageEach(payloadData, next) {
 		if (dec) {
-			const toDecrypt = transport.isJson() ? buff : payloadData.payload;
+			var toDecrypt = buff;
+			if (!transport.isJson()) {
+				toDecrypt = payloadData.payload;
+			}
 			dec(toDecrypt, pudp, addr, port, function (error, sid, seq, sdata, dec) {
 				if (error) {
 					// this is also the same as session failure
