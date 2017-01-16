@@ -242,7 +242,10 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 	if (res instanceof Error) {
 		return next(res);
 	}
-	const sid = (using.udp && using.rpc) ? sockType + res.sessionId : res.sessionId;
+	var sid = res.sessionId;
+	if (using.udp && using.rpc) {
+		sid = sockType + res.sessionId;
+	}
 	if (get && set) {
 		get(sid, function __sessOnSockValGet(error, sessionData) {
 			if (error) {

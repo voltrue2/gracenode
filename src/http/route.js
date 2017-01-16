@@ -1,8 +1,8 @@
 'use strict';
 
-var gn = require('../gracenode');
-var hooks = require('./hooks');
-var mapping = require('./mapping');
+const gn = require('../gracenode');
+const hooks = require('./hooks');
+const mapping = require('./mapping');
 
 var logger;
 
@@ -38,12 +38,12 @@ exports.find = function __httpRouteFind(method, fullpath) {
 		queryList = fullpath.substring(queryIndex + 1).split('&');
 		path = fullpath.substring(0, queryIndex);
 	}
-	var res = mapping.getRoute(method, path);
+	const res = mapping.getRoute(method, path);
 	if (!res) {
 		return null;
 	}
 	// parameters
-	var paramList = getParamList(res.matched);
+	const paramList = getParamList(res.matched);
 	// create found object
 	return {
 		path: res.route.path,
@@ -56,7 +56,7 @@ exports.find = function __httpRouteFind(method, fullpath) {
 };
 
 function getParamList(matched) {
-	var list = [];
+	const list = [];
 	var j = 0;
 	for (var i = 1, len = matched.length; i < len; i++) {
 		if (matched[i] !== undefined) {
@@ -68,7 +68,7 @@ function getParamList(matched) {
 }
 
 function parseQuery(list) {
-	var query = {};
+	const query = {};
 	for (var i = 0, len = list.length; i < len; i++) {
 		const sep = list[i].split('=');
 		query[sep[0]] = typecast(sep[1]);
@@ -87,7 +87,7 @@ function parseParams(list, names) {
 }
 
 function typecast(value) {
-	var val = decodeURI(value);
+	const val = decodeURI(value);
 	if (isNaN(val)) {
 		switch (val) {
 			case 'true':
@@ -121,7 +121,7 @@ function typecast(value) {
 }
 
 function cast(type, value) {
-	var val = decodeURI(value);
+	const val = decodeURI(value);
 	switch (type) {
 		case 'number':
 			if (isNaN(val)) {

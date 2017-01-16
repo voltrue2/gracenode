@@ -1,11 +1,12 @@
 'use strict';
 
-var gn = require('../gracenode');
+const gn = require('../gracenode');
 
-var HOOK_REG = /\/{(.*?)}/g;
+const HOOK_REG = /\/{(.*?)}/g;
+
+const hooks = {};
 
 var logger;
-var hooks = {};
 
 exports.setup = function __httpSetup() {
 	logger = gn.log.create('HTTP.hooks');
@@ -46,22 +47,22 @@ exports.hook = function __httpHook(path, func) {
 };
 
 exports.updateHooks = function __updateHooks(fastRoutes, routes, allroutes) {
-	for (var method in routes) {
+	for (const method in routes) {
 		// fast routes
-		var map = fastRoutes[method];
-		for (var path in map) {
+		const map = fastRoutes[method];
+		for (const path in map) {
 			fastRoutes[method][path].hooks = exports.findHooks(map[path].path);
 		}
 		// shortcut routes
-		for (var key in routes[method]) {
+		for (const key in routes[method]) {
 			for (var j = 0, jen = routes[method][key].length; j < jen; j++) {
 				routes[method][key][j].hooks = exports.findHooks(routes[method][key][j].path);
 			}
 		}
 		// all routes
-		var list = allroutes[method];
+		const list = allroutes[method];
 		for (var i = 0, len = list.length; i < len; i++) {
-			var route = list[i];
+			const route = list[i];
 			allroutes[method][i].hooks = exports.findHooks(route.path);
 		}
 	}
@@ -69,7 +70,7 @@ exports.updateHooks = function __updateHooks(fastRoutes, routes, allroutes) {
 
 exports.findHooks = function __findHooks(key) {
 	var matchedHooks = [];
-	for (var path in hooks) {
+	for (const path in hooks) {
 		if (path === '/') {
 			matchedHooks = matchedHooks.concat(hooks[path]);
 			continue;

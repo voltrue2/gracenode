@@ -1,15 +1,15 @@
 'use strict';
 
-var fs = require('fs');
-var async = require('../../lib/async');
-var log = require('gracelog');
-var er = require('./error');
-
 const E_DUP_NAME = 'DUPLICATE_MODULE_NAME';
 const E_DUP_PATH = 'DUPLICATE_MODULE_PATH';
 const E_MOD_NOT_FOUND = 'MODULE_NOT_FOUND';
 const E_MISSING_CONFIG_FUNC = 'MISSING_CONFIG_FUNCTION';
 const E_MISSING_CONFIG = 'MISSING_CONFIG';
+
+const fs = require('fs');
+const async = require('../../lib/async');
+const log = require('gracelog');
+const er = require('./error');
 
 var logger;
 var pathList = [];
@@ -45,10 +45,10 @@ exports.use = function __modUse(name, pathOrMod, options) {
 
 exports.start = function __modStart(gn, configMap, onExit, cb) {
 	logger = log.create('module');
-	var keys = Object.keys(pending);
-	var handle = function __onModStartHandle(key, next) {
+	const keys = Object.keys(pending);
+	const handle = function __onModStartHandle(key, next) {
 		var start = Date.now();
-		var item = pending[key];
+		const item = pending[key];
 		if (typeof item.path !== 'string') {
 			setupMod(configMap, onExit, key, item.path, function __onsetupMod(error) {
 				if (error) {
@@ -77,7 +77,7 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 					)
 				);
 			}
-			var mod = require(item.path);
+			const mod = require(item.path);
 			// if custom .config() is present, override/add it
 			if (typeof item.config === 'function') {
 				mod.configCustom = function __modConfigCustom(configIn) {
@@ -116,7 +116,7 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 			});
 		});
 	};
-	var done = function __modStartDone(error) {
+	const done = function __modStartDone(error) {
 		pathList = [];
 		pending = {};
 		if (error) {
@@ -149,8 +149,8 @@ function setupMod(configMap, onExit, key, mod, cb) {
 }
 
 function readModConfig(configMap, key, mod, cb) {
-	var config = configMap[key] || null;
-	// reaConfig is gracenode 1.x
+	const config = configMap[key] || null;
+	// readConfig is gracenode 1.x
 	var func = null;
 	if (mod.configCustom) {
 		func = mod.configCustom;
@@ -192,10 +192,10 @@ function callModSetup(key, mod, cb) {
 }
 
 function createModName(name) {
-	var sep = name.split('-');
+	const sep = name.split('-');
 	var camelCased = sep[0];
 	for (var i = 1, len = sep.length; i < len; i++) {
-		var firstChar = sep[i].substring(0, 1).toUpperCase();
+		const firstChar = sep[i].substring(0, 1).toUpperCase();
 		camelCased += firstChar + sep[i].substring(1);
 	}
 	return camelCased;

@@ -1,18 +1,18 @@
 'use strict';
 
-var net = require('net');
-var gn = require('../gracenode');
+const net = require('net');
+const gn = require('../gracenode');
 
-var connection = require('./connection');
-var router = require('./router');
-var hooks = require('./hooks');
-var protocol = require('../../lib/packet/protocol');
-var events = require('events');
-var emitter = new events.EventEmitter(); 
+const connection = require('./connection');
+const router = require('./router');
+const hooks = require('./hooks');
+const protocol = require('../../lib/packet/protocol');
+const events = require('events');
+const emitter = new events.EventEmitter(); 
 
 var logger;
 var config;
-var cryptoEngine = {
+const cryptoEngine = {
 	encrypt: null,
 	decrypt: null
 };
@@ -24,12 +24,12 @@ const TIMEOUT_FOR_CLOSE = 5000;
 const HEARTBEAT_ID =  911;
 const HEARTBEAT_NAME = 'heartbeat';
 const LAST_RANGE = 1000;
-var connectionInfo = {
+const connectionInfo = {
 	host: null,
 	port: null,
 	family: null
 };
-var connections = {};
+const connections = {};
 
 module.exports.info = function __rpcInfo() {
 	return {
@@ -85,7 +85,7 @@ module.exports.setup = function __rpcSetup(cb) {
 	// set up RPC command controller router
 	router.setup();
 	
-	var ports = [];
+	const ports = [];
 	var portIndex = 0;
 	var boundPort;
 	const pend = config.portRange[1] || config.portRange[0];
@@ -96,7 +96,7 @@ module.exports.setup = function __rpcSetup(cb) {
 
 	logger.verbose('port range is', config.portRange[0], 'to', pend);
 
-	var done = function __rpcSetupDone() {
+	const done = function __rpcSetupDone() {
 		// set up time-based cleaning for timed out connections
 		setupCleanTimedoutConnections();
 		// RPC server is now successfully bound and listening
@@ -150,7 +150,7 @@ module.exports.setup = function __rpcSetup(cb) {
 
 		cb();
 	};	
-	var listen = function __rpcListen() {
+	const listen = function __rpcListen() {
 		const port = ports[portIndex];
 		logger.verbose('binding to:', config.host + ':' + port);
 		server.listen({
@@ -160,7 +160,7 @@ module.exports.setup = function __rpcSetup(cb) {
 			exclusive: true
 		});
 	};
-	var server = net.createServer(handleConn);
+	const server = net.createServer(handleConn);
 	server.on('listening', done);
 	server.on('error', function __rpcOnError(error) {
 		if (error.code === PORT_IN_USE) {
@@ -241,7 +241,7 @@ function handleHeartbeat(state, cb) {
 		serverTime: Date.now()
 	}));
 	if (formatFunction) {
-		var formatted = formatFunction(res);
+		const formatted = formatFunction(res);
 		if (formatted) {
 			res = formatted;
 		}
@@ -261,11 +261,11 @@ function handleConn(sock) {
 		return;	
 	}
 
-	var opt = {
+	const opt = {
 		cryptoEngine: cryptoEngine
 	};
 	var conn = connection.create(sock, opt);
-	var close = function __rpcOnConnClose() {
+	const close = function __rpcOnConnClose() {
 		if (conn) {
 			logger.info('server is shutting down: close TCP connection (id:' + conn.id + ')');
 			conn.close();
@@ -298,9 +298,9 @@ function handleConn(sock) {
 }
 
 function setupCleanTimedoutConnections() {
-	var clean = function __rpcCleanTimedoutConns() {
+	const clean = function __rpcCleanTimedoutConns() {
 		if (shutdown) {
-			for (var i in connections) {
+			for (const i in connections) {
 				connections[i].kill();
 				delete connections[i];
 			}
@@ -308,10 +308,11 @@ function setupCleanTimedoutConnections() {
 		}
 		try {
 			// we search for start to end so that we iterate 1/2 times!
-			var ids = Object.keys(connections);
+			const ids = Object.keys(connections);
+			const idlen = ids.length;
 			var left = 0;
-			var right = ids.length - 1;
-			var middle = ids.length / 2 | 0;
+			var right = idlen - 1;
+			const middle = idlen / 2 | 0;
 			while (left <= middle && right >= middle) {
 				var conn = connections[ids[left]];
 				if (conn && conn.isTimedout()) {

@@ -1,18 +1,21 @@
 'use strict';
 
-var fs = require('fs');
-var log = require('gracelog');
-var aeterno = require('aeterno');
-var cluster = require('cluster-mode');
-var rootPath = getRootPath(require('./parent').getTopmostParent());
-var config = requireInternal('./config');
-var mod = requireInternal('./mod');
-var render = requireInternal('../render');
-var lint = requireInternal('../lint');
-var session = requireInternal('../session');
-var async = requireInternal('../../lib/async');
-var pkg = requireInternal('../../package.json');
-var transport = requireInternal('../../lib/transport');
+const ER_NOT_WRITABLE = '<NOT_WRITABLE>';
+const ER_LOG_DIR_NOT_FOUND = '<LOG_DIR_NOT_FOUND>';
+
+const fs = require('fs');
+const log = require('gracelog');
+const aeterno = require('aeterno');
+const cluster = require('cluster-mode');
+const rootPath = getRootPath(require('./parent').getTopmostParent());
+const config = requireInternal('./config');
+const mod = requireInternal('./mod');
+const render = requireInternal('../render');
+const lint = requireInternal('../lint');
+const session = requireInternal('../session');
+const async = requireInternal('../../lib/async');
+const pkg = requireInternal('../../package.json');
+const transport = requireInternal('../../lib/transport');
 
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
@@ -22,9 +25,6 @@ var clusterConfig;
 var onExceptions = [];
 var ready = false;
 var isSupportedVersion = true;
-
-const ER_NOT_WRITABLE = '<NOT_WRITABLE>';
-const ER_LOG_DIR_NOT_FOUND = '<LOG_DIR_NOT_FOUND>';
 
 // internal use only (src/lint)
 exports._isLogging = false;
@@ -81,7 +81,7 @@ exports.onException = function __gnOnException(func) {
 
 // deprecated backward compatibility alias
 exports.registerShutdownTask = function __gnRegisterShutdownTask(name, func) {
-	var e = new Error('WARNING');
+	const e = new Error('WARNING');
 	logger.warn(
 		'.registerShutdownTask() has been deprecated and should not be used.',
 		'Use .onExit(taskFunction, *runOnMaster) instead',
@@ -111,7 +111,7 @@ exports.start = function __gnStart(cb) {
 	const start = Date.now();
 	applyConfig();
 	aeterno.run(function aeternoRun() {
-		var tasks = [
+		const tasks = [
 			setup,
 			startCluster,
 			setupLog,
@@ -124,7 +124,7 @@ exports.start = function __gnStart(cb) {
 			startRPC,
 			startMod
 		];
-		var done = function __startDone(error) {
+		const done = function __startDone(error) {
 			if (error) {
 				return exports.stop(error);
 			}
@@ -132,7 +132,7 @@ exports.start = function __gnStart(cb) {
 			// setup
 			transport.setup();
 
-			var time = Date.now() - start;
+			const time = Date.now() - start;
 			logger.info(
 				'node.js <' + process.version + '>',
 				'gracenode <v' + pkg.version + '> is ready:',
@@ -149,7 +149,7 @@ exports.start = function __gnStart(cb) {
 };
 
 exports.stop = function __gnStop(error) {
-	var trace = new Error('Stop Call Trace');
+	const trace = new Error('Stop Call Trace');
 	if (error) {
 		logger.error(trace.stack);
 		logger.error('.stop() has been invoked:', error);
@@ -407,7 +407,7 @@ function getRootPath(file) {
 }
 
 function setOption(origin, opt) {
-	for (var key in opt) {
+	for (const key in opt) {
 		if (!origin.hasOwnProperty()) {
 			origin[key] = opt[key];
 		}

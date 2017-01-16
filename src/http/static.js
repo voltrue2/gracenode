@@ -1,10 +1,10 @@
 'use strict';
 
-var gn = require('../gracenode');
+const gn = require('../gracenode');
 
 module.exports.handle = function _httpStaticHandle(dir) {
-	var handler = new Handler(dir);
-	var func = function (req, res) {
+	const handler = new Handler(dir);
+	const func = function (req, res) {
 		handler.handle.apply(handler, [req, res]);
 	};
 	return func;
@@ -27,7 +27,7 @@ Handler.prototype.handle = function __httpStaticHandlerHandle(req, res) {
 	} else if (this._tailSlash !== '/' && filename[0] !== '/') {
 		filename = '/' + filename;
 	}
-	var path = this._dir + filename;
+	const path = this._dir + filename;
 	this._logger.verbose(path);
 	res.file(path);
 };

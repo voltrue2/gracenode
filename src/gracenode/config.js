@@ -1,7 +1,7 @@
 'use strict';
 
-var gn = require('../gracenode/');
-var config = {};
+const gn = require('../gracenode/');
+const config = {};
 
 exports.load = function __configLoad(configObj) {
 	for (var i in configObj) {
@@ -28,7 +28,7 @@ exports.get = function __configGet(propName) {
 	// this is to indicate if we found a match of configurations at least once or not
 	// if found is false, we return null
 	var found = false;
-	var conf = config;
+	var conf = gn.lib.cloneObj(config);
 	for (var i = 0, len = propNames.length; i < len; i++) {
 		var prop = propNames[i];
 		if (conf[prop] !== undefined) {
@@ -43,7 +43,7 @@ exports.get = function __configGet(propName) {
 	if (!found) {
 		conf = null;
 	}
-	return gn.lib.cloneObj(conf);
+	return conf;
 };
 
 function merge(key, origin, obj) {

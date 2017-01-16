@@ -1,14 +1,14 @@
 'use strict';
 
-var neti = require('os').networkInterfaces();
-var transport = require('../../lib/transport');
-var async = require('../../lib/async');
-var gn = require('../gracenode');
-var dgram = require('dgram');
+const neti = require('os').networkInterfaces();
+const transport = require('../../lib/transport');
+const async = require('../../lib/async');
+const gn = require('../gracenode');
+const dgram = require('dgram');
 // UDP router
-var router = require('./router');
+const router = require('./router');
 // UDP command hooks
-var hooks = require('./hooks');
+const hooks = require('./hooks');
 
 const PORT_IN_USE = 'EADDRINUSE';
 const IPv6 = 'ipv6';
@@ -24,11 +24,11 @@ var server;
 var onErrorHandler;
 var shutdown = false;
 
-var cryptoEngine = {
+const cryptoEngine = {
 	encrypt: null,
 	decrypt: null
 };
-var connectionInfo = {
+const connectionInfo = {
 	host: null,
 	port: null
 };
@@ -75,7 +75,7 @@ module.exports.setup = function __udpSetup(cb) {
 
 	logger.info('Max packet size:', transport.getMaxPacketSize());
 	
-	var addrMap = findAddrMap();
+	const addrMap = findAddrMap();
 	logger.info('Available Addresses:', addrMap);	
 
 	if (config.version && config.version.toLowerCase() === IPv6) {
@@ -111,11 +111,11 @@ module.exports.setup = function __udpSetup(cb) {
 	router.setup();
 
 	var running = false;
-	var ports = [];
+	const ports = [];
 	var portIndex = 0;
 	var boundPort;
 
-	var done = function __udpSetupDone() {
+	const done = function __udpSetupDone() {
 		// UDP server is now successfully bound and listening
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
@@ -157,7 +157,7 @@ module.exports.setup = function __udpSetup(cb) {
 
 		cb();
 	};
-	var listen = function __udpSetupListen() {
+	const listen = function __udpSetupListen() {
 		
 		if (server) {
 			server.close();
@@ -176,7 +176,7 @@ module.exports.setup = function __udpSetup(cb) {
 			exclusive: true
 		});
 	};
-	var handleError = function __udpHandleError(error) {
+	const handleError = function __udpHandleError(error) {
 		if (error.code === PORT_IN_USE) {
 			// try next port in range
 			const badPort = ports[portIndex];
@@ -276,7 +276,7 @@ function handleMessage(buff, rinfo) {
 		return;
 	}
 
-	var parsed = transport.parse(buff);
+	const parsed = transport.parse(buff);
 	if (parsed instanceof Error) {
 		logger.error(parsed);
 		dispatchOnError(parsed);
@@ -334,7 +334,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		payload = msg.payload;
 	}
 
-	var state = {
+	const state = {
 		STATUS: transport.STATUS,
 		sessionId: sessionId,
 		seq: seq,
@@ -481,12 +481,12 @@ function isIPv6() {
 }
 
 function findAddrMap() {
-	var map = {
+	const map = {
 		ipv4: [],
 		ipv6: []
 	};
 	for (var interfaceName in neti) {
-		var list = neti[interfaceName];
+		const list = neti[interfaceName];
 		for (var i = 0, len = list.length; i < len; i++) {
 			const fam = list[i].family.toLowerCase();
 			const addr = list[i].address;

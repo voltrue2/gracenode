@@ -1,13 +1,13 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
-var utils = require('util');
-var gn = require('../gracenode');
-var async = require('../../lib/async');
-var transport = require('../../lib/transport');
-var rpc = require('./rpc');
+const EventEmitter = require('events').EventEmitter;
+const utils = require('util');
+const gn = require('../gracenode');
+const async = require('../../lib/async');
+const transport = require('../../lib/transport');
+const rpc = require('./rpc');
 // this is not HTTP router
-var router = require('./router');
+const router = require('./router');
 var logger;
 var heartbeatConf;
 
@@ -53,25 +53,29 @@ function Connection(sock, options) {
 		that.close(new Error('TCP connection timeout'));
 	});
 	if (heartbeatConf) {
-		var checker = function __rpcConnectionHeartbeatChecker() {
-			if (!that.connected) {
-				return;
-			}
-			if (that.isTimedout()) {
-				if (that.sock) {
-					that.sock.emit('timeout', new Error('RPC heartbeat timeout'));
-				}
-				return;
-			}
-			setTimeout(checker, heartbeatConf.checkFrequency);
-		};
-		checker();
+		this._checkHeartbeat();
 	}
 }
 
 utils.inherits(Connection, EventEmitter);
 
-Connection.prototype.isTimedout = function () {
+Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
+	if (!this.connected) {
+		return;
+	}
+	if (this.isTimedout()) {
+		if (this.sock) {
+			this.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+		}
+		return;
+	}
+	const that = this;
+	setTimeout(function () {
+		that._checkHeartbeat();
+	}, heartbeatConf.checkFrequency);
+};
+
+Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
 	if (Date.now() - this.heartbeatTime >= heartbeatConf.timeout) {
 		return true;
 	}
@@ -115,13 +119,13 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 };
 
 Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
-	var that = this;
-	var parsed = this.parser.parse(packet);
+	const that = this;
+	const parsed = this.parser.parse(packet);
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
 	}
 	this.heartbeatTime = Date.now();
-	var done = function __rpcConnectionDataHandlerDone(error) {
+	const done = function __rpcConnectionDataHandlerDone(error) {
 		if (error) {
 			return that.kill(error);
 		}
@@ -136,7 +140,7 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 
 Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
 	if (this.crypto && this.crypto.decrypt) {
-		var that = this;
+		const that = this;
 		if (!this.sock) {
 			return cb(new Error('SocketUnexceptedlyGone'));
 		}
@@ -149,7 +153,7 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 				if (error) {
 					return cb(error);
 				}
-				var sess = {
+				const sess = {
 					sessionId: sid,
 					seq: seq,
 					data: sdata
@@ -164,7 +168,7 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 };
 
 Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsedData, sess, cb) {
-	var cmd = router.route(this.name, parsedData);
+	const cmd = router.route(this.name, parsedData);
 	if (!cmd) {
 		return this._errorResponse(parsedData, sess, cb);
 	}
@@ -172,8 +176,8 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 };
 
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
-	var state = createState(this.id, parsedData, sess);
-	var msg = new Buffer('NOT_FOUND');
+	const state = createState(this.id, parsedData, sess);
+	const msg = new Buffer('NOT_FOUND');
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
@@ -183,8 +187,8 @@ Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(pars
 };
 
 Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData, sess, cb) {
-	var that = this;
-	var state = createState(this.id, parsedData, sess);
+	const that = this;
+	const state = createState(this.id, parsedData, sess);
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
@@ -228,7 +232,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	// execute hooks before the handler(s)
 	cmd.hooks(state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
-			var msg = new Buffer(error.message);
+			const msg = new Buffer(error.message);
 			if (!status) {
 				status = transport.STATUS.BAD_REQ;
 			}
@@ -236,7 +240,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		}
 		var res;
 		var options;
-		var done = function __rpcConnectionOnCmdDone(error) {
+		const done = function __rpcConnectionOnCmdDone(error) {
 			// respond to client
 			that._write(
 				error,
@@ -279,7 +283,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 };
 
 Connection.prototype._write = function __rpcConnectionWrite(_error, state, status, seq, msg, cb) {
-	var that = this;
+	const that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
@@ -293,7 +297,7 @@ Connection.prototype._write = function __rpcConnectionWrite(_error, state, statu
 };
 
 Connection.prototype._push = function __rpcConnectionPush(state, msg, cb) {
-	var that = this;
+	const that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
@@ -379,7 +383,7 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 };
 
 function createState(id, parsedData, sess) {
-	var state = {
+	const state = {
 		STATUS: transport.STATUS,
 		command: parsedData.command,
 		payload: parsedData.payload,

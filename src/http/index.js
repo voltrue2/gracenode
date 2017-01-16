@@ -1,22 +1,24 @@
 'use strict';
 
-var uuid = require('../../lib/uuid/uuid');
-var async = require('../../lib/async');
-var http = require('http');
-var Cookies = require('cookies');
-var route = require('./route');
-var request = require('./request');
-var response = require('./response');
-var staticRouter = require('./static');
-var Response = response.Response;
-var util = require('./util');
-var gn = require('../gracenode');
+const uuid = require('../../lib/uuid/uuid');
+const async = require('../../lib/async');
+const http = require('http');
+const Cookies = require('cookies');
+const route = require('./route');
+const request = require('./request');
+const response = require('./response');
+const staticRouter = require('./static');
+const Response = response.Response;
+const util = require('./util');
+const gn = require('../gracenode');
 var logger;
 var config;
 var server;
 var trailingSlash = false;
-var errorMap = {};
-var connectionInfo = {};
+const errorMap = {};
+const connectionInfo = {};
+
+const STATIC_REGEX = /\.\.\//g;
 
 const STATIC_PARAM = '{static:staticfile}';
 const E_NOT_FOUND = 'NOT_FOUND';
@@ -71,7 +73,7 @@ exports.static = function __httpStatic(path, dirList, opt) {
 		throw new Error('StaicDirectoryListMustBeArray: ' + dirList);
 	}
 	for (var i = 0, len = dirList.length; i < len; i++) {
-		var item = dirList[i].replace(/\.\.\//g, '');
+		var item = dirList[i].replace(STATIC_REGEX, '');
 		if (path[path.length - 1] !== '/' && item[0] !== '/') {
 			path += '/';
 		}
@@ -113,7 +115,7 @@ exports.error = function __httpError(status, func) {
 exports.setup = function __httpSetup(cb) {
 	server = http.createServer(requestHandler);
 	server.on('listening', function __onHttpSetupListening() {
-		var info = server.address();
+		const info = server.address();
 		logger.info(
 			'HTTP server router started:',
 			config.host + ':' + config.port,
@@ -186,8 +188,8 @@ function requestHandler(req, res) {
 	req.startTime = Date.now();
 
 	const method = req.method;
+	const resp = new Response(req, res, errorMap);
 	var parsed;
-	var resp = new Response(req, res, errorMap);
 	try {
 		parsed = route.find(method, req.url);
 	} catch (error) {
@@ -218,7 +220,7 @@ function requestHandler(req, res) {
 		);		
 	});
 
-	var hookDone = function __onRequestHandlerHookDone(error, statusCode) {
+	const hookDone = function __onRequestHandlerHookDone(error, statusCode) {
 		if (error) {
 			// error response 400
 			if (!statusCode) {

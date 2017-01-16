@@ -1,9 +1,8 @@
 'use strict';
 
-var url = require('./url');
-var hooks = require('./hooks');
-var gn = require('../gracenode');
-var logger;
+const url = require('./url');
+const hooks = require('./hooks');
+const gn = require('../gracenode');
 
 const PARAM_NAME_REGEX = /{(.*?)}/g;
 const PARAM_REGEX = /\/{(.*?)}/g;
@@ -17,7 +16,7 @@ const TYPES = [
 ];
 
 // routes (shortcuts) with named parameters
-var routes = {
+const routes = {
 	GET: {},
 	POST: {},
 	PUT: {},
@@ -26,7 +25,7 @@ var routes = {
 };
 
 // all routes with named parameters
-var allroutes = {
+const allroutes = {
 	GET: [],
 	POST: [],
 	PUT: [],
@@ -35,13 +34,15 @@ var allroutes = {
 };
 
 // routes without named parameters
-var fastroutes = {
+const fastroutes = {
 	GET: {},
 	POST: {},
 	PUT: {},
 	DELETE: {},
 	PATCH: {}
 };
+
+var logger;
 
 exports.setup = function __mappingSetup() {
 	logger = gn.log.create('HTTP.mapping');
@@ -69,7 +70,7 @@ exports.add = function __mappingAdd(method, path, handler, opt) {
 		sensitive: false
 	};
 	// convert path to regex
-	var converted = url.convert(path, opt.sensitive);
+	const converted = url.convert(path, opt.sensitive);
 	// fast route w/o named parameters
 	if (converted.fast) {
 		return addToFastRoutes(method, path, handler, opt);
@@ -80,7 +81,7 @@ exports.add = function __mappingAdd(method, path, handler, opt) {
 
 exports.getRoute = function __mappingGetRoute(method, path) {
 	// try fast route first
-	var fast = searchFastRoute(method, path);
+	const fast = searchFastRoute(method, path);
 	if (fast) {
 		return {
 			matched: [],
@@ -95,7 +96,7 @@ exports.getRoute = function __mappingGetRoute(method, path) {
 		};
 	}
 	// try routes
-	var found = searchRoute(method, path);
+	const found = searchRoute(method, path);
 	if (!found || !found.matched) {
 		return null;
 	}
@@ -143,8 +144,8 @@ function addToRoutes(method, path, handler, opt, conv) {
 			return;
 		}
 	}
-	var regex = opt.sensitive ? new RegExp(conv.pmatch) : new RegExp(conv.pmatch, 'i');
-	var route = {
+	const regex = opt.sensitive ? new RegExp(conv.pmatch) : new RegExp(conv.pmatch, 'i');
+	const route = {
 		path: path.replace(PARAM_REGEX, ''),
 		pattern: conv.pmatch,
 		regex: regex,
@@ -171,7 +172,7 @@ function addToRoutes(method, path, handler, opt, conv) {
 function updateDupRegistry(list, method, path, key, handler) {
 	const regPath = path.replace(PARAM_REGEX, '');
 	for (var i = 0, len = list.length; i < len; i++) {
-		var item = list[i];
+		const item = list[i];
 		if (item.path === regPath) {
 			list[i].handlers.push(handler);
 			return true;
@@ -187,14 +188,14 @@ function searchFastRoute(method, path) {
 	if (path[path.length - 1] === '/') {
 		path = path.substring(0, path.length - 1);
 	}
-	var map = fastroutes[method] || {};
+	const map = fastroutes[method] || {};
 	// try case sensitive
 	if (map[path]) {
 		return map[path];
 	}
 	// try case insensitive
 	const lpath = path.toLowerCase();
-	var match = map[lpath];
+	const match = map[lpath];
 	if (match && match.sensitive) {
 		return null;
 	}
@@ -207,11 +208,11 @@ function searchRoute(method, path) {
 		return null;
 	}
 	const key = getRouteKey(path);
-	var list = routes[method][key];
+	const list = routes[method][key];
 	if (!list) {
 		return searchAllRoutes(method, path);
 	}
-	var found = searchRouteShortcut(path, list);
+	const found = searchRouteShortcut(path, list);
 	if (!found) {
 		logger.verbose('Route not found for:', path, 'in', list);
 		return null;
@@ -221,8 +222,8 @@ function searchRoute(method, path) {
 
 function searchRouteShortcut(path, list) {
 	for (var i = 0, len = list.length; i < len; i++) {
-		var item = list[i];
-		var found = item.regex.test(path);
+		const item = list[i];
+		const found = item.regex.test(path);
 		if (found) {
 			return {
 				matched: item.extract.exec(path),
@@ -236,8 +237,8 @@ function searchRouteShortcut(path, list) {
 function searchAllRoutes(method, path) {
 	var list = allroutes[method];
 	for (var i = 0, len = list.length; i < len; i++) {
-		var item = list[i];
-		var found = item.regex.test(path);
+		const item = list[i];
+		const found = item.regex.test(path);
 		if (found) {
 			return {
 				matched: item.extract.exec(path),
@@ -249,16 +250,16 @@ function searchAllRoutes(method, path) {
 }
 
 function getRouteKey(path) {
-	var key = path.substring(1);
+	const key = path.substring(1);
 	return key.substring(0, key.indexOf('/'));
 }
 
 function getParamNames(path) {
-	var list = path.match(PARAM_NAME_REGEX);
-	var res = [];
+	const list = path.match(PARAM_NAME_REGEX);
+	const res = [];
 	if (list) {
 		for (var i = 0, len = list.length; i < len; i++) {
-			var sep = list[i].replace(BRACE_REGEX, '').split(':');
+			const sep = list[i].replace(BRACE_REGEX, '').split(':');
 			var type;
 			var name;
 			if (sep.length === 2) {
@@ -285,9 +286,9 @@ function handleRegexDataType(type) {
 		// parameter data type is a regex
 		// this string MUST BE a complete javascript regular expression
 		// exmaple: /^[a-zA-Z]*$/g
+		const reg = type;
+		const arg = reg.substring(reg.lastIndexOf('/') + 1) || null;
 		var regStr;
-		var reg = type;
-		var arg = reg.substring(reg.lastIndexOf('/') + 1) || null;
 		if (arg) {
 			regStr = reg.replace(arg, '').replace(/\//g, '');
 			type = new RegExp(regStr, arg);

@@ -1,10 +1,11 @@
 'use strict';
 
-var queryString = require('querystring');
-var multiparty = require('multiparty');
-var mime = require('./mime');
-var util = require('./util');
-var gn = require('../gracenode');
+const queryString = require('querystring');
+const multiparty = require('multiparty');
+const mime = require('./mime');
+const util = require('./util');
+const gn = require('../gracenode');
+
 var logger;
 
 exports.setup = function __httpRequestSetup() {
@@ -24,9 +25,9 @@ exports.getReqBody = function __httpRequestGetRequestBody(read, req, cb) {
 		body += data;
 	});
 	req.on('end', function __httpRequestGetRequestOnEnd() {
-		var data = readRequestBody(req.url, req.headers, body);
+		const data = readRequestBody(req.url, req.headers, body);
 		if (req.method === 'GET' || req.method === 'HEAD') {
-			for (var key in data) {
+			for (const key in data) {
 				req.query[key] = data[key];
 			}
 		}
@@ -44,14 +45,14 @@ exports.getReqBody = function __httpRequestGetRequestBody(read, req, cb) {
 };
 
 function readMultipartBody(req, cb) {
-	var form = new multiparty.Form();
+	const form = new multiparty.Form();
 	form.parse(req, function __httpRequestReadMultipartBodyOnFormParse(error, fields, files) {
 		if (error) {
 			return cb(error);
 		}
-		var body = fields;
+		const body = fields;
 		body.files = [];
-		for (var f in files) {
+		for (const f in files) {
 			body.files.push(files[f][0]);
 		}
 		logger.verbose(
@@ -75,7 +76,7 @@ function readRequestBody(url, headers, body) {
 		}
 	} else {
 		reqBody = queryString.parse(body);
-		for (var key in reqBody) {
+		for (const key in reqBody) {
 			reqBody[key] = typecast(reqBody[key]);
 		}
 	}

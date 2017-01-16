@@ -1,11 +1,11 @@
 'use strict';
 
-var crypto = require('crypto');
-var fs = require('fs');
-var zlib = require('zlib');
-var mime = require('./mime');
-var util = require('./util');
-var gn = require('../gracenode');
+const crypto = require('crypto');
+const fs = require('fs');
+const zlib = require('zlib');
+const mime = require('./mime');
+const util = require('./util');
+const gn = require('../gracenode');
 var logger;
 
 const DEFAULT_HEADERS = {
@@ -40,7 +40,7 @@ function Response(req, res, errorMap) {
 	this._errorHandled = false;
 	this._errorMap = errorMap;
 	// default response headers
-	for (var i in DEFAULT_HEADERS) {
+	for (const i in DEFAULT_HEADERS) {
 		this.headers[i] = DEFAULT_HEADERS[i];
 	}
 }
@@ -93,7 +93,7 @@ Response.prototype.data = function __httpResponseData(data, status) {
 Response.prototype.download = function __httpResponseDownload(dataOrPath, status) {
 	if (typeof dataOrPath === 'string') {
 		// path
-		var that = this;
+		const that = this;
 		fs.readFile(dataOrPath, function __httpResponseDownloadOnReadFile(error, data) {
 			if (error) {
 				// forced 404 error
@@ -122,7 +122,7 @@ Response.prototype.file = function __httpResponseFile(path, status) {
 		);
 		return;
 	}
-	var that = this;
+	const that = this;
 	fs.stat(path, function __httpResponseFileOnStat(error, stats) {
 		if (error) {
 			// forced 404 error
@@ -165,7 +165,7 @@ Response.prototype.stream = function __httpResponseStream(path) {
 		return;
 	}
 	this._sent = true;
-	var that = this;
+	const that = this;
 	fs.stat(path, function __httpResponseStreamOnStat(error, stat) {
 		if (error) {
 			// forced 404 error
@@ -187,7 +187,7 @@ Response.prototype.stream = function __httpResponseStream(path) {
 			const start = parseInt(partialStart, 10);
 			const end = partialEnd ? parseInt(partialEnd, 10) : total - 1;
 			const chunkSize = (end - start) + 1;
-			var rstream = fs.createReadStream(path, { start: start, end: end });
+			const rstream = fs.createReadStream(path, { start: start, end: end });
 			that._res.writeHead(206, {
 				'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
 				'Accept-Ranges': 'bytes',
@@ -223,7 +223,7 @@ Response.prototype._send = function __httpResponseSend(data, status) {
 	}
 	// check for error handler in errorMap
 	if (!this._errorHandled && this._errorMap[status]) {
-		var errorHandler = this._errorMap[status];
+		const errorHandler = this._errorMap[status];
 		this._errorHandled = true;
 		logger.error(
 			'Error response handler found:',
@@ -236,7 +236,7 @@ Response.prototype._send = function __httpResponseSend(data, status) {
 		return;
 	}
 	this._sent = true;
-	var that = this;
+	const that = this;
 	logger.verbose(
 		'Response data:',
 		util.fmt('url', this._req.method + ' ' + this._req.url),
@@ -259,7 +259,7 @@ Response.prototype._send = function __httpResponseSend(data, status) {
 };
 
 Response.prototype._isAcceptedEncoding = function __httpResponseIsAcceptedEncoding(enc) {
-	var hd = this._req.headers;
+	const hd = this._req.headers;
 	var list = hd['accept-encoding'] || hd['Accept-Encoding'];
 	if (!list) {
 		return false;
