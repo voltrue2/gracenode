@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"jshint": "2.9.3",
-		"gracelog": "0.6.8",
+		"gracelog": "0.6.9",
 		"aeterno": "0.6.4",
 		"cluster-mode": "1.1.0",
 		"node-datetime": "0.1.5",
