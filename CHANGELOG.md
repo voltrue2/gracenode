@@ -16,6 +16,8 @@ This is a list of manually mantained changes and updates for each version.
 
 #### Dependency aeterno version updated to 0.6.5
 
+#### Dependency cluster-mode version updated to 1.2.0
+
 #### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
 
 Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
