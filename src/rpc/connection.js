@@ -272,16 +272,17 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 				parsedData.seq,
 				res,
 				function __rpcConnectionOnCmdResponse(error) {
-				if (options) {
-					if (options.closeAfterReply) {
-						return that.close();
+					if (options) {
+						if (options.closeAfterReply) {
+							return that.close();
+						}
+						if (options.killAfterReply) {
+							return that.kill();
+						}
 					}
-					if (options.killAfterReply) {
-						return that.kill();
-					}
+					cb(error);
 				}
-				cb(error);
-			});
+			);
 		};
 		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
 			handler(that.state, function __rpcConnectionCmdCallback(_res, _status, _options) {
@@ -347,7 +348,7 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	}
 
 	try {
-		this.sock.write(data, 'UTF-8', cb);
+		this.sock.write(data, 'binary', cb);
 	} catch (e) {
 		if (typeof cb === 'function') {
 			cb(e);
@@ -371,7 +372,7 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 	}
 	
 	try {
-		this.sock.write(data, 'UTF-8', cb);
+		this.sock.write(data, 'binary', cb);
 	} catch (e) {
 		if (typeof cb === 'function') {
 			cb(e);
