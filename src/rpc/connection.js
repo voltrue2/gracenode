@@ -28,8 +28,12 @@ function Connection(sock, options) {
 	this.opt = options;
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
-	this.state.send = function __rpcConnectionSend(payload) {
-		that._push(payload);
+	this.state.send = function (payload) {
+		that._send(payload);
+	};
+	// server response (if you need to use this to pretend as a response)
+	this.state.respond = function (payload, status, options) {
+		that._respond(payload, status, options);
 	};
 	this.parser = new transport.Stream();
 	this.crypto = options.cryptoEngine || null;
@@ -62,6 +66,42 @@ function Connection(sock, options) {
 }
 
 utils.inherits(Connection, EventEmitter);
+
+
+Connection.prototype._send = function __rpcConnectionSend(payload) {
+	this._push(payload);
+};
+// server response (if you need to use this to pretend as a response)
+Connection.prototype._respond = function __rpcConnectionRespond(payload, status, options) {
+	var error = null;
+	if (payload instanceof Error) {
+		payload = payload.message;
+		error = payload;
+	}
+	if (!status) {
+		if (error) {
+			status = this.state.STATUS.BAD_REQ;
+		} else {
+			status = this.state.STATUS.OK;
+		}
+	}
+	const that = this;
+	this._write(
+		error,
+		status,
+		this.state.seq,
+		payload,
+		function __rpcConnectionOnWrite() {
+		if (options) {
+			if (options.closeAfterReply) {
+				return that.close();
+			}
+			if (options.killAfterReply) {
+				return that.kill();
+			}
+		}
+	});
+};
 
 Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
 	if (!this.connected) {
@@ -186,6 +226,7 @@ Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(pars
 	const msg = new Buffer('NOT_FOUND');
 	this.state.command = parsedData.command;
 	this.state.payload = parsedData.payload;
+	this.state.seq = parsedData.seq;
 	this.state.clientAddress = this.sock.remoteAddress;
 	this.state.clientPort = this.sock.remotePort;
 	if (sess) {
@@ -203,6 +244,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	const that = this;
 	this.state.command = parsedData.command;
 	this.state.payload = parsedData.payload;
+	this.state.seq = parsedData.seq;
 	this.state.clientAddress = this.sock.remoteAddress;
 	this.state.clientPort = this.sock.remotePort;
 	if (sess) {
@@ -210,36 +252,6 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		this.state.seq = sess.seq;
 		this.state.session = sess.data;
 	}
-	// server response (if you need to use this to pretend as a response)
-	this.state.respond = function __rpcConnectionRespond(payload, status, options) {
-		var error = null;
-		if (payload instanceof Error) {
-			payload = payload.message;
-			error = payload;
-		}
-		if (!status) {
-			if (error) {
-				status = that.state.STATUS.BAD_REQ;
-			} else {
-				status = that.state.STATUS.OK;
-			}
-		}
-		that._write(
-			error,
-			status,
-			parsedData.seq,
-			payload,
-			function __rpcConnectionOnWrite() {
-			if (options) {
-				if (options.closeAfterReply) {
-					return that.close();
-				}
-				if (options.killAfterReply) {
-					return that.kill();
-				}
-			}
-		});
-	};
 	// execute hooks before the handler(s)
 	cmd.hooks(this.state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
@@ -401,7 +413,7 @@ function createState(id) {
 		clientAddress: null,
 		clientPort: null,
 		sessionId: null,
-		seq: null,
+		seq: 0,
 		session: null,
 		respond: null,
 		send: null,
