@@ -27,6 +27,10 @@ function Connection(sock, options) {
 	this.sock = sock;
 	this.opt = options;
 	this.id = gn.lib.uuid.v4().toString();
+	this.state = createState(this.id);
+	this.state.send = function __rpcConnectionSend(payload) {
+		that._push(payload);
+	};
 	this.parser = new transport.Stream();
 	this.crypto = options.cryptoEngine || null;
 	this.connected = true;
@@ -176,30 +180,38 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 };
 
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
-	const state = createState(this.id, parsedData, sess);
-	const msg = new Buffer('NOT_FOUND');
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
-	state.clientAddress = this.sock.remoteAddress;
-	state.clientPort = this.sock.remotePort;
-	this._write(new Error('NOT_FOUND'), state, state.STATUS.NOT_FOUND, state.seq, msg, cb);
+	const msg = new Buffer('NOT_FOUND');
+	this.state.command = parsedData.command;
+	this.state.payload = parsedData.payload;
+	this.state.clientAddress = this.sock.remoteAddress;
+	this.state.clientPort = this.sock.remotePort;
+	if (sess) {
+		this.state.sessionId = sess.sessionId;
+		this.state.seq = sess.seq;
+		this.state.session = sess.data;
+	}
+	this._write(new Error('NOT_FOUND'), this.state.STATUS.NOT_FOUND, this.state.seq, msg, cb);
 };
 
 Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData, sess, cb) {
-	const that = this;
-	const state = createState(this.id, parsedData, sess);
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
-	state.clientAddress = this.sock.remoteAddress;
-	state.clientPort = this.sock.remotePort;
-	// server push
-	state.send = function __rpcConnectionSend(payload) {
-		that._push(state, payload);
-	};
+	const that = this;
+	this.state.command = parsedData.command;
+	this.state.payload = parsedData.payload;
+	this.state.clientAddress = this.sock.remoteAddress;
+	this.state.clientPort = this.sock.remotePort;
+	if (sess) {
+		this.state.sessionId = sess.sessionId;
+		this.state.seq = sess.seq;
+		this.state.session = sess.data;
+	}
 	// server response (if you need to use this to pretend as a response)
-	state.respond = function __rpcConnectionRespond(payload, status, options) {
+	this.state.respond = function __rpcConnectionRespond(payload, status, options) {
 		var error = null;
 		if (payload instanceof Error) {
 			payload = payload.message;
@@ -207,14 +219,13 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		}
 		if (!status) {
 			if (error) {
-				status = state.STATUS.BAD_REQ;
+				status = that.state.STATUS.BAD_REQ;
 			} else {
-				status = state.STATUS.OK;
+				status = that.state.STATUS.OK;
 			}
 		}
 		that._write(
 			error,
-			state,
 			status,
 			parsedData.seq,
 			payload,
@@ -230,13 +241,13 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		});
 	};
 	// execute hooks before the handler(s)
-	cmd.hooks(state, function __rpcConnectionOnHooks(error, status) {
+	cmd.hooks(this.state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
 			const msg = new Buffer(error.message);
 			if (!status) {
 				status = transport.STATUS.BAD_REQ;
 			}
-			return that._write(error, state, status, parsedData.seq, msg, cb);
+			return that._write(error, status, parsedData.seq, msg, cb);
 		}
 		var res;
 		var options;
@@ -244,7 +255,6 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 			// respond to client
 			that._write(
 				error,
-				state,
 				status,
 				parsedData.seq,
 				res,
@@ -261,7 +271,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 			});
 		};
 		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
-			handler(state, function __rpcConnectionCmdCallback(_res, _status, _options) {
+			handler(that.state, function __rpcConnectionCmdCallback(_res, _status, _options) {
 				options = _options;
 				if (_res instanceof Error) {
 					if (!_status) {
@@ -282,12 +292,12 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	});	
 };
 
-Connection.prototype._write = function __rpcConnectionWrite(_error, state, status, seq, msg, cb) {
+Connection.prototype._write = function __rpcConnectionWrite(_error, status, seq, msg, cb) {
 	const that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(state, msg, function __rpcConnectionOnWriteEncrypt(error, data) {
+	this._encrypt(msg, function __rpcConnectionOnWriteEncrypt(error, data) {
 		data = transport.createReply(status, seq, data);
 		if (error) {
 			return that.__write(error, data, cb);
@@ -296,12 +306,12 @@ Connection.prototype._write = function __rpcConnectionWrite(_error, state, statu
 	});
 };
 
-Connection.prototype._push = function __rpcConnectionPush(state, msg, cb) {
+Connection.prototype._push = function __rpcConnectionPush(msg, cb) {
 	const that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(state, msg, function __rpcConnectionOnPushEncrypt(error, data) {
+	this._encrypt(msg, function __rpcConnectionOnPushEncrypt(error, data) {
 		if (error) {
 			return cb(error);
 		}
@@ -358,9 +368,9 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 	}
 };
 
-Connection.prototype._encrypt = function __rpcConnectionEncrypt(state, msg, cb) {
+Connection.prototype._encrypt = function __rpcConnectionEncrypt(msg, cb) {
 	if (this.crypto && this.crypto.encrypt) {
-		this.crypto.encrypt(state, msg, function __rpcConnectionOnEncrypt(error, data) {
+		this.crypto.encrypt(this.state, msg, function __rpcConnectionOnEncrypt(error, data) {
 			if (error) {
 				return cb(error);
 			}
@@ -382,11 +392,11 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 	this.emit('clear', killed);
 };
 
-function createState(id, parsedData, sess) {
+function createState(id) {
 	const state = {
 		STATUS: transport.STATUS,
-		command: parsedData.command,
-		payload: parsedData.payload,
+		command: 0,
+		payload: null,
 		connId: id,
 		clientAddress: null,
 		clientPort: null,
@@ -394,12 +404,8 @@ function createState(id, parsedData, sess) {
 		seq: null,
 		session: null,
 		respond: null,
-		send: null
+		send: null,
+		push: null
 	};
-	if (sess) {
-		state.sessionId = sess.sessionId;
-		state.seq = sess.seq;
-		state.session = sess.data;
-	}
 	return state;
 }
