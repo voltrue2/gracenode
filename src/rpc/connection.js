@@ -28,6 +28,7 @@ function Connection(sock, options) {
 	this.opt = options;
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
+	// server push
 	this.state.send = function (payload) {
 		that._send(payload);
 	};
