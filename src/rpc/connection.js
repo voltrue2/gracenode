@@ -16,16 +16,15 @@ module.exports.setup = function __rpcConnectionSetup() {
 	heartbeatConf = gn.getConfig('rpc.heartbeat');
 };
 
-module.exports.create = function __rpcConnectionCreate(sock, options) {
-	return new Connection(sock, options);	
+module.exports.create = function __rpcConnectionCreate(sock) {
+	return new Connection(sock);
 };
 
-function Connection(sock, options) {
+function Connection(sock) {
 	EventEmitter.call(this);
 	const you = sock.remoteAddress + ':' + sock.remotePort;
 	var that = this;
 	this.sock = sock;
-	this.opt = options;
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
 	// server push
@@ -36,8 +35,16 @@ function Connection(sock, options) {
 	this.state.respond = function (payload, status, options) {
 		that._respond(payload, status, options);
 	};
+	// force disconnect (graceful) connection
+	this.state.close = function () {
+		that.close();
+	};
+	// force kill connection
+	this.state.kill = function (error) {
+		that.kill(error);
+	};
 	this.parser = new transport.Stream();
-	this.crypto = options.cryptoEngine || null;
+	this.crypto = null;
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
 	this.heartbeatTime = Date.now();
@@ -402,7 +409,6 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 		this.sock = null;
 	}
 	this.parser = null;
-	this.opt = null;
 	this.emit('clear', killed);
 };
 
@@ -419,7 +425,9 @@ function createState(id) {
 		session: null,
 		respond: null,
 		send: null,
-		push: null
+		push: null,
+		close: null,
+		kill: null
 	};
 	return state;
 }

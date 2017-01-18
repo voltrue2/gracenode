@@ -82,7 +82,37 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
-	it('can start client', function (done) {
+	it('can start a client and disconnected from server', function (done) {
+		gn.rpc.command(7070, '7070', function (state, cb) {
+			state.close();
+		});
+		var cli = new Client();
+		cli.onClose = function () {
+			done();
+		};
+		cli.start(addr, portOne, function () {
+			cli.send(7070, 0, {}, function (error) {
+				assert.equal(error, null);
+			});
+		});
+	});
+
+	it('can start a client and connection-killed from server', function (done) {
+		gn.rpc.command(7071, '7071', function (state, cb) {
+			state.kill(new Error('killed'));
+		});
+		var cli = new Client();
+		cli.onClose = function () {
+			done();
+		};
+		cli.start(addr, portOne, function () {
+			cli.send(7071, 0, {}, function (error) {
+				assert.equal(error, null);
+			});
+		});
+	});
+
+	it('can start a client', function (done) {
 		client = new Client();
 		client.start(addr, portOne, done);
 	});
@@ -784,7 +814,6 @@ describe('gracenode.rpc', function () {
 				};
 				hb();
 				setTimeout(function () {
-					console.log('client crash');
 					rogue.client = null;
 				}, 1000);
 			});

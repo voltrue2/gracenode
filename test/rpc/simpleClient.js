@@ -7,10 +7,18 @@ var net = require('net');
 var transport = gn.lib.packet;
 
 function Client() {
+	const that = this;
 	this.logger = gn.log.create();
 	this.parser = new transport.Stream();
 	this.client = new net.Socket();
+	this.client.on('close', function (data) {
+		that.onClose(data);
+	});
 }
+
+Client.prototype.onClose = function () {
+
+};
 
 Client.prototype.start = function (host, port, cb) {
 	this.logger.debug('client connect to:', host, port);

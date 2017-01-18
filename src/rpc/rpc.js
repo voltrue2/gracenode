@@ -7,8 +7,6 @@ const connection = require('./connection');
 const router = require('./router');
 const hooks = require('./hooks');
 const protocol = require('../../lib/packet/protocol');
-const events = require('events');
-const emitter = new events.EventEmitter(); 
 
 var logger;
 var config;
@@ -48,9 +46,6 @@ module.exports.setup = function __rpcSetup(cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
 	config.cleanInterval = config.cleanInterval || 10000;
-
-	// this is to increase the number of listener limit
-	emitter.setMaxListeners(1000);
 
 	connection.setup();
 
@@ -109,16 +104,20 @@ module.exports.setup = function __rpcSetup(cb) {
 				config.host + ':' + boundPort,
 				'waiting for all open connections to close...'
 			);
-			// instruct all connections to close
-			emitter.emit('close');
-			// set up time out if connections do not close within the time, it hard closes
-			setTimeout(next, TIMEOUT_FOR_CLOSE);
 			logger.info(
 				'RPC server will forcefully close if all connections do not close in',
 				TIMEOUT_FOR_CLOSE, 'msc'
 			);
-			// stop accepting new connections and shutdown when all connections are closed
-			server.close(next);
+			// set up time out if connections do not close within the time, it hard closes
+			const timeout = setTimeout(next, TIMEOUT_FOR_CLOSE);
+			// instruct all connections to close
+			closeAllConnections(function () {
+				// stop accepting new connections and shutdown when all connections are closed
+				server.close(function () {
+					clearTimeout(timeout);
+					next();
+				});
+			});
 		});
 
 		const info = server.address();
@@ -260,22 +259,9 @@ function handleConn(sock) {
 		sock.destory();
 		return;	
 	}
-
-	const opt = {
-		cryptoEngine: cryptoEngine
-	};
-	var conn = connection.create(sock, opt);
-	const close = function __rpcOnConnClose() {
-		if (conn) {
-			logger.info('server is shutting down: close TCP connection (id:' + conn.id + ')');
-			conn.close();
-		}
-	};
-	if (cryptoEngine) {
-		conn.useCryptoEngine(cryptoEngine);
-	}
+	var conn = connection.create(sock);
+	conn.useCryptoEngine(cryptoEngine);
 	conn.on('clear', function __rpcOnConnClear(killed) {
-		emitter.removeListener('close', close);
 		if (conn) {
 			if (killed) {
 				if (typeof module.exports._onKilled === 'function') {
@@ -290,11 +276,32 @@ function handleConn(sock) {
 		}
 		conn = null;
 	});
-	emitter.once('close', close);
 
 	logger.debug('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
 
 	connections[conn.id] = conn;
+}
+
+function closeAllConnections(cb) {
+	var counter = 0;
+	const len = Object.keys(connections).length;
+	logger.info('Closing all open TCP connections:', len, 'open');
+	if (len === 0) {
+		return cb();
+	}
+	const count = function () {
+		counter += 1;
+		logger.info('Connection closed:', counter + '/' + len);
+		if (counter === len) {
+			cb();
+		}
+	};
+	for (const id in connections) {
+		const conn = connections[id];
+		conn.once('clear', count);
+		logger.info('Closing TCP connection:', id, counter + '/' + len);
+		conn.close();
+	}
 }
 
 function setupCleanTimedoutConnections() {

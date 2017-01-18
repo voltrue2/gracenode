@@ -568,6 +568,10 @@ Command handler functions will have `state` object and `callback` function passe
 	send: [function],
 	// send packet as a response to connected client: same as callback
 	respond: [function],
+	// force connection close (graceful) from server
+	close: [function],
+	// force connection kill from server
+	kill: [function],
 	// if session and encryption/decryption is used
 	sessionId: [session ID],
 	// if session and encryption/decryption is used
@@ -623,34 +627,6 @@ Default status for an error response is `4` (`state.STATUS.BAD_REQ`).
 }
 ```
 
-### Set Key/Value for the connection
-
-#### state.set(key [string], value [mixed])
-
-`state` can "remember" values for as long as the current connection is open.
-
-```javascript
-gn.rpc.command(1, 'commandOne', function (state, cb) {
-	// remember this value for later use
-	state.set('rememberMe', 1000);
-	cb({ message: 'OK' });
-});
-```
-
-### Get Key/Value for the connection
-
-#### state.get(key [string])
-
-`state` can "read" values that have been "set" by `state.set()` for as long as the current connection is open.
-
-```javascript
-gn.rpc.command(2, 'commandTwo', function (state, cb) {
-	// read the value that has been set before
-	var rememberMe = state.get('rememberMe');
-	cb({ message: rememberMe });
-});
-```
-
 ### Send packets to client
 
 #### state.send(data [object])
@@ -660,6 +636,24 @@ gn.rpc.command(3, 'command3', function (state, cb) {
 	// do something here
 	// now send some packets other than response
 	state.send({ message: 'Hello' });
+});
+```
+
+### Close TCP Connection From Server
+
+#### state.close()
+
+```javascript
+gn.rpc.command(3, 'command3', function (state, cb) {
+	state.close();
+});
+```
+
+#### state.kill(error [error])
+
+```javascript
+gn.rpc.command(3, 'command3', function (state, cb) {
+	state.kill(new Error('SomeError'));
 });
 ```
 
