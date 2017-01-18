@@ -196,24 +196,26 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 		if (!this.sock) {
 			return cb(new Error('SocketUnexceptedlyGone'));
 		}
-		this.crypto.decrypt(
-			parsedData.payload,
-			gn.session.PROTO.RPC,
-			this.sock.remoteAddress,
-			this.sock.remotePort,
-			function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
-				if (error) {
-					return cb(error);
+		setImmediate(function () {
+			that.crypto.decrypt(
+				parsedData.payload,
+				gn.session.PROTO.RPC,
+				that.sock.remoteAddress,
+				that.sock.remotePort,
+				function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
+					if (error) {
+						return cb(error);
+					}
+					const sess = {
+						sessionId: sid,
+						seq: seq,
+						data: sdata
+					};
+					parsedData.payload = decrypted;
+					that._routeAndExec(parsedData, sess, cb);
 				}
-				const sess = {
-					sessionId: sid,
-					seq: seq,
-					data: sdata
-				};
-				parsedData.payload = decrypted;
-				that._routeAndExec(parsedData, sess, cb);
-			}
-		);
+			);
+		});
 		return;
 	}
 	this._routeAndExec(parsedData, null, cb);
@@ -391,11 +393,14 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 
 Connection.prototype._encrypt = function __rpcConnectionEncrypt(msg, cb) {
 	if (this.crypto && this.crypto.encrypt) {
-		this.crypto.encrypt(this.state, msg, function __rpcConnectionOnEncrypt(error, data) {
-			if (error) {
-				return cb(error);
-			}
-			cb(null, data);
+		const that = this;
+		setImmediate(function () {
+			that.crypto.encrypt(that.state, msg, function __rpcConnectionOnEncrypt(error, data) {
+				if (error) {
+					return cb(error);
+				}
+				cb(null, data);
+			});
 		});
 		return;
 	}
