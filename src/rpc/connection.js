@@ -112,14 +112,21 @@ Connection.prototype._respond = function __rpcConnectionRespond(payload, status,
 };
 
 Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
-	if (!this.connected) {
-		return;
-	}
-	if (this.isTimedout()) {
-		if (this.sock) {
-			this.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+	try {
+		if (!this.connected) {
+			if (this.sock) {
+				this.sock.emit('error', new Error('RPC connection lost'));
+			}
+			return;
 		}
-		return;
+		if (this.isTimedout()) {
+			if (this.sock) {
+				this.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+			}
+			return;
+		}
+	} catch (error) {
+		logger.error('RPC heartbeat error:', error);		
 	}
 	const that = this;
 	setTimeout(function () {
