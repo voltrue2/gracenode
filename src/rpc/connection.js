@@ -405,7 +405,7 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 		this.sock = null;
 	}
 	this.parser = null;
-	this.emit('clear', killed);
+	this.emit('clear', killed, this.id);
 };
 
 function createState(id) {
