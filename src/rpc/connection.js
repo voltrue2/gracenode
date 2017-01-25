@@ -57,7 +57,7 @@ function Connection(sock) {
 	});
 	this.sock.on('end', function __rpcConnectionOnEnd() {
 		logger.debug(that.name, 'TCP connection ended by client');
-		that.close();
+		that.kill(new Error('TCP disconnected by client'));
 	});
 	this.sock.on('error', function __rpcConnectionOnError(error) {
 		logger.error(that.name, 'TCP connection error detected:', error);
@@ -126,7 +126,7 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
 			return;
 		}
 	} catch (error) {
-		logger.error('RPC heartbeat error:', error);		
+		logger.error(this.name, 'TCP heartbeat error:', error);		
 	}
 	const that = this;
 	setTimeout(function () {
@@ -146,7 +146,7 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 		try {
 			this.sock.end();
 		} catch (e) {
-			logger.error('socket end failed:', e);	
+			logger.error(this.name, 'TCP socket end failed:', e);	
 		}
 		if (error) {
 			logger.error(this.name, 'TCP connection closed by error:', error);
@@ -167,7 +167,7 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 		try {
 			this.sock.destroy();
 		} catch (e) {
-			logger.error('socket destory failed:', e);
+			logger.error(this.name, 'TCP socket destory failed:', e);
 		}
 	}
 	this._clear(true);
@@ -358,7 +358,7 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 		if (typeof cb === 'function') {
 			cb(e);
 		} else {
-			logger.error('writting to the socket (response) failed:', e);
+			logger.error(this.name, 'write to the TCP socket (response) failed:', e);
 		}
 	}
 };
@@ -382,7 +382,7 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 		if (typeof cb === 'function') {
 			cb(e);
 		} else {
-			logger.error('writting to the socket (push) failed:', e);
+			logger.error(this.name, 'write to the TCP socket (push) failed:', e);
 		}
 	}
 };
