@@ -116,12 +116,16 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
 		if (!this.connected) {
 			if (this.sock) {
 				this.sock.emit('error', new Error('RPC connection lost'));
+			} else {
+				this.emit('clear', true, this.id);
 			}
 			return;
 		}
 		if (this.isTimedout()) {
 			if (this.sock) {
 				this.sock.emit('timeout', new Error('RPC heartbeat timeout'));
+			} else {
+				this.emit('clear', true, this.id);
 			}
 			return;
 		}
