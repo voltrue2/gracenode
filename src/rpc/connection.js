@@ -10,10 +10,15 @@ const rpc = require('./rpc');
 const router = require('./router');
 var logger;
 var heartbeatConf;
+var cryptoEngine;
 
 module.exports.setup = function __rpcConnectionSetup() {
 	logger = gn.log.create('RPC.connection');
 	heartbeatConf = gn.getConfig('rpc.heartbeat');
+};
+
+module.exports.useCryptoEngine = function __rpcConnectionUseCryptoEngine(_cryptoEngine) {
+	cryptoEngine = _cryptoEngine;
 };
 
 module.exports.create = function __rpcConnectionCreate(sock) {
@@ -44,7 +49,6 @@ function Connection(sock) {
 		that.kill(error);
 	};
 	this.parser = new transport.Stream();
-	this.crypto = null;
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
 	this.heartbeatTime = Date.now();
@@ -94,12 +98,7 @@ Connection.prototype._respond = function __rpcConnectionRespond(payload, status,
 		}
 	}
 	const that = this;
-	this._write(
-		error,
-		status,
-		this.state.seq,
-		payload,
-		function __rpcConnectionOnWrite() {
+	const _rpcConnectionRespond = function () {
 		if (options) {
 			if (options.closeAfterReply) {
 				return that.close();
@@ -108,7 +107,8 @@ Connection.prototype._respond = function __rpcConnectionRespond(payload, status,
 				return that.kill();
 			}
 		}
-	});
+	};
+	this._write(error, status, this.state.seq, payload, _rpcConnectionRespond);
 };
 
 Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
@@ -139,10 +139,6 @@ Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
 		return true;
 	}
 	return false;
-};
-
-Connection.prototype.useCryptoEngine = function __rpcConnectionUseCryptoEngine(engine) {
-	this.crypto = engine;
 };
 
 Connection.prototype.close = function __rpcConnectionClose(error) {
@@ -198,31 +194,24 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 };
 
 Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
-	if (this.crypto && this.crypto.decrypt) {
+	if (cryptoEngine && cryptoEngine.decrypt) {
 		const that = this;
 		if (!this.sock) {
 			return cb(new Error('SocketUnexceptedlyGone'));
 		}
-		setImmediate(function () {
-			that.crypto.decrypt(
-				parsedData.payload,
-				gn.session.PROTO.RPC,
-				that.sock.remoteAddress,
-				that.sock.remotePort,
-				function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
-					if (error) {
-						return cb(error);
-					}
-					const sess = {
-						sessionId: sid,
-						seq: seq,
-						data: sdata
-					};
-					parsedData.payload = decrypted;
-					that._routeAndExec(parsedData, sess, cb);
-				}
-			);
-		});
+		const _onDec = function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
+			if (error) {
+				return cb(error);
+			}
+			const sess = {
+				sessionId: sid,
+				seq: seq,
+				data: sdata
+			};
+			parsedData.payload = decrypted;
+			that._routeAndExec(parsedData, sess, cb);
+		};
+		cryptoEngine.decrypt(parsedData.payload, gn.session.PROTO.RPC, this.sock.remoteAddress, this.sock.remotePort, _onDec);
 		return;
 	}
 	this._routeAndExec(parsedData, null, cb);
@@ -319,7 +308,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 				next();
 			});
 		}, done);
-	});	
+	});
 };
 
 Connection.prototype._write = function __rpcConnectionWrite(_error, status, seq, msg, cb) {
@@ -399,15 +388,12 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 };
 
 Connection.prototype._encrypt = function __rpcConnectionEncrypt(msg, cb) {
-	if (this.crypto && this.crypto.encrypt) {
-		const that = this;
-		setImmediate(function () {
-			that.crypto.encrypt(that.state, msg, function __rpcConnectionOnEncrypt(error, data) {
-				if (error) {
-					return cb(error);
-				}
-				cb(null, data);
-			});
+	if (cryptoEngine && cryptoEngine.encrypt) {
+		cryptoEngine.encrypt(this.state, msg, function __rpcConnectionOnEncrypt(error, data) {
+			if (error) {
+				return cb(error);
+			}
+			cb(null, data);
 		});
 		return;
 	}

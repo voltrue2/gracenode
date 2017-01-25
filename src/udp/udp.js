@@ -309,7 +309,11 @@ function handleMessage(buff, rinfo) {
 		}
 		executeCmd(null, payloadData.seq, null, payloadData, rinfo);
 		next();
-	}, function () {});
+	}, nothing);
+}
+
+function nothing() {
+
 }
 
 function dispatchOnError(error, rinfo) {
@@ -364,18 +368,9 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 
 function executeCommands(cmd, state) {
 	const handlers = cmd.handlers;
-	const done = function __udpExecuteCommandsDone(error) {
-		if (error) {
-			logger.error(
-				'command(s) executed with an error:',
-				error
-			);
-			return;
-		}
-	};
 	async.eachSeries(handlers, function __udpExecuteCommandEach(handler, next) {
 		handler(state, next);
-	}, done);
+	}, nothing);
 }
 
 function send(state, msg, seq, status, cb) {

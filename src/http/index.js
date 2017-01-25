@@ -16,7 +16,12 @@ var config;
 var server;
 var trailingSlash = false;
 const errorMap = {};
-const connectionInfo = {};
+const connectionInfo = {
+	host: null,
+	address: null,
+	port: null,
+	family: null
+};
 
 const STATIC_REGEX = /\.\.\//g;
 
@@ -121,10 +126,12 @@ exports.setup = function __httpSetup(cb) {
 			config.host + ':' + config.port,
 			info
 		);
-		connectionInfo.host = config.host;
-		connectionInfo.address = info.address;
-		connectionInfo.port = info.port;
-		connectionInfo.family = info.family.toLowerCase();
+		if (info) {
+			connectionInfo.host = config.host;
+			connectionInfo.address = info.address;
+			connectionInfo.port = info.port;
+			connectionInfo.family = info.family.toLowerCase();
+		}
 		cb();
 	});
 	server.on('error', function __onHttpSetupError(error) {
