@@ -144,14 +144,17 @@ Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
 Connection.prototype.close = function __rpcConnectionClose(error) {
 	if (this.sock) {
 		try {
-			this.sock.end();
+			if (error) {
+				logger.error(this.name, 'TCP connection closed by error:', error);
+				// force close (closed)
+				this.sock.destroy();
+			} else {
+				logger.debug(this.name, 'TCP connection closed');
+				// send FIN packet (half-closed)
+				this.sock.end();
+			}
 		} catch (e) {
 			logger.error(this.name, 'TCP socket end failed:', e);	
-		}
-		if (error) {
-			logger.error(this.name, 'TCP connection closed by error:', error);
-		} else {
-			logger.debug(this.name, 'TCP connection closed');
 		}
 	}
 	this._clear();
