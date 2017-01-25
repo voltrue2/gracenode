@@ -274,23 +274,18 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		var options;
 		const done = function __rpcConnectionOnCmdDone(error) {
 			// respond to client
-			that._write(
-				error,
-				status,
-				parsedData.seq,
-				res,
-				function __rpcConnectionOnCmdResponse(error) {
-					if (options) {
-						if (options.closeAfterReply) {
-							return that.close();
-						}
-						if (options.killAfterReply) {
-							return that.kill();
-						}
+			that._write(error, status, parsedData.seq, res, __rpcConnectionOnCmdResponse);
+			function __rpcConnectionOnCmdResponse(error) {
+				if (options) {
+					if (options.closeAfterReply) {
+						return that.close();
 					}
-					cb(error);
+					if (options.killAfterReply) {
+						return that.kill();
+					}
 				}
-			);
+				cb(error);
+			}
 		};
 		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
 			handler(that.state, function __rpcConnectionCmdCallback(_res, _status, _options) {
@@ -414,7 +409,7 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 };
 
 function createState(id) {
-	const state = {
+	return {
 		STATUS: transport.STATUS,
 		command: 0,
 		payload: null,
@@ -430,5 +425,4 @@ function createState(id) {
 		close: null,
 		kill: null
 	};
-	return state;
 }
