@@ -251,7 +251,6 @@ function handleHeartbeat(state, cb) {
 }
 
 function handleConn(sock) {
-
 	if (sock.remotePort <= 0 || sock.remotePort > 65536) {
 		logger.error(
 			'invalid and/or malformed incoming TCP packet:',
@@ -264,7 +263,7 @@ function handleConn(sock) {
 	var conn = connection.create(sock);
 	conn.on('clear', onConnectionClear);
 
-	logger.debug('new TCP connection (id:' + conn.id + ') from:', sock.remoteAddress + ':' + sock.remotePort);
+	logger.debug('new TCP connection (id:', conn.id, ') from:', sock.remoteAddress, ':', sock.remotePort);
 
 	connections[conn.id] = conn;
 }

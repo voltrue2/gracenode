@@ -79,7 +79,6 @@ function Connection(sock) {
 
 utils.inherits(Connection, EventEmitter);
 
-
 Connection.prototype._send = function __rpcConnectionSend(payload) {
 	this._push(payload);
 };
@@ -234,16 +233,6 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 	this._execCmd(cmd, parsedData, null, cb);
 };
 
-/*
-Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsedData, sess, cb) {
-	const cmd = router.route(this.name, parsedData);
-	if (!cmd) {
-		return this._errorResponse(parsedData, sess, cb);
-	}
-	this._execCmd(cmd, parsedData, sess, cb);
-};
-*/
-
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
@@ -289,8 +278,6 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		var res;
 		var options;
 		const done = function __rpcConnectionOnCmdDone(error) {
-			// respond to client
-			that._write(error, status, parsedData.seq, res, __rpcConnectionOnCmdResponse);
 			function __rpcConnectionOnCmdResponse(error) {
 				if (options) {
 					if (options.closeAfterReply) {
@@ -302,6 +289,8 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 				}
 				cb(error);
 			}
+			// respond to client
+			that._write(error, status, parsedData.seq, res, __rpcConnectionOnCmdResponse);
 		};
 		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
 			handler(that.state, function __rpcConnectionCmdCallback(_res, _status, _options) {
