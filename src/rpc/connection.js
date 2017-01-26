@@ -181,12 +181,12 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 };
 
 Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
-	const that = this;
 	const parsed = this.parser.parse(packet);
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
 	}
 	this.heartbeatTime = Date.now();
+	const that = this;
 	const done = function __rpcConnectionDataHandlerDone(error) {
 		if (error) {
 			return that.kill(error);
@@ -201,11 +201,14 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 };
 
 Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
+	// handle command routing
+	const cmd = router.route(this.name, parsedData);
+	// execute command w/ encryption and decryption
 	if (cryptoEngine && cryptoEngine.decrypt) {
-		const that = this;
 		if (!this.sock) {
 			return cb(new Error('SocketUnexceptedlyGone'));
 		}
+		const that = this;
 		const _onDec = function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
 			if (error) {
 				return cb(error);
@@ -216,14 +219,22 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 				data: sdata
 			};
 			parsedData.payload = decrypted;
-			that._routeAndExec(parsedData, sess, cb);
+			if (!cmd) {
+				return that._errorResponse(parsedData, sess, cb);
+			}
+			that._execCmd(cmd, parsedData, sess, cb);
 		};
 		cryptoEngine.decrypt(parsedData.payload, gn.session.PROTO.RPC, this.sock.remoteAddress, this.sock.remotePort, _onDec);
 		return;
 	}
-	this._routeAndExec(parsedData, null, cb);
+	// execute command w/o encryption + decryption
+	if (!cmd) {
+		return this._errorResponse(parsedData, null, cb);
+	}
+	this._execCmd(cmd, parsedData, null, cb);
 };
 
+/*
 Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsedData, sess, cb) {
 	const cmd = router.route(this.name, parsedData);
 	if (!cmd) {
@@ -231,6 +242,7 @@ Connection.prototype._routeAndExec = function __rpcConnectionRouteAndExec(parsed
 	}
 	this._execCmd(cmd, parsedData, sess, cb);
 };
+*/
 
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
 	if (!this.sock) {
