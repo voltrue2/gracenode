@@ -148,7 +148,7 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 	if (this.sock) {
 		try {
 			if (error) {
-				logger.error(this.name, 'TCP connection closed by error:', error);
+				logger.debug(this.name, 'TCP connection closed by error:', error);
 				// force close (closed)
 				this.sock.destroy();
 			} else {
@@ -166,7 +166,7 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 Connection.prototype.kill = function __rpcConnectionKill(error) {
 	if (this.sock) {
 		if (error) {
-			logger.error(this.name, 'TCP connection killed from server:', error.message);
+			logger.debug(this.name, 'TCP connection killed from server:', error.message);
 		} else {
 			logger.debug(this.name, 'TCP connection killed from server');
 		}
@@ -352,7 +352,7 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	}
 
 	if (error) {
-		logger.error(this.name, 'error response:', error, 'size:', data.length, 'bytes');
+		logger.debug(this.name, 'error response:', error, 'size:', data.length, 'bytes');
 	}
 
 	try {
@@ -360,9 +360,8 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	} catch (e) {
 		if (typeof cb === 'function') {
 			cb(e);
-		} else {
-			logger.error(this.name, 'write to the TCP socket (response) failed:', e);
 		}
+		logger.error(this.name, 'write to the TCP socket (response) failed:', e);
 	}
 };
 
@@ -384,9 +383,8 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 	} catch (e) {
 		if (typeof cb === 'function') {
 			cb(e);
-		} else {
-			logger.error(this.name, 'write to the TCP socket (push) failed:', e);
 		}
+		logger.error(this.name, 'write to the TCP socket (push) failed:', e);
 	}
 };
 
