@@ -8,6 +8,8 @@ This is a list of manually mantained changes and updates for each version.
 
 None
 
+## RPC configuration cleanInterval has been removed
+
 ## RPC server removed reference to encryption and decryption object in each connection object
 
 ## RPC server removed global check for dead connections

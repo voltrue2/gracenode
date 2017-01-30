@@ -45,7 +45,6 @@ module.exports.shutdown = function () {
 module.exports.setup = function __rpcSetup(cb) {
 	logger = gn.log.create('RPC');
 	config = gn.getConfig('rpc');
-	//config.cleanInterval = config.cleanInterval || 10000;
 
 	connection.setup();
 
@@ -92,8 +91,6 @@ module.exports.setup = function __rpcSetup(cb) {
 	logger.verbose('port range is', config.portRange[0], 'to', pend);
 
 	const done = function __rpcSetupDone() {
-		// set up time-based cleaning for timed out connections
-		//setupCleanTimedoutConnections();
 		// RPC server is now successfully bound and listening
 		boundPort = ports[portIndex];
 		// gracenode shutdown task
@@ -309,49 +306,3 @@ function closeAllConnections(cb) {
 	}
 }
 
-/*
-function setupCleanTimedoutConnections() {
-	const clean = function __rpcCleanTimedoutConns() {
-		if (shutdown) {
-			for (const i in connections) {
-				connections[i].kill();
-				delete connections[i];
-			}
-			return;
-		}
-		try {
-			// we search for start to end so that we iterate 1/2 times!
-			const ids = Object.keys(connections);
-			const idlen = ids.length;
-			var left = 0;
-			var right = idlen - 1;
-			const middle = idlen / 2 | 0;
-			while (left <= middle && right >= middle) {
-				var conn = connections[ids[left]];
-				if (conn && conn.isTimedout()) {
-					conn.kill(new Error('TimedOutConnection'));
-					delete connections[ids[left]];
-					logger.debug('timed out connection cleaned:', conn.id);
-					conn = null;
-				}
-				if (left === right) {
-					break;
-				}
-				conn = connections[ids[right]];
-				if (conn && conn.isTimedout()) {
-					conn.kill(new Error('TimedOutConnection'));
-					delete connections[ids[right]];
-					logger.debug('timed out connection cleaned:', conn.id);
-					conn = null;
-				}
-				left += 1;
-				right -= 1;
-			}
-		} catch (e) {
-			logger.error('clean timed out connections:', e);
-		}
-		setTimeout(clean, config.cleanInterval);
-	};
-	setTimeout(clean, config.cleanInterval);
-}
-*/

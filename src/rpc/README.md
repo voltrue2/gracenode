@@ -19,16 +19,9 @@ rpc: {
 	// or pass one port number instead of portRange, RPC server will bind to incremented port number in cluster mode
 	port: [ port number ]
 	maxPayloadSize: [optional] // default is 8000 bytes,
-	cleanInterval: [number],
 	heartbeat: [optional] { timeout: [milliseconds], checkFrequency: [milliseconds] }
 }
 ```
-
-## cleanInterval
-
-Interval to check and clean timed out TCP connections and their objects.
-
-The value is in milliseconds. Default is 10,000 ms.
 
 ## heartbeat
 
