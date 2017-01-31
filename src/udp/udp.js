@@ -340,6 +340,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 
 	const state = {
 		STATUS: transport.STATUS,
+		now: Date.now(),
 		sessionId: sessionId,
 		seq: seq,
 		session: sessionData,

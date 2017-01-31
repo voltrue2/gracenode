@@ -549,6 +549,8 @@ Command handler functions will have `state` object and `callback` function passe
 		// UNKNOWN
 		UNKNOWN: 99
 	},
+	// state.now is updated every time the connection recieves a packet
+	now: [timestamp in milliseconds],
 	command: [command ID],
 	// connection.id is a unique ID for each connection
 	connection: [connection object],

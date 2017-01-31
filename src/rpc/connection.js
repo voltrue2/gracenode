@@ -51,8 +51,8 @@ function Connection(sock) {
 	this.parser = new transport.Stream();
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
-	this.heartbeatTime = Date.now();
 	this.sock.on('data', function __rpcConnectionOnData(packet) {
+		that.state.now = Date.now();
 		that._data(packet);
 	});
 	this.sock.on('end', function __rpcConnectionOnEnd() {
@@ -138,7 +138,7 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
 };
 
 Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
-	if (Date.now() - this.heartbeatTime >= heartbeatConf.timeout) {
+	if (Date.now() - this.state.now >= heartbeatConf.timeout) {
 		return true;
 	}
 	return false;
@@ -184,7 +184,6 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
 	}
-	this.heartbeatTime = Date.now();
 	const that = this;
 	const done = function __rpcConnectionDataHandlerDone(error) {
 		if (error) {
@@ -426,6 +425,7 @@ function createState(id) {
 		send: null,
 		push: null,
 		close: null,
-		kill: null
+		kill: null,
+		now: Date.now()
 	};
 }

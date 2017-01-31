@@ -427,6 +427,8 @@ Command handler functions will have `state` object passed.
 		UNAVAILABLE: 6,
 		UNKNOWN: 99
 	},
+	// state.now is updated when a packet is received
+	now: [timestamp in milliseconds],
 	sessionId: [session ID] or null,
 	seq: [command sequence number] or null,
 	session: [session data object] or null,
