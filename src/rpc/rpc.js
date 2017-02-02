@@ -16,6 +16,8 @@ const cryptoEngine = {
 };
 var formatFunction;
 var shutdown = false;
+var server;
+var connectionCount = 0;
 
 const PORT_IN_USE = 'EADDRINUSE';
 const TIMEOUT_FOR_CLOSE = 5000;
@@ -27,7 +29,6 @@ const connectionInfo = {
 	port: null,
 	family: null
 };
-const connections = {};
 
 module.exports.info = function __rpcInfo() {
 	return {
@@ -158,7 +159,7 @@ module.exports.setup = function __rpcSetup(cb) {
 			exclusive: true
 		});
 	};
-	const server = net.createServer(handleConn);
+	server = net.createServer(handleConn);
 	server.on('listening', done);
 	server.on('error', function __rpcOnError(error) {
 		if (error.code === PORT_IN_USE) {
@@ -257,12 +258,16 @@ function handleConn(sock) {
 		sock.destory();
 		return;	
 	}
-	var conn = connection.create(sock);
+	var conn = connection.create(server, sock);
 	conn.on('clear', onConnectionClear);
 
-	logger.debug('new TCP connection (id:', conn.id, ') from:', sock.remoteAddress, ':', sock.remotePort);
+	connectionCount += 1;
 
-	connections[conn.id] = conn;
+	logger.debug(
+		'new TCP connection (id:', conn.id, ') from:',
+		sock.remoteAddress, ':', sock.remotePort,
+		connectionCount, 'open connections'
+	);
 }
 
 function onConnectionClear(killed, connId) {
@@ -279,30 +284,24 @@ function onConnectionClear(killed, connId) {
 	} catch (error) {
 		logger.error('RPC server failed to handle clearing TCP connection object:', error);
 	}
-	if (connections[connId]) {
-		delete connections[connId];
+	connectionCount -= 1;
+	if (connectionCount < 0) {
+		connectionCount = 0;
 	}
+	logger.debug('remaining open TCP connections:', connectionCount);
 }
 
 function closeAllConnections(cb) {
-	var counter = 0;
-	const len = Object.keys(connections).length;
-	logger.info('Closing all open TCP connections:', len, 'open');
-	if (len === 0) {
-		return cb();
-	}
-	const count = function () {
-		counter += 1;
-		logger.info('Connection closed:', counter + '/' + len);
-		if (counter === len) {
-			cb();
+	server.emit('shutdown');
+	const POLL_INTERVAL = 100;
+	const poll = function () {
+		logger.info('closing TCP connections for shutting down the server:', connectionCount, 'connections open');
+		if (connectionCount === 0) {
+			// all connections have closed
+			return cb();
 		}
+		setTimeout(poll, POLL_INTERVAL);
 	};
-	for (const id in connections) {
-		const conn = connections[id];
-		conn.once('clear', count);
-		logger.info('Closing TCP connection:', id, counter + '/' + len);
-		conn.close();
-	}
+	setTimeout(poll, POLL_INTERVAL);
 }
 

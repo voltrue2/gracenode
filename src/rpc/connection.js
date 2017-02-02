@@ -21,17 +21,21 @@ module.exports.useCryptoEngine = function __rpcConnectionUseCryptoEngine(_crypto
 	cryptoEngine = _cryptoEngine;
 };
 
-module.exports.create = function __rpcConnectionCreate(sock) {
-	return new Connection(sock);
+module.exports.create = function __rpcConnectionCreate(server, sock) {
+	return new Connection(server, sock);
 };
 
-function Connection(sock) {
+function Connection(server, sock) {
 	EventEmitter.call(this);
 	const you = sock.remoteAddress + ':' + sock.remotePort;
 	var that = this;
 	this.sock = sock;
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
+	// set up server shutdown listener
+	server.on('shutdown', function () {
+		that.close();
+	});
 	// server push
 	this.state.send = function (payload) {
 		that._send(payload);

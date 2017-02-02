@@ -12,6 +12,8 @@ None
 
 #### Packet encryption performance improved (XOR)
 
+#### RPC removed the map for connection objects and refactored close all connections on shutdown
+
 #### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
 
 Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
