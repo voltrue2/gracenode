@@ -33,7 +33,8 @@ function Connection(server, sock) {
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
 	// set up server shutdown listener
-	server.on('shutdown', function () {
+	this.server = server;
+	this.server.on('shutdown', function () {
 		that.close();
 	});
 	// server push
