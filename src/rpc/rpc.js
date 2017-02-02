@@ -19,6 +19,7 @@ var shutdown = false;
 var server;
 var connectionCount = 0;
 
+const MAX_LISTENERS = 6000;
 const PORT_IN_USE = 'EADDRINUSE';
 const TIMEOUT_FOR_CLOSE = 5000;
 const HEARTBEAT_ID =  911;
@@ -160,6 +161,7 @@ module.exports.setup = function __rpcSetup(cb) {
 		});
 	};
 	server = net.createServer(handleConn);
+	server.setMaxListeners(MAX_LISTENERS);
 	server.on('listening', done);
 	server.on('error', function __rpcOnError(error) {
 		if (error.code === PORT_IN_USE) {
