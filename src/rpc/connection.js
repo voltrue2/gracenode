@@ -33,8 +33,7 @@ function Connection(server, sock) {
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
 	// set up server shutdown listener
-	this.server = server;
-	this.server.on('shutdown', function () {
+	server.on('shutdown', function () {
 		that.close();
 	});
 	// server push
@@ -409,9 +408,11 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 	this.connected = false;
 	if (this.sock) {
 		this.sock.removeAllListeners();
-		this.sock = null;
 	}
-	this.parser = null;
+	delete this.state;
+	delete this.server;
+	delete this.sock;
+	delete this.parser;
 	this.emit('clear', killed, this.id);
 };
 

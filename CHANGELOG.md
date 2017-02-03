@@ -10,6 +10,8 @@ None
 
 ## Changed
 
+#### RPC cleans connection objects on disconnect
+
 #### RPC connection cleans server reference on disconnect
 
 #### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)

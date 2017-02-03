@@ -262,10 +262,7 @@ function handleConn(sock) {
 	}
 	var conn = connection.create(server, sock);
 	conn.on('clear', function (killed, connId) {
-		conn.removeAllListeners();
-		conn.server = null;
-		conn = null;
-		sock = null;
+		conn = null;	
 		onConnectionClear(killed, connId);
 	});
 
