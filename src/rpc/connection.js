@@ -392,6 +392,9 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 };
 
 Connection.prototype._encrypt = function __rpcConnectionEncrypt(msg, cb) {
+	if (!this.connected) {
+		return;
+	}
 	if (cryptoEngine && cryptoEngine.encrypt) {
 		cryptoEngine.encrypt(this.state, msg, function __rpcConnectionOnEncrypt(error, data) {
 			if (error) {
