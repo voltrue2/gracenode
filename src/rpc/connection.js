@@ -412,11 +412,15 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 	if (this.sock) {
 		this.sock.removeAllListeners();
 	}
+	if (this.parser) {
+		delete this.parser.buffer;
+	}
 	delete this.state;
 	delete this.server;
 	delete this.sock;
 	delete this.parser;
 	this.emit('clear', killed, this.id);
+	this.removeAllListeners();
 };
 
 function createState(id) {
