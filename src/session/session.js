@@ -143,7 +143,7 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 		req.args.session = sessionData;
 		var data = {
 			seq: 0,
-			ttl: Date.now() + options.ttl,
+			ttl: gn.lib.now() + options.ttl,
 			data: sessionData
 		};
 		if (using.udp || using.rpc) {
@@ -314,7 +314,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		return next(new Error('InvalidSeq'));
 	}
 	// check session TTL
-	const now = Date.now();
+	const now = gn.lib.now();
 	if (sess.ttl <= now) {
 		logger.error(
 			'session ID has expired:',
@@ -426,7 +426,7 @@ function HTTPSessionValidation(req, res, next) {
 				return next(new Error('SessionNotFound'), 401);
 			}
 			// check for TTL
-			if (sessData.ttl <= Date.now()) {
+			if (sessData.ttl <= gn.lib.now()) {
 				logger.error('session ID has expired:', id);
 				return next(new Error('SessionExpired'), 401);
 			}
@@ -434,7 +434,7 @@ function HTTPSessionValidation(req, res, next) {
 			req.args.sessionId = id;
 			req.args.session = sessData.data;
 			// update session and move on
-			sessData.ttl = Date.now() + options.ttl;
+			sessData.ttl = gn.lib.now() + options.ttl;
 			if (newId) {
 				id = newId;
 			}

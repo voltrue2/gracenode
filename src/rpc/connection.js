@@ -52,7 +52,7 @@ function Connection(sock) {
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
 	this.sock.on('data', function __rpcConnectionOnData(packet) {
-		that.state.now = Date.now();
+		that.state.now = gn.lib.now();
 		that._data(packet);
 	});
 	this.sock.on('end', function __rpcConnectionOnEnd() {
@@ -138,7 +138,7 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
 };
 
 Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
-	if (Date.now() - this.state.now >= heartbeatConf.timeout) {
+	if (gn.lib.now() - this.state.now >= heartbeatConf.timeout) {
 		return true;
 	}
 	return false;
@@ -355,12 +355,12 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	}
 
 	try {
-		this.sock.write(data, 'binary', cb);
+		this.sock.write(data, 'binary');
 	} catch (e) {
-		if (typeof cb === 'function') {
-			cb(e);
-		}
 		logger.error(this.name, 'write to the TCP socket (response) failed:', e);
+	}
+	if (typeof cb === 'function') {
+		cb();
 	}
 };
 
@@ -378,12 +378,12 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 	}
 	
 	try {
-		this.sock.write(data, 'binary', cb);
+		this.sock.write(data, 'binary');
 	} catch (e) {
-		if (typeof cb === 'function') {
-			cb(e);
-		}
 		logger.error(this.name, 'write to the TCP socket (push) failed:', e);
+	}
+	if (typeof cb === 'function') {
+		cb();
 	}
 };
 
@@ -439,6 +439,6 @@ function createState(id) {
 		push: null,
 		close: null,
 		kill: null,
-		now: Date.now()
+		now: gn.lib.now()
 	};
 }

@@ -243,7 +243,7 @@ function handleHeartbeat(state, cb) {
 	}
 	var res = new Buffer(JSON.stringify({
 		message: 'heartbeat',
-		serverTime: Date.now()
+		serverTime: gn.lib.now()
 	}));
 	cb(res);
 }
