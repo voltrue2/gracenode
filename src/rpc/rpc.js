@@ -6,6 +6,7 @@ const gn = require('../gracenode');
 const connection = require('./connection');
 const router = require('./router');
 const hooks = require('./hooks');
+const transport = require('../../lib/transport');
 const protocol = require('../../lib/packet/protocol');
 
 var logger;
@@ -55,6 +56,11 @@ module.exports.setup = function __rpcSetup(cb) {
 		));
 	}
 
+	// change default max size for packets
+       	if (config.maxPayloadSize) {
+		transport.setMaxSize(config.maxPayloadSize);
+	}
+	
 	protocol.setup(gn);
 
 	if (config && config.port) {

@@ -1063,6 +1063,12 @@ Stops or restarts all running daemon processes without user inputs. This option 
 
 ## gracenode.lib
 
+#### .now()
+
+Returns a current timestamp in milliseconds just like `Date.now()`, but it calculates the value every second to avoid syscall `gettimeofday`.
+
+The returned value may not be accurate. This is useful if you need to check the time in performance critical situation. Remember that you are sacrificing the accuracy.
+
 #### .padNumber(num [number], digit [*number])
 
 Returns a padded/none-padded with leading zero string.
