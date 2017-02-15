@@ -2,7 +2,39 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 3.5.20
+## Version 3.5.21
+
+## Added
+
+None
+
+## Changed
+
+#### Crypto Engine performance improved by replacing the xor loop w/ hard-coded xor
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
+## Version 3.5.21
 
 ## Added
 
