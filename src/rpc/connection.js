@@ -10,11 +10,13 @@ const rpc = require('./rpc');
 const router = require('./router');
 var logger;
 var heartbeatConf;
+var pushInterval;
 var cryptoEngine;
 
 module.exports.setup = function __rpcConnectionSetup() {
 	logger = gn.log.create('RPC.connection');
 	heartbeatConf = gn.getConfig('rpc.heartbeat');
+	pushInterval = gn.getConfig('rpc.pushInterval') || 400;
 };
 
 module.exports.useCryptoEngine = function __rpcConnectionUseCryptoEngine(_cryptoEngine) {
@@ -30,6 +32,7 @@ function Connection(sock) {
 	const you = sock.remoteAddress + ':' + sock.remotePort;
 	var that = this;
 	this.sock = sock;
+	this.pushBuf = [];
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
 	// server push
@@ -75,9 +78,28 @@ function Connection(sock) {
 	if (heartbeatConf) {
 		this._checkHeartbeat();
 	}
+	this._setupPush();
 }
 
 utils.inherits(Connection, EventEmitter);
+
+Connection.prototype._setupPush = function () {
+	const that = this;
+	const push = function () {
+		if (!that.pushBuf.length) {
+			return setTimeout(push, pushInterval);
+		}
+		const buf = Buffer.concat(that.pushBuf);
+		that.pushBuf = [];
+		try {
+			that.sock.write(buf, 'binary');
+		} catch (err) {
+			logger.error(that.name, 'server push failed:', err);
+		}
+		setTimeout(push, pushInterval);
+	};
+	setTimeout(push, pushInterval);
+};
 
 Connection.prototype._send = function __rpcConnectionSend(payload) {
 	this._push(payload);
@@ -376,12 +398,17 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 		}
 		return cb();
 	}
-	
+	/*	
 	try {
 		this.sock.write(data, 'binary');
 	} catch (e) {
 		logger.error(this.name, 'write to the TCP socket (push) failed:', e);
 	}
+	if (typeof cb === 'function') {
+		cb();
+	}
+	*/
+	this.pushBuf.push(data);
 	if (typeof cb === 'function') {
 		cb();
 	}

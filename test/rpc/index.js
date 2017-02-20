@@ -37,7 +37,8 @@ describe('gracenode.rpc', function () {
 				heartbeat: {
 					timeout: 2000,
 					checkFrequency: 1000
-				}
+				},
+				pushInterval: 10
 			},
 			udp: {
 				//protocol: 'json',

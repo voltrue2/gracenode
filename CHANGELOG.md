@@ -2,6 +2,44 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.6.0
+
+## Added
+
+#### RPC added a new configuration value called pushInterval
+
+By default, the value of this configuration is `400`.
+
+This allows you to set interval of RPC server push in milliseconds.
+
+## Changed
+
+## CryptoEngine changed encryption and decryption method
+
+To improve performance, the method of encryption/decryption has changed from AES-ECB + CTR-Mode to AES-256-CBC.
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.5.21
 
 ## Added
