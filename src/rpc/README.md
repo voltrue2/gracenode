@@ -19,16 +19,9 @@ rpc: {
 	// or pass one port number instead of portRange, RPC server will bind to incremented port number in cluster mode
 	port: [ port number ]
 	maxPayloadSize: [optional] // default is 8000 bytes,
-	pushInterval: [ optional ] // default is 400 ms,
 	heartbeat: [optional] { timeout: [milliseconds], checkFrequency: [milliseconds] }
 }
 ```
-
-## pushInterval
-
-RPC server sends server push every `400` milliseconds by default. You may change this by this configuration.
-
-**NOTE** Setting this value to be `0` will be ignored and default will be used.
 
 ## heartbeat
 
