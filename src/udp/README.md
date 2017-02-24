@@ -159,6 +159,12 @@ UDP server can also push packets as response to command requests.
 
 For UDP command packet, it must contain both `session ID` and **encrypted** `payload`.
 
+To enable encryption/decryption use:
+
+```javascript
+gracenode.session.useUDPEncryption();
+```
+
 **C# Example**
 
 `client/cs/Crypto.cs`

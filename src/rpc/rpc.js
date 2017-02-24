@@ -187,6 +187,10 @@ module.exports.setup = function __rpcSetup(cb) {
 	listen();
 };
 
+module.exports.requireCallback = function __rpcReqCb(timeout) {
+	connection.requireCallback(timeout);
+};
+
 module.exports.useEncryption = function __rpcUseEncryption(encrypt) {
 	if (typeof encrypt !== 'function') {
 		throw new Error('EncryptMustBeFunction');

@@ -11,10 +11,15 @@ const router = require('./router');
 var logger;
 var heartbeatConf;
 var cryptoEngine;
+var callbackTimeout = 0;
 
 module.exports.setup = function __rpcConnectionSetup() {
 	logger = gn.log.create('RPC.connection');
 	heartbeatConf = gn.getConfig('rpc.heartbeat');
+};
+
+module.exports.requireCallback = function __rpcConnectionReqCb(timeout) {
+	callbackTimeout = timeout;
 };
 
 module.exports.useCryptoEngine = function __rpcConnectionUseCryptoEngine(_cryptoEngine) {
@@ -293,7 +298,32 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 			that._write(error, status, parsedData.seq, res, __rpcConnectionOnCmdResponse);
 		};
 		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
+			var timeout;
+			var skipped = false;
+			if (callbackTimeout) {
+				timeout = setTimeout(function () {
+					logger.error(
+						that.name,
+						'command', cmd.id, cmd.name,
+						'callback is required but not called in',
+						callbackTimeout + 'ms',
+						'respond as an error with status',
+						transport.STATUS.SERVER_ERR
+					);
+					skipped = true;
+					status = transport.STATUS.SERVER_ERR;
+					res = new Buffer('MISSING_CALLBACK');
+					next();
+				}, callbackTimeout);
+			}
 			handler(that.state, function __rpcConnectionCmdCallback(_res, _status, _options) {
+				if (timeout) {
+					clearTimeout(timeout);
+				}
+				if (skipped) {
+					// timeout has been called: skip
+					return;
+				}
 				options = _options;
 				if (_res instanceof Error) {
 					if (!_status) {

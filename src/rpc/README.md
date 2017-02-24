@@ -278,9 +278,27 @@ byte[] stopBytes = BitConverter.GetBytes(stop);
 Buffer.BlockCopy(stopBytes, 0, packet, msg.Length + 8, uint32Size);
 ```
 
+## Requiring Callbacks
+
+By default, RPC server does NOT force each command to send a response, but by calling the following, you may enforce the requirement of callking a callback
+
+on every command execution.
+
+```
+// set callback timeout to be 1 second
+var callbackTimeout = 1000;
+gracenode.rpc.requireCallback(callbackTimeout);
+```
+
 ## Encryption and Decryption
 
 For RPC command packet, only `payload` is encrypted.
+
+To enable encryption/decryption use:
+
+```javascript
+gracenode.session.useRPCEncryption();
+```
 
 **Encryption/Decryption Example in C#**:
 

@@ -678,6 +678,18 @@ describe('gracenode.rpc', function () {
 		});
 	});
 
+	it('can require callback and detect callblack not being called on the server', function (done) {
+		gn.rpc.requireCallback(500);
+		gn.rpc.command(9988, 'mustCallCallback', function (state) {
+			
+		});
+		client.recvOnceSecure(cipher, function (data) {
+			done();
+		});
+		cipher.seq += 1;
+		client.sendSecure(sessionId, cipher, 9988, cipher.seq, {}, function () {});
+	});
+
 	it('can send client heartbeat', function (done) {
 		client.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, 'heartbeat');
