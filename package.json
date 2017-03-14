@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "A node.js framework for real-time applications over UDP and TCP protocols with extendable modules for quick and clean evelopment.",
-	"version": "3.6.2",
+	"version": "3.6.3",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -13,7 +13,7 @@
 	"dependencies": {
 		"jshint": "2.9.3",
 		"gracelog": "0.6.9",
-		"aeterno": "0.6.5",
+		"aeterno": "1.0.0",
 		"cluster-mode": "1.2.0",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",

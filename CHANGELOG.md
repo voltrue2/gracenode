@@ -2,6 +2,40 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.6.3
+
+## Added
+
+None
+
+## Changed
+
+#### Dependency aeterno version updated
+
+#### gracenode core process stop logging changed from info to verbose (stack trace part only)
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (gic) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.6.2
 
 ## Added

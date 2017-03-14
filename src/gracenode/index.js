@@ -17,12 +17,13 @@ const async = requireInternal('../../lib/async');
 const pkg = requireInternal('../../package.json');
 const transport = requireInternal('../../lib/transport');
 
+const onExceptions = [];
+
 // this will be overridden by logger in setupLog()
 var ignoreLint = false;
 var logger = console;
 var renderConf;
 var clusterConfig;
-var onExceptions = [];
 var ready = false;
 var isSupportedVersion = true;
 
@@ -154,7 +155,7 @@ exports.stop = function __gnStop(error) {
 		logger.error(trace.stack);
 		logger.error('.stop() has been invoked:', error);
 	} else {
-		logger.info(trace.stack);
+		logger.verbose(trace.stack);
 		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
