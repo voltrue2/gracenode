@@ -162,14 +162,14 @@ function sendDelivery(nexts, addr, port, data, cb) {
 			onDelivery(data);	
 			return nextDelivery(nexts, data, cb);
 		}
-		send(nexts, addr, port, data, cb);
+		deliver(nexts, addr, port, data, cb);
 	} catch (error) {
 		logger.error('delivery failed:', addr, port, error);
 		nextDelivery(nexts, data, cb);
 	}
 }
 
-function send(nexts, addr, port, data, cb) {
+function deliver(nexts, addr, port, data, cb) {
 	if (!server) {
 		if (typeof cb === 'function') {
 			cb();
@@ -183,7 +183,7 @@ function send(nexts, addr, port, data, cb) {
 			buff[key] = [];
 		}
 		buff[key].push(dataBytes);
-		return nextDelivery(nexts, dataBytes, cb);
+		return nextDelivery(nexts, data, cb);
 	}
 	logger.verbose('send:', addr, port, data);
 	server.send(dataBytes, 0, dataBytes.length, port, addr, function () {
@@ -192,14 +192,14 @@ function send(nexts, addr, port, data, cb) {
 }
 
 function nextDelivery(nexts, data, cb) {
-	setImmediate(function () {
+	setImmediate(function __busOnNextDelivery() {
 		prepareDelivery(nexts, data, cb);
 	});
 }
 
 function timedDelivery() {
 	const INTERVAL = (typeof conf.compress === 'number') ? conf.compress : 250;
-	const send = function (addr, port, compressed, cb) {
+	const send = function __busTimedDeliverySend(addr, port, compressed, cb) {
 		try {
 			logger.verbose('timed send:', addr, port);
 			server.send(compressed, 0, compressed.length, port, addr, function () {
@@ -210,7 +210,7 @@ function timedDelivery() {
 			cb();
 		}
 	};
-	const start =  function () {
+	const start =  function __busTimedDeliveryStart() {
 		const keys = Object.keys(buff);
 		async.forEach(keys, function (key, next) {
 			const list = key.split('/');
@@ -220,7 +220,7 @@ function timedDelivery() {
 			const compressed = packer.compress(buff[key]);
 			buff[key] = [];
 			send(list[0], list[1], compressed, next);
-		}, function () {
+		}, function __busTimedDeliveryNext() {
 			setImmediate(start, INTERVAL);
 		});
 	};
