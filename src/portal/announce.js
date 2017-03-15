@@ -45,6 +45,9 @@ module.exports.setup = function (cb) {
 	if (!conf.enable) {
 		return cb();
 	}
+	if (gn.isCluster() && gn.isMaster()) {
+		return cb();
+	}
 	logger.info('connecting to redis @', conf.host + ':' + conf.port);
 	rclient = redis.createClient(conf);
 	rclient.on('ready', function () {
@@ -259,6 +262,6 @@ function createCache(list, results) {
 		});
 	}
 	cache = tmp;
-	logger.verbose('cache created:', cache);
+	logger.verbose('cache created:', info, cache);
 }
 
