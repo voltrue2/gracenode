@@ -155,7 +155,7 @@ exports.stop = function __gnStop(error) {
 		logger.error(trace.stack);
 		logger.error('.stop() has been invoked:', error);
 	} else {
-		logger.verbose(trace.stack);
+		logger.verbose(trace.stack.replace('Error', ''));
 		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
