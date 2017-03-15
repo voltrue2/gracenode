@@ -17,7 +17,8 @@
 		"cluster-mode": "1.2.0",
 		"node-datetime": "0.1.5",
 		"multiparty": "4.1.2",
-		"cookies": "0.5.1"
+		"cookies": "0.5.1",
+		"redis": "2.7.1"
 	},
 	"devDependencies": {
 		"mocha": "2.3.3",

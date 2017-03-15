@@ -1,7 +1,7 @@
 'use strict';
 
-var gn = require('gracenode');
-var schemaMap = {};
+const gn = require('../../src/gracenode');
+const schemaMap = {};
 
 const UINT8 = 1;
 const INT8 = 2;
@@ -81,11 +81,11 @@ module.exports.schema = function (name, _schema) {
 };
 
 module.exports.compress = function (packedList) {
-	var list = [ COMP_BUF ];
+	const list = [ COMP_BUF ];
 	// 4 bytes is the size of COMP_BUF
 	var size = 4;
 	for (var i = 0, len = packedList.length; i < len; i++) {
-		var buf = new Buffer(4 + packedList[i].length);
+		const buf = new Buffer(4 + packedList[i].length);
 		buf.writeUInt32BE(packedList[i].length, 0);
 		packedList[i].copy(buf, 4, 0);
 		list.push(buf);
@@ -105,7 +105,7 @@ module.exports.uncompress = function (buf) {
 	while (consumed < total) {
 		const size = buf.readUInt32BE(consumed);
 		consumed += 4;
-		var packed = new Buffer(size);
+		const packed = new Buffer(size);
 		buf.copy(packed, 0, consumed);
 		consumed += size;
 		list.push(packed);
@@ -118,14 +118,14 @@ module.exports.pack = function (name, data) {
 	if (!schema) {
 		throw new Error('SchameDoesNotExistForPack:' + name);
 	}
-	var buf = new Buffer(MAX_SIZE);
+	const buf = new Buffer(MAX_SIZE);
 	var offset = 0;
 	buf.fill(0);
-	for (var prop in schema) {
+	for (const prop in schema) {
 		if (data[prop] === undefined) {
 			throw new Error('MissingProperty[' + name + ']:' + prop);
 		}
-		var value = data[prop];
+		const value = data[prop];
 		offset = packAs(schema[prop], value, buf, offset);
 	}
 	const res = buf.slice(0, offset);
@@ -137,11 +137,11 @@ module.exports.unpack = function (name, buf, _offset, addLength) {
 	if (!schema) {
 		throw new Error('SchemaDoesNotExitForUnpack:' + name);
 	}
-	var data = {};
+	const data = {};
 	var offset = _offset || 0;
-	for (var prop in schema) {
-		var type = schema[prop];
-		var unpacked = unpackAs(type, buf, offset);
+	for (const prop in schema) {
+		const type = schema[prop];
+		const unpacked = unpackAs(type, buf, offset);
 		data[prop] = unpacked.value;
 		offset += unpacked.length;
 	}
