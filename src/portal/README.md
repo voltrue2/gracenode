@@ -52,6 +52,22 @@ The default is 1000ms.
 
 ## Methods
 
+### .setServerType(type [String])
+
+### .setValue(key [String], value [String/Number])
+
+Set/Add a key/value as metadata. The values can be read by `.getNodes(...)` or `.getAllNodes()`.
+
+### .getNodes(type [String])
+
+Returns an array of mesh network nodes of the given `type`.
+
+`type` is set by calling `gracenode.portal.setServerType(...)`.
+
+### .getAllNodes()
+
+Returns an array of all mesh network nodes.
+
 ### .schema(name [String], strcture [Object])
 
 Define the mesh network communication event and its data structure.
