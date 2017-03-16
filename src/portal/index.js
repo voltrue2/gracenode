@@ -42,7 +42,7 @@ module.exports.DATATYPE = {
 	BOOL_ARR: packer.BOOL_ARR
 };
 module.exports.setServerType = announce.setServerType;
-module.exports.addStatus = announce.addStatus;
+module.exports.setValue = announce.setValue;
 module.exports.getNodes = announce.getNodes;
 module.exports.getAllNodes = announce.getAllNodes;
 module.exports.info = delivery.info; 

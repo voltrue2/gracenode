@@ -51,6 +51,8 @@ exports.rpc = requireInternal('../rpc');
 
 exports.udp = requireInternal('../udp');
 
+exports.portal = requireInternal('../portal');
+
 exports.cluster = cluster;
 
 exports.getRootPath = function __gnGetRootPath() {
@@ -118,6 +120,7 @@ exports.start = function __gnStart(cb) {
 			setupLog,
 			execLint,
 			setupLogCleaner,
+			setupPortal,
 			setupRender,
 			setupSession,
 			startHTTP,
@@ -344,6 +347,16 @@ function startMod(cb) {
 		}
 		cb();
 	});
+}
+
+function setupPortal(cb) {
+	const conf = config.get('portal');
+	if (conf && conf.enable) {
+		module.exports.portal.config(conf);
+		module.exports.portal.setup(cb);
+		return;
+	}
+	cb();
 }
 
 function setupRender(cb) {

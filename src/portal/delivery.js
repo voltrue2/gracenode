@@ -179,13 +179,13 @@ function deliver(nexts, addr, port, data, opt, cb) {
 	switch (useTcp) {
 		case true:
 			/* TODO
-			tcp.send(dataBytes, addr, port, function () {
+			tcp.send(addr, port, dataBytes, function () {
 				nextDelivery(nexts, data, opt, cb);
 			});
 			*/
 			break;
 		case false:
-			udp.send(dataBytes, addr, port, function () {
+			udp.send(addr, port, dataBytes, function () {
 				nextDelivery(nexts, data, opt, cb);
 			});
 			break;

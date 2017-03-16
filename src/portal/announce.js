@@ -17,7 +17,7 @@ const conf = {
 	port: 6379,
 	interval: 1000
 };
-const status = {};
+const valueMap = {};
 
 var cache = {};
 var logger;
@@ -73,12 +73,12 @@ module.exports.setServerType = function (type) {
 	serverType = type;
 };
 
-module.exports.addStatus = function (key, value) {
+module.exports.setValue = function (key, value) {
 	if (value !== null && typeof value === 'object') {
 		logger.error('requires value to be a string or a number:', key, value);
-		throw new Error('InvalidAnnounceStatusValue');
+		throw new Error('InvalidAnnounceValue');
 	}
-	status[key] = value;
+	valueMap[key] = value;
 };
 
 module.exports.getNodes = function (type) {
@@ -158,8 +158,8 @@ function parseKey(key) {
 
 function createValue() {
 	var value = '';
-	for (const key in status) {
-		value += key + '/' + status[key] + '/';
+	for (const key in valueMap) {
+		value += key + '/' + valueMap[key] + '/';
 	}
 	return value;
 }
