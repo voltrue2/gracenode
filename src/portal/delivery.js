@@ -1,38 +1,30 @@
 'use strict';
 
-const dgram = require('dgram');
 const async = require('../../lib/async');
-const packer = require('./packer');
 const gn = require('../../src/gracenode');
+const packer = require('./packer');
+const udp = require('./udp');
 
 const conf = {
 	// enable: false,
-	address: '127.0.0.1',
-	port: 8000,
 	relayLimit: 10,
 	compress: false
 };
 
-const PORT_IN_USE = 'EADDRINUSE';
 const DSCHEMA = '__portal__delivery__schema';
 
 const namelist = [];
 const onmap = {};
 const buff = {};
 
-var server;
 var logger;
 var info;
+
+module.exports.DSCHEMA = DSCHEMA;
 
 module.exports.config = function (_conf) {
 	if (_conf.enable) {
 		conf.enable = _conf.enable;
-	}
-	if (_conf.address) {
-		conf.address = _conf.address;
-	}
-	if (_conf.port) {
-		conf.port = _conf.port;
 	}
 	if (_conf.relayLimit) {
 		conf.relayLimit = _conf.relayLimit;
@@ -41,6 +33,7 @@ module.exports.config = function (_conf) {
 		conf.compress = _conf.compress;
 	}
 	logger = gn.log.create('portal.delivery');
+	udp.config(conf);
 };
 
 module.exports.setup = function (cb) {
@@ -52,17 +45,23 @@ module.exports.setup = function (cb) {
 		payload: packer.BIN,
 		list: packer.STR_ARR
 	});
-	startServer(cb);
+	if (conf.compress) {
+		timedDelivery();
+	}
+	udp.onDelivery(onDelivery);
+	const finalize = function (next) {
+		info = udp.info();
+		next();
+	};
+	const tasks = [
+		udp.setup,
+		finalize
+	];
+	async.series(tasks, cb);
 };
 
 module.exports.info = function () {
-	if (!info) {
-		return {};
-	}
-	return {
-		address: info.address,
-		port: info.port
-	};
+	return info;
 };
 
 module.exports.schema = function (name, struct) {
@@ -85,8 +84,11 @@ destlist [
 	{ address, port }
 	[...]
 ]
+opt {
+	tcp: <bool>
+}
 */
-module.exports.send = function (name, deliveryData, destlist, cb) {
+module.exports.send = function (name, deliveryData, destlist, opt, cb) {
 	const id = namelist.indexOf(name);
 	
 	if (id === -1) {
@@ -118,10 +120,10 @@ module.exports.send = function (name, deliveryData, destlist, cb) {
 		}
 	}
 	nexts = nexts.slice(0, counter);
-	prepareDelivery(nexts, data, cb);
+	prepareDelivery(nexts, data, opt, cb);
 };
 
-function prepareDelivery(nexts, data, cb) {
+function prepareDelivery(nexts, data, opt, cb) {
 	const list = nexts.shift();
 	if (!list) {
 		if (typeof cb === 'function') {
@@ -135,16 +137,10 @@ function prepareDelivery(nexts, data, cb) {
 	// add list to data object
 	data.list = list;
 	// send the delivery
-	sendDelivery(nexts, addr, port, data, cb);
+	sendDelivery(nexts, addr, port, data, opt, cb);
 }
 
-function sendDelivery(nexts, addr, port, data, cb) {
-	if (!server) {
-		if (typeof cb === 'function') {
-			cb();
-		}
-		return;
-	}
+function sendDelivery(nexts, addr, port, data, opt, cb) {
 	if (!addr || !port) {
 		const err = new Error('PortalDeliveryError');
 		logger.error(
@@ -156,70 +152,73 @@ function sendDelivery(nexts, addr, port, data, cb) {
 		}
 		return;	
 	}
-	try {
-		// local delivery
-		if (addr === info.address && port === info.port) {
-			onDelivery(data);	
-			return nextDelivery(nexts, data, cb);
-		}
-		deliver(nexts, addr, port, data, cb);
-	} catch (error) {
-		logger.error('delivery failed:', addr, port, error);
-		nextDelivery(nexts, data, cb);
+	// local delivery
+	if (addr === info.address && port === info.port) {
+		onDelivery(data);	
+		return nextDelivery(nexts, data, opt, cb);
 	}
+	deliver(nexts, addr, port, data, opt, cb);
 }
 
-function deliver(nexts, addr, port, data, cb) {
-	if (!server) {
-		if (typeof cb === 'function') {
-			cb();
-		}
-		return;
-	}
+function deliver(nexts, addr, port, data, opt, cb) {
 	const dataBytes = packer.pack(DSCHEMA, data);
 	if (conf.compress) {
-		const key = addr + '/' + port;
-		if (!buff[key]) {
-			buff[key] = [];
+		const proto = opt && opt.tcp ? 'tcp' : 'udp';
+		if (!buff[proto]) {
+			buff[proto] = {};
 		}
-		buff[key].push(dataBytes);
-		return nextDelivery(nexts, data, cb);
+		const key = addr + '/' + port;
+		if (!buff[proto][key]) {
+			buff[proto][key] = [];
+		}
+		buff[proto][key].push(dataBytes);
+		return nextDelivery(nexts, data, opt, cb);
 	}
-	logger.verbose('send:', addr, port, data);
-	server.send(dataBytes, 0, dataBytes.length, port, addr, function () {
-		nextDelivery(nexts, data, cb);
-	});
+	logger.verbose('send:', addr, port, opt, data);
+	const useTcp = opt && opt.tpc ? true : false;
+	switch (useTcp) {
+		case true:
+			/* TODO
+			tcp.send(dataBytes, addr, port, function () {
+				nextDelivery(nexts, data, opt, cb);
+			});
+			*/
+			break;
+		case false:
+			udp.send(dataBytes, addr, port, function () {
+				nextDelivery(nexts, data, opt, cb);
+			});
+			break;
+	}
 }
 
-function nextDelivery(nexts, data, cb) {
+function nextDelivery(nexts, data, opt, cb) {
 	setImmediate(function __portalOnNextDelivery() {
-		prepareDelivery(nexts, data, cb);
+		prepareDelivery(nexts, data, opt, cb);
 	});
 }
 
 function timedDelivery() {
 	const INTERVAL = (typeof conf.compress === 'number') ? conf.compress : 250;
 	const send = function __portalTimedDeliverySend(addr, port, compressed, cb) {
-		try {
-			logger.verbose('timed send:', addr, port);
-			server.send(compressed, 0, compressed.length, port, addr, function () {
-				setImmediate(cb);
-			});
-		} catch (error) {
-			logger.error('timed delivery failed:', error);
-			cb();
-		}
+		logger.verbose('timed send:', addr, port);
+		udp.send(addr, port, compressed, function () {
+			setImmediate(cb);
+		});
 	};
 	const start =  function __portalTimedDeliveryStart() {
-		const keys = Object.keys(buff);
-		async.forEach(keys, function (key, next) {
-			const list = key.split('/');
-			if (!buff[key].length) {
-				return next();
-			}
-			const compressed = packer.compress(buff[key]);
-			buff[key] = [];
-			send(list[0], list[1], compressed, next);
+		const protos = Object.keys(buff);
+		async.forEach(protos, function (proto, moveon) {
+			const keys = Object.keys(buff[proto]);
+			async.forEach(keys, function (key, next) {
+				const list = key.split('/');
+				if (!buff[proto][key].length) {
+					return next();
+				}
+				const compressed = packer.compress(buff[proto][key]);
+				buff[proto][key] = [];
+				send(list[0], list[1], compressed, next);
+			}, moveon);
 		}, function __portalTimedDeliveryNext() {
 			setImmediate(start, INTERVAL);
 		});
@@ -252,66 +251,3 @@ function onDelivery(data) {
 	}
 }
 
-function startServer(cb) {
-	const done = function () {
-		gn.onExit(function portalDeliveryShutdown(next) {
-			try {
-				server.close();
-				server = null;
-			} catch (error) {
-				logger.error(error);
-			}
-			next();
-		});
-		logger.info(
-			'started as UDP server:',
-			conf.address, conf.port
-		);
-		server.on('message', handleMessage);
-		info = server.address();
-		if (conf.compress) {
-			timedDelivery();
-		}
-		cb();
-	};
-	const handleError = function (error) {
-		if (error.code === PORT_IN_USE) {
-			conf.port += 1;
-			startServer(cb);
-			return;
-		}
-		logger.error(
-			'failed to start as UDP:',
-			conf.address, conf.port
-		);
-		gn.stop(error);
-	};
-	
-	if (server) {
-		server.close();
-	}
-
-	server = dgram.createSocket('udp4');
-	server.on('error', handleError);
-	server.on('listening', done);
-	server.bind({
-		port: conf.port,
-		address: conf.address,
-		exclusive: true
-	});
-}
-
-function handleMessage(dataBytes) {
-	const uncomp = packer.uncompress(dataBytes);
-	
-	if (!uncomp) {
-		const unpacked = packer.unpack(DSCHEMA, dataBytes);
-		onDelivery(unpacked);
-		return;
-	}
-
-	for (var i = 0, len = uncomp.length; i < len; i++) {
-		const unpacked = packer.unpack(DSCHEMA, uncomp[i]);
-		onDelivery(unpacked);
-	}
-}
