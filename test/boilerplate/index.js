@@ -20,7 +20,10 @@ describe('gracenode boilerplate', function () {
 	});
 	
 	it('can create boilerplate for an application', function (done) {
-		exec('cp -rv ' + boilerplatePath + '* ' + testPath, done);
+		exec('cp -rv ' + boilerplatePath + '* ' + testPath, function (error) {
+			assert.equal(error, null);
+			exec('sed -i.bak s/require\\(\'gracenode\'\\)/require\\(\'..\\/\\.\\.\\/src\\/gracenode\'\\)/ ' + boilerplatePath + 'index.js', done);
+		});
 	});
 
 	it('can set up node_modules directory and symolic link to gracenode for tests', function (done) {
@@ -72,6 +75,10 @@ describe('gracenode boilerplate', function () {
 			assert.equal(error, null);
 			done();
 		});
+	});
+
+	it('can wait for 1000ms', function (done) {
+		setTimeout(done, 1000);
 	});
 
 	it('the default HTTP server can handle a request GET /', function (done) {

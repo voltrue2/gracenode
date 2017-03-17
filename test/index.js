@@ -10,6 +10,8 @@ if (singleRun !== 'false') {
 } else {
 	// test boilerplate
 	require('./boilerplate');
+	// test configurations w/ ENV
+	require('./config');
 	// test dev gracenode
 	require('./dev');
 	// test starting up of gracenode

@@ -1,7 +1,7 @@
 'use strict';
 
 const gn = require('../gracenode/');
-const config = {};
+var config = {};
 
 exports.load = function __configLoad(configObj) {
 	for (var i in configObj) {
@@ -11,6 +11,15 @@ exports.load = function __configLoad(configObj) {
 			config[i] = merge(i, config, configObj);
 		}
 	}
+};
+
+// internal use only: for env
+exports.dump = function () {
+	return JSON.stringify(config);
+};
+// internal use only: for env
+exports.restore = function (stringified) {
+	config = JSON.parse(stringified);
 };
 
 // dotted notation is supported

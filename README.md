@@ -213,6 +213,34 @@ gn.config(require('/path/to/my/shared/config.json'));
 gn.config(require('/path/to/my/custom/config.json'));
 ```
 
+#### Using ENV variables to manipulate configurations
+
+- You may load a configuration file specified by an `ENV` variable.
+
+To load a configuration file from an `ENV` variable:
+
+**LINUX/UNIX**
+
+`export GRACENODE_CONF=/path/to/my/conf.json`
+
+**WINDOWS**
+
+`set GRACENODE_CONF=/path/to/my/conf.json`
+
+- You may also dynamically replace **placeholders** in your configurations.
+
+The **placeholder** format is: `{$YOUR_VARIABLE}`.
+
+In order to set the matching value for **placeholders**, you would set an `ENV` variable as shown below:
+
+`export GRACENODE_YOUR_VARIABLE=my_variable`
+
+- You may also change the prefix of `ENV` variables from default `GRACENODE`:
+
+```javascript
+gracenode.setEnvPrefix('MY_PREFIX');
+```
+
 **NOTE 3:** More details for logging and cluster configurations will be given later in this <a href="https://github.com/voltrue2/gracenode#default-configurations">README</a>.
 
 ### Linting

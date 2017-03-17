@@ -9,6 +9,7 @@ const aeterno = require('aeterno');
 const cluster = require('cluster-mode');
 const rootPath = getRootPath(require('./parent').getTopmostParent());
 const config = requireInternal('./config');
+const env = requireInternal('./env');
 const mod = requireInternal('./mod');
 const render = requireInternal('../render');
 const lint = requireInternal('../lint');
@@ -44,6 +45,8 @@ exports.http = require('../http');
 
 // deprecated
 exports.router = exports.http;
+
+exports.setEnvPrefix = env.setPrefix;
 
 exports.session = session;
 
@@ -169,6 +172,25 @@ exports.isSupportedVersion = function __gnIsSupportedVersion() {
 };
 
 function applyConfig() {
+	// if ENV variables are provided, handle them here
+	const envmap = env.getEnv();
+	if (envmap && envmap.CONF) {
+		// load a configuration file from ENV
+		config.load(require(envmap.CONF));
+	}
+	if (Object.keys(envmap).length) {
+		var dump = config.dump();
+		// try to replace placeholders in the configurations
+		for (const name in envmap) {
+			if (name === 'CONF') {
+				continue;
+			}
+			const key = '\\{\\$' + name + '\\}';
+			dump = dump.replace(new RegExp(key, 'g'), envmap[name]);
+		}
+		config.restore(dump);
+	}
+	// apply configurations
 	const logConf = config.get('log');
 	const clusterConf = config.get('cluster');
 	const httpPort = config.get('http.port') || config.get('router.port');
