@@ -28,7 +28,7 @@ Version `4.0.0` or above.
 
 - Provides **RPC server** over **TCP** for real-time application. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/rpc#rpc-server">here</a>.
 
-- Provides **Mesh network communication**. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/portal#portal">here</a>
+[comment] <> (- Provides **Mesh network communication**. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/portal#portal">here</a>)
 
 - Provides built-in **session** management as an option. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
 
