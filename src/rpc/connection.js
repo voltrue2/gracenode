@@ -35,7 +35,6 @@ function Connection(sock) {
 	const you = sock.remoteAddress + ':' + sock.remotePort;
 	var that = this;
 	this.sock = sock;
-	this.pushBuf = [];
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
 	// server push
@@ -411,9 +410,6 @@ Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
 		this.sock.write(data, 'binary');
 	} catch (e) {
 		logger.error(this.name, 'write to the TCP socket (push) failed:', e);
-	}
-	if (typeof cb === 'function') {
-		cb();
 	}
 };
 

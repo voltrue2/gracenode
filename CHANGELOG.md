@@ -2,6 +2,40 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.6.5
+
+## Added
+
+None
+
+## Changed
+
+#### RPC timed push has been remved
+
+#### [Planned] Gracenode process internal communication via UDP protocol (Mesh Network)
+
+Gracenode internal communication (port) is a de-centralized mesh network that enables all gracenode processes includingremote processes to comunicate to one another.
+
+It is very useful to build distributed-network system in real-time.
+
+#### It has now been implemented as portal module but not tested yet
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.6.3
 
 ## Added
