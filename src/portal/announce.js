@@ -13,9 +13,11 @@ const COUNT = 'COUNT';
 
 const conf = {
 	// enable: false,
-	host: '127.0.0.1',
-	port: 6379,
-	interval: 1000
+	announce: {
+		host: '127.0.0.1',
+		port: 6379,
+		interval: 1000
+	}
 };
 const valueMap = {};
 
@@ -29,14 +31,16 @@ module.exports.config = function (_conf) {
 	if (_conf.enable) {
 		conf.enable = _conf.enable;
 	}
-	if (_conf.host) {
-		conf.host = _conf.host;
-	}
-	if (_conf.port) {
-		conf.port = _conf.port;
-	}
-	if (_conf.interval) {
-		conf.interval = _conf.interval;
+	if (_conf.announce) {
+		if (_conf.announce.host) {
+			conf.host = _conf.announce.host;
+		}
+		if (_conf.announce.port) {
+			conf.port = _conf.announce.port;
+		}
+		if (_conf.announce.interval) {
+			conf.interval = _conf.announce.interval;
+		}
 	}
 	logger = gn.log.create('portal.announce');
 };

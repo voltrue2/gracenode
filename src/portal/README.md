@@ -16,8 +16,13 @@ In order to use `portal`, you must provide the minimum configuration as shown be
 gracenode.config({
 	portal: {
 		enable: true,
-		host: '<host of Redis server>',
-		port: <port of Redis server>
+		address: <mesh network address>,
+		port: <mesh network port>,
+		announce: {
+			host: '<host of Redis server>',
+			port: <port of Redis server>,
+			interval: <interval of announce in milliseconds>
+		}
 	}
 });
 ```
