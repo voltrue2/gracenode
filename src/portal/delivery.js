@@ -89,15 +89,31 @@ opt {
 }
 */
 module.exports.send = function (name, deliveryData, destlist, opt, cb) {
-	const id = namelist.indexOf(name);
 	
+	if (!destlist || !destlist.length) {
+		if (typeof cb === 'function') {
+			return cb(new Error('DestinationNodesNotGiven:' + name));
+		}
+		throw new Error('DestinationNodesNotGiven:' + name);
+	}
+
+	const id = namelist.indexOf(name);
+	var dataPayload = deliveryData;	
+
 	if (id === -1) {
-		cb(new Error('InvalidPortalDeliveryName:' + name));
+		if (typeof cb === 'function') {
+			return cb(new Error('InvalidPortalDeliveryName:' + name));
+		}
+		throw new Error('InvalidPortalDeliveryName:' + name);
+	}
+
+	if (!Buffer.isBuffer(dataPayload)) {
+		dataPayload = packer.pack(name, dataPayload);
 	}
 
 	const data = {
 		id: id,
-		payload: packer.pack(name, deliveryData),
+		payload: dataPayload,
 		list: []
 	};	
 	var limit = conf.relayLimit;
@@ -113,7 +129,8 @@ module.exports.send = function (name, deliveryData, destlist, opt, cb) {
 			nexts[index] = [];
 			counter += 1;
 		}
-		nexts[index].push(destlist.shift());
+		const dest = destlist.shift();
+		nexts[index].push(dest.key || dest);
 		index += 1;
 		if (index === limit) {
 			index = 0;
@@ -125,13 +142,13 @@ module.exports.send = function (name, deliveryData, destlist, opt, cb) {
 
 function prepareDelivery(nexts, data, opt, cb) {
 	const list = nexts.shift();
-	if (!list) {
+	if (!list || !list.length) {
 		if (typeof cb === 'function') {
 			cb();
 		}
 		return;
 	}
-	const dest = list.shift().key.split('/');
+	const dest = list.shift().split('/');
 	const addr = dest[0];
 	const port = parseInt(dest[1]);
 	// add list to data object

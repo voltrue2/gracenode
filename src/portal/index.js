@@ -11,6 +11,7 @@ module.exports.config = function (conf) {
 };
 
 module.exports.setup = function (cb) {
+	packer.setup();
 	const tasks = [
 		delivery.setup,
 		announce.setup
@@ -41,12 +42,11 @@ module.exports.DATATYPE = {
 	BOOL: packer.BOOL,
 	BOOL_ARR: packer.BOOL_ARR
 };
-module.exports.setServerType = announce.setServerType;
 module.exports.setValue = announce.setValue;
 module.exports.getNodes = announce.getNodes;
 module.exports.getAllNodes = announce.getAllNodes;
 module.exports.info = delivery.info; 
-module.exports.schema = delivery.schema;
+module.exports.define = delivery.schema;
 module.exports.send = send;
 module.exports.relay = relay;
 module.exports.on = delivery.on;

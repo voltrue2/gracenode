@@ -69,8 +69,8 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 		}
 		logger.verbose('Bootstrapping a module:', key, item.path);
 		start = Date.now();
-		fs.exists(item.path, function __onModExists(exists) {
-			if (!exists) {
+		fs.stat(item.path, function __onModExists(error) {
+			if (error) {
 				return next(
 					er.create(
 						E_MOD_NOT_FOUND, key + ': ' + item.path

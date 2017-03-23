@@ -317,8 +317,8 @@ function canWrite(conf, cb) {
 		cb();
 		return;
 	}
-	fs.exists(conf.file, function __logExists(exists) {
-		if (!exists) {
+	fs.stat(conf.file, function __logExists(error) {
+		if (error) {
 			return cb(new Error(ER_LOG_DIR_NOT_FOUND + ' ' + conf.file));
 		}
 		fs.open(conf.file, 'w', function __canOpenLogFile(error, fd) {

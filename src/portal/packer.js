@@ -34,6 +34,8 @@ const OBJ_TYPE = 0xdeadbeef;
 // this value is configurable
 var MAX_SIZE = 8000;
 
+var logger;
+
 module.exports.UINT8 = UINT8;
 module.exports.INT8 = INT8;
 module.exports.UINT16 = UINT16;
@@ -63,6 +65,10 @@ module.exports.setMaxSize = function (maxSize) {
 	}
 };
 
+module.exports.setup = function () {
+	logger = gn.log.create('portal.packer');
+};
+
 /***
 _schema {
 	<prop name>: <data type>,
@@ -72,7 +78,8 @@ data type can be another schema name
 **/
 module.exports.schema = function (name, _schema) {
 	if (schemaMap[name]) {
-		throw new Error('SchemaAlreadyExists:' + name);
+		logger.error('delivery data schema already exists:', name, _schema);
+		return false;
 	}
 	for (var prop in _schema) {
 		if (_schema[prop] === undefined || _schema[prop] === null) {
@@ -80,6 +87,7 @@ module.exports.schema = function (name, _schema) {
 		}
 	}
 	schemaMap[name] = _schema;
+	return true;
 };
 
 module.exports.compress = function (packedList) {
@@ -125,7 +133,10 @@ module.exports.pack = function (name, data) {
 	buf.fill(0);
 	for (const prop in schema) {
 		if (data[prop] === undefined) {
-			throw new Error('MissingProperty[' + name + ']:' + prop);
+			throw new Error(
+				'MissingProperty[' + name + ']:' + prop +
+				'\n' + JSON.stringify(data)
+			);
 		}
 		const value = data[prop];
 		offset = packAs(schema[prop], value, buf, offset);

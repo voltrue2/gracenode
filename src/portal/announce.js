@@ -5,7 +5,8 @@ const async = require('../../lib/async');
 const gn = require('../../src/gracenode');
 const delivery = require('./delivery');
 
-const PREFIX = '__gic/';
+const PREFIX = '__portal/';
+const DEFAULT_TYPE = 'normal';
 const SCAN_COUNT = 1000;
 const PATTERN = PREFIX + '*';
 const MATCH = 'MATCH';
@@ -13,11 +14,10 @@ const COUNT = 'COUNT';
 
 const conf = {
 	// enable: false,
-	announce: {
-		host: '127.0.0.1',
-		port: 6379,
-		interval: 1000
-	}
+	type: DEFAULT_TYPE,
+	host: '127.0.0.1',
+	port: 6379,
+	interval: 1000
 };
 const valueMap = {};
 
@@ -25,11 +25,13 @@ var cache = {};
 var logger;
 var info;
 var rclient;
-var serverType = 'normal';
 
 module.exports.config = function (_conf) {
 	if (_conf.enable) {
 		conf.enable = _conf.enable;
+	}
+	if (_conf.type) {
+		conf.type = _conf.type;
 	}
 	if (_conf.announce) {
 		if (_conf.announce.host) {
@@ -73,10 +75,6 @@ module.exports.setup = function (cb) {
 	});
 };
 
-module.exports.setServerType = function (type) {
-	serverType = type;
-};
-
 module.exports.setValue = function (key, value) {
 	if (value !== null && typeof value === 'object') {
 		logger.error('requires value to be a string or a number:', key, value);
@@ -89,7 +87,7 @@ module.exports.getNodes = function (type) {
 	if (cache[type]) {
 		return cache[type];
 	}
-	return null;
+	return [];
 };
 
 module.exports.getAllNodes = function () {
@@ -148,7 +146,7 @@ function startAnnounceAndRead() {
 function createKey() {
 	return PREFIX +
 		info.address + '/' + info.port +
-		'/' + serverType;
+		'/' + conf.type;
 }
 
 function parseKey(key) {
