@@ -13,7 +13,8 @@ const hooks = require('./hooks');
 const PACKET_LIMIT_INTERVAL = 1000;
 const CLEAN_INTERVAL = 60000;
 // configurable
-const PACKET_NUM_LIMIT = 20;
+const PACKET_NUM_LIMIT_IN = 10;
+const PACKET_NUM_LIMIT_OUT = 300;
 const PORT_IN_USE = 'EADDRINUSE';
 const IPv6 = 'ipv6';
 const IPv4 = 'ipv4';
@@ -66,15 +67,15 @@ module.exports.setup = function __udpSetup(cb) {
 
 	if (!config.packets) {
 		config.packets = {
-			in: PACKET_NUM_LIMIT,
-			out: PACKET_NUM_LIMIT
+			in: PACKET_NUM_LIMIT_IN,
+			out: PACKET_NUM_LIMIT_OUT
 		};
 	}
 	if (!config.packets.in) {
-		config.packets.in = PACKET_NUM_LIMIT;
+		config.packets.in = PACKET_NUM_LIMIT_IN;
 	}
 	if (!config.packets.out) {
-		config.packets.out = PACKET_NUM_LIMIT;
+		config.packets.out = PACKET_NUM_LIMIT_OUT;
 	}
 
 	if (!config || !config.portRange) {
@@ -310,7 +311,7 @@ function handleMessage(buff, rinfo) {
 	}
 	clientMap[key].in += 1;
 	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now > clientMap[key].inTime) {
+	if (gn.lib.now() > clientMap[key].inTime) {
 		clientMap[key].in = 0;
 		clientMap[key].inTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
 	}
@@ -318,7 +319,8 @@ function handleMessage(buff, rinfo) {
 		logger.warn(
 			'Packet in limit exceeded and dropped:',
 			key,
-			clientMap[key].in + '/' + config.packets.in
+			clientMap[key].in + '/' + config.packets.in,
+			'time diff:', gn.lib.now() - clientMap[key].inTime
 		);
 		return;
 	}
@@ -440,7 +442,7 @@ function send(state, msg, seq, status, cb) {
 	}
 	clientMap[key].out += 1;
 	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now > clientMap[key].outTime) {
+	if (gn.lib.now() > clientMap[key].outTime) {
 		clientMap[key].out = 0;
 		clientMap[key].outTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
 	}
@@ -550,7 +552,7 @@ function serverPush(msg, address, port, cb) {
 	}
 	clientMap[key].out += 1;
 	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now > clientMap[key].outTime) {
+	if (gn.lib.now() > clientMap[key].outTime) {
 		clientMap[key].out = 0;
 		clientMap[key].outTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
 	}
