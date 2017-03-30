@@ -41,7 +41,10 @@ describe('gracenode.rpc', function () {
 				pushInterval: 10
 			},
 			udp: {
-				//protocol: 'json',
+				packets: {
+					in: 100,
+					out: 100
+				},
 				address: udpAddr,
 				portRange: [ udpPort ]
 			}

@@ -31,6 +31,10 @@ describe('gracenode.udp', function () {
 			},
 			udp: {
 				maxPacketSize: 1000,
+				packets: {
+					in: 100,
+					out: 100
+				},
 				address: addr,
 				port: portOne
 			},

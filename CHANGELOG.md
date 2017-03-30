@@ -2,6 +2,34 @@
 
 This is a list of manually mantained changes and updates for each version.
 
+## Version 3.7.0
+
+## Added
+
+##### UDP added packets configuration to controll the number of in/out packets
+
+## Changed
+
+None
+
+### [Planned] Mesh network partially implemented but not used
+
+## Deprecated
+
+#### gracenode.registerShutdownTask()
+
+#### gracenode.router
+
+Please use `gracenode.http` instead.
+
+#### gracenode.lib.cloneObj()
+
+## Removed
+
+None
+
+***
+
 ## Version 3.6.5
 
 ## Added

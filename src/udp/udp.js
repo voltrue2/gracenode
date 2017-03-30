@@ -10,11 +10,16 @@ const router = require('./router');
 // UDP command hooks
 const hooks = require('./hooks');
 
+const PACKET_LIMIT_INTERVAL = 1000;
+const CLEAN_INTERVAL = 60000;
+// configurable
+const PACKET_NUM_LIMIT = 20;
 const PORT_IN_USE = 'EADDRINUSE';
 const IPv6 = 'ipv6';
 const IPv4 = 'ipv4';
 const IPV6_ADDR_PREFIX = 'fe80';
 const LAST_RANGE = 1000;
+const clientMap = {};
 
 var udpVersion = 'udp4';
 var ipv6 = false;
@@ -57,6 +62,19 @@ module.exports.setup = function __udpSetup(cb) {
 			config.port,
 			config.port + LAST_RANGE
 		];
+	}
+
+	if (!config.packets) {
+		config.packets = {
+			in: PACKET_NUM_LIMIT,
+			out: PACKET_NUM_LIMIT
+		};
+	}
+	if (!config.packets.in) {
+		config.packets.in = PACKET_NUM_LIMIT;
+	}
+	if (!config.packets.out) {
+		config.packets.out = PACKET_NUM_LIMIT;
 	}
 
 	if (!config || !config.portRange) {
@@ -150,7 +168,9 @@ module.exports.setup = function __udpSetup(cb) {
 		connectionInfo.host = config.address;
 		connectionInfo.port = info.port;
 		connectionInfo.family = info.family;
-		
+	
+		setupCleaning();
+	
 		logger.info('UDP server started at', info.address + ':' + info.port, connectionInfo.family);
 		logger.info('using encryption:', (cryptoEngine.encrypt ? true : false));
 		logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
@@ -276,6 +296,33 @@ function handleMessage(buff, rinfo) {
 		return;
 	}
 
+	const key = rinfo.address + rinfo.port;
+
+	// we restrict number of packets per second for stability
+	if (!clientMap[key]) {
+		clientMap[key] = {
+			inTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			outTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			in: 0,
+			out: 0,
+			time: 0
+		};
+	}
+	clientMap[key].in += 1;
+	clientMap[key].time = gn.lib.now();
+	if (gn.lib.now > clientMap[key].inTime) {
+		clientMap[key].in = 0;
+		clientMap[key].inTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
+	}
+	if (clientMap[key].in >= config.packets.in) {
+		logger.warn(
+			'Packet in limit exceeded and dropped:',
+			key,
+			clientMap[key].in + '/' + config.packets.in
+		);
+		return;
+	}
+
 	const parsed = transport.parse(buff);
 	if (parsed instanceof Error) {
 		logger.error(parsed);
@@ -380,6 +427,35 @@ function send(state, msg, seq, status, cb) {
 		return;
 	}
 
+	// we restrict number of packets per second for stability
+	const key = state.clientAddress + state.clientPort;
+	if (!clientMap[key]) {
+		clientMap[key] = {
+			inTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			outTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			in: 0,
+			out: 0,
+			time: 0
+		};
+	}
+	clientMap[key].out += 1;
+	clientMap[key].time = gn.lib.now();
+	if (gn.lib.now > clientMap[key].outTime) {
+		clientMap[key].out = 0;
+		clientMap[key].outTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
+	}
+	if (clientMap[key].out >= config.packets.out) {
+		logger.warn(
+			'Packet out limit exceeded and dropped',
+			key,
+			clientMap[key].out + '/' + config.packets.out
+		);
+		if (typeof cb === 'function') {
+			cb();
+		}
+		return;
+	}
+
 	// consider this as a reply
 	if (status !== undefined && status !== null) {
 		msg = transport.createReply(status, seq || 0, msg);
@@ -460,6 +536,31 @@ function serverPush(msg, address, port, cb) {
 	if (shutdown) {
 		return;
 	}
+	
+	// we restrict number of packets per second for stability
+	const key = address + port;
+	if (!clientMap[key]) {
+		clientMap[key] = {
+			inTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			outTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			in: 0,
+			out: 0,
+			time: 0
+		};
+	}
+	clientMap[key].out += 1;
+	clientMap[key].time = gn.lib.now();
+	if (gn.lib.now > clientMap[key].outTime) {
+		clientMap[key].out = 0;
+		clientMap[key].outTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
+	}
+	if (clientMap[key].out >= config.packets.out) {
+		logger.warn('Packet out limit exceeded and dropped');
+		if (typeof cb !== 'function') {
+			cb = function () {};
+		}
+		return;
+	}
 
 	try {
 		if (typeof cb !== 'function') {
@@ -495,3 +596,21 @@ function findAddrMap() {
 	}
 	return map;
 }
+
+function setupCleaning() {
+	const clean = function () {
+		try {
+			const now = gn.lib.now() - CLEAN_INTERVAL;
+			for (const key in clientMap) {
+				if (now >= clientMap[key].time) {
+					delete clientMap[key];
+				}
+			}
+		} catch (err) {
+			// do nothing
+		}
+		setTimeout(clean, CLEAN_INTERVAL);
+	};
+	setTimeout(clean, CLEAN_INTERVAL);
+}
+

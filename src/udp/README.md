@@ -19,6 +19,11 @@ In order to start the UDP server, you will need to provide the following configu
 ```
 {
 	udp: {
+		// maximam number of packets for in/out per second
+		packets: {
+			in: 20,
+			out: 20
+		},
 		// change the default max packet size allowed from clients: Default is 8000 (8KB)
 		maxPacketSize: 1000,
 		// UDP server will attempt to bind between the two port numbers given here
@@ -30,6 +35,16 @@ In order to start the UDP server, you will need to provide the following configu
 	}
 }
 ```
+
+### packets
+
+In order to protect the server from bombarded but controlled number of packets coming in and going out,
+
+`UDP` module has "restrictions" in place to controll the number of packets coming in and going out.
+
+`packets.in: 20` means the server allows up to 20 packets per second from a client.
+
+`packets.out: 20` means the server allows up to 20 packets per second from the server to a client.
 
 ## IPv6 Support
 
