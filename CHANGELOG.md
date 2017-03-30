@@ -6,7 +6,7 @@ This is a list of manually mantained changes and updates for each version.
 
 ## Added
 
-##### UDP added packets configuration to controll the number of in/out packets
+##### UDP added packets configuration to controll the number of in packets
 
 ## Changed
 
