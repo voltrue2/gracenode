@@ -13,8 +13,7 @@ const hooks = require('./hooks');
 const PACKET_LIMIT_INTERVAL = 1000;
 const CLEAN_INTERVAL = 60000;
 // configurable
-const PACKET_NUM_LIMIT_IN = 10;
-const PACKET_NUM_LIMIT_OUT = 300;
+const PACKET_NUM_LIMIT = 10;
 const PORT_IN_USE = 'EADDRINUSE';
 const IPv6 = 'ipv6';
 const IPv4 = 'ipv4';
@@ -66,16 +65,7 @@ module.exports.setup = function __udpSetup(cb) {
 	}
 
 	if (!config.packets) {
-		config.packets = {
-			in: PACKET_NUM_LIMIT_IN,
-			out: PACKET_NUM_LIMIT_OUT
-		};
-	}
-	if (!config.packets.in) {
-		config.packets.in = PACKET_NUM_LIMIT_IN;
-	}
-	if (!config.packets.out) {
-		config.packets.out = PACKET_NUM_LIMIT_OUT;
+		config.packets = PACKET_NUM_LIMIT;
 	}
 
 	if (!config || !config.portRange) {
@@ -302,25 +292,23 @@ function handleMessage(buff, rinfo) {
 	// we restrict number of packets per second for stability
 	if (!clientMap[key]) {
 		clientMap[key] = {
-			inTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			outTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			in: 0,
-			out: 0,
+			ttl: gn.lib.now() + PACKET_LIMIT_INTERVAL,
+			count: 0,
 			time: 0
 		};
 	}
-	clientMap[key].in += 1;
+	clientMap[key].count += 1;
 	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now() > clientMap[key].inTime) {
-		clientMap[key].in = 0;
-		clientMap[key].inTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
+	if (gn.lib.now() > clientMap[key].ttl) {
+		clientMap[key].count = 0;
+		clientMap[key].ttl = gn.lib.now() + PACKET_LIMIT_INTERVAL;
 	}
-	if (clientMap[key].in >= config.packets.in) {
+	if (clientMap[key].count >= config.packets) {
 		logger.warn(
 			'Packet in limit exceeded and dropped:',
 			key,
-			clientMap[key].in + '/' + config.packets.in,
-			'time diff:', gn.lib.now() - clientMap[key].inTime
+			clientMap[key].count + '/' + config.packets,
+			'time diff:', gn.lib.now() - clientMap[key].ttl
 		);
 		return;
 	}
@@ -429,35 +417,6 @@ function send(state, msg, seq, status, cb) {
 		return;
 	}
 
-	// we restrict number of packets per second for stability
-	const key = state.clientAddress + state.clientPort;
-	if (!clientMap[key]) {
-		clientMap[key] = {
-			inTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			outTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			in: 0,
-			out: 0,
-			time: 0
-		};
-	}
-	clientMap[key].out += 1;
-	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now() > clientMap[key].outTime) {
-		clientMap[key].out = 0;
-		clientMap[key].outTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
-	}
-	if (clientMap[key].out >= config.packets.out) {
-		logger.warn(
-			'Packet out limit exceeded and dropped',
-			key,
-			clientMap[key].out + '/' + config.packets.out
-		);
-		if (typeof cb === 'function') {
-			cb();
-		}
-		return;
-	}
-
 	// consider this as a reply
 	if (status !== undefined && status !== null) {
 		msg = transport.createReply(status, seq || 0, msg);
@@ -536,31 +495,6 @@ function send(state, msg, seq, status, cb) {
 function serverPush(msg, address, port, cb) {
 
 	if (shutdown) {
-		return;
-	}
-	
-	// we restrict number of packets per second for stability
-	const key = address + port;
-	if (!clientMap[key]) {
-		clientMap[key] = {
-			inTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			outTime: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			in: 0,
-			out: 0,
-			time: 0
-		};
-	}
-	clientMap[key].out += 1;
-	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now() > clientMap[key].outTime) {
-		clientMap[key].out = 0;
-		clientMap[key].outTime = gn.lib.now() + PACKET_LIMIT_INTERVAL;
-	}
-	if (clientMap[key].out >= config.packets.out) {
-		logger.warn('Packet out limit exceeded and dropped');
-		if (typeof cb !== 'function') {
-			cb = function () {};
-		}
 		return;
 	}
 
