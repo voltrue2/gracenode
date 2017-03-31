@@ -1,24 +1,48 @@
 'use strict';
 
 const async = require('../../lib/async');
+const gn = require('../../src/gracenode');
 const packer = require('./packer');
-const delivery = require('./delivery');
+const tcp = require('./tcp');
+const udp = require('./udp');
+const deliverySetup = require('./delivery').setup;
+const PSCHEMA = require('./delivery').PACKET_SCHEMA;
 const announce = require('./announce');
 
+const TCP = 0;
+const UDP = 1;
+const NAME_PREFIX = '__portal_';
+
+const callbackmap = {};
+var logger;
+
 module.exports.config = function (conf) {
-	delivery.config(conf);
+	tcp.config(conf);
+	udp.config(conf);
+	tcp.setReceiver(receiver);
+	udp.setReceiver(receiver);
 	announce.config(conf);
+	packer.schema(PSCHEMA, {
+		name: packer.STR,
+		nodes: packer.STR_ARR,
+		packed: packer.BIN
+        });
+	logger = gn.log.create('portal');
 };
 
 module.exports.setup = function (cb) {
 	packer.setup();
+	deliverySetup();
 	const tasks = [
-		delivery.setup,
+		tcp.setup,
+		udp.setup,
 		announce.setup
 	];
 	async.series(tasks, cb);
 };
 
+module.exports.TCP = TCP;
+module.exports.UDP = UDP;
 module.exports.DATATYPE = {
 	UINT8: packer.UINT8,
 	INT8: packer.INT8,
@@ -45,32 +69,96 @@ module.exports.DATATYPE = {
 module.exports.setValue = announce.setValue;
 module.exports.getNodes = announce.getNodes;
 module.exports.getAllNodes = announce.getAllNodes;
-module.exports.info = delivery.info; 
-module.exports.define = delivery.schema;
-module.exports.send = send;
-module.exports.relay = relay;
-module.exports.on = delivery.on;
+module.exports.info = info; 
+module.exports.define = define;
+module.exports.emit = emit;
+module.exports.on = on;
 
-/**
-* @param {string} name - Delivery name defined by .schema(...)
-* @param {string} addr - Destination address
-* @param {number} port - Destination port
-* @param {buffer} payload - Payload data to be delivered
-* @param {function} cb - Callback function
+/** @decription Defines a mesh network event and its data strcuture
+* @param {string} name - Event name
+* @param {object} dataStructure - Data structure as object
 * @returns {undefined}
 */
-function send(name, addr, port, payload, cb) {
-	delivery.send(name, payload, [ { key: addr + '/' + port } ], cb);
+function define(name, dataStruct) {
+	const key = NAME_PREFIX + name;
+	packer.schema(key, dataStruct);
+}
+
+/** @decription Defines a mesh network event listener
+* @param {string} name - Event name
+* @param {function} callback - Event listener callback
+* @returns {undefined}
+*/
+function on(name, callback) {
+	if (!callbackmap[name]) {
+		callbackmap[name] = [];
+	}
+	callbackmap[name].push(callback);
+}
+
+/** @description Returns an object of address and port
+* @param {string} proto - An optional protocol (tcp/udp)
+* @returns {object} The object of address and port (mesh network internal server)
+*/
+function info(proto) {
+	switch (proto) {
+		case 'tcp':
+			return tcp.info();
+		case 'udp':
+			return udp.info();
+		default:
+			return tcp.info();
+	}
 }
 
 /**
+* @param {number} protocol - Delivery protocol portal.TCP/protal.UDP
 * @param {string} name - Delivery name defined by .schema(...)
-* @param {array<string>} list - Array of destination as string in the format of <address>/<port>
-* @param {buffer} payload - Payload data to be delivered
-* @param {function} cb - Callback function
+* @param {string | array} nodes - Destination address and port in the format of 'address/port'
+* @param {object} data - Data object to be delivered
 * @returns {undefined}
 */
-function relay(name, list, payload, cb) {
-	delivery.send(name, payload, list, cb);
+function emit(protocol, name, nodes, data) {
+	if (!Array.isArray(nodes)) {
+		nodes = [ nodes ];
+	}
+	const key = NAME_PREFIX + name; 
+	const packed = packer.pack(key, data);
+	switch (protocol) {
+		case TCP:
+			tcp.send(packed, nodes);
+			break;
+		case UDP:
+			udp.send(packed, nodes);
+			break;
+		default:
+			logger.error('Invalid protocol', protocol, name);
+			break;	
+	}
+}
+
+// called from tcp/udp
+function receiver(name, buf) {
+	const callbacks = callbackmap[name];
+	if (!callbacks) {
+		logger.warn(
+			'Listener(s) for ', name,
+			'has not been declared'
+		);
+		return;
+	}
+	const key = NAME_PREFIX + name;
+	try {
+		const unpacked = packer.unpack(key, buf);
+		_callback(callbacks, null, unpacked);
+	} catch (error) {
+		_callback(callbacks, error);
+	}
+}
+
+function _callback(callbacks, error, res) {
+	for (var i = 0, len = callbacks.length; i < len; i++) {
+		callbacks(error, res);
+	}
 }
 
