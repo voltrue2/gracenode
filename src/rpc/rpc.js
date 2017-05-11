@@ -31,14 +31,19 @@ const connectionInfo = {
 	family: null
 };
 
-module.exports.info = function __rpcInfo() {
+module.exports.info = info;
+
+/** @description Returns the address and port of RPC server
+* @returns {object}
+*/
+function info() {
 	return {
 		address: connectionInfo.address,
 		host: connectionInfo.host,
 		port: connectionInfo.port,
 		family: connectionInfo.family
 	};
-};
+}
 
 module.exports.shutdown = function () {
 	return shutdown;

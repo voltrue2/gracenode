@@ -32,10 +32,17 @@ var prefix = 'GRACENODE';
 module.exports.setPrefix = setPrefix;
 module.exports.getEnv = getEnv;
 
+/** @description Sets custom environment variable prefix
+* @params {string} _prefix - Prefix
+*/
 function setPrefix(_prefix) {
 	prefix = _prefix;
 }
 
+/** @description Returns all environment variables
+*	w/ the prefix
+* @returns {object}
+*/
 function getEnv() {
 	for (const name in process.env) {
 		if (name.indexOf(prefix) === 0) {

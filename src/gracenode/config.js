@@ -3,7 +3,34 @@
 const gn = require('../gracenode/');
 var config = {};
 
-exports.load = function __configLoad(configObj) {
+exports.load = load;
+exports.get = get;
+
+/////////////////////////////
+
+
+/**
+* ///////////////////////
+* // Internal use only //
+* ///////////////////////
+*/
+
+exports.dump = dump;
+exports.restore = restore;
+
+/////////////////////////////
+
+
+/**
+* ///////////////////////
+* // Public Functions  //
+* ///////////////////////
+*/
+
+/** @description Sets configurations
+* @params {object} configObj - Configuration object
+*/
+function load(configObj) {
 	for (var i in configObj) {
 		if (!config.hasOwnProperty(i)) {
 			config[i] = configObj[i];
@@ -11,19 +38,32 @@ exports.load = function __configLoad(configObj) {
 			config[i] = merge(i, config, configObj);
 		}
 	}
-};
+}
 
-// internal use only: for env
-exports.dump = function () {
+/** @description Internal use only configuration data dump
+* @returns {object}
+*/
+function dump() {
 	return JSON.stringify(config);
-};
-// internal use only: for env
-exports.restore = function (stringified) {
-	config = JSON.parse(stringified);
-};
+}
 
-// dotted notation is supported
-exports.get = function __configGet(propName) {
+/** @description Internal use only function
+*	to restore modified configurations
+* @params {string} stringified
+*	- Stringified configurations to restore with
+* @returns {undefined}
+*/
+function restore(stringified) {
+	config = JSON.parse(stringified);
+}
+
+/** @description Returns configuration object
+* @params {string} propName
+*	- Property name of the configurations:
+*	Dot notation is supported for sub properties
+* @returns {any}
+*/
+function get(propName) {
 	if (!propName) {
 		return gn.lib.cloneObj(config);
 	}
@@ -34,7 +74,8 @@ exports.get = function __configGet(propName) {
 	} else {
 		propNames.push(propName);
 	}
-	// this is to indicate if we found a match of configurations at least once or not
+	// this is to indicate if we found a match
+	// of configurations at least once or not
 	// if found is false, we return null
 	var found = false;
 	var conf = gn.lib.cloneObj(config);
@@ -44,7 +85,8 @@ exports.get = function __configGet(propName) {
 			conf = conf[prop];
 			found = true;
 		} else {
-			// if the configurations you are looking for is not found, return null
+			// if the configurations you are looking for
+			// is not found, return null
 			conf = null;
 			break;
 		}
@@ -53,7 +95,16 @@ exports.get = function __configGet(propName) {
 		conf = null;
 	}
 	return conf;
-};
+}
+
+
+/////////////////////////////
+
+/**
+* ///////////////////////
+* // Private Functions //
+* ///////////////////////
+*/
 
 function merge(key, origin, obj) {
 	if (typeof origin[key] === 'object' && typeof obj[key] === 'object') {

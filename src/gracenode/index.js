@@ -36,84 +36,149 @@ exports.mod = {};
 
 // backward compatibility for gracenode 1.x
 exports.lib = requireInternal('/../../lib');
-
 exports.log = log;
-
 exports.render = render.render;
-
 exports.http = require('../http');
-
-// deprecated
-exports.router = exports.http;
-
 exports.setEnvPrefix = env.setPrefix;
-
 exports.session = session;
-
 exports.rpc = requireInternal('../rpc');
-
 exports.udp = requireInternal('../udp');
-
 exports.portal = requireInternal('../portal');
-
 exports.cluster = cluster;
+exports.getRootPath = _getRootPath;
+exports.config = _config;
+exports.getConfig = _getConfig;
+exports.require = _require;
+exports.onExit = _onExit;
+exports.onException = _onException;
+exports.use = _use;
+exports.isMaster = _isMaster;
+exports.isCluster = _isCluster;
+exports.start = _start;
+exports.stop = _stop;
+exports.isSupportedVersion = _isSupportedVersion;
 
-exports.getRootPath = function __gnGetRootPath() {
+/*
+* //////////////////////
+* // DEPRECATED       //
+* //////////////////////
+*/
+exports.router = exports.http;
+exports.registerShutdownTask = _registerShutdownTask;
+
+///////////////////////////////
+
+/**
+* ///////////////////////
+* // Public Functions  //
+* ///////////////////////
+*/
+
+/** @description Returns the root path of the application
+* @returns {string}
+*/
+function _getRootPath() {
 	return rootPath;
-};
+}
 
-exports.require = function __gnRequire(path) {
-	return require(exports.getRootPath() + path);
-};
-
-exports.config = function __gnConfig(obj) {
+/** @description Sets configurations
+* @params {object} obj - Configuration object
+* @returns {undefined}
+*/
+function _config(obj) {
 	config.load(obj);
-};
+}
 
-exports.getConfig = function __gnGetConfig(name) {
+/** @description Returns configurations as an object
+* @params {string} name - Configuration property name:
+*	can be dot separated
+* @returns {object}
+*/
+function _getConfig(name) {
 	return config.get(name);
-};
+}
 
-exports.onExit = function __gnOnExit(taskFunc, runOnMaster) {
+/** @desctiption Requires with application root path
+* @params {string} path - Path to the module
+* @returns {object}
+*/
+function _require(path) {
+	return require(_getRootPath() + path);
+}
+
+/** @description Registers a function to be executed on process stop
+* @params {function} taskFunc - Function to be invoked on process stop
+* @params {boolean} runOnMaster - If true, the function is invoked on
+*	master process stop as well as child process(es)
+* @returns {undefined}
+*/
+function _onExit(taskFunc, runOnMaster) {
 	cluster.addShutdownTask(taskFunc, (runOnMaster) ? true : false);
-};
+}
 
-exports.onException = function __gnOnException(func) {
+/** @description Registers a function to be invoked
+*	on uncaught exception
+* @params {function} func
+*	- Function to be executed on uncaught exception
+* @returns {undefined}
+*/
+function _onException(func) {
 	if (typeof func !== 'function') {
 		throw new Error('InvalidOnExceptionCallback:' + func);
 	}
 	onExceptions.push(func);
-};
+}
 
-// deprecated backward compatibility alias
-exports.registerShutdownTask = function __gnRegisterShutdownTask(name, func) {
+/** @description Deprecated alias of .onExit
+*
+*/
+function _registerShutdownTask(name, func) {
 	const e = new Error('WARNING');
 	logger.warn(
-		'.registerShutdownTask() has been deprecated and should not be used.',
+		'.registerShutdownTask() has been deprecated',
+		'and should not be used.',
 		'Use .onExit(taskFunction, *runOnMaster) instead',
 		e.stack
 	);	
 	exports.onExit(func);
-};
+}
 
-// add module name and path to be bootstrapped by .start()
-exports.use = function __gnUse(name, path, options) { 
+/** @description Adds a module to be bootstrapped in .start()
+* @params {string} name - Module name
+* @params {string|object} path
+*	- Module path or required module object
+* @params {object} options - Optional object
+* @returns {undefined}
+*/
+function _use(name, path, options) { 
 	if (typeof path === 'string') {
 		path = rootPath + path;
 	}
 	mod.use(name, path, options);
-};
+}
 
-exports.isMaster = function __gnIsMaster() {
+/** @description Returns true
+*	if the process is a master process
+* @returns {boolean}
+*/
+function _isMaster() {
 	return cluster.isMaster();
-};
+}
 
-exports.isCluster = function __gnIsCluster() {
+/** @description Returns true
+*	if the process has been started as cluster
+* @returns {boolean}
+*/
+function _isCluster() {
 	return cluster.isCluster();
-};
+}
 
-// call this when everything is ready
-exports.start = function __gnStart(cb) {
+/** @description Starts application process
+*	and bootstraps modules added by .use()
+* @params {function} cb - Callback function
+* @returns {undefined}
+*/
+function _start(cb) {
 	const start = Date.now();
 	applyConfig();
 	aeterno.run(function aeternoRun() {
@@ -153,9 +218,14 @@ exports.start = function __gnStart(cb) {
 		};
 		async.series(tasks, done);
 	});
-};
+}
 
-exports.stop = function __gnStop(error) {
+/** @description Stops application process
+* @params {error=} error
+*	- If given the process is stopped with an error
+* @returns {undefined}
+*/
+function _stop(error) {
 	const trace = new Error('Stop Call Trace');
 	if (error) {
 		logger.error(trace.stack);
@@ -165,11 +235,22 @@ exports.stop = function __gnStop(error) {
 		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
-};
+}
 
-exports.isSupportedVersion = function __gnIsSupportedVersion() {
+/** @description Returns true if the node.js version used is supported
+* @returns {boolean}
+*/
+function _isSupportedVersion() {
 	return isSupportedVersion;
-};
+}
+
+///////////////////////////////
+
+/**
+* ///////////////////////
+* // Private Functions //
+* ///////////////////////
+*/
 
 function applyConfig() {
 	// if ENV variables are provided, handle them here

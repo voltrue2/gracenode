@@ -15,7 +15,18 @@ var logger;
 var pathList = [];
 var pending = {};
 
-exports.use = function __modUse(name, pathOrMod, options) {
+exports.use = use;
+exports.start = start;
+
+/** @description Adds a module to gracenode
+*	to be bootstrapped on start
+* @params {string} name - Module name
+* @params {string|object} pathOrMod
+*	- Module path or required module object
+* @params {object} options - Optional object
+* @returns {undefined}
+*/
+function use(name, pathOrMod, options) {
 	if (pending[name]) {
 		throw er.create(
 			E_DUP_NAME, name +
@@ -28,7 +39,8 @@ exports.use = function __modUse(name, pathOrMod, options) {
 		throw er.create(
 			E_DUP_PATH, name +
 			': ' +
-			((typeof pathOrMod !== 'string') ? '[module object]' : pathOrMod)
+			((typeof pathOrMod !== 'string') ?
+			'[module object]' : pathOrMod)
 		);
 	}
 	if (!options) {
@@ -41,30 +53,46 @@ exports.use = function __modUse(name, pathOrMod, options) {
 		exit: options.exit || null
 	};
 	pathList.push(pathOrMod);
-};
+}
 
-exports.start = function __modStart(gn, configMap, onExit, cb) {
+/** @descrion Start loading added modules
+* @params {object} gn - Gracenode object
+* @params {object} configMap - Configurations
+* @params {function} onExit
+*	- Function to be executed on process stop
+*	by all modules if .onExit() is used
+* @params {function} cb - Callback on finish
+* @returns {undefined}
+*/
+function start(gn, configMap, onExit, cb) {
 	logger = log.create('module');
 	const keys = Object.keys(pending);
 	const handle = function __onModStartHandle(key, next) {
 		var start = Date.now();
 		const item = pending[key];
 		if (typeof item.path !== 'string') {
-			setupMod(configMap, onExit, key, item.path, function __onsetupMod(error) {
-				if (error) {
-					return next(error);
+			setupMod(
+				configMap,
+				onExit,
+				key,
+				item.path,
+				function __onsetupMod(error) {
+					if (error) {
+						return next(error);
+					}
+					const modName = createModName(key);
+					gn.mod[modName] = item.path;
+					logger.info(
+						'Bootstrapped a module:',
+						'gracenode.mod.' + modName,
+						'[', key, ']',
+						((typeof item.path !== 'string') ?
+						'[module object]' : item.path),
+						'[time:' + (Date.now() - start) + 'ms]'
+					);
+					next();
 				}
-				const modName = createModName(key);
-				gn.mod[modName] = item.path;
-				logger.info(
-					'Bootstrapped a module:',
-					'gracenode.mod.' + modName,
-					'[', key, ']',
-					((typeof item.path !== 'string') ? '[module object]' : item.path),
-					'[time:' + (Date.now() - start) + 'ms]'
-				);
-				next();
-			});
+			);
 			return;
 		}
 		logger.verbose('Bootstrapping a module:', key, item.path);
@@ -126,7 +154,7 @@ exports.start = function __modStart(gn, configMap, onExit, cb) {
 		cb(null);
 	};
 	async.eachSeries(keys, handle, done);
-};
+}
 
 function setupMod(configMap, onExit, key, mod, cb) {
 	// setup on exit function of the module
