@@ -1,7 +1,7 @@
 'use strict';
 
 const uuid = require('../../lib/uuid/uuid');
-const async = require('../../lib/async');
+const async = require('async');
 const http = require('http');
 const Cookies = require('cookies');
 const route = require('./route');

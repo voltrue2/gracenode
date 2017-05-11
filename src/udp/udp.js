@@ -2,7 +2,7 @@
 
 const neti = require('os').networkInterfaces();
 const transport = require('../../lib/transport');
-const async = require('../../lib/async');
+const async = require('async');
 const gn = require('../gracenode');
 const dgram = require('dgram');
 // UDP router

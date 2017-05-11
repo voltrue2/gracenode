@@ -1,94 +1,127 @@
 {
-	"name": "gracenode",
-	"description": "A node.js framework for real-time applications over UDP and TCP protocols with extendable modules for quick and clean evelopment.",
-	"version": "3.7.1",
-	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/voltrue2/gracenode.git"
-	},
-	"scripts": {
-		"test": "make lint && make test"
-	},
-	"dependencies": {
-		"jshint": "2.9.3",
-		"async": "2.0.0-rc.6",
-		"gracelog": "0.6.9",
-		"aeterno": "1.0.0",
-		"cluster-mode": "1.2.0",
-		"node-datetime": "0.1.5",
-		"multiparty": "4.1.2",
-		"cookies": "0.5.1",
-		"redis": "2.7.1"
-	},
-	"devDependencies": {
-		"mocha": "2.3.3",
-		"staticdata": "0.0.7",
-		"gracenode-server": "0.4.3",
-		"request": "2.75.0",
-		"express": "4.13.3"
-	},
-	"engine": {
-		"engine": "node >= 4.0.0"
-	},
-	"jshintConfig": {
-                "esversion": 6,
-		"node": true,
-                "bitwise": false,
-                "camelcase": true,
-                "curly": true,
-                "eqeqeq": true,
-                "forin": false,
-                "immed": true,
-                "latedef": false,
-                "newcap": true,
-                "noarg": true,
-                "noempty": true,
-                "undef": true,
-                "unused": true,
-                "nonew": true,
-                "white": true,
-                "maxdepth": 5,
-                "quotmark": "single",
-                "globals": {
-                        "mocha": false,
-                        "describe": false,
-                        "it": false,
-                        "before": false,
-                        "beforeEach": false,
-                        "after": false,
-                        "afterEach": false
-                }
-        },
-	"keywords": [
-		"framework",
-		"grace",
-		"node",
-		"gracenode",
-		"boostrap",
-		"cluster",
-		"daemon",
-		"express",
-		"light",
-		"organize",
-		"structure",
-		"modular",
-		"router",
-		"udp",
-		"realtime",
-		"real-time",
-		"real time",
-		"session",
-		"web",
-		"api",
-		"http",
-		"udp",
-		"rpc",
-		"tcp",
-		"render",
-		"template",
-		"rest",
-		"game"
-	],
-	"license": "MIT"
+  "name": "gracenode",
+  "description": "A node.js framework for real-time applications over UDP and TCP protocols with extendable modules for quick and clean evelopment.",
+  "version": "3.7.0",
+  "author": {
+    "name": "Nobuyori Takahashi",
+    "email": "voltrue2@yahoo.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voltrue2/gracenode.git"
+  },
+  "scripts": {
+    "test": "make lint && make test"
+  },
+  "dependencies": {
+    "jshint": "2.9.3",
+    "gracelog": "0.6.9",
+    "aeterno": "1.0.0",
+    "cluster-mode": "1.2.0",
+    "node-datetime": "0.1.5",
+    "multiparty": "4.1.2",
+    "cookies": "0.5.1",
+    "redis": "2.7.1"
+  },
+  "devDependencies": {
+    "mocha": "2.3.3",
+    "staticdata": "0.0.7",
+    "gracenode-server": "0.4.3",
+    "request": "2.75.0",
+    "express": "4.13.3"
+  },
+  "engine": {
+    "engine": "node >= 4.0.0"
+  },
+  "jshintConfig": {
+    "esversion": 6,
+    "node": true,
+    "bitwise": false,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": false,
+    "immed": true,
+    "latedef": false,
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "undef": true,
+    "unused": true,
+    "nonew": true,
+    "white": true,
+    "maxdepth": 5,
+    "quotmark": "single",
+    "globals": {
+      "mocha": false,
+      "describe": false,
+      "it": false,
+      "before": false,
+      "beforeEach": false,
+      "after": false,
+      "afterEach": false
+    }
+  },
+  "keywords": [
+    "framework",
+    "grace",
+    "node",
+    "gracenode",
+    "boostrap",
+    "cluster",
+    "daemon",
+    "express",
+    "light",
+    "organize",
+    "structure",
+    "modular",
+    "router",
+    "udp",
+    "realtime",
+    "real-time",
+    "real time",
+    "session",
+    "web",
+    "api",
+    "http",
+    "udp",
+    "rpc",
+    "tcp",
+    "render",
+    "template",
+    "rest",
+    "game"
+  ],
+  "license": "MIT",
+  "gitHead": "3f47414d081312d4b7dcb32296d03aaca34336ab",
+  "bugs": {
+    "url": "https://github.com/voltrue2/gracenode/issues"
+  },
+  "homepage": "https://github.com/voltrue2/gracenode#readme",
+  "_id": "gracenode@3.7.0",
+  "_shasum": "b97415ef3f45884ceedcbec7c20d5a1479f004d5",
+  "_from": "gracenode@3.7.0",
+  "_npmVersion": "3.10.10",
+  "_nodeVersion": "7.3.0",
+  "_npmUser": {
+    "name": "voltrue2",
+    "email": "voltrue2@yahoo.com"
+  },
+  "maintainers": [
+    {
+      "name": "voltrue2",
+      "email": "voltrue2@yahoo.com"
+    }
+  ],
+  "dist": {
+    "shasum": "b97415ef3f45884ceedcbec7c20d5a1479f004d5",
+    "tarball": "https://registry.npmjs.org/gracenode/-/gracenode-3.7.0.tgz"
+  },
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/gracenode-3.7.0.tgz_1490864338113_0.13040679739788175"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/gracenode/-/gracenode-3.7.0.tgz",
+  "readme": "ERROR: No README data found!"
 }

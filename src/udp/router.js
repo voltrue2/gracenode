@@ -1,9 +1,9 @@
 'use strict';
 
-var async = require('../../lib/async');
-var gn = require('../gracenode');
-var hooks = require('./hooks');
-var commands = {};
+const async = require('async');
+const gn = require('../gracenode');
+const hooks = require('./hooks');
+const commands = {};
 var logger;
 
 module.exports.setup = function __udpRouterSetup() {

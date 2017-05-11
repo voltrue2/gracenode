@@ -14,7 +14,7 @@ const mod = requireInternal('./mod');
 const render = requireInternal('../render');
 const lint = requireInternal('../lint');
 const session = requireInternal('../session');
-const async = requireInternal('../../lib/async');
+const async = require('async');
 const pkg = requireInternal('../../package.json');
 const transport = requireInternal('../../lib/transport');
 
@@ -36,149 +36,84 @@ exports.mod = {};
 
 // backward compatibility for gracenode 1.x
 exports.lib = requireInternal('/../../lib');
+
 exports.log = log;
+
 exports.render = render.render;
+
 exports.http = require('../http');
-exports.setEnvPrefix = env.setPrefix;
-exports.session = session;
-exports.rpc = requireInternal('../rpc');
-exports.udp = requireInternal('../udp');
-exports.portal = requireInternal('../portal');
-exports.cluster = cluster;
-exports.getRootPath = _getRootPath;
-exports.config = _config;
-exports.getConfig = _getConfig;
-exports.require = _require;
-exports.onExit = _onExit;
-exports.onException = _onException;
-exports.use = _use;
-exports.isMaster = _isMaster;
-exports.isCluster = _isCluster;
-exports.start = _start;
-exports.stop = _stop;
-exports.isSupportedVersion = _isSupportedVersion;
 
-/*
-* //////////////////////
-* // DEPRECATED       //
-* //////////////////////
-*/
+// deprecated
 exports.router = exports.http;
-exports.registerShutdownTask = _registerShutdownTask;
 
-///////////////////////////////
+exports.setEnvPrefix = env.setPrefix;
 
-/**
-* ///////////////////////
-* // Public Functions  //
-* ///////////////////////
-*/
+exports.session = session;
 
-/** @description Returns the root path of the application
-* @returns {string}
-*/
-function _getRootPath() {
+exports.rpc = requireInternal('../rpc');
+
+exports.udp = requireInternal('../udp');
+
+exports.portal = requireInternal('../portal');
+
+exports.cluster = cluster;
+
+exports.getRootPath = function __gnGetRootPath() {
 	return rootPath;
-}
+};
 
-/** @description Sets configurations
-* @params {object} obj - Configuration object
-* @returns {undefined}
-*/
-function _config(obj) {
+exports.require = function __gnRequire(path) {
+	return require(exports.getRootPath() + path);
+};
+
+exports.config = function __gnConfig(obj) {
 	config.load(obj);
-}
+};
 
-/** @description Returns configurations as an object
-* @params {string} name - Configuration property name:
-*	can be dot separated
-* @returns {object}
-*/
-function _getConfig(name) {
+exports.getConfig = function __gnGetConfig(name) {
 	return config.get(name);
-}
+};
 
-/** @desctiption Requires with application root path
-* @params {string} path - Path to the module
-* @returns {object}
-*/
-function _require(path) {
-	return require(_getRootPath() + path);
-}
-
-/** @description Registers a function to be executed on process stop
-* @params {function} taskFunc - Function to be invoked on process stop
-* @params {boolean} runOnMaster - If true, the function is invoked on
-*	master process stop as well as child process(es)
-* @returns {undefined}
-*/
-function _onExit(taskFunc, runOnMaster) {
+exports.onExit = function __gnOnExit(taskFunc, runOnMaster) {
 	cluster.addShutdownTask(taskFunc, (runOnMaster) ? true : false);
-}
+};
 
-/** @description Registers a function to be invoked
-*	on uncaught exception
-* @params {function} func
-*	- Function to be executed on uncaught exception
-* @returns {undefined}
-*/
-function _onException(func) {
+exports.onException = function __gnOnException(func) {
 	if (typeof func !== 'function') {
 		throw new Error('InvalidOnExceptionCallback:' + func);
 	}
 	onExceptions.push(func);
-}
+};
 
-/** @description Deprecated alias of .onExit
-*
-*/
-function _registerShutdownTask(name, func) {
+// deprecated backward compatibility alias
+exports.registerShutdownTask = function __gnRegisterShutdownTask(name, func) {
 	const e = new Error('WARNING');
 	logger.warn(
-		'.registerShutdownTask() has been deprecated',
-		'and should not be used.',
+		'.registerShutdownTask() has been deprecated and should not be used.',
 		'Use .onExit(taskFunction, *runOnMaster) instead',
 		e.stack
 	);	
 	exports.onExit(func);
-}
+};
 
-/** @description Adds a module to be bootstrapped in .start()
-* @params {string} name - Module name
-* @params {string|object} path
-*	- Module path or required module object
-* @params {object} options - Optional object
-* @returns {undefined}
-*/
-function _use(name, path, options) { 
+// add module name and path to be bootstrapped by .start()
+exports.use = function __gnUse(name, path, options) { 
 	if (typeof path === 'string') {
 		path = rootPath + path;
 	}
 	mod.use(name, path, options);
-}
+};
 
-/** @description Returns true
-*	if the process is a master process
-* @returns {boolean}
-*/
-function _isMaster() {
+exports.isMaster = function __gnIsMaster() {
 	return cluster.isMaster();
-}
+};
 
-/** @description Returns true
-*	if the process has been started as cluster
-* @returns {boolean}
-*/
-function _isCluster() {
+exports.isCluster = function __gnIsCluster() {
 	return cluster.isCluster();
-}
+};
 
-/** @description Starts application process
-*	and bootstraps modules added by .use()
-* @params {function} cb - Callback function
-* @returns {undefined}
-*/
-function _start(cb) {
+// call this when everything is ready
+exports.start = function __gnStart(cb) {
 	const start = Date.now();
 	applyConfig();
 	aeterno.run(function aeternoRun() {
@@ -218,14 +153,9 @@ function _start(cb) {
 		};
 		async.series(tasks, done);
 	});
-}
+};
 
-/** @description Stops application process
-* @params {error=} error
-*	- If given the process is stopped with an error
-* @returns {undefined}
-*/
-function _stop(error) {
+exports.stop = function __gnStop(error) {
 	const trace = new Error('Stop Call Trace');
 	if (error) {
 		logger.error(trace.stack);
@@ -235,22 +165,11 @@ function _stop(error) {
 		logger.info('.stop() has been invoked');
 	}
 	cluster.stop(error);
-}
+};
 
-/** @description Returns true if the node.js version used is supported
-* @returns {boolean}
-*/
-function _isSupportedVersion() {
+exports.isSupportedVersion = function __gnIsSupportedVersion() {
 	return isSupportedVersion;
-}
-
-///////////////////////////////
-
-/**
-* ///////////////////////
-* // Private Functions //
-* ///////////////////////
-*/
+};
 
 function applyConfig() {
 	// if ENV variables are provided, handle them here
