@@ -4,9 +4,9 @@
 
 With `portal`, you have full control of communications among the servers.
 
-**NOTE**:
+**IMPORTANT**:
 
-`portal` requires a Redis server to keep track of all **gracenode** servers.
+`portal` requires a **Redis** server to keep track of all **gracenode** servers.
 
 ## Configurations
 
