@@ -26,6 +26,10 @@ describe('gracenode.portal', function () {
 		});
 	});
 
+	it('can wait for 1 second', function (done) {
+		setTimeout(done, 2000);
+	});
+
 	it('start server two', function (done) {
 		exec(TWO + ' start', function (err) {
 			if (err) {
@@ -37,7 +41,7 @@ describe('gracenode.portal', function () {
 	});
 
 	it('can wait for 1 second', function (done) {
-		setTimeout(done, 1000);
+		setTimeout(done, 2000);
 	});
 
 	it('server one can send a mesh network message to server two and get a response from it', function (done) {
