@@ -27,7 +27,7 @@ const _info = [];
 var logger;
 
 packer.schema(PTS, {
-	id: packer.TYPE.BIN,
+	id: packer.TYPE.UUID,
 	hasResponse: packer.TYPE.BOOL,
 	protocol: packer.TYPE.UINT8,
 	eventName: packer.TYPE.STR,
@@ -35,7 +35,7 @@ packer.schema(PTS, {
 	payload: packer.TYPE.BIN
 });
 packer.schema(PTRS, {
-	id: packer.TYPE.BIN,
+	id: packer.TYPE.UUID,
 	eventName: packer.TYPE.STR,
 	payload: packer.TYPE.BIN,
 	isError: packer.TYPE.BOOL
@@ -254,7 +254,6 @@ function _onRemoteReceive(packed, response) {
 	}
 	// is packed a response?
 	const res = packer.unpack(PTRS, packed);
-	res.id = res.id.toString('hex');
 	logger.debug('Handle response:', res);
 	if (res && responses[res.id]) {
 		try {

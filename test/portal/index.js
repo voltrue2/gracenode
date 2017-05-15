@@ -50,10 +50,10 @@ describe('gracenode.portal', function () {
 			if (error) {
 				console.error(error);
 			}
-			assert.equal(error, null);
 			if (status > 399) {
-				console.error('Error:', status, body);
+				console.error('Error:', status, body.toString());
 			}
+			assert.equal(error, null);
 			body = JSON.parse(body);
 			assert.equal(status, 200);
 			assert.equal(body.str, 'one2two');
@@ -72,10 +72,10 @@ describe('gracenode.portal', function () {
 			if (error) {
 				console.error(error);
 			}
-			assert.equal(error, null);
 			if (status > 399) {
-				console.error('Error:', status, body);
+				console.error('Error:', status, body.toString());
 			}
+			assert.equal(error, null);
 			body = JSON.parse(body);
 			assert.equal(status, 200);
 			assert.equal(body.message, 'OK');
