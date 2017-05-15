@@ -1,6 +1,6 @@
 'use strict';
 
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const TYPE = require('./packer').TYPE;
 const announce = require('./announce');
 const broker = require('./broker');
