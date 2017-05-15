@@ -22,7 +22,7 @@ gn.config({
 	},
 	http: {
 		host: '127.0.0.1',
-		port: 7500
+		port: 8600
 	}
 });
 
