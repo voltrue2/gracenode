@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request');
+const request = require('../src/request');
 const assert = require('assert');
 const exec = require('child_process').exec;
 const gn = require('../../');
@@ -26,7 +26,7 @@ describe('gracenode.portal', function () {
 		});
 	});
 
-	it('can wait for 1 second', function (done) {
+	it('can wait for 2 second', function (done) {
 		setTimeout(done, 2000);
 	});
 
@@ -40,27 +40,22 @@ describe('gracenode.portal', function () {
 		});
 	});
 
-	it('can wait for 1 second', function (done) {
+	it('can wait for 2 second', function (done) {
 		setTimeout(done, 2000);
 	});
 
 	it('server one can send a mesh network message to server two and get a response from it', function (done) {
 		const url = 'http://127.0.0.1:8500/one2two';
-		const params = {
-			method: 'get',
-			url: url,
-			json: true
-		};
-		request(params, function (error, res, body) {
+		request.GET(url, null, null, function (error, body, status) {
 			if (error) {
 				console.error(error);
 			}
 			assert.equal(error, null);
-
-			if (res.statusCode > 399) {
-				console.error('Error:', res.statusCode, body);
+			if (status > 399) {
+				console.error('Error:', status, body);
 			}
-			assert.equal(res.statusCode, 200);
+			body = JSON.parse(body);
+			assert.equal(status, 200);
 			assert.equal(body.str, 'one2two');
 			one2two = body;
 			done(); 
@@ -73,21 +68,16 @@ describe('gracenode.portal', function () {
 
 	it('server two can send a mesh network message to all server ones', function (done) {
 		const url = 'http://127.0.0.1:8600/two2one';
-		const params = {
-			method: 'get',
-			url: url,
-			json: true
-		};
-		request(params, function (error, res, body) {
+		request.GET(url, null, null, function (error, body, status) {
 			if (error) {
 				console.error(error);
 			}
 			assert.equal(error, null);
-
-			if (res.statusCode > 399) {
-				console.error('Error:', res.statusCode, body);
+			if (status > 399) {
+				console.error('Error:', status, body);
 			}
-			assert.equal(res.statusCode, 200);
+			body = JSON.parse(body);
+			assert.equal(status, 200);
 			assert.equal(body.message, 'OK');
 			done(); 
 		});
@@ -99,14 +89,10 @@ describe('gracenode.portal', function () {
 
 	it('server ones and server two now share the same (except for .str) data', function (done) {
 		const url = 'http://127.0.0.1:8500/two2one';
-		const params = {
-			method: 'get',
-			url: url,
-			json: true
-		};
-		request(params, function (error, res, body) {
+		request.GET(url, null, null, function (error, body, status) {
 			assert.equal(error, null);
-			assert.equal(res.statusCode, 200);
+			assert.equal(status, 200);
+			body = JSON.parse(body);
 			assert.equal(body.str, 'two2one');
 			body.str = 'one2two';
 			assert.equal(JSON.stringify(one2two), JSON.stringify(body));
