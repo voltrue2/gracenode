@@ -294,6 +294,9 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 				cb(error);
 			}
 			// respond to client
+			if (!res) {
+				throw new Error('MissingResponsePacket');
+			}
 			that._write(error, status, parsedData.seq, res, __rpcConnectionOnCmdResponse);
 		};
 		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
