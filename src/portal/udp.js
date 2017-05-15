@@ -1,131 +1,190 @@
 'use strict';
 
 const dgram = require('dgram');
-const gn = require('../../src/gracenode');
+const gn = require('gracenode');
 const packer = require('./packer');
-const delivery = require('./delivery');
 
 const conf = {
-	// enable: false,
 	address: '127.0.0.1',
-	port: 8000,
-	relayLimit: 10,
-	compress: false
+	port: 8100,
+	relayInterval: 0
+};
+const info = {
+	address: '127.0.0.1',
+	port: 0
 };
 
-const PORT_IN_USE = 'EADDRINUSE';
+const emitBuffer = {};
 
-var server;
+const E_PORT_IN_USE = 'EADDRINUSE';
+
 var logger;
-var info;
-var onDelivery;
+var server;
+var notifier;
 
-module.exports.config = function (_conf) {
-	if (_conf.enable) {
-		conf.enable = _conf.enable;
-	}
+module.exports = {
+	config: config,
+	setup: setup,
+	// emit is either _bufferEmit or
+	// _emit dependes on relayInterval
+	emit: null,
+	on: on,
+	info: getInfo
+};
+
+function config(_conf) {
 	if (_conf.address) {
 		conf.address = _conf.address;
 	}
 	if (_conf.port) {
 		conf.port = _conf.port;
 	}
-	logger = gn.log.create('portal.delivery:udp');
-};
-
-module.exports.setup = function (cb) {
-	if (!conf.enable) {
-		return cb();
+	if (_conf.relayInterval) {
+		conf.relayInterval = _conf.relayInterval;
 	}
-	startServer(cb);
-};
-
-module.exports.info = function () {
-	if (!info) {
-		return null;
-	}
-	return {
-		address: info.address,
-		port: info.port
-	};
-};
-
-module.exports.send = function (addr, port, dataBytes, cb) {
-	if (!server) {
-		if (typeof cb === 'function') {
-			cb();
-		}
-		return;
-	}
-	try {
-		server.send(dataBytes, 0, dataBytes.length, port, addr, cb);
-	} catch (error) {
-		logger.error('failed to send:', addr, port, error);
-		cb();
-	}
-};
-
-module.exports.onDelivery = function (func) {
-	onDelivery = func;
-};
-
-function startServer(cb) {
-	const done = function () {
-		gn.onExit(function portalUDPShutdown(next) {
-			try {
-				server.close();
-				server = null;
-			} catch (error) {
-				logger.error(error);
-			}
-			next();
-		});
+	logger = gn.log.create(
+		'portal.broker.delivery.udp'
+	);
+	if (conf.relayInterval) {
 		logger.info(
-			'started server:',
-			conf.address, conf.port
+			'Timed emit enabled at every',
+			conf.relayInterval,
+			'ms'
 		);
-		server.on('message', handleMessage);
-		info = server.address();
-		cb();
-	};
-	const handleError = function (error) {
-		if (error.code === PORT_IN_USE) {
-			conf.port += 1;
-			startServer(cb);
-			return;
-		}
-		logger.error(
-			'failed to start:',
-			conf.address, conf.port
-		);
-		gn.stop(error);
-	};
-	
+		module.exports.emit = _bufferEmit;
+		_timedEmit();
+	} else {
+		logger.info('Emit buffering is disabled');
+		module.exports.emit = _emit;
+	}
+}
+
+function setup(cb) {
 	if (server) {
 		server.close();
+		server = null;
 	}
-
 	server = dgram.createSocket('udp4');
-	server.on('error', handleError);
-	server.on('listening', done);
+	server.on('listening', __onListening);
+	server.on('error', __onError);
+	server.on('message', _handleMessage);
 	server.bind({
 		port: conf.port,
 		address: conf.address,
 		exclusive: true
 	});
+
+	function __onListening() {
+		const ad = server.address();
+		info.address = ad.address;
+		info.port = ad.port;
+		logger.info(
+			'Mesh network ready:',
+			info.address,
+			info.port
+		);
+		cb();
+	}
+
+	function __onError(error) {
+		if (error.code === E_PORT_IN_USE) {
+			conf.port += 1;
+			setup(cb);
+			return;
+		}
+		logger.error(
+			'Failed to start mesh network',
+			conf,
+			error
+		);
+		cb(error);
+	}
 }
 
-function handleMessage(dataBytes) {
-	const uncomp = packer.uncompress(dataBytes);
-	
-	if (!uncomp) {
-		const unpacked = packer.unpack(delivery.DSCHEMA, dataBytes);
-		onDelivery(unpacked);
+function _handleMessage(buf, remote) {
+	const resp = _createResponse(remote);
+	const uncmp = packer.uncompress(buf);
+	if (uncmp) {
+		for (var i = 0, len = uncmp.length; i < len; i++) {
+			notifier(uncmp[i], resp);
+		}
 		return;
 	}
+	notifier(buf, resp);
+}
 
-	for (var i = 0, len = uncomp.length; i < len; i++) {
-		const unpacked = packer.unpack(delivery.DSCHEMA, uncomp[i]);
-		onDelivery(unpacked);
+function _createResponse(remote) {
+	function __response(payload) {
+		module.exports.emit(
+			remote.address,
+			remote.port,
+			payload,
+			true
+		);
+	}
+	return __response;
+}
+
+function _emit(addr, port, packed, isResponse) {
+	try {
+		logger.debug(
+			'Emitting to', addr, port,
+			'as response', isResponse ? true : false
+		);
+		server.send(packed, 0, packed.length, port, addr);
+	} catch (error) {
+		logger.error(
+			'Mesh network failed to send:',
+			addr, port,
+			error
+		);
 	}
 }
+
+function _bufferEmit(addr, port, packed, isResponse) {
+	logger.debug(
+		'Emitting to', addr, port,
+		'as response', isResponse
+	);
+	const key = addr + '/' + port;
+	if (!emitBuffer[key]) {
+		emitBuffer[key] = [];
+	}
+	emitBuffer[key].push(packed);
+}
+
+function _timedEmit() {
+	for (const key in emitBuffer) {
+		if (!emitBuffer[key] || !emitBuffer[key].length) {
+			continue;
+		}
+		const list = key.split('/');
+		const cmp = packer.compress(emitBuffer[key]);
+		emitBuffer[key] = [];
+		try {
+			server.send(
+				cmp,
+				0,
+				cmp.length,
+				parseInt(list[1]),
+				list[0]
+			);
+		} catch (err) {
+			logger.error(
+				'Mesh network failed to emit:',
+				key,
+				err
+			);
+		}
+	}
+	setTimeout(_timedEmit, conf.relayInterval);
+}
+
+function on(_notifier) {
+	notifier = _notifier;
+}
+
+function getInfo() {
+	return info;
+}
+

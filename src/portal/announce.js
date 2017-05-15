@@ -1,8 +1,8 @@
 'use strict';
 
 const redis = require('redis');
-const async = require('../../lib/async');
-const gn = require('../../src/gracenode');
+const async = require('async');
+const gn = require('gracenode');
 const delivery = require('./delivery');
 
 const PREFIX = '__portal/';
@@ -13,13 +13,13 @@ const MATCH = 'MATCH';
 const COUNT = 'COUNT';
 
 const conf = {
-	// enable: false,
 	type: DEFAULT_TYPE,
 	host: '127.0.0.1',
 	port: 6379,
 	interval: 1000
 };
 const valueMap = {};
+const onAnnounceCallbacks = [];
 
 var cache = {};
 var logger;
@@ -27,10 +27,16 @@ var info;
 var rclient;
 
 module.exports.config = function (_conf) {
-	if (_conf.enable) {
-		conf.enable = _conf.enable;
-	}
+	logger = gn.log.create('portal.announce');
 	if (_conf.type) {
+		if (_conf.type.search(/\//) !== -1) {
+			logger.warn(
+				'Configuration "type" must NOT have "/"',
+				'and "/" converted to "-"',
+				_conf.type
+			);	
+			_conf.type = _conf.type.replace(/\//g, '-');
+		}
 		conf.type = _conf.type;
 	}
 	if (_conf.announce) {
@@ -44,29 +50,38 @@ module.exports.config = function (_conf) {
 			conf.interval = _conf.announce.interval;
 		}
 	}
-	logger = gn.log.create('portal.announce');
 };
 
 module.exports.setup = function (cb) {
-	if (!conf.enable) {
-		return cb();
-	}
 	if (gn.isCluster() && gn.isMaster()) {
 		return cb();
 	}
-	logger.info('connecting to redis @', conf.host + ':' + conf.port);
+	logger.info(
+		'connecting to redis @',
+		conf.host + ':' + conf.port
+	);
 	rclient = redis.createClient(conf);
 	rclient.on('ready', function () {
-		logger.info('connected redis @', conf.host + ':' + conf.port);
+		logger.info(
+			'connected redis @',
+			conf.host + ':' + conf.port
+		);
 		info = delivery.info();
 		startAnnounceAndRead();
 		cb();
 	});
 	rclient.on('reconnect', function () {
-		logger.info('connection to redis has been lost and reconnected @', conf.host + ':' + conf.port);
+		logger.info(
+			'connection to redis',
+			'has been lost and reconnected @',
+			conf.host + ':' + conf.port
+		);
 	});
 	rclient.on('error', function (error) {
-		logger.error('connection to redis detected an error:', conf.host + ':' + conf.port, error);
+		logger.error(
+			'connection to redis detected an error:',
+			conf.host + ':' + conf.port, error
+		);
 		closeConnection();
 	});
 	gn.onExit(function portalAnnounceShutdown(next) {
@@ -75,10 +90,33 @@ module.exports.setup = function (cb) {
 	});
 };
 
+module.exports.onAnnounce = function (func) {
+	onAnnounceCallbacks.push(func);
+};
+
 module.exports.setValue = function (key, value) {
 	if (value !== null && typeof value === 'object') {
-		logger.error('requires value to be a string or a number:', key, value);
+		logger.error(
+			'requires value to be a string or a number:',
+			key, value
+		);
 		throw new Error('InvalidAnnounceValue');
+	}
+	if (key.search(/\//) !== -1) {
+		logger.warn(
+			'Key of value must NOT have "/"',
+			'and "/" converted to "-"',
+			key
+		);
+		key = key.replace(/\//g, '-');
+	}
+	if (value.search(/\//) !== -1) {
+		logger.warn(
+			'Value must NOT have "/"',
+			'and "/" converted to "-"',
+			value
+		);
+		value = value.replace(/\//g, '-');
 	}
 	valueMap[key] = value;
 };
@@ -100,6 +138,12 @@ module.exports.getAllNodes = function () {
 
 function startAnnounceAndRead() {
 	const ttl = conf.interval * 10 / 1000;
+	const onAnnounce = function (next) {
+		for (var i = 0, len = onAnnounceCallbacks.length; i < len; i++) {
+			onAnnounceCallbacks[i]();
+		}
+		next();
+	};
 	const announce = function __portalAnnounce(next) {
 		if (!rclient) {
 			return done();
@@ -133,6 +177,7 @@ function startAnnounceAndRead() {
 		setTimeout(exec, conf.interval);
 	};
 	const tasks = [
+		onAnnounce,
 		announce,
 		read
 	];
@@ -188,7 +233,10 @@ function parseValue(value) {
 }
 
 function closeConnection() {
-	logger.info('close connection to redis @', conf.host + ':' + conf.port);
+	logger.info(
+		'close connection to redis @',
+		conf.host + ':' + conf.port
+	);
 	if (!rclient) {
 		return;
 	}
@@ -196,7 +244,10 @@ function closeConnection() {
 		rclient.quit();
 		rclient = null;
 	} catch (error) {
-		logger.error('failed to close connection to redis @', conf.host + ':' + conf.port, error);
+		logger.error(
+			'failed to close connection to redis @',
+			conf.host + ':' + conf.port, error
+		);
 	}
 }
 

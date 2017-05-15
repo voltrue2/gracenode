@@ -15,9 +15,11 @@ In order to use `portal`, you must provide the minimum configuration as shown be
 ```
 gracenode.config({
 	portal: {
-		enable: true,
+		type: <string>,
 		address: <mesh network address>,
 		port: <mesh network port>,
+		relayLimit: <number>,
+		compress: <boolean>,
 		announce: {
 			host: '<host of Redis server>',
 			port: <port of Redis server>,
@@ -28,6 +30,12 @@ gracenode.config({
 ```
 
 ## Advanced Configurations
+
+### type [String]
+
+Defines a server type (name). You will be able to get a list of mesh nodes with the same server type
+
+by `.getNodes(...)`
 
 ### address [String]
 
@@ -57,9 +65,23 @@ The default is 1000ms.
 
 ## Methods
 
-### .setServerType(type [String])
+### .onAnnounce(callback [Function])
 
-### .setValue(key [String], value [String/Number])
+Registers a callback function (synchronous) to be invoked on every announce.
+
+It is useful when you need to update mesh node value on every announce.
+
+Example:
+
+```javascript
+gn.portal.onAnnounce(function () {
+	gn.portal.setNodeValue('onlineUsers', getNumberOfOnlineUsers());
+});
+```
+
+The above example will update "onlineUsers" on every announce.
+
+### .setNodeValue(key [String], value [String/Number])
 
 Set/Add a key/value as metadata. The values can be read by `.getNodes(...)` or `.getAllNodes()`.
 
@@ -67,11 +89,27 @@ Set/Add a key/value as metadata. The values can be read by `.getNodes(...)` or `
 
 Returns an array of mesh network nodes of the given `type`.
 
-`type` is set by calling `gracenode.portal.setServerType(...)`.
+`type` is set by configuration { type: <server type string>, {...} }`.
 
 ### .getAllNodes()
 
 Returns an array of all mesh network nodes.
+
+### .nodes.toNodeListBytes(nodeList [Array])
+
+Converts an array of mesh node (`{ address: <string>, port: <number> }`) to bytes.
+
+### .nodes.toNodeList(bytes [Buffer])
+
+Converts bytes to an array of mesh node (`{ address: <string>, port: <number> }`).
+
+### .nodes.addrAndPortBytes(address [String], port [Number])
+
+Converts address and port to bytes.
+
+### .nodes.bytesToAddrAndPort(bytes [Buffer])
+
+Converts bytes to address and port: `{ address: <string>, port: <number> }`
 
 ### .define(name [String], strcture [Object])
 
@@ -172,19 +210,7 @@ Array of String data type
 
 Array of Boolean data type
 
-### .send(name [String], data [Object], address [String], port [Number], options [Object], callback [Function])
-
-Sends mesh network communication to another mesh network node.
-
-#### name [String]
-
-The name that has been defined by `.define(...)`.
-
-#### data [Object]
-
-Data object to be sent via mesh network.
-
-### .relay(name [String], nodeList [Array], data [Object], callback [Function])
+### .emit(name [String], nodeList [Array], data [Object], callback [Function])
 
 Sends mesh netowrk communication to multiple mesh network nodes.
 
@@ -192,7 +218,11 @@ Sends mesh netowrk communication to multiple mesh network nodes.
 
 The name that has been defined by `.define(...)`.
 
-### nodeList [Array]
+#### data [Object]
+
+Data object predefined by `define(...)`.
+
+#### nodeList [Array]
 
 Array of other mesh network nodes to send communication to
 
@@ -200,14 +230,14 @@ Structure of `nodeList`:
 
 ```
 [
-	{ key: '127.0.0.1/8000' },
-	{ key: '127.0.0.1/8001' },
-	{ key: '127.0.0.1/8002' },
-	{ key: '127.0.0.1/8003' },
+	{ address: '127.0.0.1', port: 8000 },
+	{ address: '127.0.0.1', port: 8001 }
+	{ address: '127.0.0.1', port: 8002 }
+	{ address: '127.0.0.1', port: 8003 }
 ]
 ```
 
 ### .on(name [String], callback [Function])
 
-The listener for `name` that is given.
+The listener for `name` pre-defined by `.define(...)`.
 

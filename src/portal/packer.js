@@ -1,6 +1,6 @@
 'use strict';
 
-const gn = require('../../src/gracenode');
+const gn = require('gracenode');
 const schemaMap = {};
 
 const UINT8 = 1;
@@ -25,39 +25,46 @@ const UUID_ARR = 19;
 const BOOL = 20;
 const BOOL_ARR = 21;
 const OBJ = 22;
+const ERR = 23;
 
 const COMPRESS_TAG = 0xffffffff;
 const COMP_BUF = new Buffer(4);
 COMP_BUF.writeUInt32BE(COMPRESS_TAG, 0);
 const OBJ_TYPE = 0xdeadbeef;
 
+// sub schema that is defined within a schema
+const SUB = 0; 
+
 // this value is configurable
 var MAX_SIZE = 8000;
 
 var logger;
 
-module.exports.UINT8 = UINT8;
-module.exports.INT8 = INT8;
-module.exports.UINT16 = UINT16;
-module.exports.INT16 = INT16;
-module.exports.UINT32 = UINT32;
-module.exports.INT32 = INT32;
-module.exports.DOUBLE = DOUBLE;
-module.exports.STR = STR;
-module.exports.UUID = UUID;
-module.exports.BOOL = BOOL;
-module.exports.UINT8_ARR = UINT8_ARR;
-module.exports.INT8_ARR = INT8_ARR;
-module.exports.UINT16_ARR = UINT16_ARR;
-module.exports.INT16_ARR = INT16_ARR;
-module.exports.UINT32_ARR = UINT32_ARR;
-module.exports.INT32_ARR = INT32_ARR;
-module.exports.DOUBLE_ARR = DOUBLE_ARR;
-module.exports.STR_ARR = STR_ARR;
-module.exports.UUID_ARR = UUID_ARR;
-module.exports.BOOL_ARR = BOOL_ARR;
-module.exports.BIN = BIN;
-module.exports.OBJ = OBJ;
+module.exports.TYPE = {
+	UINT8: UINT8,
+	INT8: INT8,
+	UINT16: UINT16,
+	INT16: INT16,
+	UINT32: UINT32,
+	INT32: INT32,
+	DOUBLE: DOUBLE,
+	STR: STR,
+	UUID: UUID,
+	BOOL: BOOL,
+	UINT8_ARR: UINT8_ARR,
+	INT8_ARR: INT8_ARR,
+	UINT16_ARR: UINT16_ARR,
+	INT16_ARR: INT16_ARR,
+	UINT32_ARR: UINT32_ARR,
+	INT32_ARR: INT32_ARR,
+	DOUBLE_ARR: DOUBLE_ARR,
+	STR_ARR: STR_ARR,
+	UUID_ARR: UUID_ARR,
+	BOOL_ARR: BOOL_ARR,
+	BIN: BIN,
+	OBJ: OBJ,
+	ERR: ERR
+};
 
 module.exports.setMaxSize = function (maxSize) {
 	if (maxSize) {
@@ -78,16 +85,36 @@ data type can be another schema name
 **/
 module.exports.schema = function (name, _schema) {
 	if (schemaMap[name]) {
-		logger.error('delivery data schema already exists:', name, _schema);
+		logger.error(
+			'Event data schema already exists:',
+			name, _schema
+		);
 		return false;
 	}
 	for (var prop in _schema) {
 		if (_schema[prop] === undefined || _schema[prop] === null) {
-			throw new Error('InvalidDataType[' + name + '.' + prop + ']');
+			throw new Error(
+				'InvalidDataType[' + name + '.' + prop + ']'
+			);
+		}
+		// we assume this is a sub schema
+		if (typeof _schema[prop] === 'object') {
+			module.exports.schema(
+				name + '.' + prop,
+				_schema[prop]
+			);
+			_schema[prop] = SUB;
 		}
 	}
 	schemaMap[name] = _schema;
 	return true;
+};
+
+module.exports.schemaExists = function (name) {
+	if (schemaMap[name]) {
+		return true;
+	}
+	return false;
 };
 
 module.exports.compress = function (packedList) {
@@ -124,6 +151,9 @@ module.exports.uncompress = function (buf) {
 };
 
 module.exports.pack = function (name, data) {
+	if (!data) {
+		return new Buffer(0);
+	}
 	const schema = schemaMap[name];
 	if (!schema) {
 		throw new Error('SchameDoesNotExistForPack:' + name);
@@ -139,13 +169,19 @@ module.exports.pack = function (name, data) {
 			);
 		}
 		const value = data[prop];
-		offset = packAs(schema[prop], value, buf, offset);
+		offset = packAs(name + '.' + prop, schema[prop], value, buf, offset);
+		if (offset instanceof Error) {
+			return null;
+		}
 	}
 	const res = buf.slice(0, offset);
 	return res;
 };
 
 module.exports.unpack = function (name, buf, _offset, addLength) {
+	if (!buf || buf.length === 0) {
+		return null;
+	}
 	const schema = schemaMap[name];
 	if (!schema) {
 		throw new Error('SchemaDoesNotExitForUnpack:' + name);
@@ -154,7 +190,10 @@ module.exports.unpack = function (name, buf, _offset, addLength) {
 	var offset = _offset || 0;
 	for (const prop in schema) {
 		const type = schema[prop];
-		const unpacked = unpackAs(type, buf, offset);
+		const unpacked = unpackAs(name + '.' + prop, type, buf, offset);
+		if (unpacked instanceof Error) {
+			return null;
+		}
 		data[prop] = unpacked.value;
 		offset += unpacked.length;
 	}
@@ -164,7 +203,16 @@ module.exports.unpack = function (name, buf, _offset, addLength) {
 	return data;
 };
 
-function packAs(type, value, buf, offset) {
+function packAs(name, type, value, buf, offset) {
+	try {
+		return _packAs(name, type, value, buf, offset);
+	} catch (error) {
+		logger.debug('Failed to pack @', name, type, value, error);
+		return error;
+	}
+}
+
+function _packAs(name, type, value, buf, offset) {
 	switch (type) {
 		case UINT8:
 			buf.writeUInt8(value, offset);
@@ -203,6 +251,7 @@ function packAs(type, value, buf, offset) {
 			offset += 8;
 			break;
 		case STR:
+		case ERR:
 			buf.writeUInt32BE(value.length, offset);
 			offset += 4;
 			buf.write(value, offset);
@@ -221,6 +270,13 @@ function packAs(type, value, buf, offset) {
 			uuid.copy(buf, offset);
 			offset += 16;
 			break;
+		case SUB:
+			const sub = module.exports.pack(name, value);
+			buf.writeUInt32BE(OBJ_TYPE, offset);
+			offset += 4;
+			sub.copy(buf, offset, 0);
+			offset += sub.length;
+			break;	
 		case UINT8_ARR:
 		case INT8_ARR:
 		case UINT16_ARR:
@@ -354,7 +410,16 @@ function packArrayAs(type, value, buf, offset) {
 	return offset;
 }
 
-function unpackAs(type, buf, offset) {
+function unpackAs(name, type, buf, offset) {
+	try {
+		return _unpackAs(name, type, buf, offset);
+	} catch (error) {
+		logger.debug('Failed to unpack @', name, type, error);
+		return error;
+	}
+}
+
+function _unpackAs(name, type, buf, offset) {
 	var value;
 	var len;
 	switch (type) {
@@ -397,10 +462,17 @@ function unpackAs(type, buf, offset) {
 			break;
 		case STR:
 			const size = buf.readUInt32BE(offset);
-			var strbuf = new Buffer(size);
+			const strbuf = new Buffer(size);
 			buf.copy(strbuf, 0, offset + 4);
 			value = strbuf.toString();
 			len = 4 + size;
+			break;
+		case ERR:
+			const esize = buf.readUInt32BE(offset);
+			const estrbuf = new Buffer(esize);
+			buf.copy(estrbuf, 0, offset + 4);
+			value = new Error(estrbuf.toString());
+			len = 4 + esize;
 			break;
 		case OBJ:
 			var objbuf = new Buffer(buf.readUInt32BE(offset));
@@ -414,6 +486,16 @@ function unpackAs(type, buf, offset) {
 			buf.copy(uuid, 0, offset);
 			value = gn.lib.uuid.create(uuid).toString();
 			len = 16;
+			break;
+		case SUB:
+			offset += 4;
+			value = module.exports.unpack(name, buf, offset, true);
+			if (value === null) {
+				len = 0;
+			} else {
+				len = value._length;
+				delete value._length;
+			}
 			break;
 		case UINT8_ARR:
 		case INT8_ARR:

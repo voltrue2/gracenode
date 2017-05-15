@@ -1,215 +1,243 @@
 'use strict';
 
 const net = require('net');
-const gn = require('../../src/gracenode');
+const gn = require('gracenode');
 const transport = gn.lib.packet;
-const packer = require('./packer');
-const Delivery = require('./delivery').Delivery;
-const PSCHEMA = require('./delivery').PACKET_SCHEMA;
 
-const PORT_IN_USE = 'EADDRINUSE';
-const ENC = 'binary';
-
-const info = {
-	host: '',
-	address: '',
-	port: 0,
-	family: ''
-};
-const connMap = {};
-var conf = {
+const conf = {
 	address: '127.0.0.1',
-	port: 8000,
-	relayLimit: 10
+	port: 8100
 };
+const info = {
+	address: '127.0.0.1',
+	port: 0
+};
+const conns = {};
+const E_PORT_IN_USE = 'EADDRINUSE';
+
 var logger;
-var conn;
 var server;
-var receiver;
-var delivery;
+var notifier;
 
-module.exports.config = function (_conf) {
-	gn.mod.defaults.apply(conf, _conf);
-	logger = gn.log.create('portal:tcp');
+module.exports = {
+	config: config,
+	setup: setup,
+	emit: emit,
+	on: on,
+	info: getInfo
 };
 
-module.exports.setup = function (cb) {
-	gn.onExit(function ShutdownInternalMeshNetwork(next) {
-		try {
-			logger.info('Shutting down internal mesh network server');
-			server.close();
-			next();
-		} catch (error) {
-			logger.error('Failed to shut down internal mesh network properly:', error);
-			next(error);
-		}
-	});
-	startServer(cb);
-};
-
-module.exports.setReceiver = function (_receiver) {
-	receiver = _receiver;
-	// TODO: refactor this b/c it's messy...
-	const _sender = function (addr, port, key, packed) {
-		if (!connMap[key]) {
-			const client = net.Socket();
-			client.connect(port, addr, function (error) {
-				if (error) {
-					logger.error(error);
-					return;
-				}
-				connMap[key] = client;
-				try {
-					connMap[key].write(
-						transport.createRequest(
-							0,
-							0,
-							packed
-						),
-						ENC
-					);
-				} catch (err) {
-					logger.error(
-						'Failed to send internal command:',
-						err
-					);
-					if (connMap[key]) {
-						connMap[key].end();
-					}
-					delete connMap[key];
-				}
-			});
-			return;
-		}
-		try {
-			connMap[key].write(transport.createRequest(0, 0, packed), ENC);
-		} catch (err) {
-			logger.error('Failed to send internal command:', err);
-			if (connMap[key]) {
-				connMap[key].end();
-			}
-			delete connMap[key];
-		}
-
-	};
-	const sender = function (nodes, addr, port, dataBytes) {
-		const key = addr + '/' + port;
-		const packed = packer.pack(PSCHEMA, {
-			nodes: nodes,
-			packed: dataBytes
-		});
-		_sender(addr, port, key, packed);
-	};
-	delivery = new Delivery(
-		module.exports.info,
-		receiver,
-		sender,
-		conf.relayLimit
+function config(_conf) {
+	if (_conf.address) {
+		conf.address = _conf.address;
+	}
+	if (_conf.port) {
+		conf.port = _conf.port;
+	}
+	logger = gn.log.create(
+		'portal.broker.delivery.tcp'
 	);
-};
+}
 
-module.exports.info = function () {
-	return info;
-};
-
-module.exports.send = function (dataBytes, nodes) {
-	delivery.send(dataBytes, nodes);
-};
-
-function startServer(cb) {
-	server = net.createServer(handleConnection);
-	server.on('listening', function () {
-		handleListening();
-		// ready
-		logger.info('Internal mesh network started:', info.address, info.port);
-		cb();
-	});
-	server.on('error', function (error) {
-		if (error && error.code === PORT_IN_USE) {
-			logger.verbose('Port is in use:', conf.port);
-			conf.port += 1;
-			startServer(cb);
-			return;
-		}
-		logger.error('Failed to start internal mesh network:', error, conf);
-		cb(error);
-	});
+function setup(cb) {
+	server = net.createServer(_manageConn);
+	server.on('listening', __onListening);
+	server.on('error', __onError);
 	server.listen({
 		port: conf.port,
 		host: conf.address,
 		exclusive: true
 	});
-}
+	function __onListening() {
+		const ad = server.address();
+		info.address = ad.address;
+		info.port = ad.port;
+		logger.info(
+			'Mesh network ready:',
+			info.address,
+			info.port
+		);
+		cb();
+	}
 
-function handleListening() {
-	const connInfo = server.address();
-	if (connInfo) {
-		info.address = connInfo.address;
-		info.host = conf.address;
-		info.port = connInfo.port;
-		info.family = connInfo.family;
+	function __onError(error) {
+		if (error && error.code === E_PORT_IN_USE) {
+			conf.port += 1;
+			setup(cb);
+			return;
+		}
+		logger.error(
+			'Failed to start mesh network:',
+			conf,
+			error
+		);
+		cb(error);
 	}
 }
 
-function handleConnection(sock) {
-	logger.debug('New mesh node connected', sock.remoteAddress, sock.remotePort);
-	conn = new Connection(sock);
-}
+function _manageConn(sock, localKey) {
+	// setup the new socket
+	const key = localKey || _remoteSockKey(sock);
+	const stream = new transport.Stream();
+	sock.on('data', __onData);
+	sock.on('error', __onError);
+	sock.on('close', __onClose);
+	sock.on('end', __onEnd);
+	
+	// setup response handler	
+	const split = key.split('/');
+	const addr = split[0];
+	const port = split[1];
+	const response = _createResponse(sock, addr + '/' + port);
+	
+	// now manage the socket connections
+	if (conns[key]) {
+		logger.debug('Replace the client sock:', key);
+		conns[key].deadSock = conns[key].sock;
+		conns[key].sock = null;
+	} else {
+		conns[key] = {
+			sock: null,
+			deadSock: null
+		};
+	}
 
-function Connection(sock) {
-	const that = this;
-	this.sock = sock;
-	this.stream = new transport.Stream();
-	this.sock.on('data', function (data) {
-		that.receiveData(data);
-	});
-	this.sock.on('end', function () {
-		that.handleEnd();
-	});
-	this.sock.on('close', function () {
-		that.handleClose();
-	});
-	this.sock.on('error', function (error) {
-		that.handleError(error);
-	});
-}
+	logger.debug('New socket registered:', key);
 
-Connection.prototype.receiveData = function (buf) {
-	const handleReg = function (payload) {
-		const unpacked = packer.unpack(PSCHEMA, payload);
-		receiver(unpacked.name, unpacked.packed);
-		if (unpacked.nodes.length) {
-			module.exports.send(
-				unpacked.packed,
-				unpacked.nodes,
-				unpacked.proto
-			);
-		}
-	};
-	const handle = function (error, parsed) {
+	// register new socket	
+	conns[key].sock = sock;
+	
+	// these are listeners of the new socket
+	function __onData(buf) {
+		stream.lazyParse(buf, __streamHandler);
+	}
+
+	function __streamHandler(error, list) {
 		if (error) {
-			return logger.error(
-				'Internal command could not be handled:',
+			logger.error(
+				'Failed to handle mesh network data stream:',
 				error
 			);
+			return;
 		}
-		for (var i = 0, len = parsed.length; i < len; i++) {
-			const payload = parsed[i].payload;
-			handleReg(payload);
+		for (var i = 0, len = list.length; i < len; i++) {
+			notifier(list[i].payload, response);
 		}
-	};
-	this.stream.lazyParse(buf, handle);
-};
+	}
 
-Connection.prototype.handleEnd = function () {
-	logger.debug(this.sock.remoteAddress, this.sock.remotePort, 'closed connection');
-};
+	function __onError(error) {
+		logger.error(
+			'Mesh network connection detected an error:',
+			key, error
+		);
+		if (conns[key] && conns[key].deadSock) {
+			conns[key].deadSock = null;
+		}
+		sock.destroy();
+	}
+	
+	function __onClose() {
+		logger.debug(
+			'Mesh network connection has closed:',
+			key
+		);
+		if (conns[key] && conns[key].deadSock) {
+			conns[key].deadSock = null;
+		}
+		sock.destroy();
+	}
 
-Connection.prototype.handleClose = function () {
-	logger.debug('Closing connection to', this.sock.remoteAddress, this.sock.remotePort);
-	this.sock.end();
-};
+	function __onEnd() {
+		logger.debug(
+			'Mesh network connection has ended:',
+			key
+		);
+		if (conns[key] && conns[key].deadSock) {
+			conns[key].deadSock = null;
+		}
+		sock.destroy();
+	}
 
-Connection.prototype.handleError = function (error) {
-	logger.error(this.sock.remoteAddress, this.sock.remotePort, error);
-};
+	return key;	
+}
+
+function _remoteSockKey(sock) {
+	const ad = sock.address();
+	return ad.address + '/' + ad.port;
+}
+
+function _createResponse(sock, key) {
+	const addr = sock.remoteAddress;
+	const port = sock.remotePort;
+	function __response(resPayload) {
+		logger.debug(
+			'Emit response to',
+			addr,
+			port
+		);
+		const req = transport.createRequest(
+			0,
+			0,
+			resPayload
+		);
+		_write(key, req);
+	}
+	return __response;
+}
+
+function emit(addr, port, packed) {
+	const key = addr + '/' + port;
+	const conn = conns[key];
+	if (!conn || conn.sock.destroyed) {
+		logger.debug(
+			'Mesh network connection not found:',
+			key,
+			'create a new connection'
+		);
+		_createSock(addr, port, key, packed);
+		return;
+	}
+	const req = transport.createRequest(
+		0,
+		0,
+		packed
+	);
+	logger.debug('Emitting to', addr, port);
+	_write(key, req);
+}
+
+function _createSock(addr, port, key, packed) {
+	// create a new socket
+	const sock = net.Socket();
+	sock.connect(port, addr, __onListening);
+	
+	// setup the new socket
+	_manageConn(sock, key);
+
+	function __onListening() {
+		emit(addr, port, packed);
+	}
+}
+
+function _write(key, bytes) {
+	if (!conns[key]) {
+		logger.error('Missing socket', key);
+	}
+	if (conns[key].deadSock) {
+		// write to the dead socket and remove it
+		conns[key].sock.write(bytes, 'binary');
+		conns[key].deadSock.end();
+		conns[key].deadSock = null;
+	} else {
+		conns[key].sock.write(bytes, 'binary');
+	}
+}
+
+function on(_notifier) {
+	notifier = _notifier;
+}
+
+function getInfo() {
+	return info;
+}
+

@@ -34,4 +34,6 @@ if (singleRun !== 'false') {
 	require('./render');
 	// test performance
 	require('./performance');
+	// test gracenode.portal
+	require('./portal');
 }

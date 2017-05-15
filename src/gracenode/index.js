@@ -373,7 +373,7 @@ function startMod(cb) {
 
 function setupPortal(cb) {
 	const conf = config.get('portal');
-	if (conf && conf.enable) {
+	if (conf) {
 		module.exports.portal.config(conf);
 		module.exports.portal.setup(cb);
 		return;
