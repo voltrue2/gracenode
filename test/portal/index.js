@@ -16,7 +16,7 @@ describe('gracenode.portal', function () {
 		clean(done);
 	});
 
-	it('start server one', function (done) {
+	it('can start server one', function (done) {
 		exec(ONE + ' start', function (err) {
 			if (err) {
 				console.error(err);
@@ -30,7 +30,7 @@ describe('gracenode.portal', function () {
 		setTimeout(done, 2000);
 	});
 
-	it('start server two', function (done) {
+	it('can start server two', function (done) {
 		exec(TWO + ' start', function (err) {
 			if (err) {
 				console.error(err);
