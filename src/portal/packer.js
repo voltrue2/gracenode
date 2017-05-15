@@ -1,6 +1,6 @@
 'use strict';
 
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const schemaMap = {};
 
 const UINT8 = 1;

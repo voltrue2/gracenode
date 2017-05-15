@@ -1,7 +1,7 @@
 'use strict';
 
 const net = require('net');
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const transport = gn.lib.packet;
 
 const conf = {

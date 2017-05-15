@@ -1,7 +1,7 @@
 'use strict';
 
 const dgram = require('dgram');
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const packer = require('./packer');
 
 const conf = {

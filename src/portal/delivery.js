@@ -7,7 +7,7 @@
 */
 
 const async = require('async');
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const packer = require('./packer');
 const meshNodes = require('./meshnodes');
 const tcp = require('./tcp');

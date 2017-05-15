@@ -1,6 +1,6 @@
 'use strict';
 
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const packer = require('./packer');
 const delivery = require('./delivery');
 

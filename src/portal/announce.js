@@ -2,7 +2,7 @@
 
 const redis = require('redis');
 const async = require('async');
-const gn = require('gracenode');
+const gn = require('../gracenode');
 const delivery = require('./delivery');
 
 const PREFIX = '__portal/';
