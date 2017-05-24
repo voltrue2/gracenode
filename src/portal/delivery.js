@@ -7,7 +7,7 @@
 */
 
 const async = require('async');
-const gn = require('../gracenode');
+const gn = require('gracenode');
 const packer = require('./packer');
 const meshNodes = require('./meshnodes');
 const tcp = require('./tcp');
@@ -27,7 +27,7 @@ const _info = [];
 var logger;
 
 packer.schema(PTS, {
-	id: packer.TYPE.UUID,
+	id: packer.TYPE.BIN,
 	hasResponse: packer.TYPE.BOOL,
 	protocol: packer.TYPE.UINT8,
 	eventName: packer.TYPE.STR,
@@ -35,7 +35,7 @@ packer.schema(PTS, {
 	payload: packer.TYPE.BIN
 });
 packer.schema(PTRS, {
-	id: packer.TYPE.UUID,
+	id: packer.TYPE.BIN,
 	eventName: packer.TYPE.STR,
 	payload: packer.TYPE.BIN,
 	isError: packer.TYPE.BOOL
@@ -155,16 +155,17 @@ function send(protocol, eventName, nodes, data, cb) {
 	setImmediate(__send);
 	
 	function __send() {
+		var err;
 		switch (protocol) {
 			case TCP:
-				tcp.emit(
+				err = tcp.emit(
 					addr,
 					port,
 					packed
 				);	
 			break;
 			case UDP:
-				udp.emit(
+				err = udp.emit(
 					addr,
 					port,
 					packed
@@ -177,6 +178,16 @@ function send(protocol, eventName, nodes, data, cb) {
 					addr, port
 				);
 			break;
+		}
+		if (err) {
+			logger.error(
+				'Send failed for event',
+				eventName,
+				'to',
+				addr, port,
+				'with',
+				err	
+			);
 		}
 	}
 }
@@ -254,6 +265,7 @@ function _onRemoteReceive(packed, response) {
 	}
 	// is packed a response?
 	const res = packer.unpack(PTRS, packed);
+	res.id = res.id.toString('hex');
 	logger.debug('Handle response:', res);
 	if (res && responses[res.id]) {
 		try {

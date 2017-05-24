@@ -1,6 +1,6 @@
 'use strict';
 
-const gn = require('../gracenode');
+const gn = require('gracenode');
 const schemaMap = {};
 
 const UINT8 = 1;
@@ -179,7 +179,7 @@ module.exports.pack = function (name, data) {
 };
 
 module.exports.unpack = function (name, buf, _offset, addLength) {
-	if (!buf || buf.length === 0) {
+	if (buf.length === 0) {
 		return null;
 	}
 	const schema = schemaMap[name];
@@ -207,7 +207,7 @@ function packAs(name, type, value, buf, offset) {
 	try {
 		return _packAs(name, type, value, buf, offset);
 	} catch (error) {
-		logger.debug('Failed to pack @', name, type, value, error);
+		//logger.debug('Failed to pack @', name, type, value, error);
 		return error;
 	}
 }
@@ -310,7 +310,7 @@ function _packAs(name, type, value, buf, offset) {
 		default:
 			var schema = schemaMap[type];
 			if (!schema) {
-				throw new Error('InvalidDataTypeForPack:' + type);
+				throw new Error('InvalidDataTypeForPack:' + name + '['+ type + ']');
 			}
 			if (!value) {
 				offset = packNull(buf, offset);
@@ -414,7 +414,7 @@ function unpackAs(name, type, buf, offset) {
 	try {
 		return _unpackAs(name, type, buf, offset);
 	} catch (error) {
-		logger.debug('Failed to unpack @', name, type, error);
+		//logger.debug('Failed to unpack @', name, type, error);
 		return error;
 	}
 }
@@ -493,7 +493,7 @@ function _unpackAs(name, type, buf, offset) {
 			if (value === null) {
 				len = 0;
 			} else {
-				len = value._length;
+				len = 4 + value._length;
 				delete value._length;
 			}
 			break;
@@ -525,7 +525,7 @@ function _unpackAs(name, type, buf, offset) {
 		default:
 			var schema = schemaMap[type];
 			if (!schema) {
-				throw new Error('InvalidDataTypeForUnpack:' + type);
+				throw new Error('InvalidDataTypeForUnpack:' + name + '['+ type + ']');
 			}
 			if (buf.readUInt32BE(offset) === OBJ_TYPE) {
 				offset += 4;
