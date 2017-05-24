@@ -6,7 +6,8 @@ gn.config({
 	log: {
 		console: true,
 		color: true,
-		level: 'debug >='
+		level: 'debug >=',
+		file: __dirname + '/logs/'
 	},
 	portal: {
 		type: 'server-two',
@@ -33,6 +34,7 @@ gn.portal.onAnnounce(function () {
 const remember = {};
 
 gn.start(function () {
+	gn.log.setPrefix('TWO');
 	const TYPE = gn.portal.TYPE;
 	gn.portal.define('one2two', {
 		bool: TYPE.BOOL,

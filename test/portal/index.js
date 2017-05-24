@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const request = require('../src/request');
 const assert = require('assert');
 const exec = require('child_process').exec;
@@ -108,9 +109,11 @@ describe('gracenode.portal', function () {
 });
 
 function clean(cb) {
-	exec(ONE + ' stop', function () {
-		exec(TWO + ' stop', function () {
-			cb();
+	fs.unlink(__dirname + '/servers/logs/*', function () {
+		exec(ONE + ' stop', function () {
+			exec(TWO + ' stop', function () {
+				cb();
+			});
 		});
 	});
 }
