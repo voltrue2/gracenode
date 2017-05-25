@@ -19,7 +19,7 @@ gracenode.config({
 		address: <mesh network address>,
 		port: <mesh network port>,
 		relayLimit: <number>,
-		compress: <boolean>,
+		relayInterval: <number>,
 		announce: {
 			host: '<host of Redis server>',
 			port: <port of Redis server>,
@@ -51,11 +51,11 @@ The maximum cap for the number of mesh network node to be communicated at a time
 
 Default is `10`.
 
-### compress [Boolean/Number]
+### relayInterval [Boolean/Number]
 
-If `true`, call mesh network communication packets will be combined into one packet and sent every 250ms.
+Configures the interval for mesh network communication emits.
 
-If number greater than 0 is provided, the interval of combining and sending of mesh network packets will be the given value.
+The default is `0`.
 
 ### interval [Number]
 

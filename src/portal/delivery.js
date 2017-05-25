@@ -196,7 +196,7 @@ function _createResponseTimeout(id, eventName, cb) {
 	const timeout = setTimeout(__onTimeout, RES_TIMEOUT);
 	
 	function __onTimeout() {
-		logger.error(
+		logger.debug(
 			'Response timed out:',
 			id,
 			eventName

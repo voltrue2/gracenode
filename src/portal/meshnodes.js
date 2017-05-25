@@ -30,7 +30,7 @@ function toNodeList(bytes) {
 	for (var i = 0; i <= len; i += 6) {
 		var buf = bytes.slice(i, i + 6);
 		var res = bytesToAddrAndPort(buf);
-		if (res) {
+		if (res && res.address && res.port) {
 			list.push(res);
 		}
 	}
