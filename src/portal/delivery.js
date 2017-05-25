@@ -19,7 +19,7 @@ const PTS = '_pts';
 const PTRS = '_ptr';
 const PTRES = '_pte';
 // should we make it configurable?
-const RES_TIMEOUT = 10000;
+const RES_TIMEOUT = 3000;
 
 const handlers = {};
 const responses = {};
