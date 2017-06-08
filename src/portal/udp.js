@@ -132,12 +132,14 @@ function _emit(addr, port, packed, isResponse) {
 			'as response', isResponse ? true : false
 		);
 		server.send(packed, 0, packed.length, port, addr);
+		return null;
 	} catch (error) {
 		logger.error(
 			'Mesh network failed to send:',
 			addr, port,
 			error
 		);
+		return error;
 	}
 }
 

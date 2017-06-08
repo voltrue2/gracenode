@@ -131,9 +131,13 @@ function clean(cb) {
 		next();
 	}
 	function _clean(next) {
-		fs.unlink(__dirname + '/servers/logs/*', function () {
-			exec(ONE + ' stop', function () {
-				exec(TWO + ' stop', function () {
+		exec(ONE + ' stop', function () {
+			exec(TWO + ' stop', function () {
+				gn.lib.walkDir(__dirname + '/servers/logs/', function (error, list) {
+					assert.equal(error, null);
+					for (var i = 0, len = list.length; i < len; i++) {
+						fs.unlinkSync(list[i].file);
+					}
 					next();
 				});
 			});
