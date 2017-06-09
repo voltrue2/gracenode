@@ -2,11 +2,11 @@
 
 This is a list of manually mantained changes and updates for each version.
 
-## Version 3.7.2
+## Version 3.7.3
 
 ## Add
 
-None
+#### Portal module added (untested throughly)
 
 ## Changed
 
