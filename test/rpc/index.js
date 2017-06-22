@@ -790,7 +790,7 @@ describe('gracenode.rpc', function () {
 		client2.start(addr, portOne, done);
 	});
 
-	it('try session highjack (use session ID for different connection) and be rejected from the server', function (done) {
+	it('try session hijack (use session ID for different connection) and be rejected from the server', function (done) {
 		client2.recvOnceSecure(cipher, function (data) {
 			assert.equal(data.message, 'closed');
 			client.stop(done);
