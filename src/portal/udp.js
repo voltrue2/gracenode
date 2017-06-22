@@ -127,7 +127,7 @@ function _createResponse(remote) {
 
 function _emit(addr, port, packed, isResponse) {
 	try {
-		logger.debug(
+		logger.sys(
 			'Emitting to', addr, port,
 			'as response', isResponse ? true : false
 		);
@@ -144,7 +144,7 @@ function _emit(addr, port, packed, isResponse) {
 }
 
 function _bufferEmit(addr, port, packed, isResponse) {
-	logger.debug(
+	logger.sys(
 		'Emitting to', addr, port,
 		'as response', isResponse
 	);

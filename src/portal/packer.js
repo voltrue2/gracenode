@@ -207,7 +207,7 @@ function packAs(name, type, value, buf, offset) {
 	try {
 		return _packAs(name, type, value, buf, offset);
 	} catch (error) {
-		//logger.debug('Failed to pack @', name, type, value, error);
+		//logger.sys('Failed to pack @', name, type, value, error);
 		return error;
 	}
 }
@@ -414,7 +414,7 @@ function unpackAs(name, type, buf, offset) {
 	try {
 		return _unpackAs(name, type, buf, offset);
 	} catch (error) {
-		//logger.debug('Failed to unpack @', name, type, error);
+		//logger.sys('Failed to unpack @', name, type, error);
 		return error;
 	}
 }

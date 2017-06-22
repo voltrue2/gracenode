@@ -61,7 +61,7 @@ function Connection(sock) {
 		that._data(packet);
 	});
 	this.sock.on('end', function __rpcConnectionOnEnd() {
-		logger.debug(that.name, 'TCP connection ended by client');
+		logger.sys(that.name, 'TCP connection ended by client');
 		that.kill(new Error('TCP disconnected by client'));
 	});
 	this.sock.on('error', function __rpcConnectionOnError(error) {
@@ -153,11 +153,11 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 	if (this.sock) {
 		try {
 			if (error) {
-				logger.debug(this.name, 'TCP connection closed by error:', error);
+				logger.sys(this.name, 'TCP connection closed by error:', error);
 				// force close (closed)
 				this.sock.destroy();
 			} else {
-				logger.debug(this.name, 'TCP connection closed');
+				logger.sys(this.name, 'TCP connection closed');
 				// send FIN packet (half-closed)
 				this.sock.end();
 			}
@@ -171,9 +171,9 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
 Connection.prototype.kill = function __rpcConnectionKill(error) {
 	if (this.sock) {
 		if (error) {
-			logger.debug(this.name, 'TCP connection killed from server:', error);
+			logger.sys(this.name, 'TCP connection killed from server:', error);
 		} else {
-			logger.debug(this.name, 'TCP connection killed from server');
+			logger.sys(this.name, 'TCP connection killed from server');
 		}
 		try {
 			this.sock.destroy();
@@ -384,7 +384,7 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 	}
 
 	if (error) {
-		logger.debug(this.name, 'error response:', error, 'size:', data.length, 'bytes');
+		logger.sys(this.name, 'error response:', error, 'size:', data.length, 'bytes');
 	}
 
 	try {

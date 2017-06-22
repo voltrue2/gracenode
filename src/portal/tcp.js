@@ -92,7 +92,7 @@ function _manageConn(sock, localKey) {
 	
 	// now manage the socket connections
 	if (conns[key]) {
-		logger.debug('Replace the client sock:', key);
+		logger.sys('Replace the client sock:', key);
 		conns[key].deadSock = conns[key].sock;
 		conns[key].sock = null;
 	} else {
@@ -102,7 +102,7 @@ function _manageConn(sock, localKey) {
 		};
 	}
 
-	logger.debug('New socket registered:', key);
+	logger.sys('New socket registered:', key);
 
 	// register new socket	
 	conns[key].sock = sock;
@@ -137,7 +137,7 @@ function _manageConn(sock, localKey) {
 	}
 	
 	function __onClose() {
-		logger.debug(
+		logger.sys(
 			'Mesh network connection has closed:',
 			key
 		);
@@ -148,7 +148,7 @@ function _manageConn(sock, localKey) {
 	}
 
 	function __onEnd() {
-		logger.debug(
+		logger.sys(
 			'Mesh network connection has ended:',
 			key
 		);
@@ -170,7 +170,7 @@ function _createResponse(sock, key) {
 	const addr = sock.remoteAddress;
 	const port = sock.remotePort;
 	function __response(resPayload) {
-		logger.debug(
+		logger.sys(
 			'Emit response to',
 			addr,
 			port
@@ -189,7 +189,7 @@ function emit(addr, port, packed) {
 	const key = addr + '/' + port;
 	const conn = conns[key];
 	if (!conn || conn.sock.destroyed) {
-		logger.debug(
+		logger.sys(
 			'Mesh network connection not found:',
 			key,
 			'create a new connection'
@@ -202,7 +202,7 @@ function emit(addr, port, packed) {
 		0,
 		packed
 	);
-	logger.debug('Emitting to', addr, port);
+	logger.sys('Emitting to', addr, port);
 	_write(key, req);
 }
 

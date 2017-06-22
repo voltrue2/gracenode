@@ -109,7 +109,7 @@ function send(protocol, eventName, nodes, data, cb) {
 		return;
 	}
 
-	logger.debug(
+	logger.sys(
 		'Emitting to:', addr, port,
 		'event:', eventName,
 		'is local:', isLocal,
@@ -196,7 +196,7 @@ function _createResponseTimeout(id, eventName, cb) {
 	const timeout = setTimeout(__onTimeout, RES_TIMEOUT);
 	
 	function __onTimeout() {
-		logger.debug(
+		logger.sys(
 			'Response timed out:',
 			id,
 			eventName
@@ -225,7 +225,7 @@ function _onLocalReceive(protocol, eventName, nodes, data, cb) {
 		_handlers[i](data, resp);
 	}
 	if (nodes.length) {
-		logger.debug(
+		logger.sys(
 			'Emitting relay from local:',
 			'protocol (TCP=0 UDP=1)', protocol,
 			'event', eventName,
@@ -266,7 +266,7 @@ function _onRemoteReceive(packed, response) {
 	// is packed a response?
 	const res = packer.unpack(PTRS, packed);
 	res.id = res.id.toString('hex');
-	logger.debug('Handle response:', res);
+	logger.sys('Handle response:', res);
 	if (res && responses[res.id]) {
 		try {
 			clearTimeout(responses[res.id].timeout);
@@ -278,7 +278,7 @@ function _onRemoteReceive(packed, response) {
 				module.exports._RES_SCHEMA_SUFFIX;
 			}
 			const resData = packer.unpack(rname, res.payload);
-			logger.debug(
+			logger.sys(
 				'Invoke response callback:',
 				res.id, resData
 			);
@@ -293,7 +293,7 @@ function _onRemoteReceive(packed, response) {
 		delete responses[res.id];
 		return;
 	}
-	logger.debug('Response callback not found:', res, packed);
+	logger.sys('Response callback not found:', res, packed);
 }
 
 function _callHandler(unpacked, handler, response) {
@@ -304,7 +304,7 @@ function _callHandler(unpacked, handler, response) {
 			unpacked.eventName,
 			unpacked.payload
 		);
-		logger.debug(
+		logger.sys(
 			'Handled event:', unpacked.eventName,
 			'protocol (TCP=0 UDP=1)', unpacked.protocol,
 			'id', unpacked.id.toString('hex'),
@@ -318,7 +318,7 @@ function _callHandler(unpacked, handler, response) {
 			handler(data);
 		}
 		if (unpacked.nodes.length) {
-			logger.debug(
+			logger.sys(
 				'Emitting relay:',
 				'protocol (TCP=0 UDP=1)', unpacked.protocol,
 				'event', unpacked.eventName,
@@ -342,7 +342,7 @@ function _callHandler(unpacked, handler, response) {
 			rname = unpacked.eventName +
 				module.exports._RES_SCHEMA_SUFFIX;
 		}
-		logger.debug(
+		logger.sys(
 			'Calling response:',
 			'as error?', isError,
 			unpacked.id,
