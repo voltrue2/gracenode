@@ -4,8 +4,6 @@
 
 RPC server can optionally use built-in session/encryption for secure data transmission.
 
-**STABILITY**: This feature is still unstable and subjected to changes in the future.
-
 ## Access
 
 `gracenode.rpc`
@@ -606,6 +604,19 @@ var gn = require('gracenode');
 gn.rpc.hook([1, 2], function (state, next) {
 	next();
 });
+```
+
+### .getCommandList()
+
+Returns an array of all commands that have been registered by `.command(...)` up until this point.
+
+The command map format:
+
+```javascript
+[
+ { id: 911, name: 'heartbeat' },
+ { id: 100, name: 'myAwesomeCommand' }
+]
 ```
 
 ### .setHeartbeatResponseFormat(format [function])

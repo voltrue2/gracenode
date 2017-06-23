@@ -187,6 +187,10 @@ module.exports.setup = function __rpcSetup(cb) {
 	listen();
 };
 
+module.exports.getCommandList = function () {
+	return router.getCommandList();
+};
+
 module.exports.requireCallback = function __rpcReqCb(timeout) {
 	connection.requireCallback(timeout);
 };
@@ -273,7 +277,7 @@ function handleConn(sock) {
 
 	conns[conn.id] = conn;
 
-	logger.debug(
+	logger.sys(
 		'new TCP connection (id:', conn.id, ') from:',
 		sock.remoteAddress, ':', sock.remotePort
 	);

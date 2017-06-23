@@ -4,10 +4,6 @@
 
 The **gracenode** UDP server can optionally use built-in session/encyption to secure all packets sent and received.
 
-**STABILITY**: This feature is still unstable and subjected to changes in the future.
-
-**30/06/2016**: As of version `3.3.0`, the packet protocol is now `binary` not `JSON`.
-
 ## Access
 
 `gracenode.udp`
@@ -423,6 +419,22 @@ gracenode.udp.multipush(message, list, function (error) {
 	}
 	// we are done
 });
+```
+
+***
+
+## Get a list of registered commands
+
+### .getCommandList()
+
+Returns an array of all commands that have been registered by `.command(...)` up until this point.
+
+The command map format:
+
+```javascript
+[
+ { id: 100, name: 'myAwesomeCommand' }
+]
 ```
 
 ***

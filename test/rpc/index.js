@@ -52,6 +52,13 @@ describe('gracenode.rpc', function () {
 		gn.start(done);
 	});
 
+	it('can get command list', function () {
+		const list = gn.rpc.getCommandList();
+		assert.equal(list.length, 1);
+		assert.equal(list[0].id, 911);
+		assert.equal(list[0].name, 'heartbeat');
+	});
+
 	it('can get connected host and port of RPC server', function () {
 		var info = gn.rpc.info();
 		assert(info.host);

@@ -237,6 +237,10 @@ module.exports.useDecryption = function __udpUseDecryption(decrypt) {
 	cryptoEngine.decrypt = decrypt;
 };
 
+module.exports.getCommandList = function () {
+	return router.getCommandList();
+};
+
 // assign a handler function to a command
 module.exports.command = function __udpCommand(cmdId, commandName, handler) {
 	router.define(cmdId, commandName, handler);

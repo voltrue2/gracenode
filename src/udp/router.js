@@ -10,6 +10,14 @@ module.exports.setup = function __udpRouterSetup() {
 	logger = gn.log.create('UDP.router');
 };
 
+module.exports.getCommandList = function () {
+	const list = [];
+	for (const id in commands) {
+		list.push({ id: id, name: commands[id].name });
+	}
+	return list;
+};
+
 module.exports.define = function __udpRouterDefine(cmdId, cmdName, handler) {
 	if (commands[cmdId]) {
 		if (cmdName !== commands[cmdId].name) {

@@ -45,6 +45,14 @@ describe('gracenode.udp', function () {
 		});
 		gn.start(done);
 	});
+
+	it('can get a list of commands', function () {
+		gn.udp.command(911, 'testCommand', function () {});
+		const list = gn.udp.getCommandList();
+		assert.equal(list.length, 1);
+		assert.equal(list[0].id, 911);
+		assert.equal(list[0].name, 'testCommand');
+	});
 	
 	it('can get connection info', function () {
 		var info = gn.udp.info();
