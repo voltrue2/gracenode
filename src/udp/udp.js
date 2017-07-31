@@ -10,7 +10,6 @@ const router = require('./router');
 // UDP command hooks
 const hooks = require('./hooks');
 
-const PACKET_LIMIT_INTERVAL = 1000;
 const CLEAN_INTERVAL = 60000;
 // configurable
 const PACKET_NUM_LIMIT = 10;
@@ -26,6 +25,7 @@ var ipv6 = false;
 var logger;
 var config;
 var server;
+var lastCleaned;
 var onErrorHandler;
 var shutdown = false;
 
@@ -50,6 +50,9 @@ module.exports.info = function __udpInfo() {
 module.exports.setup = function __udpSetup(cb) {
 	logger = gn.log.create('UDP');
 	config = gn.getConfig('udp');
+
+	// we update this at every clean up and use this as TTL for each udp client
+	lastCleaned = gn.lib.now();
 
 	if (!gn.isSupportedVersion()) {
 		return gn.stop(new Error(
@@ -293,29 +296,12 @@ function handleMessage(buff, rinfo) {
 
 	const key = rinfo.address + rinfo.port;
 
-	// we restrict number of packets per second for stability
 	if (!clientMap[key]) {
 		clientMap[key] = {
-			ttl: gn.lib.now() + PACKET_LIMIT_INTERVAL,
-			count: 0,
 			time: 0
 		};
 	}
-	clientMap[key].count += 1;
-	clientMap[key].time = gn.lib.now();
-	if (gn.lib.now() > clientMap[key].ttl) {
-		clientMap[key].count = 0;
-		clientMap[key].ttl = gn.lib.now() + PACKET_LIMIT_INTERVAL;
-	}
-	if (clientMap[key].count >= config.packets) {
-		logger.warn(
-			'Packet in limit exceeded and dropped:',
-			key,
-			clientMap[key].count + '/' + config.packets,
-			'time diff:', gn.lib.now() - clientMap[key].ttl
-		);
-		return;
-	}
+	clientMap[key].time = lastCleaned;
 
 	const parsed = transport.parse(buff);
 	if (parsed instanceof Error) {
@@ -381,7 +367,6 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 
 	const state = {
 		STATUS: transport.STATUS,
-		now: gn.lib.now(),
 		sessionId: sessionId,
 		seq: seq,
 		session: sessionData,
@@ -540,7 +525,8 @@ function findAddrMap() {
 function setupCleaning() {
 	const clean = function () {
 		try {
-			const now = gn.lib.now() - CLEAN_INTERVAL;
+			lastCleaned = gn.lib.now();
+			const now = lastCleaned - CLEAN_INTERVAL;
 			for (const key in clientMap) {
 				if (now >= clientMap[key].time) {
 					delete clientMap[key];
