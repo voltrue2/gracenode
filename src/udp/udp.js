@@ -487,15 +487,11 @@ function serverPush(msg, address, port, cb) {
 		return;
 	}
 
-	try {
-		if (typeof cb !== 'function') {
-			cb = function () {};
-		}
-		msg = transport.createPush(0, msg);
-		server.send(msg, 0, msg.length, port, address, cb);
-	} catch (e) {
-		cb(e);
+	if (typeof cb !== 'function') {
+		cb = function () {};
 	}
+	msg = transport.createPush(0, msg);
+	server.send(msg, 0, msg.length, port, address, cb);
 }
 
 function isIPv6() {
