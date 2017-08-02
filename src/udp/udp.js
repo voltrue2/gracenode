@@ -282,7 +282,7 @@ module.exports.multipush = function (msg, list, cb) {
 		}
 	};
 	const next = function __multipushUdpNext() {
-		setImmediate(sender);
+		process.nextTick(sender);
 	};
 	next();
 };
