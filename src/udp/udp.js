@@ -394,8 +394,7 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 }
 
 function executeCommands(cmd, state) {
-	const handlers = cmd.handlers;
-	async.eachSeries(handlers, function __udpExecuteCommandEach(handler, next) {
+	async.eachSeries(cmd.handlers, function __udpExecuteCommandEach(handler, next) {
 		handler(state, next);
 	}, nothing);
 }
