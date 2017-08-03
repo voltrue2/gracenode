@@ -255,7 +255,7 @@ function handleHeartbeat(state, cb) {
 			return cb(formatted);
 		}
 	}
-	var res = new Buffer(JSON.stringify({
+	var res = gn.Buffer.alloc(JSON.stringify({
 		message: 'heartbeat',
 		serverTime: gn.lib.now()
 	}));

@@ -627,7 +627,7 @@ Allows you to register a custom response data format function for heartbeat.
 
 ```javascript
 gracenode.rpc.setHeartbeatResponseFormat(function () {
-	var buf = new Buffer(9);
+	var buf = Buffer.alloc(9);
 	buf.write('heartbeat');
 	return buf;
 });

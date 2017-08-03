@@ -39,6 +39,8 @@ exports.lib = requireInternal('/../../lib');
 
 exports.log = log;
 
+exports.Buffer = require('../buffer');
+
 exports.render = render.render;
 
 exports.http = require('../http');

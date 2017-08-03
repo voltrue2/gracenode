@@ -1089,6 +1089,20 @@ Stops or restarts all running daemon processes without user inputs. This option 
 
 ***
 
+## gracenode.Buffer
+
+`new Buffer(...)` has been deprecaged, but older version of `node.js` does not support methods such as `Buffer.alloc` etc.
+
+**gracenode** provides a wrapper function to cover for that.
+
+#### .Buffer.alloc(size [number])
+
+#### .Buffer.alloc(str [string], encoding [*string])
+
+#### .Buffer.alloc(list [array])
+
+***
+
 ## gracenode.lib
 
 #### .now()

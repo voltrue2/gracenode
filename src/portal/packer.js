@@ -28,7 +28,7 @@ const OBJ = 22;
 const ERR = 23;
 
 const COMPRESS_TAG = 0xffffffff;
-const COMP_BUF = new Buffer(4);
+const COMP_BUF = gn.Buffer.alloc(4);
 COMP_BUF.writeUInt32BE(COMPRESS_TAG, 0);
 const OBJ_TYPE = 0xdeadbeef;
 
@@ -122,7 +122,7 @@ module.exports.compress = function (packedList) {
 	// 4 bytes is the size of COMP_BUF
 	var size = 4;
 	for (var i = 0, len = packedList.length; i < len; i++) {
-		const buf = new Buffer(4 + packedList[i].length);
+		const buf = gn.Buffer.alloc(4 + packedList[i].length);
 		buf.writeUInt32BE(packedList[i].length, 0);
 		packedList[i].copy(buf, 4, 0);
 		list.push(buf);
@@ -142,7 +142,7 @@ module.exports.uncompress = function (buf) {
 	while (consumed < total) {
 		const size = buf.readUInt32BE(consumed);
 		consumed += 4;
-		const packed = new Buffer(size);
+		const packed = gn.Buffer.alloc(size);
 		buf.copy(packed, 0, consumed);
 		consumed += size;
 		list.push(packed);
@@ -152,13 +152,13 @@ module.exports.uncompress = function (buf) {
 
 module.exports.pack = function (name, data) {
 	if (!data) {
-		return new Buffer(0);
+		return gn.Buffer.alloc(0);
 	}
 	const schema = schemaMap[name];
 	if (!schema) {
 		throw new Error('SchameDoesNotExistForPack:' + name);
 	}
-	const buf = new Buffer(MAX_SIZE);
+	const buf = gn.Buffer.alloc(MAX_SIZE);
 	var offset = 0;
 	buf.fill(0);
 	for (const prop in schema) {
@@ -462,27 +462,27 @@ function _unpackAs(name, type, buf, offset) {
 			break;
 		case STR:
 			const size = buf.readUInt32BE(offset);
-			const strbuf = new Buffer(size);
+			const strbuf = gn.Buffer.alloc(size);
 			buf.copy(strbuf, 0, offset + 4);
 			value = strbuf.toString();
 			len = 4 + size;
 			break;
 		case ERR:
 			const esize = buf.readUInt32BE(offset);
-			const estrbuf = new Buffer(esize);
+			const estrbuf = gn.Buffer.alloc(esize);
 			buf.copy(estrbuf, 0, offset + 4);
 			value = new Error(estrbuf.toString());
 			len = 4 + esize;
 			break;
 		case OBJ:
-			var objbuf = new Buffer(buf.readUInt32BE(offset));
+			var objbuf = gn.Buffer.alloc(buf.readUInt32BE(offset));
 			buf.copy(objbuf, 0, offset + 4);
 			// let it throw an exception if it has to
 			value = JSON.parse(objbuf);
 			len = 4 + objbuf.length;
 			break;
 		case UUID:
-			const uuid = new Buffer(16);
+			const uuid = gn.Buffer.alloc(16);
 			buf.copy(uuid, 0, offset);
 			value = gn.lib.uuid.create(uuid).toString();
 			len = 16;
@@ -517,7 +517,7 @@ function _unpackAs(name, type, buf, offset) {
 				value = null;
 				len = 4;
 			} else {
-				value = new Buffer(bsize);
+				value = gn.Buffer.alloc(bsize);
 				buf.copy(value, 0, offset + 4);
 				len = value.length + 4;
 			}
@@ -603,7 +603,7 @@ function unpackArrayAs(type, buf, offset) {
 			}
 			break;
 		case STR_ARR:
-			var strbuf = new Buffer(MAX_SIZE);
+			var strbuf = gn.Buffer.alloc(MAX_SIZE);
 			for (i = 0; i < arrlen; i++) {
 				var size = buf.readUInt32BE(offset);
 				offset += 4;
@@ -616,7 +616,7 @@ function unpackArrayAs(type, buf, offset) {
 			}
 			break;
 		case UUID_ARR:
-			var uuid = new Buffer(16);
+			var uuid = gn.Buffer.alloc(16);
 			for (i = 0; i < arrlen; i++) {
 				uuid.fill(0);
 				buf.copy(uuid, 0, offset);

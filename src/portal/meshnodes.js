@@ -1,5 +1,7 @@
 'use strict';
 
+const gn = require('../gracenode');
+
 module.exports = {
 	toBytes: toNodeListBytes,
 	toList: toNodeList,
@@ -41,11 +43,11 @@ function toNodeList(bytes) {
 // returns 6-byte binary 
 function addrAndPortToBytes(addr, port) {
 	if (!addr && !port) {
-		return new Buffer(0);
+		return gn.Buffer.alloc(0);
 	}
 	const list = addr.split('.');
 	// 4 bytes = address 2 bytes = port
-	const buf = new Buffer(6);
+	const buf = gn.Buffer.alloc(6);
 	for (var i = 0, len = list.length; i < len; i++) {
 		buf.writeUInt8(parseInt(list[i]), i);
 	}

@@ -129,7 +129,7 @@ Response.prototype.file = function __httpResponseFile(path, status) {
 			that.error(error, 404);
 			return;
 		}
-		that.headers.ETag = '"' + crypto.createHash('md5').update(new Buffer(stats.mtime.toString())).digest('hex') + '"';
+		that.headers.ETag = '"' + crypto.createHash('md5').update(gn.Buffer.alloc(stats.mtime.toString())).digest('hex') + '"';
 		that.headers.Date = new Date().toUTCString();
 		// check for if-modified-since
 		if (new Date(that._req.headers['if-modified-since']).getTime() === new Date(stats.mtime).getTime()) {

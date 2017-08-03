@@ -241,7 +241,7 @@ Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(pars
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
-	const msg = new Buffer('NOT_FOUND');
+	var msg = gn.Buffer.alloc('NOT_FOUND');
 	this.state.command = parsedData.command;
 	this.state.payload = parsedData.payload;
 	this.state.seq = parsedData.seq;
@@ -273,7 +273,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	// execute hooks before the handler(s)
 	cmd.hooks(this.state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
-			const msg = new Buffer(error.message);
+			var msg = gn.Buffer.alloc(error.message);
 			if (!status) {
 				status = transport.STATUS.BAD_REQ;
 			}
@@ -314,7 +314,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 					);
 					skipped = true;
 					status = transport.STATUS.SERVER_ERR;
-					res = new Buffer('MISSING_CALLBACK');
+					res = gn.Buffer.alloc('MISSING_CALLBACK');
 					next();
 				}, callbackTimeout);
 			}
@@ -332,7 +332,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 						_status = transport.STATUS.BAD_REQ;
 					}
 					status = _status;
-					res = new Buffer(_res.message);
+					res = gn.Buffer.alloc(_res.message);
 					return next(_res);
 				}
 				if (!_status) {
