@@ -30,6 +30,7 @@ describe('gracenode.udp', function () {
 				level: '>= verbose'
 			},
 			udp: {
+				supportJSON: true,
 				maxPacketSize: 1000,
 				packets: {
 					in: 100,

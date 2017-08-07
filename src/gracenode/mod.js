@@ -7,7 +7,7 @@ const E_MISSING_CONFIG_FUNC = 'MISSING_CONFIG_FUNCTION';
 const E_MISSING_CONFIG = 'MISSING_CONFIG';
 
 const fs = require('fs');
-const async = require('async');
+const async = require('../../lib/async');
 const log = require('gracelog');
 const er = require('./error');
 

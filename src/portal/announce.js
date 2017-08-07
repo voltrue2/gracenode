@@ -1,7 +1,7 @@
 'use strict';
 
 const redis = require('redis');
-const async = require('async');
+const async = require('../../lib/async');
 const gn = require('../gracenode');
 const delivery = require('./delivery');
 

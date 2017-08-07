@@ -45,6 +45,7 @@ describe('gracenode.rpc', function () {
 					in: 100,
 					out: 100
 				},
+				supportJSON: true,
 				address: udpAddr,
 				portRange: [ udpPort ]
 			}

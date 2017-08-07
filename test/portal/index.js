@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const async = require('async');
+const async = require('../../lib/async');
 const request = require('../src/request');
 const assert = require('assert');
 const exec = require('child_process').exec;

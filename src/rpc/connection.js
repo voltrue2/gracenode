@@ -3,7 +3,7 @@
 const EventEmitter = require('events').EventEmitter;
 const utils = require('util');
 const gn = require('../gracenode');
-const async = require('async');
+const async = require('../../lib/async');
 const transport = require('../../lib/transport');
 const rpc = require('./rpc');
 // this is not HTTP router

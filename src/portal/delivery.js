@@ -6,7 +6,7 @@
 * managing the number of open sockets asynchronously turns out to be tough
 */
 
-const async = require('async');
+const async = require('../../lib/async');
 const gn = require('../gracenode');
 const packer = require('./packer');
 const meshNodes = require('./meshnodes');

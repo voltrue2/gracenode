@@ -1,6 +1,6 @@
 'use strict';
 
-const async = require('async');
+const async = require('../../lib/async');
 const gn = require('../gracenode');
 const hooks = require('./hooks');
 const commands = {};
@@ -12,7 +12,7 @@ module.exports.setup = function __udpRouterSetup() {
 
 module.exports.getCommandList = function () {
 	var list = [];
-	for (const id in commands) {
+	for (var id in commands) {
 		list.push({ id: id, name: commands[id].name });
 	}
 	return list;
@@ -60,20 +60,23 @@ module.exports.route = function __udpRouterRoute(packet) {
 	
 	var cmd = commands[packet.command];
 
-	var hookList = hooks.findByCmdId(packet.command);
-
 	return {
 		id: cmd.id,
 		name: cmd.name,
 		handlers: cmd.handlers,
-		hooks: getHookExec(cmd.id, cmd.name, hookList)
+		hooks: _execHooks
 	};
 };
 
-function getHookExec(cmdId, cmdName, hookList) {
-	return function __udpRouterGetHookExecExec(state, cb) {
-		async.eachSeries(hookList, function __udpRouterGetHookExecEach(hook, next) {
-			hook(state, next);
-		}, cb);
+function _execHooks(packet, state, cb) {
+	var params = {
+		state: state
 	};
+	var hookList = hooks.findByCmdId(packet.command);
+	async.loopSeries(hookList, params, _onEachHook, cb);
 }
+
+function _onEachHook(hook, params, next) {
+	hook(params.state, next);
+}
+

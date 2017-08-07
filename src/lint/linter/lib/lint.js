@@ -1,9 +1,9 @@
 'use strict';
 
-var async = require('async');
-var jshintcli = require('jshint/src/cli');
-var print = require('./print');
-var files = require('./files');
+const async = require('../../../../lib/async');
+const jshintcli = require('jshint/src/cli');
+const print = require('./print');
+const files = require('./files');
 
 function Lint(files, ignorelist) {
 	var that = this;

@@ -14,7 +14,7 @@ const mod = requireInternal('./mod');
 const render = requireInternal('../render');
 const lint = requireInternal('../lint');
 const session = requireInternal('../session');
-const async = require('async');
+const async = require('../../lib/async');
 const pkg = requireInternal('../../package.json');
 const transport = requireInternal('../../lib/transport');
 
@@ -38,6 +38,8 @@ exports.mod = {};
 exports.lib = requireInternal('/../../lib');
 
 exports.log = log;
+
+exports.async = async;
 
 exports.Buffer = require('../buffer');
 
