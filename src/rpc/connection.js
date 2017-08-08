@@ -185,23 +185,26 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 };
 
 Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
-	const parsed = this.parser.parse(packet);
+	var parsed = this.parser.parse(packet);
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
 	}
-	const that = this;
-	const done = function __rpcConnectionDataHandlerDone(error) {
+	var that = this;
+	var done = function __rpcConnectionDataHandlerDone(error) {
 		if (error) {
 			return that.kill(error);
 		}
 	};
-	async.eachSeries(parsed, function __rpcConnectionDataHandlerEach(parsedData, next) {
-		if (!parsedData) {
-			return next();
-		}
-		that._decrypt(parsedData, next);
-	}, done);
+	var params = { that: that };
+	async.loopSeries(parsed, params, _onEachData, done);
 };
+
+function _onEachData(parsedData, params, next) {
+	if (!parsedData) {
+		return next();
+	}
+	params.that._decrypt(parsedData, next);
+}
 
 Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
 	// handle command routing
@@ -259,7 +262,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
-	const that = this;
+	var that = this;
 	this.state.command = parsedData.command;
 	this.state.payload = parsedData.payload;
 	this.state.seq = parsedData.seq;
@@ -271,7 +274,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		this.state.session = sess.data;
 	}
 	// execute hooks before the handler(s)
-	cmd.hooks(this.state, function __rpcConnectionOnHooks(error, status) {
+	cmd.hooks(parsedData, this.state, function __rpcConnectionOnHooks(error, status) {
 		if (error) {
 			var msg = gn.Buffer.alloc(error.message);
 			if (!status) {

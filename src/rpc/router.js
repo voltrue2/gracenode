@@ -64,22 +64,21 @@ module.exports.route = function __rpcRouterRoute(name, packet) {
 	}
 	
 	var cmd = commands[packet.command];
-	var hookList = hooks.findByCmdId(packet.command);
 
 	return {
 		id: cmd.id,
 		name: cmd.name,
 		handlers: cmd.handlers,
-		hooks: getHookExec(cmd.id, cmd.name, hookList)
+		hooks: _execHooks
 	};
 };
 
-function getHookExec(cmdId, cmdName, hookList) {
-	var exec = function __rpcRouterOnExec(state, cb) {
-		async.eachSeries(hookList, function __rpcRouterEachHook(hook, next) {
-			hook(state, next);
-		}, cb);
-	};
+function _execHooks(packet, state, cb) {
+	var params = { state: state };
+	var hookList = hooks.findByCmdId(packet.command);
+	async.loopSeries(hookList, params, _onEachHook, cb);
+}
 
-	return exec;
+function _onEachHook(hook, params, next) {
+	hook(params.state, next);
 }

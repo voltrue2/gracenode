@@ -308,16 +308,5 @@ function closeAllConnections(cb) {
 		}
 	}
 	server.on('close', cb);
-	/*
-	const poll = function () {
-		const openConns = Object.keys(conns).length;
-		logger.info('Remaining open TCP connections:', openConns);
-		if (openConns === 0) {
-			cb();
-		}
-		setTimeout(poll, 100);
-	};
-	setTimeout(poll, 100);
-	*/
 }
 

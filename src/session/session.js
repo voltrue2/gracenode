@@ -333,14 +333,26 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		};
 	}
 	// check for client IP and port
-	if (sess.client[sockType].ip !== remoteIp || sess.client[sockType].port !== remotePort) {
-		logger.error(
-			'invalid client IP address detected:',
-			sockType,
-			remoteIp,
-			'session:', sockType + res.sessionId
-		);
-		return next('InvalidClient');
+	if (sockType === PROTO_RPC) {
+		if (sess.client[sockType].ip !== remoteIp || sess.client[sockType].port !== remotePort) {
+			logger.error(
+				'invalid client IP address detected:',
+				sockType,
+				remoteIp,
+				'session:', sockType + res.sessionId
+			);
+			return next('InvalidClient');
+		}
+	} else if (sockType === PROTO_UDP) {
+		if (sess.client[sockType].ip !== remoteIp) {
+			logger.error(
+				'invalid client IP address detected:',
+				sockType,
+				remoteIp,
+				'session:', sockType + res.sessionId
+			);
+			return next('InvalidClient');
+		}
 	}
 	// update session and move on
 	sess.seq = res.seq;
