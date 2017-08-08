@@ -318,7 +318,7 @@ function handleMessage(buff, rinfo) {
 		buff: buff,
 		rinfo: rinfo
 	};
-	async.loopSeries(parsed.payloads, params, _onEachMessage, nothing);
+	async.loopSeries(parsed.payloads, params, _onEachMessage);
 }
 
 function _onEachMessage(payloadData, params, next) {
@@ -347,10 +347,6 @@ function _onEachMessage(payloadData, params, next) {
 	}
 	executeCmd(null, payloadData.seq, null, payloadData, params.rinfo);
 	next();
-}
-
-function nothing() {
-
 }
 
 function dispatchOnError(error) {
@@ -385,13 +381,18 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		}
 	};
 
-	cmd.hooks(msg, state, function _onHooksFinished(error) {
-		if (error) {
-			dispatchOnError(error);
-			return;
-		}
-		executeCommands(cmd, state);
-	});
+	cmd.hooks(msg, state, _onHooksFinished.bind({
+		cmd: cmd,
+		state: state
+	}));
+}
+
+function _onHooksFinished(error) {
+	if (error) {
+		dispatchOnError(error);
+		return;
+	}
+	executeCommands(this.cmd, this.state);
 }
 
 function _getPayloadFromJSON(payload) {
@@ -404,7 +405,7 @@ function _getPayloadFromJSON(payload) {
 
 function executeCommands(cmd, state) {
 	var params = { state: state };
-	async.loopSeries(cmd.handlers, params, _onEachCommand, nothing);
+	async.loopSeries(cmd.handlers, params, _onEachCommand);
 
 }
 
@@ -492,7 +493,7 @@ function serverPush(msg, address, port, cb) {
 	}
 
 	if (typeof cb !== 'function') {
-		cb = function () {};
+		cb = _nothing;
 	}
 	msg = transport.createPush(0, msg);
 	server.send(msg, 0, msg.length, port, address, cb);
@@ -532,11 +533,15 @@ function setupCleaning() {
 					delete clientMap[key];
 				}
 			}
-		} catch (err) {
-			// do nothing
+		} catch (error) {
+			logger.error('cleaning error:', error);
 		}
 		setTimeout(clean, CLEAN_INTERVAL);
 	};
 	setTimeout(clean, CLEAN_INTERVAL);
+}
+
+function _nothing() {
+
 }
 

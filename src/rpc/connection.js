@@ -208,29 +208,26 @@ function _onEachData(parsedData, params, next) {
 
 Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
 	// handle command routing
-	const cmd = router.route(this.name, parsedData);
+	var cmd = router.route(this.name, parsedData);
 	// execute command w/ encryption and decryption
 	if (cryptoEngine && cryptoEngine.decrypt) {
 		if (!this.sock) {
 			return cb(new Error('SocketUnexceptedlyGone'));
 		}
-		const that = this;
-		const _onDec = function __rpcConnectionOnDecrypt(error, sid, seq, sdata, decrypted) {
-			if (error) {
-				return cb(error);
-			}
-			const sess = {
-				sessionId: sid,
-				seq: seq,
-				data: sdata
-			};
-			parsedData.payload = decrypted;
-			if (!cmd) {
-				return that._errorResponse(parsedData, sess, cb);
-			}
-			that._execCmd(cmd, parsedData, sess, cb);
+		var that = this;
+		var params = {
+			that: that,
+			parsedData: parsedData,
+			cmd: cmd,
+			cb: cb
 		};
-		cryptoEngine.decrypt(parsedData.payload, gn.session.PROTO.RPC, this.sock.remoteAddress, this.sock.remotePort, _onDec);
+		cryptoEngine.decrypt(
+			parsedData.payload,
+			gn.session.PROTO.RPC,
+			this.sock.remoteAddress,
+			this.sock.remotePort,
+			_onDecrypt.bind(params)
+		);
 		return;
 	}
 	// execute command w/o encryption + decryption
@@ -239,6 +236,22 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 	}
 	this._execCmd(cmd, parsedData, null, cb);
 };
+
+function _onDecrypt(error, sid, seq, sdata, decrypted) {
+	if (error) {
+		return this.cb(error);
+	}
+	var sess = {
+		sessionId: sid,
+		seq: seq,
+		data: sdata
+	};
+	this.parsedData.payload = decrypted;
+	if (!this.cmd) {
+		return this.that._errorResponse(this.parsedData, sess, this.cb);
+	}
+	this.that._execCmd(this.cmd, this.parsedData, sess, this.cb);
+}
 
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
 	if (!this.sock) {
@@ -368,13 +381,15 @@ Connection.prototype._push = function __rpcConnectionPush(msg, cb) {
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(msg, function __rpcConnectionOnPushEncrypt(error, data) {
-		if (error) {
-			return cb(error);
-		}
-		that.__push(transport.createPush(0, data), cb);
-	});
+	this._encrypt(msg, _onPushEncrypt.bind({ that: that, cb: cb }));
 };
+
+function _onPushEncrypt(error, data) {
+	if (error) {
+		return this.cb(error);
+	}
+	this.that.__push(transport.createPush(0, data), this.cb);
+}
 
 Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, cb) {
 	
@@ -424,16 +439,18 @@ Connection.prototype._encrypt = function __rpcConnectionEncrypt(msg, cb) {
 		return;
 	}
 	if (cryptoEngine && cryptoEngine.encrypt) {
-		cryptoEngine.encrypt(this.state, msg, function __rpcConnectionOnEncrypt(error, data) {
-			if (error) {
-				return cb(error);
-			}
-			cb(null, data);
-		});
+		cryptoEngine.encrypt(this.state, msg, _onEncrypt.bind({ cb: cb }));
 		return;
 	}
 	cb(null, msg);
 };
+
+function _onEncrypt(error, data) {
+	if (error) {
+		return this.cb(error);
+	}
+	this.cb(null, data);
+}
 
 Connection.prototype._clear = function __rpcConnectionClear(killed) {
 	this.connected = false;
