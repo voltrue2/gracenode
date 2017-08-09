@@ -331,21 +331,30 @@ function _onEachMessage(payloadData, params, next) {
 		if (!transport.isJson()) {
 			toDecrypt = payloadData.payload;
 		}
-		decrypt(toDecrypt, pudp, addr, port, function (error, sid, seq, sdata, dec) {
-			if (error) {
-				// this is also the same as session failure
-				logger.error('decryption of message failed:', error);
-				dispatchOnError(new Error('DecryptionFailed'));
-				return;
-			}
-			payloadData.payload = dec;
-			// route and execute command
-			executeCmd(sid, seq, sdata, payloadData, params.rinfo);
-			next();
-		});
+		decrypt(toDecrypt, pudp, addr, port, _onEachDecrypt.bind({
+			payloadData: payloadData,
+			params: params,
+			next: next
+		}));
 		return;
 	}
 	executeCmd(null, payloadData.seq, null, payloadData, params.rinfo);
+	next();
+}
+
+function _onEachDecrypt(error, sid, seq, sdata, dec) {
+	var payloadData = this.payloadData;
+	var params = this.params;
+	var next = this.next;
+	if (error) {
+		// this is also the same as session failure
+		logger.error('decryption of message failed:', error);
+		dispatchOnError(new Error('DecryptionFailed'));
+		return;
+	}
+	payloadData.payload = dec;
+	// route and execute command
+	executeCmd(sid, seq, sdata, payloadData, params.rinfo);
 	next();
 }
 
@@ -486,6 +495,7 @@ function send(state, msg, seq, status, cb) {
 	}
 }
 
+// it cannot encrypt b/c it does not have state
 function serverPush(msg, address, port, cb) {
 
 	if (shutdown) {
