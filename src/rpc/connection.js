@@ -33,53 +33,81 @@ module.exports.create = function __rpcConnectionCreate(sock) {
 function Connection(sock) {
 	EventEmitter.call(this);
 	const you = sock.remoteAddress + ':' + sock.remotePort;
-	var that = this;
+	// object to hold response data/options/status/timeout/skipped
+	this.response = {
+		data: null,
+		options: null,
+		timeout: null,
+		skipped: false,
+		status: transport.STATUS.OK
+	};
 	this.sock = sock;
 	this.id = gn.lib.uuid.v4().toString();
 	this.state = createState(this.id);
 	// server push
-	this.state.send = function (payload) {
-		that._send(payload);
-	};
+	var params = { that: this };
+	this.state.send = _send.bind(params);
 	// server response (if you need to use this to pretend as a response)
-	this.state.respond = function (payload, status, options) {
-		that._respond(payload, status, options);
-	};
+	this.state.respond = _respond.bind(params); 
 	// force disconnect (graceful) connection
-	this.state.close = function () {
-		that.close();
-	};
+	this.state.close = _close.bind(params);
 	// force kill connection
-	this.state.kill = function (error) {
-		that.kill(error);
-	};
+	this.state.kill = _kill.bind(params);
+
 	this.parser = new transport.Stream();
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
-	this.sock.on('data', function __rpcConnectionOnData(packet) {
-		that.state.now = gn.lib.now();
-		that._data(packet);
-	});
-	this.sock.on('end', function __rpcConnectionOnEnd() {
-		logger.sys(that.name, 'TCP connection ended by client');
-		that.kill(new Error('TCP disconnected by client'));
-	});
-	this.sock.on('error', function __rpcConnectionOnError(error) {
-		logger.error(that.name, 'TCP connection error detected:', error);
-		that.kill(error);
-	});
-	this.sock.on('close', function __rpcConnectionOnClose() {
-		that.close();
-	});
-	this.sock.on('timeout', function __rpcConnectionOnTimeout(error) {
-		if (error) {
-			return that.close(error);
-		}
-		that.close(new Error('TCP connection timeout'));
-	});
+	this.sock.on('data', _onDataReceived.bind(params));
+	this.sock.on('end', _onConnectionEnd.bind(params));
+	this.sock.on('error', _onConnectionError.bind(params));
+	this.sock.on('close', _onConnectionClose.bind(params));
+	this.sock.on('timeout', _onConnectionTimeout.bind(params));
+
 	if (heartbeatConf) {
 		this._checkHeartbeat();
 	}
+}
+
+function _send(payload) {
+	this.that._send(payload);
+}
+
+function _respond(payload, status, options) {
+	this.that._respond(payload, status, options);
+}
+
+function _close() {
+	this.that.close();
+}
+
+function _kill(error) {
+	this.that.kill(error);
+} 
+
+function _onDataReceived(packet) {
+	this.that.state.now = gn.lib.now();
+	this.that._data(packet);
+}
+
+function _onConnectionEnd() {
+	logger.sys(this.that.name, 'TCP connection ended by client');
+	this.that.kill(new Error('TCP disconnected by client'));
+}
+
+function _onConnectionError(error) {
+	logger.error(this.that.name, 'TCP connection error detected:', error);
+	this.that.kill(error);
+}
+
+function _onConnectionClose() {
+	this.that.close();
+}
+
+function _onConnectionTimeout(error) {
+	if (error) {
+		return this.that.close(error);
+	}
+	this.that.close(new Error('TCP connection timeout'));
 }
 
 utils.inherits(Connection, EventEmitter);
@@ -101,19 +129,31 @@ Connection.prototype._respond = function __rpcConnectionRespond(payload, status,
 			status = this.state.STATUS.OK;
 		}
 	}
-	const that = this;
-	const _rpcConnectionRespond = function () {
-		if (options) {
-			if (options.closeAfterReply) {
-				return that.close();
-			}
-			if (options.killAfterReply) {
-				return that.kill();
-			}
-		}
+	var params = {
+		that: this,
+		options: options
 	};
-	this._write(error, status, this.state.seq, payload, _rpcConnectionRespond);
+	this._write(
+		error,
+		status,
+		this.state.seq,
+		payload,
+		_onRespond.bind(params)
+	);
 };
+
+function _onRespond() {
+	var that = this.that;
+	var options = this.options;
+	if (options) {
+		if (options.closeAfterReply) {
+			return that.close();
+		}
+		if (options.killAfterReply) {
+			return that.kill();
+		}
+	}
+}
 
 Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
 	try {
@@ -136,11 +176,12 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
 	} catch (error) {
 		logger.error(this.name, 'TCP heartbeat error:', error);		
 	}
-	const that = this;
-	setTimeout(function () {
-		that._checkHeartbeat();
-	}, heartbeatConf.checkFrequency);
+	setTimeout(_callHeartbeatCheck.bind({ that: this }), heartbeatConf.checkFrequency);
 };
+
+function _callHeartbeatCheck() {
+	this.that._checkHeartbeat();
+}
 
 Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
 	if (gn.lib.now() - this.state.now >= heartbeatConf.timeout) {
@@ -189,15 +230,20 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
 	}
-	var that = this;
-	var done = function __rpcConnectionDataHandlerDone(error) {
-		if (error) {
-			return that.kill(error);
-		}
-	};
-	var params = { that: that };
-	async.loopSeries(parsed, params, _onEachData, done);
+	var params = { that: this };
+	async.loopSeries(
+		parsed,
+		params,
+		_onEachData,
+		_onDataHandled.bind(params)
+	);
 };
+
+function _onDataHandled(error) {
+	if (error) {
+		return this.that.kill(error);
+	}
+}
 
 function _onEachData(parsedData, params, next) {
 	if (!parsedData) {
@@ -275,7 +321,6 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 	if (!this.sock) {
 		return cb(new Error('SocketUnexceptedlyGone'));
 	}
-	var that = this;
 	this.state.command = parsedData.command;
 	this.state.payload = parsedData.payload;
 	this.state.seq = parsedData.seq;
@@ -287,101 +332,175 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		this.state.session = sess.data;
 	}
 	// execute hooks before the handler(s)
-	cmd.hooks(parsedData, this.state, function __rpcConnectionOnHooks(error, status) {
-		if (error) {
-			var msg = gn.Buffer.alloc(error.message);
-			if (!status) {
-				status = transport.STATUS.BAD_REQ;
-			}
-			return that._write(error, status, parsedData.seq, msg, cb);
-		}
-		var res;
-		var options;
-		const done = function __rpcConnectionOnCmdDone(error) {
-			function __rpcConnectionOnCmdResponse(error) {
-				if (options) {
-					if (options.closeAfterReply) {
-						return that.close();
-					}
-					if (options.killAfterReply) {
-						return that.kill();
-					}
-				}
-				cb(error);
-			}
-			// respond to client
-			if (!res) {
-				throw new Error('MissingResponsePacket');
-			}
-			that._write(error, status, parsedData.seq, res, __rpcConnectionOnCmdResponse);
-		};
-		async.eachSeries(cmd.handlers, function __rpcConnectionCmdEach(handler, next) {
-			var timeout;
-			var skipped = false;
-			if (callbackTimeout) {
-				timeout = setTimeout(function () {
-					logger.error(
-						that.name,
-						'command', cmd.id, cmd.name,
-						'callback is required but not called in',
-						callbackTimeout + 'ms',
-						'respond as an error with status',
-						transport.STATUS.SERVER_ERR
-					);
-					skipped = true;
-					status = transport.STATUS.SERVER_ERR;
-					res = gn.Buffer.alloc('MISSING_CALLBACK');
-					next();
-				}, callbackTimeout);
-			}
-			handler(that.state, function __rpcConnectionCmdCallback(_res, _status, _options) {
-				if (timeout) {
-					clearTimeout(timeout);
-				}
-				if (skipped) {
-					// timeout has been called: skip
-					return;
-				}
-				options = _options;
-				if (_res instanceof Error) {
-					if (!_status) {
-						_status = transport.STATUS.BAD_REQ;
-					}
-					status = _status;
-					res = gn.Buffer.alloc(_res.message);
-					return next(_res);
-				}
-				if (!_status) {
-					_status = transport.STATUS.OK;
-				}
-				status = _status;
-				res = _res;
-				next();
-			});
-		}, done);
-	});
+	var params = {
+		that: this,
+		cmd: cmd,
+		parsedData: parsedData,
+		cb: cb
+	};
+	cmd.hooks(parsedData, this.state, _onHooksFinished.bind(params));
 };
+
+function _onHooksFinished(error, status) {
+	var that = this.that;
+	var cmd = this.cmd;
+	var parsedData = this.parsedData;
+	var cb = this.cb;
+	var params = {
+		that: that,
+		cmd: cmd,
+		parsedData: parsedData,
+		cb: cb
+	};
+	if (error) {
+		var msg = gn.Buffer.alloc(error.message);
+		if (!status) {
+			status = transport.STATUS.BAD_REQ;
+		}
+		return that._write(error, status, parsedData.seq, msg, cb);
+	}
+	that.response.data = null;
+	that.response.options = null;
+	that.response.timeout = null;
+	that.response.skipped = false;
+	that.response.status = status || transport.STATUS.OK;
+	async.eachSeries(
+		cmd.handlers,
+		_onEachCommand.bind(params),
+		_onCommandsFinished.bind(params)
+	);
+}
+
+function _onEachCommand(handler, next) {
+	var that = this.that;
+	var cmd = this.cmd;
+	var params = {
+		that: that,
+		cmd: cmd,
+		next: next
+	};
+	if (callbackTimeout) {
+		that.response.timeout = setTimeout(
+			_onResponseTimeout.bind(params),
+			callbackTimeout
+		);
+	}
+	handler(that.state, _onCommand.bind(params));
+}
+
+function _onResponseTimeout() {
+	var that = this.that;
+	var cmd = this.cmd;
+	var next = this.next;
+	logger.error(
+		that.name,
+		'command', cmd.id, cmd.name,
+		'callback is required but not called in',
+		callbackTimeout + 'ms',
+		'respond as an error with status',
+		transport.STATUS.SERVER_ERR
+	);
+	that.response.skipped = true;
+	that.response.status = transport.STATUS.SERVER_ERR;
+	that.response.data = gn.Buffer.alloc('MISSING_CALLBACK');
+	next();
+}
+
+function _onCommand(_res, _status, _options) {
+	var that = this.that;
+	var next = this.next;
+	if (that.response.timeout) {
+		clearTimeout(that.response.timeout);
+		that.response.timeout = null;
+	}
+	if (that.response.skipped) {
+		// timeout has been called: skip
+		return;
+	}
+	that.response.options = _options;
+	if (_res instanceof Error) {
+		if (!_status) {
+			_status = transport.STATUS.BAD_REQ;
+		}
+		that.response.status = _status;
+		that.response.data = gn.Buffer.alloc(_res.message);
+		return next(_res);
+	}
+	if (!_status) {
+		_status = transport.STATUS.OK;
+	}
+	that.response.status = _status;
+	that.response.data = _res;
+	next();
+}
+
+function _onCommandsFinished(error) {
+	var that = this.that;
+	var parsedData = this.parsedData;
+	var cb = this.cb;
+	var params = {
+		that: that,
+		cb: cb
+	};
+	// respond to client
+	if (!that.response.data) {
+		throw new Error('MissingResponsePacket');
+	}
+	that._write(
+		error,
+		that.response.status,
+		parsedData.seq,
+		that.response.data,
+		_onCommandResponseFinished.bind(params)
+	);
+}
+
+function _onCommandResponseFinished(error) {
+	var that = this.that;
+	var cb = this.cb;
+	if (that.response.options) {
+		if (that.response.options.closeAfterReply) {
+			return that.close();
+		}
+		if (that.response.options.killAfterReply) {
+			return that.kill();
+		}
+	}
+	cb(error);
+}
 
 Connection.prototype._write = function __rpcConnectionWrite(_error, status, seq, msg, cb) {
-	const that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(msg, function __rpcConnectionOnWriteEncrypt(error, data) {
-		data = transport.createReply(status, seq, data);
-		if (error) {
-			return that.__write(error, data, cb);
-		}
-		that.__write(_error, data, cb);
-	});
+	var params = {
+		that: this,
+		_error: _error,
+		status: status,
+		seq: seq,
+		cb: cb
+	};
+	this._encrypt(msg, _onWriteEncrypt.bind(params));
 };
 
+function _onWriteEncrypt(error, data) {
+	var that = this.that;
+	var _error = this._error;
+	var status = this.status;
+	var seq = this.seq;
+	var cb = this.cb;
+	data = transport.createReply(status, seq, data);
+	if (error) {
+		return that.__write(error, data, cb);
+	}
+	that.__write(_error, data, cb);
+}
+
 Connection.prototype._push = function __rpcConnectionPush(msg, cb) {
-	const that = this;
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(msg, _onPushEncrypt.bind({ that: that, cb: cb }));
+	this._encrypt(msg, _onPushEncrypt.bind({ that: this, cb: cb }));
 };
 
 function _onPushEncrypt(error, data) {
