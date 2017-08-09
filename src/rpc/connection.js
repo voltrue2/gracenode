@@ -32,7 +32,7 @@ module.exports.create = function __rpcConnectionCreate(sock) {
 
 function Connection(sock) {
 	EventEmitter.call(this);
-	const you = sock.remoteAddress + ':' + sock.remotePort;
+	var you = sock.remoteAddress + ':' + sock.remotePort;
 	// object to hold response data/options/status/timeout/skipped
 	this.response = {
 		data: null,
