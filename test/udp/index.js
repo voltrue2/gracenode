@@ -305,7 +305,7 @@ describe('gracenode.udp', function () {
 	it('can sync seq w/ push', function (done) {
 		cipher.seq += 1;
 		sendSeq = cipher.seq;
-		var time = Date.now();
+		var time = 222;
 		gn.udp.command(55, 'sync', function sync(state) {
 			state.send({ sync: state.payload.sync });
 		});
@@ -315,6 +315,26 @@ describe('gracenode.udp', function () {
 			done();
 		});
 		simpleClient.secureSender(portOne, sessionId, cipher, 55, sendSeq, { sync: time }, function () {
+			
+		});
+	});
+
+	it('can sync seq w/ encrypted push', function (done) {
+		cipher.seq += 1;
+		sendSeq = cipher.seq;
+		var time = 222;
+		gn.udp.command(56, 'encryptedSync', function sync(state) {
+			var addr = state.clientAddress;
+			var port = state.clientPort;
+			gn.udp.push({ sync: state.payload.sync }, addr, port, state);
+		});
+		simpleClient.secureReceiver(cipher, function (msg, seq) {
+			msg = JSON.parse(msg);
+			assert.equal(msg.sync, time);
+			assert.equal(seq, 0);
+			done();
+		});
+		simpleClient.secureSender(portOne, sessionId, cipher, 56, sendSeq, { sync: time }, function () {
 			
 		});
 	});

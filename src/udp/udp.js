@@ -265,18 +265,24 @@ module.exports.hook = function __udpHook(cmdIdList, handler) {
 
 // send server push UDP message to user defined address and port
 // msg must be a buffer
-module.exports.push = function (msg, address, port, cb) {
-	serverPush(msg, address, port, cb);
+/*
+options {
+	// used for encryption
+	session: <session object>
+}
+*/
+module.exports.push = function (msg, address, port, cb, options) {
+	serverPush(msg, address, port, cb, options);
 };
 
 // send server push UDP message to multiple users
 // msg must be a buffer
 // list = [ { address, port } { ... } ];
-module.exports.multipush = function (msg, list, cb) {
+module.exports.multipush = function (msg, list, cb, options) {
 	var sender = function __multipushUdpSender() {
 		var dest = list.shift();
 		if (dest) {
-			module.exports.push(msg, dest.address, dest.port, next);
+			module.exports.push(msg, dest.address, dest.port, next, options);
 			return;
 		}
 		// done
@@ -385,15 +391,24 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		clientAddress: rinfo.address,
 		clientPort: rinfo.port,
 		payload: payload,
-		send: function __udpSend(msg, status, cb) {
-			send(state, msg, seq, status, cb);
-		}
+		send: null
 	};
+	
+	state.send = _sender.bind({
+		state: state,
+		seq: seq
+	});
 
 	cmd.hooks(msg, state, _onHooksFinished.bind({
 		cmd: cmd,
 		state: state
 	}));
+}
+
+function _sender(msg, status, cb) {
+	var state = this.state;
+	var seq = this.seq;
+	send(state, msg, seq, status, cb);
 }
 
 function _onHooksFinished(error) {
@@ -436,77 +451,124 @@ function send(state, msg, seq, status, cb) {
 		msg = transport.createPush(seq || 0, msg);
 	}
 
-	var sent = function __udpSendDone(error) {
-		if (error) {
-			logger.error(
-				'sending UDP packet failed:',
-				error,
-				'to:', state.clientAddress + ':' +
-				state.clientPort
-			);
-			if (typeof cb === 'function') {
-				cb(error);
-			}
-			return dispatchOnError(error);
-		}
-		if (typeof cb === 'function') {
-			cb();
-		}
-	};
-
 	if (cryptoEngine.encrypt) {
-		cryptoEngine.encrypt(state, msg, function __udpOnEncrypt(error, encrypted) {
-			if (error) {
-				logger.error(
-					'encryption of message failed:',
-					state.sessionId,
-					state.seq,
-					error
-				);
-				return dispatchOnError(new Error('EncryptionFailed'));
-			}
-			try {
-				server.send(
-					encrypted,
-					0,
-					encrypted.length,
-					state.clientPort,
-					state.clientAddress,
-					sent
-				);
-			} catch (e) {
-				logger.error('send failed:', e);
-			}
-		});
+		cryptoEngine.encrypt(
+			state,
+			msg,
+			_onSendEncrypt.bind({
+				state: state,
+				sent: _onSent
+			})
+		);
 		return;
 	}
 
-	try {
-		server.send(
-			msg,
-			0,
-			msg.length,
-			state.clientPort,
-			state.clientAddress,
-			sent
+	server.send(
+		msg,
+		0,
+		msg.length,
+		state.clientPort,
+		state.clientAddress,
+		_onSent.bind({
+			state: state,
+			cb: cb
+		})
+	);
+}
+
+function _onSendEncrypt(error, encrypted) {
+	var state = this.state;
+	var sent = this.sent;
+	var cb = this.cb;
+	if (error) {
+		logger.error(
+			'encryption of message failed:',
+			state.sessionId,
+			state.seq,
+			error
 		);
-	} catch (e) {
-		logger.error('send failed:', e);
+		return dispatchOnError(new Error('EncryptionFailed'));
+	}
+	server.send(
+		encrypted,
+		0,
+		encrypted.length,
+		state.clientPort,
+		state.clientAddress,
+		sent.bind({
+			state: state,
+			cb: cb
+		})
+	);
+}
+
+function _onSent(error) {
+	var state = this.state;
+	var cb = this.cb;
+	if (error) {
+		logger.error(
+			'sending UDP packet failed:',
+			error,
+			'to:', state.clientAddress + ':' +
+			state.clientPort
+		);
+		if (typeof cb === 'function') {
+			cb(error);
+		}
+		return dispatchOnError(error);
+	}
+	if (typeof cb === 'function') {
+		cb();
 	}
 }
 
-// it cannot encrypt b/c it does not have state
-function serverPush(msg, address, port, cb) {
+function serverPush(msg, address, port, cb, options) {
 
 	if (shutdown) {
 		return;
 	}
 
+	if (typeof cb === 'object' && cb !== null) {
+		options = cb;
+		cb = null;
+	}
+
 	if (typeof cb !== 'function') {
 		cb = _nothing;
 	}
+	
 	msg = transport.createPush(0, msg);
+
+	// we encrypt push packet ONLY if options.session is provided with encryption enabled
+	if (cryptoEngine.encrypt && options && options.session) {
+		cryptoEngine.encrypt(
+			{ session: options.session },
+			msg,
+			_onPushEncrypt.bind({
+				address: address,
+				port: port,
+				cb: cb
+			})
+		);
+		return;
+	}
+
 	server.send(msg, 0, msg.length, port, address, cb);
+}
+
+function _onPushEncrypt(error, encrypted) {
+	var address = this.address;
+	var port = this.port;
+	var cb = this.cb;
+	if (error) {
+		logger.error(
+			'failed to encrypt packet for push',
+			address,
+			port
+		);
+		return cb();
+	}
+	server.send(encrypted, 0, encrypted.length, port, address, cb);
 }
 
 function isIPv6() {
