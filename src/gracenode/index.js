@@ -91,7 +91,7 @@ exports.onException = function __gnOnException(func) {
 
 // deprecated backward compatibility alias
 exports.registerShutdownTask = function __gnRegisterShutdownTask(name, func) {
-	const e = new Error('WARNING');
+	var e = new Error('WARNING');
 	logger.warn(
 		'.registerShutdownTask() has been deprecated and should not be used.',
 		'Use .onExit(taskFunction, *runOnMaster) instead',
@@ -118,10 +118,10 @@ exports.isCluster = function __gnIsCluster() {
 
 // call this when everything is ready
 exports.start = function __gnStart(cb) {
-	const start = Date.now();
+	var start = Date.now();
 	applyConfig();
 	aeterno.run(function aeternoRun() {
-		const tasks = [
+		var tasks = [
 			setup,
 			startCluster,
 			setupLog,
@@ -135,7 +135,7 @@ exports.start = function __gnStart(cb) {
 			startRPC,
 			startMod
 		];
-		const done = function __startDone(error) {
+		var done = function __startDone(error) {
 			if (error) {
 				return exports.stop(error);
 			}
@@ -143,7 +143,7 @@ exports.start = function __gnStart(cb) {
 			// setup
 			transport.setup();
 
-			const time = Date.now() - start;
+			var time = Date.now() - start;
 			logger.info(
 				'node.js <' + process.version + '>',
 				'gracenode <v' + pkg.version + '> is ready:',
@@ -160,7 +160,7 @@ exports.start = function __gnStart(cb) {
 };
 
 exports.stop = function __gnStop(error) {
-	const trace = new Error('Stop Call Trace');
+	var trace = new Error('Stop Call Trace');
 	if (error) {
 		logger.error(trace.stack);
 		logger.error('.stop() has been invoked:', error);
@@ -177,7 +177,7 @@ exports.isSupportedVersion = function __gnIsSupportedVersion() {
 
 function applyConfig() {
 	// if ENV variables are provided, handle them here
-	const envmap = env.getEnv();
+	var envmap = env.getEnv();
 	if (envmap && envmap.CONF) {
 		// load a configuration file from ENV
 		config.load(require(envmap.CONF));
@@ -185,20 +185,20 @@ function applyConfig() {
 	if (Object.keys(envmap).length) {
 		var dump = config.dump();
 		// try to replace placeholders in the configurations
-		for (const name in envmap) {
+		for (var name in envmap) {
 			if (name === 'CONF') {
 				continue;
 			}
-			const key = '\\{\\$' + name + '\\}';
+			var key = '\\{\\$' + name + '\\}';
 			dump = dump.replace(new RegExp(key, 'g'), envmap[name]);
 		}
 		config.restore(dump);
 	}
 	// apply configurations
-	const logConf = config.get('log');
-	const clusterConf = config.get('cluster');
-	const httpPort = config.get('http.port') || config.get('router.port');
-	const httpHost = config.get('http.host') || config.get('router.host');
+	var logConf = config.get('log');
+	var clusterConf = config.get('cluster');
+	var httpPort = config.get('http.port') || config.get('router.port');
+	var httpHost = config.get('http.host') || config.get('router.host');
 	var isLogging = false;
 	if (config.get('lint.enable') === false) {
 		ignoreLint = true;
@@ -247,8 +247,8 @@ function setup(cb) {
 		}
 		execOnExceptions(error);
 	});
-	const gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
-	const currentV = parseFloat(process.version.replace('v', ''));
+	var gnReqVersion = parseFloat(pkg.engine.engine.replace('node >= ', ''));
+	var currentV = parseFloat(process.version.replace('v', ''));
 	if (gnReqVersion > currentV) {
 		logger.warn(
 			'gracenode requires', pkg.engine.engine,
@@ -376,7 +376,7 @@ function startMod(cb) {
 }
 
 function setupPortal(cb) {
-	const conf = config.get('portal');
+	var conf = config.get('portal');
 	if (conf) {
 		module.exports.portal.config(conf);
 		module.exports.portal.setup(cb);
@@ -388,7 +388,7 @@ function setupPortal(cb) {
 function setupRender(cb) {
 	if (renderConf) {
 		logger.info('Pre-render template files in', renderConf);
-		const start = Date.now();
+		var start = Date.now();
 		render.config(renderConf.path, renderConf.cacheSize);
 		render.setup(function __onRenderSetup(error) {
 			if (error) {
@@ -408,8 +408,8 @@ function setupSession(cb) {
 }
 
 function startHTTP(cb) {
-	const host = config.get('http.host') || config.get('router.host');
-	const port = config.get('http.port') || config.get('router.port');
+	var host = config.get('http.host') || config.get('router.host');
+	var port = config.get('http.port') || config.get('router.port');
 	if (!cluster.isMaster() && host && port) {
 		exports.http.setup(cb);
 		return;
@@ -447,7 +447,7 @@ function getRootPath(file) {
 }
 
 function setOption(origin, opt) {
-	for (const key in opt) {
+	for (var key in opt) {
 		if (!origin.hasOwnProperty()) {
 			origin[key] = opt[key];
 		}
