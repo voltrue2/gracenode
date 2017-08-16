@@ -152,12 +152,11 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 		}
 		if (using.udp && using.rpc) {
 			// when we share the same session for RPC and UDP, we create 2 separate sessions
-			set(PROTO_RPC + id, data, function __sessOnSet(error) {
-				if (error) {
-					return cb(error);
-				}
-				set(PROTO_UDP + id, data, cb);
-			});
+			set(PROTO_RPC + id, data, _onCustomSet.bind({
+				id: id,
+				data: data,
+				cb: cb
+			}));
 			return;
 		}
 		return set(id, data, cb);
@@ -170,30 +169,60 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 	}
 	if (using.udp && using.rpc) {
 		// when we share the same session for RPC and UDP, we create 2 separate sessions
-		mem.set(PROTO_RPC + id, sessionData, function __sessOnMemRPCSet(error) {
-			if (error) {
-				return cb(error);
-			}
-			mem.set(PROTO_UDP + id, sessionData, function __sessOnMemUDPSet(error) {
-				if (error) {
-					return cb(error);
-				}
-				req.args.sessionId = id;
-				req.args.session = sessionData;
-				cb();
-			});
-		});
+		mem.set(PROTO_RPC + id, sessionData, _onSet.bind({
+			id: id,
+			sessionData: sessionData,
+			req: req,
+			cb: cb
+		}));
 		return;
 	}
-	mem.set(id, sessionData, function __sessOnMemSet(error) {
-		if (error) {
-			return cb(error);
-		}
-		req.args.sessionId = id;
-		req.args.session = sessionData;
-		cb();
-	});
+	mem.set(id, sessionData, _onMemSetFinished.bind({
+		id: id,
+		sessionData: sessionData,
+		req: req,
+		cb: cb
+	}));
 };
+
+function _onCustomSet(error) {
+	var id = this.id;
+	var data = this.data;
+	var cb = this.cb;
+	if (error) {
+		return cb(error);
+	}
+	set(PROTO_UDP + id, data, cb);
+}
+
+function _onSet(error) {
+	var id = this.id;
+	var sessionData = this.sessionData;
+	var req = this.req;
+	var cb = this.cb;
+	if (error) {
+		return cb(error);
+	}
+	mem.set(PROTO_UDP + id, sessionData, _onMemSetFinished.bind({
+		id: id,
+		sessionData: sessionData,
+		req: req,
+		cb: cb
+	}));
+}
+
+function _onMemSetFinished(error) {
+	var id = this.id;
+	var sessionData = this.sessionData;
+	var req = this.req;
+	var cb = this.cb;
+	if (error) {
+		return cb(error);
+	}
+	req.args.sessionId = id;
+	req.args.session = sessionData;
+	cb();
+}
 
 // this needs to be manually called in the application
 // typically logout
@@ -213,28 +242,34 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 
 	if (del) {
 		if (using.udp && using.rpc) {
-			del(PROTO_RPC, function __sessOnDel(error) {
-				if (error) {
-					return cb(error);
-				}
-				del(PROTO_UDP, cb);
-			});
+			del(PROTO_RPC, _onCustomDel.bind({ cb: cb }));
 			return;
 		}
 		return del(id, cb);
 	}
 
 	if (using.udp && using.rpc) {
-		mem.del(PROTO_RPC, function __sessOnMemRPCDel(error) {
-			if (error) {
-				return cb(error);
-			}
-			mem.del(PROTO_UDP, cb);
-		});
+		mem.del(PROTO_RPC, _onMemDel.bind({ cb: cb }));
 		return;
 	}
 	mem.del(id, cb);
 };
+
+function _onCustomDel(error) {
+	var cb = this.cb;
+	if (error) {
+		return cb(error);
+	}
+	del(PROTO_UDP, cb);
+}
+
+function _onMemDel(error) {
+	var cb = this.cb;
+	if (error) {
+		return cb(error);
+	}
+	mem.del(PROTO_UDP, cb);
+}
 
 function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 	var ce = gn.lib.CryptoEngine;
@@ -247,54 +282,127 @@ function socketSessionValidation(packet, sockType, remoteIp, remotePort, next) {
 		sid = sockType + res.sessionId;
 	}
 	if (get && set) {
-		get(sid, function __sessOnSockValGet(error, sessionData) {
-			if (error) {
-				return next(error);
-			}
-			_socketSessionValidation(
-				res,
-				sockType,
-				remoteIp,
-				remotePort,
-				sessionData,
-				function __sessOnSockVal(error) {
-				if (error) {
-					return next(error);
-				}
-				set(sid, sessionData, function __sessOnSockValSet(error) {
-					if (error) {
-						return next(error);
-					}
-					socketSessionDecrypt(ce, res, sessionData, next);
-				});
-			});
-		});
+		get(sid, _onCustomSockGet.bind({
+			ce: ce,
+			sid: sid,
+			res: res,
+			sockType: sockType,
+			remoteIp: remoteIp,
+			remotePort: remotePort,
+			next: next
+		}));
 		return;
 	}
 	logger.warn('get is using default in-memory storage: Not for production');
-	mem.get(sid, function __sessOnSockValMemGet(error, sess) {
-		if (error) {
-			logger.error('session not found:', sid);
-			return next(error);
-		}
-		_socketSessionValidation(
-			res,
-			sockType,
-			remoteIp,
-			remotePort,
-			sess,
-			function __sessOnSockValMem(error) {
-			if (error) {
-				return next(error);
-			}
-			mem.set(sid, sess, function __sessOnSockValMemSet(error) {
-				if (error) {
-					return next(error);
-				}
-				socketSessionDecrypt(ce, res, sess, next);
-			});
-		});
-	});
+	mem.get(sid, _onMemSockGet.bind({
+		ce: ce,
+		sid: sid,
+		res: res,
+		sockType: sockType,
+		remoteIp: remoteIp,
+		remotePort: remotePort,
+		next: next
+	}));
+}
+
+function _onCustomSockGet(error, sess) {
+	var ce = this.ce;
+	var sid = this.sid;
+	var res = this.res;
+	var sockType = this.sockType;
+	var remoteIp = this.remoteIp;
+	var remotePort = this.remotePort;
+	var next = this.next;
+	if (error) {
+		return next(error);
+	}
+	_socketSessionValidation(
+		res,
+		sockType,
+		remoteIp,
+		remotePort,
+		sess,
+		_onSockValFinished.bind({
+			ce: ce,
+			sid: sid,
+			res: res,
+			sess: sess,
+			next: next
+		})
+	);
+}
+
+function _onSockValFinished(error) {
+	var ce = this.ce;
+	var sid = this.sid;
+	var res = this.res;
+	var sess = this.sess;
+	var next = this.next;
+	if (error) {
+		return next(error);
+	}
+	set(sid, sess, _onSockValSet.bind({
+		ce: ce,
+		res: res,
+		sess: sess,
+		next: next
+	}));
+}
+
+function _onMemSockGet(error, sess) {
+	var ce = this.ce;
+	var sid = this.sid;
+	var res = this.res;
+	var sockType = this.sockType;
+	var remoteIp = this.remoteIp;
+	var remotePort = this.remotePort;
+	var next = this.next;
+	if (error) {
+		logger.error('session not found:', sid);
+		return next(error);
+	}
+	_socketSessionValidation(
+		res,
+		sockType,
+		remoteIp,
+		remotePort,
+		sess,
+		_onMemSockValFinished.bind({
+			ce: ce,
+			sid: sid,
+			res: res,
+			sess: sess,
+			next: next
+		})
+	);
+}
+
+function _onMemSockValFinished(error){
+	var ce = this.ce;
+	var sid = this.sid;
+	var res = this.res;
+	var sess = this.sess;
+	var next = this.next;
+	if (error) {
+		return next(error);
+	}
+	mem.set(sid, sess, _onSockValSet.bid({
+		ce: ce,
+		res: res,
+		sess: sess,
+		next: next
+	}));
+}
+
+function _onSockValSet(error) {
+	var ce = this.ce;
+	var res = this.res;
+	var sess = this.sess;
+	var next = this.next;
+	if (error) {
+		return next(error);
+	}
+	socketSessionDecrypt(ce, res, sess, next);
 }
 
 // get rid of the code redundancy in secketSessionValidation
@@ -314,7 +422,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
 		return next(new Error('InvalidSeq'));
 	}
 	// check session TTL
-	const now = gn.lib.now();
+	var now = gn.lib.now();
 	if (sess.ttl <= now) {
 		logger.error(
 			'session ID has expired:',
@@ -406,7 +514,7 @@ function HTTPSessionValidation(req, res, next) {
 	}
 
 	if (options.oneTime) {
-		const prevId = id;
+		var prevId = id;
 		newId = gn.lib.uuid.v4().toString();
 		// update the session ID in response headers
 		if (!options.useCookie) {
