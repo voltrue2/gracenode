@@ -26,7 +26,6 @@ var ipv6 = false;
 var logger;
 var config;
 var server;
-var lastCleaned;
 var onErrorHandler;
 var shutdown = false;
 
@@ -53,9 +52,6 @@ module.exports.setup = function __udpSetup(cb) {
 	config = gn.getConfig('udp');
 
 	supportJSON = config.supportJSON || false;
-
-	// we update this at every clean up and use this as TTL for each udp client
-	lastCleaned = gn.lib.now();
 
 	if (!gn.isSupportedVersion()) {
 		return gn.stop(new Error(
@@ -310,7 +306,7 @@ function handleMessage(buff, rinfo) {
 			time: 0
 		};
 	}
-	clientMap[key].time = lastCleaned;
+	clientMap[key].time = gn.lib.now();
 
 	var parsed = transport.parse(buff);
 	
@@ -598,8 +594,7 @@ function findAddrMap() {
 function setupCleaning() {
 	var clean = function () {
 		try {
-			lastCleaned = gn.lib.now();
-			var now = lastCleaned - CLEAN_INTERVAL;
+			var now = gn.lib.now() - CLEAN_INTERVAL;
 			for (var key in clientMap) {
 				if (now >= clientMap[key].time) {
 					delete clientMap[key];
