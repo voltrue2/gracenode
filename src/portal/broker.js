@@ -56,17 +56,19 @@ function define(eventName, struct, responseStruct) {
 }
 
 /** @description Emits(sends) a mesh network event
+* @param {number} protocol - TCP/UDP = 0 or 1
 * @param {string} eventName - The mesh network event to emit/send as
 * @param {array<string>} nodes - A list of mesh nodes
 * @param {object} data - Data to be emitted/sent
-* @param {function=} cb - Optional callback for emit
+* @param {function=} cb - Optional callback for TCP
 */
-function emit(/* protocol, */ eventName, nodes, data, cb) {
-	const branches = _createNodeBranches(nodes);
+function emit(protocol, eventName, nodes, data, cb) {
+	var branches = _createNodeBranches(nodes);
+	logger.sys('target emit branches', branches);
 	for (var i = 0, len = branches.length; i < len; i++) {
+		logger.sys('emit', eventName, protocol, branches[i], data);
 		delivery.send(
-			//protocol,
-			1,
+			protocol,
 			eventName,
 			branches[i],
 			data,
@@ -80,7 +82,7 @@ function _createNodeBranches(nodes) {
 	if (nodes.length <= limit) {
 		limit = nodes.length;
 	}
-	const branches = [];
+	var branches = [];
 	var path = 0;
 	while (nodes.length) {
 		if (path < limit) {
@@ -89,7 +91,7 @@ function _createNodeBranches(nodes) {
 		if (!branches[path]) {
 			branches[path] = [];
 		}
-		const node = nodes.shift();
+		var node = nodes.shift();
 		if (node) {
 			branches[path].push({
 				address: node.address,

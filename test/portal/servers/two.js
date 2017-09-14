@@ -7,7 +7,7 @@ gn.config({
 	log: {
 		console: true,
 		color: true,
-		level: 'debug >=',
+		level: 'sys >=',
 		file: __dirname + '/logs/'
 	},
 	portal: {
@@ -83,7 +83,7 @@ gn.http.get('two2one', function (req, res) {
 	const data = JSON.parse(JSON.stringify(remember.one2two));
 	data.str = 'two2one';
 	data.obj.bin = new Buffer(data.obj.bin.data);
-	gn.portal.emit('two2one', nodes, data);
+	gn.portal.emit(gn.portal.UDP, 'two2one', nodes, data);
 	res.json({ message: 'OK' });
 });
 

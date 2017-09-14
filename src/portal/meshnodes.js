@@ -10,12 +10,15 @@ module.exports = {
 };
 
 function toNodeListBytes(nodeList) {
-	const list = [];
+	var list = [];
 	for (var i = 0, len = nodeList.length; i < len; i++) {
 		var bytes = addrAndPortToBytes(
 			nodeList[i].address,
 			nodeList[i].port
 		);
+		var byteSize = gn.Buffer.alloc(1);
+		byteSize.writeUInt8(bytes.length);
+		list.push(byteSize);
 		list.push(bytes);
 	}
 	return Buffer.concat(list);
@@ -25,34 +28,30 @@ function toNodeList(bytes) {
 	if (!bytes) {
 		return [];
 	}
-	const list = [];
-	const len = bytes.length;
-	// there should NOT be any remainder but if the packet
-	// is corrupt it could happen and we do NOT want to hang
-	for (var i = 0; i <= len; i += 6) {
-		var buf = bytes.slice(i, i + 6);
-		var res = bytesToAddrAndPort(buf);
-		if (res && res.address && res.port) {
-			list.push(res);
-		}
+	var list = [];
+	var len = bytes.length;
+	var consumed = 0;
+	while (consumed < len) {
+		var byteSize = bytes.readUInt8(consumed);
+		var fragmentBytes = gn.Buffer.alloc(byteSize);
+		consumed += 1;
+		bytes.copy(fragmentBytes, 0, consumed, consumed + byteSize);
+		list.push(bytesToAddrAndPort(fragmentBytes));
+		consumed += byteSize; 
 	}
 	return list;
 }
 
-// addr MUST be an IP address NOT hostname
-// returns 6-byte binary 
+// addr CAN be an IP address OR a hostname
+// it supports IPv6 addresses
 function addrAndPortToBytes(addr, port) {
 	if (!addr && !port) {
 		return gn.Buffer.alloc(0);
 	}
-	const list = addr.split('.');
-	// 4 bytes = address 2 bytes = port
-	const buf = gn.Buffer.alloc(6);
-	for (var i = 0, len = list.length; i < len; i++) {
-		buf.writeUInt8(parseInt(list[i]), i);
-	}
-	buf.writeUInt16BE(port, 4);
-	return buf;
+	var portBuf = gn.Buffer.alloc(2);
+	portBuf.writeUInt16BE(port, 0);
+	var addrBuf = gn.Buffer.alloc(addr);
+	return Buffer.concat([ portBuf, addrBuf ]);
 }
 
 function bytesToAddrAndPort(buf) {
@@ -62,17 +61,9 @@ function bytesToAddrAndPort(buf) {
 			port: 0
 		};
 	}
-	const list = [];
-	// first 4 bytes are for address
-	for (var i = 0; i < 4; i++) {
-		list.push(buf.readUInt8(i));
-	}
-	// last 2 bytes are port
-	const port = buf.readUInt16BE(4);
-	// now return
 	return {
-		address: list.join('.'),
-		port: port
+		port: buf.readUInt16BE(0),
+		address: buf.slice(2).toString()
 	};
 }
 

@@ -137,19 +137,19 @@ module.exports.getAllNodes = function () {
 };
 
 function startAnnounceAndRead() {
-	const ttl = conf.interval * 10 / 1000;
-	const onAnnounce = function (next) {
+	var ttl = conf.interval * 10 / 1000;
+	var onAnnounce = function (next) {
 		for (var i = 0, len = onAnnounceCallbacks.length; i < len; i++) {
 			onAnnounceCallbacks[i]();
 		}
 		next();
 	};
-	const announce = function __portalAnnounce(next) {
+	var announce = function __portalAnnounce(next) {
 		if (!rclient) {
 			return done();
 		}
-		const multi = rclient.multi();
-		const key = createKey();
+		var multi = rclient.multi();
+		var key = createKey();
 		multi.set(key, createValue());
 		multi.expire(key, ttl);
 		multi.exec(function __portalOnAnnounce(error) {
@@ -159,7 +159,7 @@ function startAnnounceAndRead() {
 			next();
 		});
 	};
-	const read = function __portalRead(next) {
+	var read = function __portalRead(next) {
 		if (!rclient) {
 			return done();
 		}
@@ -170,18 +170,18 @@ function startAnnounceAndRead() {
 			next();
 		});
 	};
-	const done = function (error) {
+	var done = function (error) {
 		if (error) {
 			logger.error(error);
 		}
 		setTimeout(exec, conf.interval);
 	};
-	const tasks = [
+	var tasks = [
 		onAnnounce,
 		announce,
 		read
 	];
-	const exec = function () {
+	var exec = function () {
 		async.series(tasks, done);
 	};
 
@@ -195,7 +195,7 @@ function createKey() {
 }
 
 function parseKey(key) {
-	const list = key.split('/');
+	var list = key.split('/');
 	return {
 		address: list[1],
 		port: parseInt(list[2]),
@@ -205,7 +205,7 @@ function parseKey(key) {
 
 function createValue() {
 	var value = '';
-	for (const key in valueMap) {
+	for (var key in valueMap) {
 		value += key + '/' + valueMap[key] + '/';
 	}
 	return value;
@@ -215,8 +215,8 @@ function parseValue(value) {
 	if (!value) {
 		return null;
 	}
-	const list = value.split('/');
-	const res = {};
+	var list = value.split('/');
+	var res = {};
 	var key;
 	for (var i = 0, len = list.length; i < len; i++) {
 		if (i % 2 === 0) {
@@ -257,8 +257,8 @@ function scan(cb) {
 	}
 	var cursor = 0;
 	var list = [];
-	const multi = rclient.multi();
-	const callback = function __portalScanCallback(error, res) {
+	var multi = rclient.multi();
+	var callback = function __portalScanCallback(error, res) {
 		if (error) {
 			return cb(error);
 		}
@@ -278,7 +278,7 @@ function scan(cb) {
 			cb(null, createCache(list, results));
 		});
 	};
-	const scanner = function __portalScanner() {
+	var scanner = function __portalScanner() {
 		if (!rclient) {
 			return cb(new Error('RedisIsOffline')); 
 		}
@@ -296,13 +296,13 @@ function scan(cb) {
 }
 
 function createCache(list, results) {
-	const tmp = {};
+	var tmp = {};
 	for (var i = 0, len = results.length; i < len; i++) {
-		const item = {
+		var item = {
 			key: parseKey(list[i]),
 			value: parseValue(results[i])
 		};
-		const key = list[i].replace(PREFIX, '')
+		var key = list[i].replace(PREFIX, '')
 			.replace('/' + item.key.type, '');
 		if (!tmp[item.key.type]) {
 			tmp[item.key.type] = [];

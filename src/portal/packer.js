@@ -27,7 +27,7 @@ const BOOL_ARR = 21;
 const OBJ = 22;
 const ERR = 23;
 
-const COMPRESS_TAG = 0xffffffff;
+const COMPRESS_TAG = 0xffeeddcc;
 const COMP_BUF = gn.Buffer.alloc(4);
 COMP_BUF.writeUInt32BE(COMPRESS_TAG, 0);
 const OBJ_TYPE = 0xdeadbeef;
@@ -84,12 +84,11 @@ _schema {
 data type can be another schema name
 **/
 module.exports.schema = function (name, _schema) {
+	if (typeof name !== 'string') {
+		throw new Error('EventNameMustBeString:' + name);
+	}
 	if (schemaMap[name]) {
-		logger.error(
-			'Event data schema already exists:',
-			name, _schema
-		);
-		return false;
+		throw new Error('EventSchemaAlreadyExists:' + name);
 	}
 	for (var prop in _schema) {
 		if (_schema[prop] === undefined || _schema[prop] === null) {
@@ -118,17 +117,15 @@ module.exports.schemaExists = function (name) {
 };
 
 module.exports.compress = function (packedList) {
-	const list = [ COMP_BUF ];
+	var list = [ COMP_BUF ];
 	// 4 bytes is the size of COMP_BUF
-	var size = 4;
 	for (var i = 0, len = packedList.length; i < len; i++) {
-		const buf = gn.Buffer.alloc(4 + packedList[i].length);
-		buf.writeUInt32BE(packedList[i].length, 0);
-		packedList[i].copy(buf, 4, 0);
+		var buf = gn.Buffer.alloc(2 + packedList[i].length);
+		buf.writeUInt16BE(packedList[i].length, 0);
+		packedList[i].copy(buf, 2, 0, packedList[i].length);
 		list.push(buf);
-		size += buf.length;
 	}
-	return Buffer.concat(list, size);
+	return Buffer.concat(list);
 };
 
 module.exports.uncompress = function (buf) {
@@ -136,14 +133,14 @@ module.exports.uncompress = function (buf) {
 		return null;
 	}
 	buf = buf.slice(4);
-	const total = buf.length;
-	const list = [];
+	var total = buf.length;
+	var list = [];
 	var consumed = 0;
 	while (consumed < total) {
-		const size = buf.readUInt32BE(consumed);
-		consumed += 4;
-		const packed = gn.Buffer.alloc(size);
-		buf.copy(packed, 0, consumed);
+		var size = buf.readUInt16BE(consumed);
+		consumed += 2;
+		var packed = gn.Buffer.alloc(size);
+		buf.copy(packed, 0, consumed, consumed + size);
 		consumed += size;
 		list.push(packed);
 	}
@@ -152,46 +149,51 @@ module.exports.uncompress = function (buf) {
 
 module.exports.pack = function (name, data) {
 	if (!data) {
+		logger.trace('Packer pack must have a data', name);
 		return gn.Buffer.alloc(0);
 	}
-	const schema = schemaMap[name];
+	var schema = schemaMap[name];
 	if (!schema) {
-		throw new Error('SchameDoesNotExistForPack:' + name);
+		logger.sys('Schema does not exist for pack', name);
+		return null;
 	}
-	const buf = gn.Buffer.alloc(MAX_SIZE);
+	var buf = gn.Buffer.alloc(MAX_SIZE);
 	var offset = 0;
 	buf.fill(0);
-	for (const prop in schema) {
+	for (var prop in schema) {
 		if (data[prop] === undefined) {
 			throw new Error(
 				'MissingProperty[' + name + ']:' + prop +
 				'\n' + JSON.stringify(data)
 			);
 		}
-		const value = data[prop];
-		offset = packAs(name + '.' + prop, schema[prop], value, buf, offset);
+		var value = data[prop];
+		offset = _packAs(name + '.' + prop, schema[prop], value, buf, offset);
 		if (offset instanceof Error) {
+			logger.sys('Packer pack failed:', name, prop, offset.message);
 			return null;
 		}
 	}
-	const res = buf.slice(0, offset);
-	return res;
+	return buf.slice(0, offset);
 };
 
 module.exports.unpack = function (name, buf, _offset, addLength) {
 	if (buf.length === 0) {
+		logger.trace('Packer unpack must have a buffer', name);
 		return null;
 	}
-	const schema = schemaMap[name];
+	var schema = schemaMap[name];
 	if (!schema) {
-		throw new Error('SchemaDoesNotExitForUnpack:' + name);
+		logger.sys('Schema does not exist for unpack', name);
+		return null;
 	}
-	const data = {};
+	var data = {};
 	var offset = _offset || 0;
-	for (const prop in schema) {
-		const type = schema[prop];
-		const unpacked = unpackAs(name + '.' + prop, type, buf, offset);
+	for (var prop in schema) {
+		var type = schema[prop];
+		var unpacked = _unpackAs(name + '.' + prop, type, buf, offset);
 		if (unpacked instanceof Error) {
+			logger.sys('Packer unpack failed:', name, prop, unpacked.message);
 			return null;
 		}
 		data[prop] = unpacked.value;
@@ -202,15 +204,6 @@ module.exports.unpack = function (name, buf, _offset, addLength) {
 	}
 	return data;
 };
-
-function packAs(name, type, value, buf, offset) {
-	try {
-		return _packAs(name, type, value, buf, offset);
-	} catch (error) {
-		//logger.sys('Failed to pack @', name, type, value, error);
-		return error;
-	}
-}
 
 function _packAs(name, type, value, buf, offset) {
 	switch (type) {
@@ -266,12 +259,12 @@ function _packAs(name, type, value, buf, offset) {
 			offset += value.length;
 			break;
 		case UUID:
-			const uuid = gn.lib.uuid.create(value).toBytes();
+			var uuid = gn.lib.uuid.create(value).toBytes();
 			uuid.copy(buf, offset);
 			offset += 16;
 			break;
 		case SUB:
-			const sub = module.exports.pack(name, value);
+			var sub = module.exports.pack(name, value);
 			buf.writeUInt32BE(OBJ_TYPE, offset);
 			offset += 4;
 			sub.copy(buf, offset, 0);
@@ -299,7 +292,7 @@ function _packAs(name, type, value, buf, offset) {
 					buf.write(value, offset);
 					offset += value.length;
 				} else {
-					const byteLen = Buffer.byteLength(value);
+					var byteLen = Buffer.byteLength(value);
 					buf.writeUInt32BE(byteLen, offset);
 					offset += 4;
 					value.copy(buf, offset, 0);
@@ -334,7 +327,7 @@ function packNull(buf, offset) {
 
 function packArrayAs(type, value, buf, offset) {
 	var i;
-	const len = value.length;
+	var len = value.length;
 	buf.writeUInt16BE(len, offset);
 	offset += 2;
 	switch (type) {
@@ -392,7 +385,7 @@ function packArrayAs(type, value, buf, offset) {
 			break;
 		case STR_ARR:
 			for (i = 0; i < len; i++) {
-				const strlen = value[i].length;
+				var strlen = value[i].length;
 				buf.writeUInt32BE(strlen, offset);
 				offset += 4;
 				buf.write(value[i], offset);
@@ -401,7 +394,7 @@ function packArrayAs(type, value, buf, offset) {
 			break;
 		case UUID_ARR:
 			for (i = 0; i < len; i++) {
-				const uuid = gn.lib.uuid.create(value[i]).toBytes();
+				var uuid = gn.lib.uuid.create(value[i]).toBytes();
 				uuid.copy(buf, offset, 0);
 				offset += 16;
 			}
@@ -410,18 +403,9 @@ function packArrayAs(type, value, buf, offset) {
 	return offset;
 }
 
-function unpackAs(name, type, buf, offset) {
-	try {
-		return _unpackAs(name, type, buf, offset);
-	} catch (error) {
-		//logger.sys('Failed to unpack @', name, type, error);
-		return error;
-	}
-}
-
 function _unpackAs(name, type, buf, offset) {
-	var value;
-	var len;
+	var value = null;
+	var len = 0;
 	switch (type) {
 		case UINT8:
 			value = buf.readUInt8(offset);
@@ -461,15 +445,15 @@ function _unpackAs(name, type, buf, offset) {
 			len = 8;
 			break;
 		case STR:
-			const size = buf.readUInt32BE(offset);
-			const strbuf = gn.Buffer.alloc(size);
+			var size = buf.readUInt32BE(offset);
+			var strbuf = gn.Buffer.alloc(size);
 			buf.copy(strbuf, 0, offset + 4);
 			value = strbuf.toString();
 			len = 4 + size;
 			break;
 		case ERR:
-			const esize = buf.readUInt32BE(offset);
-			const estrbuf = gn.Buffer.alloc(esize);
+			var esize = buf.readUInt32BE(offset);
+			var estrbuf = gn.Buffer.alloc(esize);
 			buf.copy(estrbuf, 0, offset + 4);
 			value = new Error(estrbuf.toString());
 			len = 4 + esize;
@@ -482,7 +466,7 @@ function _unpackAs(name, type, buf, offset) {
 			len = 4 + objbuf.length;
 			break;
 		case UUID:
-			const uuid = gn.Buffer.alloc(16);
+			var uuid = gn.Buffer.alloc(16);
 			buf.copy(uuid, 0, offset);
 			value = gn.lib.uuid.create(uuid).toString();
 			len = 16;
@@ -512,7 +496,7 @@ function _unpackAs(name, type, buf, offset) {
 			len = unpacked.length;
 			break;
 		case BIN:
-			const bsize = buf.readUInt32BE(offset);
+			var bsize = buf.readUInt32BE(offset);
 			if (!bsize) {
 				value = null;
 				len = 4;
@@ -525,7 +509,7 @@ function _unpackAs(name, type, buf, offset) {
 		default:
 			var schema = schemaMap[type];
 			if (!schema) {
-				throw new Error('InvalidDataTypeForUnpack:' + name + '['+ type + ']');
+				value = new Error('InvalidDataTypeForUnpack:' + name + '['+ type + ']');
 			}
 			if (buf.readUInt32BE(offset) === OBJ_TYPE) {
 				offset += 4;

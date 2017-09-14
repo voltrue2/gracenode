@@ -1,15 +1,10 @@
 'use strict';
 
-/**
-* FIXME: TCP protocol is currently unstable is should not be used... :(
-* The issue with TCP is that
-* managing the number of open sockets asynchronously turns out to be tough
-*/
-
-const async = require('../../lib/async');
 const gn = require('../gracenode');
+const async = gn.async;
 const packer = require('./packer');
 const meshNodes = require('./meshnodes');
+const ipc = require('./ipc');
 const tcp = require('./tcp');
 const udp = require('./udp');
 
@@ -18,13 +13,17 @@ const UDP = 1;
 const PTS = '_pts';
 const PTRS = '_ptr';
 const PTRES = '_pte';
-// should we make it configurable?
-const RES_TIMEOUT = 3000;
+const RES_BYTES = gn.Buffer.alloc(4);
+RES_BYTES.writeUInt32BE(0x01020304);
+const RES_BYTES_VAL = RES_BYTES.readUInt32BE(0);
 
 const handlers = {};
 const responses = {};
 const _info = [];
+
 var logger;
+var conf;
+var _sendHandler;
 
 packer.schema(PTS, {
 	id: packer.TYPE.UUID,
@@ -57,21 +56,27 @@ module.exports = {
 
 function config(_conf) {
 	logger = gn.log.create('portal.broker.delivery');
+	conf = _conf;
 	tcp.config(_conf);
 	udp.config(_conf);
+	ipc.config(_conf);
+	_sendHandler = _send;
 }
 
 function setup(cb) {
-	//tcp.on(_onRemoteReceive);
+	var tasks;
+	tcp.on(_onRemoteReceive);
 	udp.on(_onRemoteReceive);
-	async.series([
-		//tcp.setup,
+	ipc.on(_onRemoteReceive);
+	tasks = [
+		tcp.setup,
 		udp.setup,
+		ipc.setup,
 		__getInfo
-	], cb);
-
+	];
+	async.series(tasks, cb);
 	function __getInfo(next) {
-		//_info[TCP] = tcp.info();
+		_info[TCP] = tcp.info();
 		_info[UDP] = udp.info();
 		next();
 	}
@@ -90,16 +95,17 @@ function info(protocol) {
 }
 
 function send(protocol, eventName, nodes, data, cb) {
-	const node = nodes.shift();
+	var node = nodes.shift();
 	if (!node) {
 		// no where to send payload to...
 		return;
 	}
-	const addr = node.address;
-	const port = node.port;
-	const me = info();
-
-	const isLocal = addr === me.address && port === me.port;
+	var addr = node.address;
+	var port = node.port;
+	var me = info();
+	var isSelf = false;
+	var isLocal = false;
+	
 	if (!addr || isNaN(port)) {
 		logger.error(
 			'Invalid address/port to emit:',
@@ -108,19 +114,33 @@ function send(protocol, eventName, nodes, data, cb) {
 		);
 		return;
 	}
+	
+	if (addr === me.address) {
+		if (port === me.port) {
+			isSelf = true;
+		} else {
+			isLocal = true;
+		}
+	}
+
+	var hasResponse = false;
+	if (typeof cb === 'function') {
+		hasResponse = true;
+	}
 
 	logger.sys(
 		'Emitting to:', addr, port,
 		'event:', eventName,
+		'is self:', isSelf,
 		'is local:', isLocal,
 		'protocol (TCP=0 UDP=1):', protocol,
-		'response:', cb ? true : false,
+		'response:', hasResponse,
 		'payload data:', data
 	);
 
-	// determine local send or remote send
-	if (isLocal) {
-		_onLocalReceive(
+	// determine self send or remote send
+	if (isSelf) {
+		_onSelfReceive(
 			protocol,
 			eventName,
 			nodes,
@@ -130,82 +150,59 @@ function send(protocol, eventName, nodes, data, cb) {
 		return;
 	}
 
-	const id = gn.lib.uuid.v4();
-	const packed = packer.pack(PTS, {
+	var id = gn.lib.uuid.v4();
+	var packed = packer.pack(PTS, {
 		id: id.toBytes(),
-		hasResponse: cb ? true : false,
+		hasResponse: hasResponse,
 		protocol: protocol,
 		eventName: eventName,
 		nodes: meshNodes.toBytes(nodes),
 		payload: packer.pack(eventName, data)
 	});
-	if (typeof cb === 'function') {
-		const idStr = id.toString();
-		const timeout = _createResponseTimeout(
-			idStr,
-			eventName,
-			cb
-		);
-		responses[idStr] = {
-			callback: cb,
-			timeout: timeout
+	if (hasResponse) {
+		logger.sys('Response callback set as ID', id.toString());
+		responses[id.toString()] = {
+			callback: cb
 		};
 	}
-
-	setImmediate(__send);
-	
-	function __send() {
-		var err;
-		switch (protocol) {
-			case TCP:
-				err = tcp.emit(
-					addr,
-					port,
-					packed
-				);	
-			break;
-			case UDP:
-				err = udp.emit(
-					addr,
-					port,
-					packed
-				);
-			break;
-			default:
-				logger.error(
-					'Invalid protocol for remote send:',
-					protocol,
-					addr, port
-				);
-			break;
-		}
-		if (err) {
-			logger.error(
-				'Send failed for event',
-				eventName,
-				'to',
-				addr, port,
-				'with',
-				err	
-			);
-		}
-	}
+	_sendHandler(protocol, isLocal, addr, port, packed);
 }
 
-function _createResponseTimeout(id, eventName, cb) {
-	const timeout = setTimeout(__onTimeout, RES_TIMEOUT);
+function _send(protocol, isLocal, addr, port, packed) {
 	
-	function __onTimeout() {
-		logger.sys(
-			'Response timed out:',
-			id,
-			eventName
+	// same server different process
+	if (isLocal) {
+		ipc.emit(
+			addr,
+			port,
+			packed
 		);
-		delete responses[id];
-		// TODO: send an error packet or something...
-		cb(new Error('PortalResponseTimeout:' + eventName));
+		return;
 	}
-	return timeout;
+
+	switch (protocol) {
+		case TCP:
+			tcp.emit(
+				addr,
+				port,
+				packed
+			);	
+		break;
+		case UDP:
+			udp.emit(
+				addr,
+				port,
+				packed
+			);
+		break;
+		default:
+			logger.error(
+				'Invalid protocol for remote send:',
+				protocol,
+				addr, port
+			);
+		break;
+	}
 }
 
 function receive(eventName, handler) {
@@ -215,18 +212,18 @@ function receive(eventName, handler) {
 	handlers[eventName].push(handler);
 }
 
-function _onLocalReceive(protocol, eventName, nodes, data, cb) {
+function _onSelfReceive(protocol, eventName, nodes, data, cb) {
 	if (!handlers[eventName]) {
 		return;
 	}
-	const resp = _createLocalResponse(cb);
-	const _handlers = handlers[eventName];
+	var resp = _onSelfResponse.bind({ cb: cb });
+	var _handlers = handlers[eventName];
 	for (var i = 0, len = _handlers.length; i < len; i++) {
 		_handlers[i](data, resp);
 	}
 	if (nodes.length) {
 		logger.sys(
-			'Emitting relay from local:',
+			'Emitting relay from self:',
 			'protocol (TCP=0 UDP=1)', protocol,
 			'event', eventName,
 			'payload data', data
@@ -240,36 +237,35 @@ function _onLocalReceive(protocol, eventName, nodes, data, cb) {
 	}
 }
 
-function _createLocalResponse(cb) {
-	function __onLocalResponse(res) {
-		if (res instanceof Error) {
-			return cb(res);
-		}
-		cb(null, res);
+function _onSelfResponse(res) {
+	var cb = this.cb;
+	if (res instanceof Error) {
+		return cb(res);
 	}
-	return __onLocalResponse;
+	cb(null, res);
 }
 
-function _onRemoteReceive(packed, response) {
-	const unpacked = packer.unpack(PTS, packed);
-	if (unpacked) {
-		if (!handlers[unpacked.eventName]) {
-			return;
-		}
-		unpacked.nodes = meshNodes.toList(unpacked.nodes);
-		const _handlers = handlers[unpacked.eventName];
-		for (var i = 0, len = _handlers.length; i < len; i++) {
-			_callHandler(unpacked, _handlers[i], response);
-		}
+function _onRemoteReceive(buf, response) {
+	var uncmp = packer.uncompress(buf);
+	if (uncmp) {
+		async.forEachSeries(
+			uncmp,
+			__onRemoteReceive.bind({ response: response})
+		);
 		return;
 	}
-	// is packed a response?
-	const res = packer.unpack(PTRS, packed);
-	res.id = res.id.toString('hex');
-	logger.sys('Handle response:', res);
-	if (res && responses[res.id]) {
-		try {
-			clearTimeout(responses[res.id].timeout);
+	__onRemoteReceive(buf, null, response);
+}
+
+function __onRemoteReceive(packed, next, _response) {
+	var response = _response || this.response;
+	if (RES_BYTES_VAL === packed.readUInt32BE(0)) {
+		// response
+		packed = packed.slice(4);
+		var res = packer.unpack(PTRS, packed);
+		res.id = res.id.toString('hex');
+		logger.sys('Handle response:', res);
+		if (res && responses[res.id]) {
 			var rname;
 			if (res.isError) {
 				rname = PTRES;
@@ -277,7 +273,7 @@ function _onRemoteReceive(packed, response) {
 				rname = res.eventName +
 				module.exports._RES_SCHEMA_SUFFIX;
 			}
-			const resData = packer.unpack(rname, res.payload);
+			var resData = packer.unpack(rname, res.payload);
 			logger.sys(
 				'Invoke response callback:',
 				res.id, resData
@@ -287,85 +283,103 @@ function _onRemoteReceive(packed, response) {
 			} else {
 				responses[res.id].callback(null, resData);
 			}
-		} catch (err) {
-			logger.error('Response error:', err);
+			delete responses[res.id];
+			return _callNext(next);
 		}
-		delete responses[res.id];
+		logger.sys('Response callback not found:', res, packed);
+		return _callNext(next);
+	}
+	// non response
+	var unpacked = packer.unpack(PTS, packed);
+	if (!handlers[unpacked.eventName]) {
+		return _callNext(next);
+	}
+	unpacked.nodes = meshNodes.toList(unpacked.nodes);
+	var _handlers = handlers[unpacked.eventName];
+	for (var i = 0, len = _handlers.length; i < len; i++) {
+		_callHandler(unpacked, _handlers[i], response);
+	}
+	_callNext(next);
+}
+
+function _callNext(next) {
+	if (!next) {
 		return;
 	}
-	logger.sys('Response callback not found:', res, packed);
+	process.nextTick(next);
 }
 
 function _callHandler(unpacked, handler, response) {
-	setImmediate(__callHandler);
-
-	function __callHandler() {
-		const data = packer.unpack(
-			unpacked.eventName,
-			unpacked.payload
-		);
+	var data = packer.unpack(
+		unpacked.eventName,
+		unpacked.payload
+	);
+	logger.sys(
+		'Handled event:', unpacked.eventName,
+		'protocol (TCP=0 UDP=1)', unpacked.protocol,
+		'id', unpacked.id.toString('hex'),
+		'requires response',
+		response ? true : false,
+		'payload data:', data
+	);
+	if (response && unpacked.hasResponse) {
+		handler(data, _onHandlerResponse.bind({
+			unpacked: unpacked,
+			response: response
+		}));
+	} else {
+		handler(data);
+	}
+	if (unpacked.nodes.length) {
 		logger.sys(
-			'Handled event:', unpacked.eventName,
+			'Emitting relay:',
 			'protocol (TCP=0 UDP=1)', unpacked.protocol,
-			'id', unpacked.id.toString('hex'),
-			'requires response',
-			response ? true : false,
-			'payload data:', data
+			'event', unpacked.eventName,
+			'payload data', data
 		);
-		if (response && unpacked.hasResponse) {
-			handler(data, __response);
-		} else {
-			handler(data);
-		}
-		if (unpacked.nodes.length) {
-			logger.sys(
-				'Emitting relay:',
-				'protocol (TCP=0 UDP=1)', unpacked.protocol,
-				'event', unpacked.eventName,
-				'payload data', data
-			);
-			send(
-				unpacked.protocol,
-				unpacked.eventName,
-				unpacked.nodes,
-				data
-			);			
-		}
-	}
-
-	function __response(data) {
-		const isError = data instanceof Error ? true : false;
-		var rname;
-		if (isError) {
-			rname = PTRES;	
-		} else {
-			rname = unpacked.eventName +
-				module.exports._RES_SCHEMA_SUFFIX;
-		}
-		logger.sys(
-			'Calling response:',
-			'as error?', isError,
-			unpacked.id,
+		send(
+			unpacked.protocol,
 			unpacked.eventName,
-			'pack data name', rname,
+			unpacked.nodes,
 			data
-		);
-		if (!packer.schemaExists(rname)) {
-			logger.error(
-				'Event response data structure missing:',
-				unpacked.eventName,
-				rname
-			);
-			return;
-		}
-		const res = packer.pack(rname, data);
-		const resPacked = packer.pack(PTRS, {
-			id: unpacked.id,
-			eventName: unpacked.eventName,
-			payload: res,
-			isError: isError
-		});
-		response(resPacked);
+		);			
 	}
+}
+
+function _onHandlerResponse(data) {
+	var isError = data instanceof Error ? true : false;
+	var rname;
+	var unpacked = this.unpacked;
+	var response = this.response;
+	if (isError) {
+		rname = PTRES;	
+	} else {
+		rname = unpacked.eventName +
+			module.exports._RES_SCHEMA_SUFFIX;
+	}
+	logger.sys(
+		'Calling response:',
+		'as error?', isError,
+		unpacked.id,
+		unpacked.eventName,
+		'pack data name', rname,
+		data
+	);
+	if (!packer.schemaExists(rname)) {
+		logger.error(
+			'Event response data structure missing:',
+			unpacked.eventName,
+			rname
+		);
+		return;
+	}
+	var res = packer.pack(rname, data);
+	var resPacked = packer.pack(PTRS, {
+		id: unpacked.id,
+		eventName: unpacked.eventName,
+		payload: res,
+		isError: isError
+	});
+	response(Buffer.concat([ RES_BYTES, resPacked ]));
 }
 

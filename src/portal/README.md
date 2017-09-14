@@ -4,6 +4,8 @@
 
 With `portal`, you have full control of communications among the servers.
 
+Portal uses either TCP or UDP to communicate, but if it is communicating with a node that is on the same server, it will automatically switch to Unix socket.
+
 **IMPORTANT**:
 
 `portal` requires a **Redis** server to keep track of all **gracenode** servers.
@@ -19,7 +21,6 @@ gracenode.config({
 		address: <mesh network address>,
 		port: <mesh network port>,
 		relayLimit: <number>,
-		relayInterval: <number>,
 		announce: {
 			host: '<host of Redis server>',
 			port: <port of Redis server>,
@@ -50,12 +51,6 @@ The internal port number of be used as mesh network node communication end point
 The maximum cap for the number of mesh network node to be communicated at a time.
 
 Default is `10`.
-
-### relayInterval [Boolean/Number]
-
-Configures the interval for mesh network communication emits.
-
-The default is `0`.
 
 ### interval [Number]
 
@@ -210,9 +205,13 @@ Array of String data type
 
 Array of Boolean data type
 
-### .emit(name [String], nodeList [Array], data [Object], callback [Function])
+### .emit(protocol [Number], name [String], nodeList [Array], data [Object], callback [Function])
 
 Sends mesh netowrk communication to multiple mesh network nodes.
+
+#### protocol [Number]
+
+Mesh network protocol. The valid values are: `portal.TCP` or `portal.UDP`.
 
 #### name [String]
 
