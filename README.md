@@ -30,6 +30,8 @@ Version `4.0.0` or above.
 
 - Provides built-in **session** management as an option. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/session#session">here</a>.
 
+- Provides build-in **Mesh network** management to allow all gracenode processes (even across multiple servers) to communicate as one. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/portal#portal">here</a>.
+
 - Provides fast **template enigne**. Read <a href="https://github.com/voltrue2/gracenode/tree/develop/src/render#render">here</a>.
 
 ## Installation via npm
