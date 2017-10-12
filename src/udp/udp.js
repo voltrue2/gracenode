@@ -340,6 +340,9 @@ function _onEachMessage(payloadData, params, next) {
 		}));
 		return;
 	}
+	if (payloadData.seq >= 0xffff) {
+		payloadData.seq = 0;
+	} 
 	executeCmd(null, payloadData.seq, null, payloadData, params.rinfo);
 	next();
 }
