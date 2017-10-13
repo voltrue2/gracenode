@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const gn = require('gracenode');
+const gn = require('../../gracenode');
 const pkg = require(__dirname + '/../../../package.json');
 const Linter = require('eslint').Linter;
 const linter = new Linter();
