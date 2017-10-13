@@ -59,14 +59,16 @@ function setup(cb) {
 	me = createSockFileName(info.address, info.port);
 	gn.onExit(function shutdownPortalIPC(next) {
 		shutdown = true;
-		for (var key in clients) {
+		gn.async.forEachSeries(Object.keys(clients), function (key, moveon) {
 			if (clients[key]) {
 				clients[key].end();
 			}
-		}
-		setTimeout(function () {
-			fs.unlink(me, next);
-		}, 100);
+			process.nextTick(moveon);
+		}, function () {
+			fs.unlink(me, function () {
+				next();
+			});
+		});
 	});
 	server = new net.createServer(_onConnection);
 	server.on('error', _onError.bind({ me: me, cb: cb }));

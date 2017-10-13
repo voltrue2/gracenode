@@ -18,9 +18,6 @@ install: ## Initial installation
 lint: ## Execute lint against the source code
 	./bin/lint index.js src/ lib/ boilerplate/api
 
-check: ## Executes nsp to against package.json to check security issues
-	./node_modules/nsp/bin/nsp check
-
 .PHONY: test
 ifndef log
   log=false
@@ -32,6 +29,5 @@ ifndef group
   group=false
 endif
 test: ## Execute all unit tests. Optionally you can run: make test [single=boilerplate|start|dev|server|express|daemon|http|udp|rpc|render] [group= comma separated test names] [log=true]
-	./node_modules/nsp/bin/nsp check
 	./bin/lint index.js src/ lib/ boilerplate/api
 	./node_modules/mocha/bin/mocha test/index.js -s 10 -R spec -b --timeout 50000 --log=$(log) --single=$(single) --group=$(group)
