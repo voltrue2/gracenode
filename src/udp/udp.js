@@ -20,7 +20,6 @@ const IPV6_ADDR_PREFIX = 'fe80';
 const LAST_RANGE = 1000;
 const clientMap = {};
 
-var supportJSON = false;
 var udpVersion = 'udp4';
 var ipv6 = false;
 var logger;
@@ -50,8 +49,6 @@ module.exports.info = function __udpInfo() {
 module.exports.setup = function __udpSetup(cb) {
 	logger = gn.log.create('UDP');
 	config = gn.getConfig('udp');
-
-	supportJSON = config.supportJSON || false;
 
 	if (!gn.isSupportedVersion()) {
 		return gn.stop(new Error(

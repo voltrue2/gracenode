@@ -107,7 +107,6 @@ function extract(content) {
 		return { content: content, list: [], vars: null, literals: [] };
 	}
 	
-	var index = 0;
 	var list = [];
 	var vars = {};
 	
@@ -141,7 +140,6 @@ function extract(content) {
 				logic: logic
 			});
 		}
-		index += 1;
 		// next
 		matched = tmp.match(COND_TAG); 
 	}

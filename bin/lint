@@ -1,61 +1,31 @@
 #!/usr/bin/env node
 
-var gn = require('../src/gracenode');
+const gn = require('../src/gracenode');
+const lint = require('../src/lint');
 
-var lint;
-var logger;
-var root = process.cwd();
-var targetList = [];
-
-/****************
-* Process	*
-****************/
-setup(function () {
-	getTargetList();
-	execLint();
+gn.config({
+	log: { level: 'error >=', color: true },
+	cluster: { max: 0 }
 });
 
-/************************
-*	Functions	*
-************************/
-function setup(cb) {
-	gn.config({
-		lint: {
-			strict: true
-		},
-		log: {
-			color: true,
-			console: true,
-			level: [
-				'verbose',
-				'error',
-				'fatal'
-			]
-		}
-	});
-	gn.start(function () {
-		lint = require('../src/lint/');
-		logger = gn.log.create('bin/lint');
-		cb();
-	});
-}
+var root = process.cwd();
+var list = [];
 
-function getTargetList() {
+gn.start(function () {
 	for (var i = 2, len = process.argv.length; i < len; i++) {
-		targetList.push(root + '/' + process.argv[i]);
+		list.push(root + '/' + process.argv[i]);
 	}
-	if (!targetList.length) {
-		gn.stop(new Error('Missing target directory list'));
-	}
-}
-
-function execLint() {
-	var done = function (error) {
+	gn.async.forEachSeries(list, function (path, next) {
+		lint(path, [], function (error) {
+			if (error) {
+				return next(error);
+			}
+			next();
+		});
+	}, function (error) {
 		if (error) {
-			return gn.stop(error);
+			return process.exit(1);
 		}
-		logger.verbose('Lint Completed');
-		gn.stop();
-	};
-	lint(targetList, null, done);
-}
+		process.exit(0);
+	});
+});

@@ -22,7 +22,6 @@ const responses = {};
 const _info = [];
 
 var logger;
-var conf;
 var _sendHandler;
 
 packer.schema(PTS, {
@@ -56,7 +55,6 @@ module.exports = {
 
 function config(_conf) {
 	logger = gn.log.create('portal.broker.delivery');
-	conf = _conf;
 	tcp.config(_conf);
 	udp.config(_conf);
 	ipc.config(_conf);

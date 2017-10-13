@@ -6,8 +6,6 @@ const announce = require('./announce');
 const broker = require('./broker');
 const meshNodes = require('./meshnodes');
 
-var logger;
-
 module.exports = {
 	TYPE: TYPE,
 	TCP: broker.TCP,
@@ -38,7 +36,6 @@ function config(conf) {
 
 	announce.config(conf);
 	broker.config(conf);
-	logger = gn.log.create('portal');
 }
 
 function setup(cb) {

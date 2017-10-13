@@ -1,13 +1,9 @@
 'use strict';
 
-const gn = require('../gracenode');
 const hooks = require('./hooks');
 const mapping = require('./mapping');
 
-var logger;
-
 exports.setup = function __httpRouteSetup() {
-	logger = gn.log.create('HTTP.route');
 	mapping.setup();
 	hooks.setup();
 };
