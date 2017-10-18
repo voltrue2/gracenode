@@ -1,7 +1,7 @@
 {
 	"name": "gracenode",
 	"description": "A node.js framework for real-time applications over UDP and TCP protocols with extendable modules for quick and clean evelopment.",
-	"version": "3.8.2",
+	"version": "3.8.3",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",
@@ -24,7 +24,7 @@
 		"mocha": "2.3.3",
 		"staticdata": "0.0.7",
 		"gracenode-server": "0.4.3",
-		"request": "2.75.0",
+		"request": "2.81.0",
 		"express": "4.13.3"
 	},
 	"engine": {
@@ -38,6 +38,7 @@
 		},
 		"env": {
 			"node": true,
+			"es6": true,
 			"amd": true,
 			"mocha": true
 		},

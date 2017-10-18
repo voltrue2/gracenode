@@ -20,13 +20,25 @@ const PURPLE = '0;35';
 const BROWN = '0;33';
 const RED = '0;31';
 
-const msg = linter.verify('var foo = 111', pkg.eslintConfig);
+var conf = pkg.eslintConfig;
 
 module.exports = {
 	start: start
 };
 
 function start(path, ignores, cb) {
+	try {
+		conf = require(gn.getRootPath() + 'package.json').eslintConfig;
+		console.log(color(
+			'Lint loading ' + gn.getRootPath() +
+			'package.json' + ' as configuration', GREY)
+		);
+	} catch (err) {
+		console.log(color(
+			'Lint loading ' + __dirname +
+			'/../../../package.json as configuration', GREY)
+		);
+	}
 	gn.lib.walkDir(path, function (error, list) {
 		if (error) {
 			return cb(error);
@@ -82,7 +94,7 @@ function _exec(file) {
 }
 
 function _onExec(file, data) {
-	var msg = linter.verify(data, pkg.eslintConfig);	
+	var msg = linter.verify(data, conf);
 	if (!msg.length) {
 		// no error!
 		var good = color('Lint [ ', GREY) + color('OK', GREEN) + color(' ] ' + file, GREY);
