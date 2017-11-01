@@ -2,6 +2,8 @@ services:
   - redis-server
 language: node_js
 node_js:
+- 9.0
+- 8.9
 - 7.3
 - 6.0
 - 5.0
