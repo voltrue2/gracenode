@@ -3,6 +3,7 @@
 var gn = require('../gracenode');
 var mem = require('./mem');
 var logger;
+var createSessionId = _createSessionId;
 var set;
 var get;
 var del;
@@ -59,6 +60,16 @@ module.exports.setup = function __sessSetup() {
 	setup = true;
 
 	mem.setup();
+};
+
+module.exports.defineCreateSessionId = function (func) {
+	if (setup) {
+		logger.warn('.defineCreateSessionId() should not be called after gracenode.start()');
+	}
+	if (typeof func !== 'function') {
+		throw new Error('<SESSION_CREATE_SESSION_ID_MUST_BE_FUNCTION>');
+	}
+	createSessionId = func;
 };
 
 module.exports.defineSet = function __sessDefineSet(func) {
@@ -128,8 +139,7 @@ module.exports.useUDPSession = function __sessUseUDPSession() {
 // this needs to be manually called in the application
 // typically in login etc
 module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionData, cb) {
-	const uuid = gn.lib.uuid.v4();
-	const id = uuid.toString();
+	var id = createSessionId();
 
 	if (options.useCookie) {
 		var cookies = req.cookies();
@@ -184,6 +194,10 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
 		cb: cb
 	}));
 };
+
+function _createSessionId() {
+	return gn.lib.uuid.v4().toString();
+}
 
 function _onCustomSet(error) {
 	var id = this.id;
