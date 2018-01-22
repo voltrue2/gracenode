@@ -341,7 +341,7 @@ function _onEachMessage(payloadData, params, next) {
 		if (!transport.isJson()) {
 			toDecrypt = payloadData.payload;
 		}
-		decrypt(toDecrypt, pudp, addr, port, _onEachDecrypt.bind({
+		decrypt(toDecrypt, pudp, addr, port, _onEachDecrypt.bind(null, {
 			payloadData: payloadData,
 			params: params,
 			next: next
@@ -355,10 +355,10 @@ function _onEachMessage(payloadData, params, next) {
 	next();
 }
 
-function _onEachDecrypt(error, sid, seq, sdata, dec) {
-	var payloadData = this.payloadData;
-	var params = this.params;
-	var next = this.next;
+function _onEachDecrypt(bind, error, sid, seq, sdata, dec) {
+	var payloadData = bind.payloadData;
+	var params = bind.params;
+	var next = bind.next;
 	if (error) {
 		// this is also the same as session failure
 		logger.error('decryption of message failed:', error);
@@ -401,29 +401,29 @@ function executeCmd(sessionId, seq, sessionData, msg, rinfo) {
 		send: null
 	};
 	
-	state.send = _sender.bind({
+	state.send = _sender.bind(null, {
 		state: state,
 		seq: seq
 	});
 
-	cmd.hooks(msg, state, _onHooksFinished.bind({
+	cmd.hooks(msg, state, _onHooksFinished.bind(null, {
 		cmd: cmd,
 		state: state
 	}));
 }
 
-function _sender(msg, status, cb) {
-	var state = this.state;
-	var seq = this.seq;
+function _sender(bind, msg, status, cb) {
+	var state = bind.state;
+	var seq = bind.seq;
 	send(state, msg, seq, status, cb);
 }
 
-function _onHooksFinished(error) {
+function _onHooksFinished(bind, error) {
 	if (error) {
 		dispatchOnError(error);
 		return;
 	}
-	executeCommands(this.cmd, this.state);
+	executeCommands(bind.cmd, bind.state);
 }
 
 function _getPayloadFromJSON(payload) {
@@ -462,7 +462,7 @@ function send(state, msg, seq, status, cb) {
 		cryptoEngine.encrypt(
 			state,
 			msg,
-			_onSendEncrypt.bind({
+			_onSendEncrypt.bind(null, {
 				state: state,
 				sent: _onSent
 			})
@@ -476,17 +476,17 @@ function send(state, msg, seq, status, cb) {
 		msg.length,
 		state.clientPort,
 		state.clientAddress,
-		_onSent.bind({
+		_onSent.bind(null, {
 			state: state,
 			cb: cb
 		})
 	);
 }
 
-function _onSendEncrypt(error, encrypted) {
-	var state = this.state;
-	var sent = this.sent;
-	var cb = this.cb;
+function _onSendEncrypt(bind, error, encrypted) {
+	var state = bind.state;
+	var sent = bind.sent;
+	var cb = bind.cb;
 	if (error) {
 		logger.error(
 			'encryption of message failed:',
@@ -502,16 +502,16 @@ function _onSendEncrypt(error, encrypted) {
 		encrypted.length,
 		state.clientPort,
 		state.clientAddress,
-		sent.bind({
+		sent.bind(null, {
 			state: state,
 			cb: cb
 		})
 	);
 }
 
-function _onSent(error) {
-	var state = this.state;
-	var cb = this.cb;
+function _onSent(bind, error) {
+	var state = bind.state;
+	var cb = bind.cb;
 	if (error) {
 		logger.error(
 			'sending UDP packet failed:',
@@ -551,7 +551,7 @@ function serverPush(msg, address, port, cb, options) {
 		cryptoEngine.encrypt(
 			{ session: options.session },
 			msg,
-			_onPushEncrypt.bind({
+			_onPushEncrypt.bind(null, {
 				address: address,
 				port: port,
 				cb: cb
@@ -563,10 +563,10 @@ function serverPush(msg, address, port, cb, options) {
 	server.send(msg, 0, msg.length, port, address, cb);
 }
 
-function _onPushEncrypt(error, encrypted) {
-	var address = this.address;
-	var port = this.port;
-	var cb = this.cb;
+function _onPushEncrypt(bind, error, encrypted) {
+	var address = bind.address;
+	var port = bind.port;
+	var cb = bind.cb;
 	if (error) {
 		logger.error(
 			'failed to encrypt packet for push',
