@@ -8,6 +8,10 @@ const transport = require('../../lib/transport');
 const rpc = require('./rpc');
 // this is not HTTP router
 const router = require('./router');
+
+const PING_MSG = gn.Buffer.alloc('ping');
+const PONG_MSG = gn.Buffer.alloc('PONG\n');
+
 var logger;
 var heartbeatConf;
 var cryptoEngine;
@@ -46,68 +50,68 @@ function Connection(sock) {
 	this.state = createState(this.id);
 	// server push
 	var params = { that: this };
-	this.state.send = _send.bind(params);
+	this.state.send = _send.bind(null, params);
 	// server response (if you need to use this to pretend as a response)
-	this.state.respond = _respond.bind(params); 
+	this.state.respond = _respond.bind(null, params); 
 	// force disconnect (graceful) connection
-	this.state.close = _close.bind(params);
+	this.state.close = _close.bind(null, params);
 	// force kill connection
-	this.state.kill = _kill.bind(params);
+	this.state.kill = _kill.bind(null, params);
 
 	this.parser = new transport.Stream();
 	this.connected = true;
 	this.name = '{ID:' + this.id + '|p:' + sock.localPort + '|' + you + '}';
-	this.sock.on('data', _onDataReceived.bind(params));
-	this.sock.on('end', _onConnectionEnd.bind(params));
-	this.sock.on('error', _onConnectionError.bind(params));
-	this.sock.on('close', _onConnectionClose.bind(params));
-	this.sock.on('timeout', _onConnectionTimeout.bind(params));
+	this.sock.on('data', _onDataReceived.bind(null, params));
+	this.sock.on('end', _onConnectionEnd.bind(null, params));
+	this.sock.on('error', _onConnectionError.bind(null, params));
+	this.sock.on('close', _onConnectionClose.bind(null, params));
+	this.sock.on('timeout', _onConnectionTimeout.bind(null, params));
 
 	if (heartbeatConf) {
 		this._checkHeartbeat();
 	}
 }
 
-function _send(payload) {
-	this.that._send(payload);
+function _send(bind, payload) {
+	bind.that._send(payload);
 }
 
-function _respond(payload, status, options) {
-	this.that._respond(payload, status, options);
+function _respond(bind, payload, status, options) {
+	bind.that._respond(payload, status, options);
 }
 
-function _close() {
-	this.that.close();
+function _close(bind) {
+	bind.that.close();
 }
 
-function _kill(error) {
-	this.that.kill(error);
+function _kill(bind, error) {
+	bind.that.kill(error);
 } 
 
-function _onDataReceived(packet) {
-	this.that.state.now = gn.lib.now();
-	this.that._data(packet);
+function _onDataReceived(bind, packet) {
+	bind.that.state.now = gn.lib.now();
+	bind.that._data(packet);
 }
 
-function _onConnectionEnd() {
-	logger.sys(this.that.name, 'TCP connection ended by client');
-	this.that.kill(new Error('TCP disconnected by client'));
+function _onConnectionEnd(bind) {
+	logger.sys(bind.that.name, 'TCP connection ended by client');
+	bind.that.kill(new Error('TCP disconnected by client'));
 }
 
-function _onConnectionError(error) {
-	logger.error(this.that.name, 'TCP connection error detected:', error);
-	this.that.kill(error);
+function _onConnectionError(bind, error) {
+	logger.error(bind.that.name, 'TCP connection error detected:', error);
+	bind.that.kill(error);
 }
 
-function _onConnectionClose() {
-	this.that.close();
+function _onConnectionClose(bind) {
+	bind.that.close();
 }
 
-function _onConnectionTimeout(error) {
+function _onConnectionTimeout(bind, error) {
 	if (error) {
-		return this.that.close(error);
+		return bind.that.close(error);
 	}
-	this.that.close(new Error('TCP connection timeout'));
+	bind.that.close(new Error('TCP connection timeout'));
 }
 
 utils.inherits(Connection, EventEmitter);
@@ -226,6 +230,9 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 };
 
 Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
+	if (this._handleIfPing(packet)) {
+		return;
+	}
 	var parsed = this.parser.parse(packet);
 	if (parsed instanceof Error) {
 		return this.kill(parsed);
@@ -235,13 +242,29 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
 		parsed,
 		params,
 		_onEachData,
-		_onDataHandled.bind(params)
+		_onDataHandled.bind(null, params)
 	);
 };
 
-function _onDataHandled(error) {
+Connection.prototype._handleIfPing = function __rpcConnectionHandleIfPing(packet) {
+	if (packet[0] === PING_MSG[0] &&
+		packet[1] === PING_MSG[1] &&
+		packet[2] === PING_MSG[2] &&
+		packet[3] === PING_MSG[3]
+	) {
+		this.__write(null, PONG_MSG, _onHandlePing.bind(null, { that: this }));
+		return true;
+	}
+	return false;
+};
+
+function _onHandlePing(bind) {
+	bind.that.close();
+}
+
+function _onDataHandled(bind, error) {
 	if (error) {
-		return this.that.kill(error);
+		return bind.that.kill(error);
 	}
 }
 
@@ -272,7 +295,7 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 			gn.session.PROTO.RPC,
 			this.sock.remoteAddress,
 			this.sock.remotePort,
-			_onDecrypt.bind(params)
+			_onDecrypt.bind(null, params)
 		);
 		return;
 	}
@@ -283,20 +306,20 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
 	this._execCmd(cmd, parsedData, null, cb);
 };
 
-function _onDecrypt(error, sid, seq, sdata, decrypted) {
+function _onDecrypt(bind, error, sid, seq, sdata, decrypted) {
 	if (error) {
-		return this.cb(error);
+		return bind.cb(error);
 	}
 	var sess = {
 		sessionId: sid,
 		seq: seq,
 		data: sdata
 	};
-	this.parsedData.payload = decrypted;
-	if (!this.cmd) {
-		return this.that._errorResponse(this.parsedData, sess, this.cb);
+	bind.parsedData.payload = decrypted;
+	if (!bind.cmd) {
+		return bind.that._errorResponse(bind.parsedData, sess, bind.cb);
 	}
-	this.that._execCmd(this.cmd, this.parsedData, sess, this.cb);
+	bind.that._execCmd(bind.cmd, bind.parsedData, sess, bind.cb);
 }
 
 Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
@@ -338,14 +361,14 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
 		parsedData: parsedData,
 		cb: cb
 	};
-	cmd.hooks(parsedData, this.state, _onHooksFinished.bind(params));
+	cmd.hooks(parsedData, this.state, _onHooksFinished.bind(null, params));
 };
 
-function _onHooksFinished(error, status) {
-	var that = this.that;
-	var cmd = this.cmd;
-	var parsedData = this.parsedData;
-	var cb = this.cb;
+function _onHooksFinished(bind, error, status) {
+	var that = bind.that;
+	var cmd = bind.cmd;
+	var parsedData = bind.parsedData;
+	var cb = bind.cb;
 	var params = {
 		that: that,
 		cmd: cmd,
@@ -366,14 +389,14 @@ function _onHooksFinished(error, status) {
 	that.response.status = status || transport.STATUS.OK;
 	async.eachSeries(
 		cmd.handlers,
-		_onEachCommand.bind(params),
-		_onCommandsFinished.bind(params)
+		_onEachCommand.bind(null, params),
+		_onCommandsFinished.bind(null, params)
 	);
 }
 
-function _onEachCommand(handler, next) {
-	var that = this.that;
-	var cmd = this.cmd;
+function _onEachCommand(bind, handler, next) {
+	var that = bind.that;
+	var cmd = bind.cmd;
 	var params = {
 		that: that,
 		cmd: cmd,
@@ -381,17 +404,17 @@ function _onEachCommand(handler, next) {
 	};
 	if (callbackTimeout) {
 		that.response.timeout = setTimeout(
-			_onResponseTimeout.bind(params),
+			_onResponseTimeout.bind(null, params),
 			callbackTimeout
 		);
 	}
-	handler(that.state, _onCommand.bind(params));
+	handler(that.state, _onCommand.bind(null, params));
 }
 
-function _onResponseTimeout() {
-	var that = this.that;
-	var cmd = this.cmd;
-	var next = this.next;
+function _onResponseTimeout(bind) {
+	var that = bind.that;
+	var cmd = bind.cmd;
+	var next = bind.next;
 	logger.error(
 		that.name,
 		'command', cmd.id, cmd.name,
@@ -406,9 +429,9 @@ function _onResponseTimeout() {
 	next();
 }
 
-function _onCommand(_res, _status, _options) {
-	var that = this.that;
-	var next = this.next;
+function _onCommand(bind, _res, _status, _options) {
+	var that = bind.that;
+	var next = bind.next;
 	if (that.response.timeout) {
 		clearTimeout(that.response.timeout);
 		that.response.timeout = null;
@@ -434,10 +457,10 @@ function _onCommand(_res, _status, _options) {
 	next();
 }
 
-function _onCommandsFinished(error) {
-	var that = this.that;
-	var parsedData = this.parsedData;
-	var cb = this.cb;
+function _onCommandsFinished(bind, error) {
+	var that = bind.that;
+	var parsedData = bind.parsedData;
+	var cb = bind.cb;
 	var params = {
 		that: that,
 		cb: cb
@@ -451,13 +474,13 @@ function _onCommandsFinished(error) {
 		that.response.status,
 		parsedData.seq,
 		that.response.data,
-		_onCommandResponseFinished.bind(params)
+		_onCommandResponseFinished.bind(null, params)
 	);
 }
 
-function _onCommandResponseFinished(error) {
-	var that = this.that;
-	var cb = this.cb;
+function _onCommandResponseFinished(bind, error) {
+	var that = bind.that;
+	var cb = bind.cb;
 	if (that.response.options) {
 		if (that.response.options.closeAfterReply) {
 			return that.close();
@@ -480,15 +503,15 @@ Connection.prototype._write = function __rpcConnectionWrite(_error, status, seq,
 		seq: seq,
 		cb: cb
 	};
-	this._encrypt(msg, _onWriteEncrypt.bind(params));
+	this._encrypt(msg, _onWriteEncrypt.bind(null, params));
 };
 
-function _onWriteEncrypt(error, data) {
-	var that = this.that;
-	var _error = this._error;
-	var status = this.status;
-	var seq = this.seq;
-	var cb = this.cb;
+function _onWriteEncrypt(bind, error, data) {
+	var that = bind.that;
+	var _error = bind._error;
+	var status = bind.status;
+	var seq = bind.seq;
+	var cb = bind.cb;
 	data = transport.createReply(status, seq, data);
 	if (error) {
 		return that.__write(error, data, cb);
@@ -500,14 +523,14 @@ Connection.prototype._push = function __rpcConnectionPush(msg, cb) {
 	if (typeof msg === 'object' && !(msg instanceof Buffer)) {
 		msg = JSON.stringify(msg);
 	}
-	this._encrypt(msg, _onPushEncrypt.bind({ that: this, cb: cb }));
+	this._encrypt(msg, _onPushEncrypt.bind(null, { that: this, cb: cb }));
 };
 
-function _onPushEncrypt(error, data) {
+function _onPushEncrypt(bind, error, data) {
 	if (error) {
-		return this.cb(error);
+		return bind.cb(error);
 	}
-	this.that.__push(transport.createPush(0, data), this.cb);
+	bind.that.__push(transport.createPush(0, data), bind.cb);
 }
 
 Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, cb) {
@@ -558,17 +581,17 @@ Connection.prototype._encrypt = function __rpcConnectionEncrypt(msg, cb) {
 		return;
 	}
 	if (cryptoEngine && cryptoEngine.encrypt) {
-		cryptoEngine.encrypt(this.state, msg, _onEncrypt.bind({ cb: cb }));
+		cryptoEngine.encrypt(this.state, msg, _onEncrypt.bind(null, { cb: cb }));
 		return;
 	}
 	cb(null, msg);
 };
 
-function _onEncrypt(error, data) {
+function _onEncrypt(bind, error, data) {
 	if (error) {
-		return this.cb(error);
+		return bind.cb(error);
 	}
-	this.cb(null, data);
+	bind.cb(null, data);
 }
 
 Connection.prototype._clear = function __rpcConnectionClear(killed) {

@@ -10,6 +10,8 @@ const router = require('./router');
 // UDP command hooks
 const hooks = require('./hooks');
 
+const PING_MSG = gn.Buffer.alloc('ping');
+const PONG_MSG = gn.Buffer.alloc('PONG\n');
 const CLEAN_INTERVAL = 60000;
 // configurable
 const PACKET_NUM_LIMIT = 10;
@@ -295,6 +297,15 @@ function handleMessage(buff, rinfo) {
 		logger.error('malformed packet received from invalid port (packet ignored):', rinfo, buff);
 		return;
 	}
+
+	if (buff[0] === PING_MSG[0] &&
+		buff[1] === PING_MSG[1] &&
+		buff[2] === PING_MSG[2] &&
+		buff[3] === PING_MSG[3]
+	) {
+		server.send(PONG_MSG, 0, PONG_MSG.length, rinfo.port, rinfo.address);	
+		return;
+	}	
 
 	var key = rinfo.address + rinfo.port;
 
