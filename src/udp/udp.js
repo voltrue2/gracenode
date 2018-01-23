@@ -317,6 +317,11 @@ function handleMessage(buff, rinfo) {
 	clientMap[key].time = gn.lib.now();
 
 	var parsed = transport.parse(buff);
+
+	if (!parsed) {
+		// invalid packet
+		return;
+	}
 	
 	if (parsed instanceof Error) {
 		logger.error(parsed);
