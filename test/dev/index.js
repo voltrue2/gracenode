@@ -24,4 +24,28 @@ describe('dev set up gracenode', function () {
 		console.log(uuid.toBytes());
 	});
 
+	it('can loop an array using gracenode.async.forEachSeries', function (done) {
+		var list = [ 0, 1, 2, 3, 4, 5 ];
+		gn.async.forEachSeries(list, function (item, next, index) {
+			assert.equal(item, index);
+			next();
+		}, function (error) {
+			assert.equal(error, null);
+			done();
+		});
+	});
+
+	it('can loop an array using gracenode.async.loopSeries', function (done) {
+		var list = [ 0, 1, 2, 3, 4, 5 ];
+		var params = 'hello';
+		gn.async.loopSeries(list, params, function (item, param, next, index) {
+			assert.equal(item, index);
+			assert.equal(params, param);
+			next();
+		}, function (error) {
+			assert.equal(error, null);
+			done();
+		});
+	});
+
 });
