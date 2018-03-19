@@ -56,6 +56,8 @@ exports.hook = function __mappingHook(path, handler) {
 exports.add = function __mappingAdd(method, path, handler, opt) {
 	// head is treated as get
 	method = method === 'HEAD' ? 'GET' : method;
+	// remove spaces
+	path = path.replace(/ /g, '');
 	// always leading slash
 	if (path[0] !== '/') {
 		path = '/' + path;
