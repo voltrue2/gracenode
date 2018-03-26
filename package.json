@@ -1,117 +1,119 @@
 {
-	"name": "gracenode",
-	"description": "A node.js framework for real-time applications over UDP and TCP protocols with extendable modules for quick and clean evelopment.",
-	"version": "3.8.12",
-	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/voltrue2/gracenode.git"
-	},
-	"scripts": {
-		"test": "make lint && make test"
-	},
-	"dependencies": {
-		"eslint": "4.8.0",
-		"gracelog": "0.7.1",
-		"aeterno": "1.0.0",
-		"cluster-mode": "1.2.0",
-		"node-datetime": "0.1.5",
-		"multiparty": "4.1.2",
-		"cookies": "0.5.1",
-		"redis": "2.7.1"
-	},
-	"devDependencies": {
-		"mocha": "2.3.3",
-		"staticdata": "0.0.7",
-		"gracenode-server": "0.4.3",
-		"request": "2.81.0",
-		"express": "4.13.3"
-	},
-	"engine": {
-		"engine": "node >= 4.0.0"
-	},
-	"eslintConfig": {
-		"parserOptions": {
-			"ecmaVersion": 6,
-			"sourceType": "module",
-			"jsx": true
-		},
-		"env": {
-			"node": true,
-			"es6": true,
-			"amd": true,
-			"mocha": true
-		},
-		"rules": {
-			"max-depth": 5,
-			"no-undef": "error",
-			"no-unused-vars": "warn",
-			"no-cond-assign": "error",
-			"no-console": "warn",
-			"no-dupe-args": "error",
-			"no-dupe-keys": "error",
-			"no-empty": "error",
-			"no-duplicate-case": "error",
-			"no-func-assign": "error",
-			"no-inner-declarations": "warn",
-			"no-irregular-whitespace": "error",
-			"no-obj-calls": "error",
-			"no-sparse-arrays": "error",
-			"no-unreachable": "error",
-			"no-unsafe-negation": "error",
-			"use-isnan": "error",
-			"valid-typeof": "error",
-			"dot-notation": "warn",
-			"guard-for-in": "off",
-			"no-eval": "error",
-			"no-global-assign": "error",
-			"no-implicit-globals": "error",
-			"no-implied-eval": "error",
-			"no-loop-func": "error",
-			"no-octal": "off",
-			"no-octal-escape": "off",
-			"no-proto": "error",
-			"no-redeclare": "error",
-			"no-restricted-properties": "error",
-			"eqeqeq": "error",
-			"quotes": [ "error", "single" ],
-			"curly": "error",
-			"camelcase": "error",
-			"validthis": "off",
-			"bitwise": "off",
-			"semi": "error"
-		}
-		
-	},
-	"keywords": [
-		"framework",
-		"grace",
-		"node",
-		"gracenode",
-		"boostrap",
-		"cluster",
-		"daemon",
-		"express",
-		"light",
-		"organize",
-		"structure",
-		"modular",
-		"router",
-		"udp",
-		"realtime",
-		"real-time",
-		"real time",
-		"session",
-		"web",
-		"api",
-		"http",
-		"udp",
-		"rpc",
-		"tcp",
-		"render",
-		"template",
-		"rest",
-		"game"
-	],
-	"license": "MIT"
+  "name": "gracenode",
+  "description": "A node.js framework for real-time applications over UDP and TCP protocols with extendable modules for quick and clean evelopment.",
+  "version": "3.8.12",
+  "author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voltrue2/gracenode.git"
+  },
+  "scripts": {
+    "test": "make lint && make test"
+  },
+  "dependencies": {
+    "eslint": "4.18.2",
+    "gracelog": "0.7.1",
+    "aeterno": "1.0.0",
+    "cluster-mode": "1.2.0",
+    "node-datetime": "0.1.5",
+    "multiparty": "4.1.2",
+    "cookies": "0.5.1",
+    "redis": "2.7.1"
+  },
+  "devDependencies": {
+    "mocha": "2.3.3",
+    "staticdata": "0.0.7",
+    "gracenode-server": "0.4.3",
+    "request": "2.81.0",
+    "express": "4.13.3"
+  },
+  "engine": {
+    "engine": "node >= 4.0.0"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "jsx": true
+    },
+    "env": {
+      "node": true,
+      "es6": true,
+      "amd": true,
+      "mocha": true
+    },
+    "rules": {
+      "max-depth": 5,
+      "no-undef": "error",
+      "no-unused-vars": "warn",
+      "no-cond-assign": "error",
+      "no-console": "warn",
+      "no-dupe-args": "error",
+      "no-dupe-keys": "error",
+      "no-empty": "error",
+      "no-duplicate-case": "error",
+      "no-func-assign": "error",
+      "no-inner-declarations": "warn",
+      "no-irregular-whitespace": "error",
+      "no-obj-calls": "error",
+      "no-sparse-arrays": "error",
+      "no-unreachable": "error",
+      "no-unsafe-negation": "error",
+      "use-isnan": "error",
+      "valid-typeof": "error",
+      "dot-notation": "warn",
+      "guard-for-in": "off",
+      "no-eval": "error",
+      "no-global-assign": "error",
+      "no-implicit-globals": "error",
+      "no-implied-eval": "error",
+      "no-loop-func": "error",
+      "no-octal": "off",
+      "no-octal-escape": "off",
+      "no-proto": "error",
+      "no-redeclare": "error",
+      "no-restricted-properties": "error",
+      "eqeqeq": "error",
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "curly": "error",
+      "camelcase": "error",
+      "validthis": "off",
+      "bitwise": "off",
+      "semi": "error"
+    }
+  },
+  "keywords": [
+    "framework",
+    "grace",
+    "node",
+    "gracenode",
+    "boostrap",
+    "cluster",
+    "daemon",
+    "express",
+    "light",
+    "organize",
+    "structure",
+    "modular",
+    "router",
+    "udp",
+    "realtime",
+    "real-time",
+    "real time",
+    "session",
+    "web",
+    "api",
+    "http",
+    "udp",
+    "rpc",
+    "tcp",
+    "render",
+    "template",
+    "rest",
+    "game"
+  ],
+  "license": "MIT"
 }
