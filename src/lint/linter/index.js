@@ -28,7 +28,7 @@ module.exports = {
 
 function start(path, ignores, cb) {
 	try {
-		conf = require(process.cwd() + 'package.json').eslintConfig;
+		conf = require(process.cwd() + '/package.json').eslintConfig;
 		console.log(color(
 			'Lint loading ' + gn.getRootPath() +
 			'package.json' + ' as configuration', GREY)
