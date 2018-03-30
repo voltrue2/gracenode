@@ -43,14 +43,14 @@ function start(path, ignores, cb) {
 		if (error) {
 			return cb(error);
 		}
-		var failed = lint(path, list);
+		var failed = lint(path, ignores, list);
 		cb(failed);
 	});
 }
 
-function lint(path, list) {
+function lint(path, ignores, list) {
 	for (var i = 0, len = list.length; i < len; i++) {
-		var error = _onEachLint(path, list[i]);
+		var error = _onEachLint(path, ignores, list[i]);
 		if (error) {
 			return error;
 		}
@@ -58,7 +58,7 @@ function lint(path, list) {
 	return null;
 }
 
-function _onEachLint(path, item) {
+function _onEachLint(path, ignores, item) {
 	var pathFragment = item.file.replace(path, '');
 	if (pathFragment.indexOf(MOD_PATH) === 0) {
 		return;
@@ -80,6 +80,20 @@ function _onEachLint(path, item) {
 	}
 	if (!isJs(item.file)) {
 		return;
+	}
+	if (ignores && ignores.length) {
+		for (var i = 0, len = ignores.length; i < len; i++) {
+			if (pathFragment.indexOf(ignores[i]) !== 0) {
+				continue;
+			}
+			var skip = color(
+				'Lint [ ', GREY) +
+				color('Ignore', DARK_BLUE) +
+				color(' ] ' + item.file, GREY
+			);
+			console.log(skip);
+			return;
+		}
 	}
 	return _exec(item.file);
 }
