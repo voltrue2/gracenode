@@ -12,6 +12,8 @@ var root = process.cwd();
 var list = [];
 
 gn.start(function () {
+	// we change the current working directory from gracenode/bin/
+	process.chdir(root);
 	for (var i = 2, len = process.argv.length; i < len; i++) {
 		list.push(root + '/' + process.argv[i]);
 	}
