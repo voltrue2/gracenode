@@ -117,9 +117,16 @@ exports.isCluster = function __gnIsCluster() {
 };
 
 // call this when everything is ready
-exports.start = function __gnStart(cb) {
-	var start = Date.now();
+exports.start = function startGracenode(cb) {
 	applyConfig();
+	if (Promise && !cb) {
+		return new Promise(_startGracenode);
+	}
+	_startGracenode(null, null, cb);
+};
+
+function _startGracenode(resolve, reject, cb) {
+	var start = Date.now();
 	aeterno.run(function aeternoRun() {
 		var tasks = [
 			setup,
@@ -149,15 +156,17 @@ exports.start = function __gnStart(cb) {
 				'gracenode <v' + pkg.version + '> is ready:',
 				'[time:' + time + 'ms]'
 			);
-			if (typeof cb === 'function') {
+			// we need set ready = true AFTER the callback/resolve
+			if (resolve) {
+				resolve();
+			} else if (cb) {
 				cb();
 			}
-
 			ready = true;
 		};
 		async.series(tasks, done);
 	});
-};
+}
 
 exports.stop = function __gnStop(error) {
 	var trace = new Error('Stop Call Trace');

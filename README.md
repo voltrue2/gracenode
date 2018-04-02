@@ -190,8 +190,12 @@ gn.configure({
 });
 
 // Now start gracenode
-gn.start(function () {
+gn.start()
+.then(function () {
 	// Your application is now ready!
+})
+.catch(function (error) {
+	// error..
 });
 
 ```
@@ -409,11 +413,15 @@ gn.use('foo', 'node_modules/foo', {
 	}
 });
 
-gn.start({
+gn.start()
+.then(function () {
 	// Now gracenode is ready
 	// And foo is also ready
 	// To access foo module:
 	gn.mod.foo.doSomething();
+})
+.catch(function (err) {
+	// error starting gracenode....
 });
 ```
 
@@ -436,8 +444,12 @@ var gn = require('gracenode');
 
 gn.use('myModule', '/path/to/my/module/');
 
-gn.start(function () {
+gn.start()
+.then(function () {
 	gn.mod.myModule.doSomething();
+})
+.catch(function (err) {
+	// error...
 });
 ```
 
@@ -454,10 +466,14 @@ var gn = require('gracenode');
 
 gn.use('express', require('express'));
 
-gn.start(function () {
+gn.start()
+.then(function () {
 	// start your express application
 	var app = gn.mod.express();
 	app.listen(8000);
+})
+.catch(function (error) {
+	// error...
 });
 ```
 
@@ -877,9 +893,11 @@ gracenode.use('myMod', '/path/to/my/mod/', {
 
 **NOTE**: `this` in the function is the bootstrapped module.
 
-### .start(callback [function]);
+### .start(callback [*function]);
 
 Starts the **gracenode** process.
+
+Returns an instance of Promise.
 
 **NOTE**: If there is an error while starting the process, it will crash with an exception.
 

@@ -16,7 +16,6 @@ const MOD_PATH = 'node_modules/';
 const GREY = '0;90';
 const DARK_BLUE = '0;34';
 const GREEN = '0;32';
-const PURPLE = '0;35';
 const BROWN = '0;33';
 const RED = '0;31';
 
@@ -29,14 +28,14 @@ module.exports = {
 function start(path, ignores, cb) {
 	try {
 		conf = require(process.cwd() + '/package.json').eslintConfig;
-		console.log(color(
+		process.stdout.write(color(
 			'Lint loading ' + gn.getRootPath() +
-			'package.json' + ' as configuration', GREY)
+			'package.json' + ' as configuration', GREY) + '\n'
 		);
 	} catch (err) {
-		console.log(color(
+		process.stdout.write(color(
 			'Lint loading ' + __dirname +
-			'/../../../package.json as configuration', GREY)
+			'/../../../package.json as configuration', GREY) + '\n'
 		);
 	}
 	gn.lib.walkDir(path, function (error, list) {
@@ -91,7 +90,7 @@ function _onEachLint(path, ignores, item) {
 				color('Ignore', DARK_BLUE) +
 				color(' ] ' + item.file, GREY
 			);
-			console.log(skip);
+			process.stdout.write(skip + '\n');
 			return;
 		}
 	}
@@ -112,7 +111,7 @@ function _onExec(file, data) {
 	if (!msg.length) {
 		// no error!
 		var good = color('Lint [ ', GREY) + color('OK', GREEN) + color(' ] ' + file, GREY);
-		console.log(good);
+		process.stdout.write(good + '\n');
 		return;
 	}
 	// if there are errors...
@@ -136,18 +135,18 @@ function print(file, msg) {
 		if (item.severity === 2) {
 			error = true;
 		}
-		console.log(
-			color('Lint [', GREY),
-			getSeverity(item.severity),
-			color('] ' + file + ' Line:' + item.line + ' Column:' + item.column, GREY),
-			'\n',
-			color('[', GREY),
-			getType(item.severity, item.nodeType),
-			getMessage(item.severity, item.message),
-			color(']', GREY),
-			'\n',
-			'{' + color(item.ruleId, GREY) + '}',
-			getSource(color(item.source, GREY))
+		process.stdout.write(
+			color('Lint [', GREY) +
+			getSeverity(item.severity) +
+			color('] ' + file + ' Line:' + item.line + ' Column:' + item.column, GREY) +
+			'\n' +
+			color('[', GREY) +
+			getType(item.severity, item.nodeType) +
+			getMessage(item.severity, item.message) +
+			color(']', GREY) +
+			'\n' +
+			'{' + color(item.ruleId, GREY) + '} ' +
+			getSource(color(item.source, GREY)) + '\n'
 		);
 	}
 	return error;

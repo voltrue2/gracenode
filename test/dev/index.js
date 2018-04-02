@@ -10,6 +10,12 @@ describe('dev set up gracenode', function () {
 				console: logEnabled
 			}
 		});
+		
+		if (Promise) {
+			gn.start().then(done);
+			return;
+		}
+
 		gn.start(done);
 	});
 
@@ -46,6 +52,96 @@ describe('dev set up gracenode', function () {
 			assert.equal(error, null);
 			done();
 		});
+	});
+
+	it('can execute an array of promise functions in order', function (done) {
+		
+		if (!Promise) {
+			// node.js is too old to have Promise
+			return done();
+		}
+
+		var list = [];
+
+		function one() {
+			return new Promise(function (resolve, reject) {
+				list.push(1);	
+				resolve();
+			});
+		}
+
+		function two() {
+			return new Promise(function (resolve, reject) {
+				list.push(2);	
+				resolve();
+			});
+		}
+
+		function three() {
+			return new Promise(function (resolve, reject) {
+				list.push(3);	
+				resolve();
+			});
+		}
+	
+		gn.async.promiseAll([
+			one,
+			two,
+			three
+		]).then(function () {
+			for (var i = 0, len = list.length; i < len; i++) {
+				assert.equal(i + 1, list[i]);
+			}
+			done();
+		}).catch(() => {});
+	
+	});
+
+	it('can execute an array of promise functions in order and catch an exeption', function (done) {
+		
+		if (!Promise) {
+			// node.js is too old to have Promise
+			return done();
+		}
+
+		var list = [];
+
+		function one() {
+			return new Promise(function (resolve, reject) {
+				list.push(1);	
+				resolve();
+			});
+		}
+
+		function two() {
+			return new Promise(function (resolve, reject) {
+				list.push(2);	
+				resolve();
+			});
+		}
+
+		function three() {
+			return new Promise(function (resolve, reject) {
+				list.push(3);	
+				throw new Error('Foo');
+			});
+		}
+	
+		gn.async.promiseAll([
+			one,
+			two,
+			three
+		])
+		.then(function () {})
+		.catch(function (err) {
+			for (var i = 0, len = list.length; i < len; i++) {
+				assert.equal(i + 1, list[i]);
+			}
+			assert(err);
+			assert.equal(err.message, 'Foo');
+			done();
+		});
+	
 	});
 
 });
