@@ -1,6 +1,6 @@
 'use strict';
 
-const gn = require('gracenode');
+const gn = require('../gracenode');
 
 const DATA_TYPE_BUFFER = 254;
 const DATA_TYPE_ERR = 253;
