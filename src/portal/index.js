@@ -1,13 +1,11 @@
 'use strict';
 
 const gn = require('../gracenode');
-const TYPE = require('./packer').TYPE;
 const announce = require('./announce');
 const broker = require('./broker');
 const meshNodes = require('./meshnodes');
 
 module.exports = {
-	TYPE: TYPE,
 	TCP: broker.TCP,
 	UDP: broker.UDP,
 	// internally used methods
@@ -16,7 +14,6 @@ module.exports = {
 	// mesh network helper object
 	nodes: meshNodes,
 	// public methods for mesh network communication
-	define: broker.define,
 	emit: broker.emit,
 	on: on,
 	// mesh network methods

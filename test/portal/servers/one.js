@@ -41,35 +41,6 @@ gn.start(function () {
 	gn.log.setPrefix('ONE');
 	logger = gn.log.create();
 	const TYPE = gn.portal.TYPE;
-	gn.portal.define('one2two', {
-		bool: TYPE.BOOL,
-		str: TYPE.STR,
-		strlist: TYPE.STR_ARR,
-		obj: {
-			num: TYPE.UINT32,
-			uuid: TYPE.UUID,
-			bin: TYPE.BIN
-		}
-	}, {
-		bool: TYPE.BOOL,
-		str: TYPE.STR,
-		strlist: TYPE.STR_ARR,
-		obj: {
-			num: TYPE.UINT32,
-			uuid: TYPE.UUID,
-			bin: TYPE.BIN
-		}
-	});
-	gn.portal.define('two2one', {
-		bool: TYPE.BOOL,
-		str: TYPE.STR,
-		strlist: TYPE.STR_ARR,
-		obj: {
-			num: TYPE.UINT32,
-			uuid: TYPE.UUID,
-			bin: TYPE.BIN
-		}
-	});
 	gn.portal.on('two2one', function (payload) {
 		
 		console.log(payload);

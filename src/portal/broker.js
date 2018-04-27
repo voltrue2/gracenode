@@ -1,7 +1,6 @@
 'use strict';
 
 const gn = require('../gracenode');
-const packer = require('./packer');
 const delivery = require('./delivery');
 
 const RES_SCHEMA_SUFFIX = '_response';
@@ -18,7 +17,6 @@ module.exports = {
 	UDP: delivery.UDP,
 	config: config,
 	setup: setup,
-	define: define,
 	emit: emit,
 	on: on,
 	info: delivery.info,
@@ -35,24 +33,7 @@ function config(_conf) {
 }
 
 function setup(cb) {
-	packer.setup();
 	delivery.setup(cb);
-}
-
-/** @description Defines a mesh network communication event
-*	and its data structure
-* @param {string} eventName - A mesh network event name
-* @param {object} struct - A data structure for the event
-* @param {object} responseStruct - Optional data structure for response callback
-*/
-function define(eventName, struct, responseStruct) {
-	packer.schema(eventName, struct);
-	if (typeof responseStruct === 'object') {
-		packer.schema(
-			eventName + RES_SCHEMA_SUFFIX,
-			responseStruct
-		);
-	}
 }
 
 /** @description Emits(sends) a mesh network event

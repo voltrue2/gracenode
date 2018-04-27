@@ -24,24 +24,6 @@ const _info = [];
 var logger;
 var _sendHandler;
 
-packer.schema(PTS, {
-	id: packer.TYPE.UUID,
-	hasResponse: packer.TYPE.BOOL,
-	protocol: packer.TYPE.UINT8,
-	eventName: packer.TYPE.STR,
-	nodes: packer.TYPE.BIN,
-	payload: packer.TYPE.BIN
-});
-packer.schema(PTRS, {
-	id: packer.TYPE.UUID,
-	eventName: packer.TYPE.STR,
-	payload: packer.TYPE.BIN,
-	isError: packer.TYPE.BOOL
-});
-packer.schema(PTRES, {
-	message: packer.TYPE.ERR
-});
-
 module.exports = {
 	TCP: TCP,
 	UDP: UDP,
@@ -149,13 +131,13 @@ function send(protocol, eventName, nodes, data, cb) {
 	}
 
 	var id = gn.lib.uuid.v4();
-	var packed = packer.pack(PTS, {
+	var packed = packer.pack({
 		id: id.toBytes(),
 		hasResponse: hasResponse,
 		protocol: protocol,
 		eventName: eventName,
 		nodes: meshNodes.toBytes(nodes),
-		payload: packer.pack(eventName, data)
+		payload: packer.pack(data)
 	});
 	if (hasResponse) {
 		logger.sys('Response callback set as ID', id.toString());
@@ -244,14 +226,6 @@ function _onSelfResponse(res) {
 }
 
 function _onRemoteReceive(buf, response) {
-	var uncmp = packer.uncompress(buf);
-	if (uncmp) {
-		async.forEachSeries(
-			uncmp,
-			__onRemoteReceive.bind({ response: response})
-		);
-		return;
-	}
 	__onRemoteReceive(buf, null, response);
 }
 
@@ -260,7 +234,7 @@ function __onRemoteReceive(packed, next, _response) {
 	if (RES_BYTES_VAL === packed.readUInt32BE(0)) {
 		// response
 		packed = packed.slice(4);
-		var res = packer.unpack(PTRS, packed);
+		var res = packer.unpack(packed);
 		res.id = res.id.toString('hex');
 		logger.sys('Handle response:', res);
 		if (res && responses[res.id]) {
@@ -271,7 +245,7 @@ function __onRemoteReceive(packed, next, _response) {
 				rname = res.eventName +
 				module.exports._RES_SCHEMA_SUFFIX;
 			}
-			var resData = packer.unpack(rname, res.payload);
+			var resData = packer.unpack(res.payload);
 			logger.sys(
 				'Invoke response callback:',
 				res.id, resData
@@ -288,7 +262,7 @@ function __onRemoteReceive(packed, next, _response) {
 		return _callNext(next);
 	}
 	// non response
-	var unpacked = packer.unpack(PTS, packed);
+	var unpacked = packer.unpack(packed);
 	if (!handlers[unpacked.eventName]) {
 		return _callNext(next);
 	}
@@ -308,10 +282,7 @@ function _callNext(next) {
 }
 
 function _callHandler(unpacked, handler, response) {
-	var data = packer.unpack(
-		unpacked.eventName,
-		unpacked.payload
-	);
+	var data = packer.unpack(unpacked.payload);
 	logger.sys(
 		'Handled event:', unpacked.eventName,
 		'protocol (TCP=0 UDP=1)', unpacked.protocol,
@@ -363,16 +334,8 @@ function _onHandlerResponse(data) {
 		'pack data name', rname,
 		data
 	);
-	if (!packer.schemaExists(rname)) {
-		logger.error(
-			'Event response data structure missing:',
-			unpacked.eventName,
-			rname
-		);
-		return;
-	}
-	var res = packer.pack(rname, data);
-	var resPacked = packer.pack(PTRS, {
+	var res = packer.pack(data);
+	var resPacked = packer.pack({
 		id: unpacked.id,
 		eventName: unpacked.eventName,
 		payload: res,

@@ -83,13 +83,6 @@ function setup(cb) {
 
 function _handleMessage(buf, remote) {
 	var resp = _onMessageResponse.bind({ remote: remote });
-	var uncmp = packer.uncompress(buf);
-	if (uncmp) {
-		for (var i = 0, len = uncmp.length; i < len; i++) {
-			notifier(uncmp[i], resp);
-		}
-		return;
-	}
 	notifier(buf, resp);
 }
 
