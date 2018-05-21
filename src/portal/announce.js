@@ -9,6 +9,7 @@ const PREFIX = '__portal/';
 const DEFAULT_TYPE = 'normal';
 const SCAN_COUNT = 1000;
 const PATTERN = PREFIX + '*';
+const ALL_ADDR = '0.0.0.0/';
 const MATCH = 'MATCH';
 const COUNT = 'COUNT';
 
@@ -122,6 +123,25 @@ module.exports.setValue = function (key, value) {
 	valueMap[key] = value;
 };
 
+module.exports.getNode = function (type, addr, port) {
+	var list = cache[type];
+	if (!list || !list.length) {
+		return null;
+	}
+	var index;
+	var key = addr + port;
+	var allKey = ALL_ADDR + port;
+	if (map[key] !== undefined) {
+		index = map[key]; 
+	} else if (map[allKey] !== undefined) {
+		index = map[allKey];
+	}
+	if (index === undefined) {
+		return null;
+	}
+	return cache[type][index] || null;
+};
+
 module.exports.getNodes = function (type) {
 	if (cache[type]) {
 		return cache[type];
@@ -140,7 +160,7 @@ module.exports.getAllNodes = function () {
 
 module.exports.nodeExists = function (addr, port) {
 	var key = addr + port;
-	return map[key] || false;	
+	return (map[key] !== undefined || map[ALL_ADDR + port] === undefined) ? true : false;	
 };
 
 function startAnnounceAndRead() {
@@ -322,7 +342,7 @@ function createCache(list, results) {
 			value: item.value
 		});
 		// address + port is always unique, of cource!
-		tmpmap[item.key.address + item.key.port] = true;
+		tmpmap[item.key.address + item.key.port] = tmp[item.key.type].length - 1;
 	}
 	cache = tmp;
 	map = tmpmap;
