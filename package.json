@@ -45,7 +45,7 @@
     "rules": {
       "max-depth": 5,
       "no-undef": "error",
-      "no-unused-vars": "warn",
+      "no-unused-vars": "error",
       "no-cond-assign": "error",
       "no-console": "warn",
       "no-dupe-args": "error",

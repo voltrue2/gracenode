@@ -10,9 +10,6 @@ const udp = require('./udp');
 
 const TCP = 0;
 const UDP = 1;
-const PTS = '_pts';
-const PTRS = '_ptr';
-const PTRES = '_pte';
 const RES_BYTES = gn.Buffer.alloc(4);
 RES_BYTES.writeUInt32BE(0x01020304);
 const RES_BYTES_VAL = RES_BYTES.readUInt32BE(0);
@@ -238,13 +235,6 @@ function __onRemoteReceive(packed, next, _response) {
 		res.id = res.id.toString('hex');
 		logger.sys('Handle response:', res);
 		if (res && responses[res.id]) {
-			var rname;
-			if (res.isError) {
-				rname = PTRES;
-			} else {
-				rname = res.eventName +
-				module.exports._RES_SCHEMA_SUFFIX;
-			}
 			var resData = packer.unpack(res.payload);
 			logger.sys(
 				'Invoke response callback:',
@@ -317,21 +307,13 @@ function _callHandler(unpacked, handler, response) {
 
 function _onHandlerResponse(data) {
 	var isError = data instanceof Error ? true : false;
-	var rname;
 	var unpacked = this.unpacked;
 	var response = this.response;
-	if (isError) {
-		rname = PTRES;	
-	} else {
-		rname = unpacked.eventName +
-			module.exports._RES_SCHEMA_SUFFIX;
-	}
 	logger.sys(
 		'Calling response:',
 		'as error?', isError,
 		unpacked.id,
 		unpacked.eventName,
-		'pack data name', rname,
 		data
 	);
 	var res = packer.pack(data);

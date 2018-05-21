@@ -37,7 +37,7 @@ function convert(data) {
 		for (var i = 0, len = data.length; i < len; i++) {
 			data[i] = convert(data[i]);
 		}
-	} else if (type === 'object') {
+	} else if (type === 'object' && data !== null) {
 		for (var key in data) {
 			data[key] = convert(data[key]);
 		}

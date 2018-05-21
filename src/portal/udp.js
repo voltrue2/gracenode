@@ -2,7 +2,6 @@
 
 const dgram = require('dgram');
 const gn = require('../gracenode');
-const packer = require('./packer');
 
 const conf = {
 	address: '127.0.0.1',

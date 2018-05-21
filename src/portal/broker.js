@@ -1,6 +1,7 @@
 'use strict';
 
 const gn = require('../gracenode');
+const announce = require('./announce');
 const delivery = require('./delivery');
 
 const RES_SCHEMA_SUFFIX = '_response';
@@ -72,7 +73,7 @@ function _createNodeBranches(nodes) {
 		if (!branches[path]) {
 			branches[path] = [];
 		}
-		var node = nodes.shift();
+		var node = _getNode(nodes);
 		if (node) {
 			branches[path].push({
 				address: node.address,
@@ -82,6 +83,19 @@ function _createNodeBranches(nodes) {
 		}
 	}
 	return branches;
+}
+
+function _getNode(nodes) {
+	var node = nodes.shift();
+	if (!node) {
+		return null;
+	}
+	if (!announce.nodeExists(node.address, node.port)) {
+		// node we found does is no longer available: find next node
+		return _getNode(nodes);	
+	}
+	// this node is available
+	return node;
 }
 
 function on(eventName, handler) {

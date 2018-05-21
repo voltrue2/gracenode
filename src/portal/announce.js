@@ -22,6 +22,7 @@ const valueMap = {};
 const onAnnounceCallbacks = [];
 
 var cache = {};
+var map = {};
 var logger;
 var info;
 var rclient;
@@ -130,10 +131,16 @@ module.exports.getNodes = function (type) {
 
 module.exports.getAllNodes = function () {
 	var list = [];
-	for (const type in cache) {
-		list = list.concat(cache[type]);
+	var types = Object.keys(cache);
+	for (var i = 0, len = types.length; i < len; i++) {
+		list = list.concat(cache[types[i]]);
 	}
 	return list;
+};
+
+module.exports.nodeExists = function (addr, port) {
+	var key = addr + port;
+	return map[key] || false;	
 };
 
 function startAnnounceAndRead() {
@@ -188,10 +195,10 @@ function startAnnounceAndRead() {
 	setTimeout(exec, conf.interval);
 }
 
-function createKey() {
+function createKey(addr, port, type) {
 	return PREFIX +
-		info.address + '/' + info.port +
-		'/' + conf.type;
+		(addr || info.address) + '/' + (port || info.port) +
+		'/' + (type || conf.type);
 }
 
 function parseKey(key) {
@@ -297,6 +304,7 @@ function scan(cb) {
 
 function createCache(list, results) {
 	var tmp = {};
+	var tmpmap = {};
 	for (var i = 0, len = results.length; i < len; i++) {
 		var item = {
 			key: parseKey(list[i]),
@@ -313,8 +321,11 @@ function createCache(list, results) {
 			key: key,
 			value: item.value
 		});
+		// address + port is always unique, of cource!
+		tmpmap[item.key.address + item.key.port] = true;
 	}
 	cache = tmp;
+	map = tmpmap;
 	logger.verbose('cache created:', info, cache);
 }
 

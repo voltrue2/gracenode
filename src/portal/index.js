@@ -20,6 +20,7 @@ module.exports = {
 	info: broker.info,
 	// mesh network node methods
 	setNodeValue: announce.setValue,
+	nodeExists: announce.nodeExists,
 	onAnnounce: announce.onAnnounce,
 	getNodes: announce.getNodes,
 	getAllNodes: announce.getAllNodes
