@@ -66,7 +66,7 @@ gn.http.get('/one2two', function (req, res) {
 		return res.error(new Error('NoNodeFound'));
 	}
 	logger.debug('emit event one2two', nodes, data);
-	gn.portal.emit(gn.portal.TCP, 'one2two', nodes, data, function (error, resp) {
+	gn.portal.emit(gn.portal.RUDP, 'one2two', nodes, data, function (error, resp) {
 		if (error) {
 			return res.error(error);
 		}

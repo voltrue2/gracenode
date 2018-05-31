@@ -14,7 +14,7 @@ var logger;
 delivery._RES_SCHEMA_SUFFIX = RES_SCHEMA_SUFFIX;
 
 module.exports = {
-	TCP: delivery.TCP,
+	RUDP: delivery.RUDP,
 	UDP: delivery.UDP,
 	config: config,
 	setup: setup,
@@ -38,11 +38,11 @@ function setup(cb) {
 }
 
 /** @description Emits(sends) a mesh network event
-* @param {number} protocol - TCP/UDP = 0 or 1
+* @param {number} protocol - RUDP/UDP = 0 or 1
 * @param {string} eventName - The mesh network event to emit/send as
 * @param {array<string>} nodes - A list of mesh nodes
 * @param {object} data - Data to be emitted/sent
-* @param {function=} cb - Optional callback for TCP
+* @param {function=} cb - Optional callback for RUDP
 */
 function emit(protocol, eventName, nodes, data, cb) {
 	var branches = _createNodeBranches(nodes);

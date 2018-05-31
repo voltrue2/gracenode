@@ -6,7 +6,7 @@ const broker = require('./broker');
 const meshNodes = require('./meshnodes');
 
 module.exports = {
-	TCP: broker.TCP,
+	RUDP: broker.RUDP,
 	UDP: broker.UDP,
 	// internally used methods
 	config: config,
@@ -51,7 +51,7 @@ function setup(cb) {
 * @param {string} eventName - An event name of
 *	mesh network communication event
 * @param {function} handler - A listener handler
-* @param {function} cb - Indicates as TCP if given
+* @param {function} cb - Indicates as RUDP if given
 *	the handler must call "callback" within itself
 */
 function on(eventName, handler) {

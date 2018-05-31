@@ -4,11 +4,9 @@ const gn = require('../gracenode');
 const async = gn.async;
 const packer = require('./packer');
 const meshNodes = require('./meshnodes');
-const ipc = require('./ipc');
-const tcp = require('./tcp');
 const udp = require('./udp');
 
-const TCP = 0;
+const RUDP = 0;
 const UDP = 1;
 const RES_BYTES = gn.Buffer.alloc(4);
 RES_BYTES.writeUInt32BE(0x01020304);
@@ -22,7 +20,7 @@ var logger;
 var _sendHandler;
 
 module.exports = {
-	TCP: TCP,
+	RUDP: RUDP,
 	UDP: UDP,
 	config: config,
 	setup: setup,
@@ -34,26 +32,20 @@ module.exports = {
 
 function config(_conf) {
 	logger = gn.log.create('portal.broker.delivery');
-	tcp.config(_conf);
 	udp.config(_conf);
-	ipc.config(_conf);
 	_sendHandler = _send;
 }
 
 function setup(cb) {
 	var tasks;
-	tcp.on(_onRemoteReceive);
 	udp.on(_onRemoteReceive);
-	ipc.on(_onRemoteReceive);
 	tasks = [
-		tcp.setup,
 		udp.setup,
-		ipc.setup,
 		__getInfo
 	];
 	async.series(tasks, cb);
 	function __getInfo(next) {
-		_info[TCP] = tcp.info();
+		_info[RUDP] = udp.info();
 		_info[UDP] = udp.info();
 		next();
 	}
@@ -61,7 +53,7 @@ function setup(cb) {
 
 function info(protocol) {
 	switch (protocol) {
-		case TCP:
+		case RUDP:
 			return _info[protocol];
 		case UDP:
 			return _info[protocol];
@@ -81,7 +73,6 @@ function send(protocol, eventName, nodes, data, cb) {
 	var port = node.port;
 	var me = info();
 	var isSelf = false;
-	var isLocal = false;
 	
 	if (!addr || isNaN(port)) {
 		logger.error(
@@ -95,8 +86,6 @@ function send(protocol, eventName, nodes, data, cb) {
 	if (addr === me.address) {
 		if (port === me.port) {
 			isSelf = true;
-		} else {
-			isLocal = true;
 		}
 	}
 
@@ -109,8 +98,7 @@ function send(protocol, eventName, nodes, data, cb) {
 		'Emitting to:', addr, port,
 		'event:', eventName,
 		'is self:', isSelf,
-		'is local:', isLocal,
-		'protocol (TCP=0 UDP=1):', protocol,
+		'protocol (RUDP=0 UDP=1):', protocol,
 		'response:', hasResponse,
 		'payload data:', data
 	);
@@ -142,28 +130,17 @@ function send(protocol, eventName, nodes, data, cb) {
 			callback: cb
 		};
 	}
-	_sendHandler(protocol, isLocal, addr, port, packed);
+	_sendHandler(protocol, addr, port, packed);
 }
 
-function _send(protocol, isLocal, addr, port, packed) {
-	
-	// same server different process
-	if (isLocal) {
-		ipc.emit(
-			addr,
-			port,
-			packed
-		);
-		return;
-	}
-
+function _send(protocol, addr, port, packed) {
 	switch (protocol) {
-		case TCP:
-			tcp.emit(
+		case RUDP:
+			udp.remit(
 				addr,
 				port,
 				packed
-			);	
+			);
 		break;
 		case UDP:
 			udp.emit(
@@ -201,7 +178,7 @@ function _onSelfReceive(protocol, eventName, nodes, data, cb) {
 	if (nodes.length) {
 		logger.sys(
 			'Emitting relay from self:',
-			'protocol (TCP=0 UDP=1)', protocol,
+			'protocol (RUDP=0 UDP=1)', protocol,
 			'event', eventName,
 			'payload data', data
 		);
@@ -275,7 +252,7 @@ function _callHandler(unpacked, handler, response) {
 	var data = packer.unpack(unpacked.payload);
 	logger.sys(
 		'Handled event:', unpacked.eventName,
-		'protocol (TCP=0 UDP=1)', unpacked.protocol,
+		'protocol (RUDP=0 UDP=1)', unpacked.protocol,
 		'id', unpacked.id.toString('hex'),
 		'requires response',
 		response ? true : false,
@@ -292,7 +269,7 @@ function _callHandler(unpacked, handler, response) {
 	if (unpacked.nodes.length) {
 		logger.sys(
 			'Emitting relay:',
-			'protocol (TCP=0 UDP=1)', unpacked.protocol,
+			'protocol (RUDP=0 UDP=1)', unpacked.protocol,
 			'event', unpacked.eventName,
 			'payload data', data
 		);
