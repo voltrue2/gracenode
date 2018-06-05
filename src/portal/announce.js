@@ -21,6 +21,7 @@ const conf = {
 };
 const valueMap = {};
 const onAnnounceCallbacks = [];
+const onNewNodeCallbacks = [];
 
 var cache = {};
 var map = {};
@@ -94,6 +95,10 @@ module.exports.setup = function (cb) {
 
 module.exports.onAnnounce = function (func) {
 	onAnnounceCallbacks.push(func);
+};
+
+module.exports.onNewNode = function (func) {
+	onNewNodeCallbacks.push(func);
 };
 
 module.exports.setValue = function (key, value) {
@@ -325,6 +330,7 @@ function scan(cb) {
 function createCache(list, results) {
 	var tmp = {};
 	var tmpmap = {};
+	var newNodes = [];
 	for (var i = 0, len = results.length; i < len; i++) {
 		var item = {
 			key: parseKey(list[i]),
@@ -342,10 +348,27 @@ function createCache(list, results) {
 			value: item.value
 		});
 		// address + port is always unique, of cource!
-		tmpmap[item.key.address + item.key.port] = tmp[item.key.type].length - 1;
+		var mapkey = item.key.address + item.key.port;
+		tmpmap[mapkey] = tmp[item.key.type].length - 1;
+		// have we seen this node before?
+		if (map[mapkey] === undefined) {
+			newNodes.push({
+				address: item.key.address,
+				port: item.key.port,
+				value: item.value,
+				type: item.key.value
+			});
+		}
 	}
 	cache = tmp;
 	map = tmpmap;
+	for (var k = 0, ken = newNodes.length; k < ken; k++) {
+		var newNode = newNodes[k];
+		for (var j = 0, jen = onNewNodeCallbacks.length; j < jen; j++) {
+			var cb = onNewNodeCallbacks[j];
+			cb(newNode);
+		}
+	}
 	logger.verbose('cache created:', info, cache);
 }
 

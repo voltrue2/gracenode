@@ -76,6 +76,25 @@ gn.portal.onAnnounce(function () {
 
 The above example will update "onlineUsers" on every announce.
 
+### .onNewNode(callback [Function])
+
+Registers a callback function to be invoked on detecting a new mesh network node.
+
+Example:
+
+```javascript
+gn.portal.onNewNode(function (node) {
+	/**
+	node {
+		address,
+		port,
+		value,
+		type
+	}
+	*/
+});
+```
+
 ### .setNodeValue(key [String], value [String/Number])
 
 Set/Add a key/value as metadata. The values can be read by `.getNodes(...)` or `.getAllNodes()`.

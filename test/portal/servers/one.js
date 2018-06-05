@@ -2,6 +2,7 @@
 
 const gn = require('../../../index');
 var logger;
+var prefix = '';
 
 gn.config({
 	log: {
@@ -35,6 +36,13 @@ gn.portal.onAnnounce(function () {
 	gn.portal.setNodeValue('one-value-key', 'one-value-' + Date.now());
 });
 
+gn.portal.onNewNode(function (node) {
+	
+	console.log(node);
+	
+	prefix = 'deadbeef';
+});
+
 const remember = {};
 
 gn.start(function () {
@@ -48,6 +56,10 @@ gn.start(function () {
 		remember.two2one = payload;
 	});
 
+});
+
+gn.http.get('/deadbeef', function (req, res) {
+	res.text(prefix);
 });
 
 gn.http.get('/one2two', function (req, res) {

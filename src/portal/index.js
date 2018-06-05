@@ -22,6 +22,7 @@ module.exports = {
 	setNodeValue: announce.setValue,
 	nodeExists: announce.nodeExists,
 	onAnnounce: announce.onAnnounce,
+	onNewNode: announce.onNewNode,
 	getNodes: announce.getNodes,
 	getAllNodes: announce.getAllNodes
 };

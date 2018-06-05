@@ -46,6 +46,22 @@ describe('gracenode.portal', function () {
 		setTimeout(done, 2000);
 	});
 
+	it('server one can detect server two as a new node', function (done) {
+		var url = 'http://127.0.0.1:8500/deadbeef';
+		request.GET(url, null, null, function (error, body, status) {
+			if (error) {
+				console.error(error);
+			}
+			if (status > 399) {
+				console.error('Error:', status, body.toString());
+			}
+			assert.equal(error, null);
+			assert.equal(status, 200);
+			assert.equal(body, 'deadbeef');
+			done();
+		});
+	});
+
 	it('server one can send a mesh network message to server two and get a response from it', function (done) {
 		const url = 'http://127.0.0.1:8500/one2two';
 		request.GET(url, null, null, function (error, body, status) {
