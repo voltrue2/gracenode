@@ -125,112 +125,13 @@ Converts address and port to bytes.
 
 Converts bytes to address and port: `{ address: <string>, port: <number> }`
 
-### .define(name [String], strcture [Object])
-
-Define the mesh network communication event and its data structure.
-
-Example:
-
-```javascript
-gracenode.portal.define('example', {
-	value1: gracenode.portal.DATATYPE.UINT8,
-	value2: gracenode.portal.DATATYPE.STR,
-	value3: gracenode.portal.DATATYPE.BIN,
-	value4: gracenode.portal.DATATYPE.STR_ARR
-});
-```
-
-### .DATATYPE
-
-The hash map of data types used with `gracenode.portal.define(...)`.
-
-#### .DATATYPE.UINT8
-
-UInt8 data type
-
-#### .DATATYPE.INT8
-
-Int8 data type
-
-#### .DATATYPE.UINT16
-
-UInt16 data type
-
-#### .DATATYPE.INT16
-
-Int16 data type
-
-#### .DATATYPE.UINT32
-
-UInt32 data type
-
-#### .DATATYPE.INT32
-
-Int32 data type
-
-#### .DATATYPE.DOUBLE
-
-Double data type
-
-#### .DATATYPE.BIN
-
-Binary data type
-
-#### .DATATYPE.STR
-
-String data type
-
-#### .DATATYPE.BOOL
-
-Boolean data type
-
-#### .DATATYPE.UINT8_ARR
-
-Array of UInt8 data type
-
-#### .DATATYPE.INT8_ARR
-
-Array of Int8 data type
-
-#### .DATATYPE.UINT16_ARR
-
-Array of UInt16 data type
-
-#### .DATATYPE.INT16_ARR
-
-Array of Int16 data type
-
-#### .DATATYPE.UINT32_ARR
-
-Array of UInt32 data type
-
-#### .DATATYPE.INT32_ARR
-
-Array of Int32 data type
-
-#### .DATATYPE.DOUBLE_ARR
-
-Array of Double data type
-
-#### .DATATYPE.BIN_ARR
-
-Array of Binary data type
-
-#### .DATATYPE.STR_ARR
-
-Array of String data type
-
-#### .DATATYPE.BOOL_ARR
-
-Array of Boolean data type
-
 ### .emit(protocol [Number], name [String], nodeList [Array], data [Object], callback [Function])
 
 Sends mesh netowrk communication to multiple mesh network nodes.
 
 #### protocol [Number]
 
-Mesh network protocol. The valid values are: `portal.TCP` or `portal.UDP`.
+Mesh network protocol. The valid values are: `portal.RUDP` or `portal.UDP`.
 
 #### name [String]
 
