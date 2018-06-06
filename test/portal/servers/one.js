@@ -48,7 +48,6 @@ const remember = {};
 gn.start(function () {
 	gn.log.setPrefix('ONE');
 	logger = gn.log.create();
-	const TYPE = gn.portal.TYPE;
 	gn.portal.on('two2one', function (payload) {
 		
 		console.log(payload);

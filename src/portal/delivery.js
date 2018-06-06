@@ -9,8 +9,10 @@ const udp = require('./udp');
 const RUDP = 0;
 const UDP = 1;
 const RES_BYTES = gn.Buffer.alloc(4);
-RES_BYTES.writeUInt32BE(0x01020304);
-const RES_BYTES_VAL = RES_BYTES.readUInt32BE(0);
+RES_BYTES[0] = 0xde;
+RES_BYTES[1] = 0xaf;
+RES_BYTES[2] = 0xbe;
+RES_BYTES[3] = 0xed;
 
 const handlers = {};
 const responses = {};
@@ -34,6 +36,7 @@ function config(_conf) {
 	logger = gn.log.create('portal.broker.delivery');
 	udp.config(_conf);
 	_sendHandler = _send;
+	udp.onTimeOut(_onTimeOut);
 }
 
 function setup(cb) {
@@ -191,6 +194,33 @@ function _onSelfReceive(protocol, eventName, nodes, data, cb) {
 	}
 }
 
+function _onTimeOut(packet) {
+	if (_isResponsePacket(packet)) {
+		// we do not re-deliver response:
+		// b/c a response must be delivered to a specific node...
+		return;
+	}
+	var unpacked = packer.unpack(packet);
+	var nodes = meshNodes.toList(unpacked.nodes);
+	var data = packer.unpack(unpacked.payload);
+	if (!nodes.length) {
+		// no nodes to re-delivery...
+		return;
+	}
+	// re-deliver to another node
+	logger.sys(
+		'Re-deliver message:',
+		'event', unpacked.eventName,
+		'payload data', data
+	);
+	send(
+		unpacked.protocol,
+		unpacked.eventName,
+		nodes,
+		data
+	);
+}
+
 function _onSelfResponse(res) {
 	var cb = this.cb;
 	if (res instanceof Error) {
@@ -199,13 +229,9 @@ function _onSelfResponse(res) {
 	cb(null, res);
 }
 
-function _onRemoteReceive(buf, response) {
-	__onRemoteReceive(buf, null, response);
-}
-
-function __onRemoteReceive(packed, next, _response) {
+function _onRemoteReceive(packed, _response) {
 	var response = _response || this.response;
-	if (RES_BYTES_VAL === packed.readUInt32BE(0)) {
+	if (_isResponsePacket(packed)) {
 		// response
 		packed = packed.slice(4);
 		var res = packer.unpack(packed);
@@ -223,62 +249,54 @@ function __onRemoteReceive(packed, next, _response) {
 				responses[res.id].callback(null, resData);
 			}
 			delete responses[res.id];
-			return _callNext(next);
+			return;
 		}
 		logger.sys('Response callback not found:', res, packed);
-		return _callNext(next);
+		return;
 	}
 	// non response
 	var unpacked = packer.unpack(packed);
-	if (!handlers[unpacked.eventName]) {
-		return _callNext(next);
-	}
+	unpacked.data = packer.unpack(unpacked.payload);
 	unpacked.nodes = meshNodes.toList(unpacked.nodes);
+	if (unpacked.nodes.length) {
+		logger.sys(
+			'Emitting relay:',
+			'protocol (RUDP=0 UDP=1)', unpacked.protocol,
+			'event', unpacked.eventName,
+			'payload data', unpacked.data
+		);
+		send(
+			unpacked.protocol,
+			unpacked.eventName,
+			unpacked.nodes,
+			unpacked.data
+		);			
+	}
+	if (!handlers[unpacked.eventName]) {
+		return;
+	}
 	var _handlers = handlers[unpacked.eventName];
 	for (var i = 0, len = _handlers.length; i < len; i++) {
 		_callHandler(unpacked, _handlers[i], response);
 	}
-	_callNext(next);
-}
-
-function _callNext(next) {
-	if (!next) {
-		return;
-	}
-	process.nextTick(next);
 }
 
 function _callHandler(unpacked, handler, response) {
-	var data = packer.unpack(unpacked.payload);
 	logger.sys(
 		'Handled event:', unpacked.eventName,
 		'protocol (RUDP=0 UDP=1)', unpacked.protocol,
 		'id', unpacked.id.toString('hex'),
 		'requires response',
 		response ? true : false,
-		'payload data:', data
+		'payload data:', unpacked.data
 	);
 	if (response && unpacked.hasResponse) {
-		handler(data, _onHandlerResponse.bind({
+		handler(unpacked.data, _onHandlerResponse.bind({
 			unpacked: unpacked,
 			response: response
 		}));
 	} else {
-		handler(data);
-	}
-	if (unpacked.nodes.length) {
-		logger.sys(
-			'Emitting relay:',
-			'protocol (RUDP=0 UDP=1)', unpacked.protocol,
-			'event', unpacked.eventName,
-			'payload data', data
-		);
-		send(
-			unpacked.protocol,
-			unpacked.eventName,
-			unpacked.nodes,
-			data
-		);			
+		handler(unpacked.data);
 	}
 }
 
@@ -301,5 +319,17 @@ function _onHandlerResponse(data) {
 		isError: isError
 	});
 	response(Buffer.concat([ RES_BYTES, resPacked ]));
+}
+
+function _isResponsePacket(packet) {
+	if (
+		packet[0] === RES_BYTES[0] &&
+		packet[1] === RES_BYTES[1] &&
+		packet[2] === RES_BYTES[2] &&
+		packet[3] === RES_BYTES[3]
+	) {
+		return true;
+	}
+	return false;
 }
 

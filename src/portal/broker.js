@@ -73,6 +73,7 @@ function _createNodeBranches(nodes) {
 		if (!branches[path]) {
 			branches[path] = [];
 		}
+		// make sure we include live node ONLY
 		var node = _getNode(nodes);
 		if (node) {
 			branches[path].push({

@@ -24,6 +24,7 @@ RFLAG.writeUInt8(0x00);
 NFLAG.writeUInt8(0x01);
 AFLAG.writeUInt8(0x02);
 const reliables = {};
+const _onTimeOutCallbacks = [];
 
 var logger;
 var server;
@@ -35,7 +36,8 @@ module.exports = {
 	emit: _emit,
 	remit: _remit,
 	on: on,
-	info: getInfo
+	info: getInfo,
+	onTimeOut: onTimeOut
 };
 
 function config(_conf) {
@@ -209,8 +211,7 @@ function _remit(addr, port, packed, isResponse) {
 }
 
 function _retryRemit(bind) {
-	var id = bind.id;
-	var sid = id.toString();
+	var sid = bind.id.toString();
 	var time = bind.time; 
 	var addr = bind.addr;
 	var port = bind.port;
@@ -218,7 +219,7 @@ function _retryRemit(bind) {
 	var now = Date.now();
 	logger.sys(
 		'Retry reliable emit ID:', sid,
-		'Timeout?', (now >= time ? true : false),
+		'TimeOut?', (now >= time ? true : false),
 		'Will send?', (reliables[sid] ? true : false)
 	);
 	if (now >= time) {
@@ -226,6 +227,11 @@ function _retryRemit(bind) {
 		logger.error('Reliable emit timed out ID:', sid);
 		clearTimeout(reliables[sid].retry);
 		delete reliables[sid];
+		// remove 17 bytes = 1 byte the flag + 16 bytes of relaible message ID
+		packet = packet.slice(17);
+		for (var i = 0, len = _onTimeOutCallbacks.length; i < len; i++) {
+			_onTimeOutCallbacks[i](packet);
+		}
 		return;
 	}
 	if (!reliables[sid]) {
@@ -265,4 +271,9 @@ function on(_notifier) {
 function getInfo() {
 	return info;
 }
+
+function onTimeOut(onTimeOutCallback) {
+	_onTimeOutCallbacks.push(onTimeOutCallback);
+}
+
 
