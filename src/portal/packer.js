@@ -41,19 +41,24 @@ function convert(data) {
 	if (data === null && data === undefined) {
 		return data;
 	}
+	var res;
 	var type = typeof data;
 	if (type === 'object' && Array.isArray(data)) {
+		res = [];
 		for (var i = 0, len = data.length; i < len; i++) {
-			data[i] = convert(data[i]);
+			res[i] = convert(data[i]);
 		}
 	} else if (type === 'object' && data !== null) {
 		var keys = Object.keys(data);
+		res = {};
 		for (var j = 0, jen = keys.length; j < jen; j++) {
 			var key = keys[j];
-			data[key] = convert(data[key]);
+			res[key] = convert(data[key]);
 		}
+	} else {
+		res = data;
 	}
-	return data;
+	return res;
 }
 
 function revert(data) {
