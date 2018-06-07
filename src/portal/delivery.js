@@ -125,7 +125,7 @@ function send(protocol, eventName, nodes, data, cb) {
 		protocol: protocol,
 		eventName: eventName,
 		nodes: meshNodes.toBytes(nodes),
-		payload: packer.pack(data)
+		payload: data
 	});
 	if (hasResponse) {
 		logger.sys('Response callback set as ID', id.toString());
@@ -202,7 +202,6 @@ function _onTimeOut(packet) {
 	}
 	var unpacked = packer.unpack(packet);
 	var nodes = meshNodes.toList(unpacked.nodes);
-	var data = packer.unpack(unpacked.payload);
 	if (!nodes.length) {
 		// no nodes to re-delivery...
 		return;
@@ -211,13 +210,13 @@ function _onTimeOut(packet) {
 	logger.sys(
 		'Re-deliver message:',
 		'event', unpacked.eventName,
-		'payload data', data
+		'payload data', unpacked.payload
 	);
 	send(
 		unpacked.protocol,
 		unpacked.eventName,
 		nodes,
-		data
+		unpacked.payload
 	);
 }
 
@@ -238,7 +237,7 @@ function _onRemoteReceive(packed, _response) {
 		res.id = res.id.toString('hex');
 		logger.sys('Handle response:', res);
 		if (res && responses[res.id]) {
-			var resData = packer.unpack(res.payload);
+			var resData = res.payload;
 			logger.sys(
 				'Invoke response callback:',
 				res.id, resData
@@ -256,20 +255,19 @@ function _onRemoteReceive(packed, _response) {
 	}
 	// non response
 	var unpacked = packer.unpack(packed);
-	unpacked.data = packer.unpack(unpacked.payload);
 	unpacked.nodes = meshNodes.toList(unpacked.nodes);
 	if (unpacked.nodes.length) {
 		logger.sys(
 			'Emitting relay:',
 			'protocol (RUDP=0 UDP=1)', unpacked.protocol,
 			'event', unpacked.eventName,
-			'payload data', unpacked.data
+			'payload data', unpacked.payload
 		);
 		send(
 			unpacked.protocol,
 			unpacked.eventName,
 			unpacked.nodes,
-			unpacked.data
+			unpacked.payload
 		);			
 	}
 	if (!handlers[unpacked.eventName]) {
@@ -288,15 +286,15 @@ function _callHandler(unpacked, handler, response) {
 		'id', unpacked.id.toString('hex'),
 		'requires response',
 		response ? true : false,
-		'payload data:', unpacked.data
+		'payload data:', unpacked.payload
 	);
 	if (response && unpacked.hasResponse) {
-		handler(unpacked.data, _onHandlerResponse.bind({
+		handler(unpacked.payload, _onHandlerResponse.bind({
 			unpacked: unpacked,
 			response: response
 		}));
 	} else {
-		handler(unpacked.data);
+		handler(unpacked.payload);
 	}
 }
 
@@ -311,11 +309,10 @@ function _onHandlerResponse(data) {
 		unpacked.eventName,
 		data
 	);
-	var res = packer.pack(data);
 	var resPacked = packer.pack({
 		id: unpacked.id,
 		eventName: unpacked.eventName,
-		payload: res,
+		payload: data,
 		isError: isError
 	});
 	response(Buffer.concat([ RES_BYTES, resPacked ]));
