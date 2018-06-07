@@ -1,7 +1,7 @@
 'use strict';
 
 const dgram = require('dgram');
-const gn = require('gracenode');
+const gn = require('../gracenode');
 
 const conf = {
 	address: '127.0.0.1',
