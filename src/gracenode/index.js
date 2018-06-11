@@ -280,7 +280,7 @@ function execLint(cb) {
 		return cb();
 	}
 	logger.info('Lint application code');
-	lint(exports.getRootPath(), config.get('lint.ignore'), function __onLint(error) {
+	lint(exports.getRootPath(), config.get('lint.packagePath'), config.get('lint.ignore'), function __onLint(error) {
 		if (error && config.get('lint.strict')) {
 			return cb(error);
 		}

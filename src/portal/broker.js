@@ -43,6 +43,7 @@ function setup(cb) {
 * @param {array<string>} nodes - A list of mesh nodes
 * @param {object} data - Data to be emitted/sent
 * @param {function=} cb - Optional callback for RUDP
+				Emit that requires a response
 */
 function emit(protocol, eventName, nodes, data, cb) {
 	var branches = _createNodeBranches(nodes);

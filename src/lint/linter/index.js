@@ -25,11 +25,12 @@ module.exports = {
 	start: start
 };
 
-function start(path, ignores, cb) {
+function start(path, _packagePath, ignores, cb) {
+	var packagePath = getPackagePath(_packagePath);	
 	try {
-		conf = require(process.cwd() + '/package.json').eslintConfig;
+		conf = require(packagePath + '/package.json').eslintConfig;
 		process.stdout.write(color(
-			'Lint loading ' + gn.getRootPath() +
+			'Lint loading ' + packagePath +
 			'package.json' + ' as configuration', GREY) + '\n'
 		);
 	} catch (err) {
@@ -45,6 +46,21 @@ function start(path, ignores, cb) {
 		var failed = lint(path, ignores, list);
 		cb(failed);
 	});
+}
+
+function getPackagePath(path, lastTry) {
+	if (!path) {
+		return process.cwd();
+	}
+	try {
+		fs.statSync(path);
+	} catch (err) {
+		if (lastTry) {
+			return process.cwd();
+		}
+		return getPackagePath(gn.getRootPath() + path, true);
+	}
+	return path;
 }
 
 function lint(path, ignores, list) {

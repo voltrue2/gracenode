@@ -18,7 +18,7 @@ gn.start(function () {
 		list.push(root + '/' + process.argv[i]);
 	}
 	gn.async.forEachSeries(list, function (path, next) {
-		lint(path, [], function (error) {
+		lint(path, '', [], function (error) {
 			if (error) {
 				return next(error);
 			}
