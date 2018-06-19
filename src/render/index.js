@@ -12,42 +12,42 @@ var logger;
 var pathPrefix = '';
 
 exports.config = function __renderIndexConfig(path, cacheSize) {
-	logger = gn.log.create('render');
-	pathPrefix = path;
-	if (cacheSize !== undefined) {
-		cache.setMemSize(cacheSize);
-	}
+    logger = gn.log.create('render');
+    pathPrefix = path;
+    if (cacheSize !== undefined) {
+        cache.setMemSize(cacheSize);
+    }
 };
 
 exports.setup = function __renderIndexSetup(cb) {
-	if (!pathPrefix) {
-		return cb(new Error('RenderMissingPath'));
-	}
-	loader.load(pathPrefix, cb);	
+    if (!pathPrefix) {
+        return cb(new Error('RenderMissingPath'));
+    }
+    loader.load(pathPrefix, cb);    
 };
 
 exports.render = function __renderIndexRender(path, vars, cacheTtl) {
-	if (cacheTtl === undefined) {
-		cacheTtl = DEFAULT_TTL;
-	}
-	if (cacheTtl) {
-		var res = cache.get(vars);
-		if (res) {
-			logger.verbose('Used render cache:', path);
-			return res;
-		}
-		var rendered = render.render(path, vars);
-		cache.set(vars, rendered, cacheTtl);
-		logger.verbose('Rendered without cache:', path);
-		return rendered;
-	}
-	return render.render(path, vars);
+    if (cacheTtl === undefined) {
+        cacheTtl = DEFAULT_TTL;
+    }
+    if (cacheTtl) {
+        var res = cache.get(vars);
+        if (res) {
+            logger.verbose('Used render cache:', path);
+            return res;
+        }
+        var rendered = render.render(path, vars);
+        cache.set(vars, rendered, cacheTtl);
+        logger.verbose('Rendered without cache:', path);
+        return rendered;
+    }
+    return render.render(path, vars);
 };
 
 exports.render.getAllPaths = function __renderIndexGetAllPaths() {
-	return render.getAllPaths();
+    return render.getAllPaths();
 };
 
 exports.render.func = function __renderIndexFunc(name, handler) {
-	func.add(name, handler);
+    func.add(name, handler);
 };

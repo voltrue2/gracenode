@@ -1,3 +1,3 @@
 exports.GET = function (req, res) {
-	res.json({ test: true });
+    res.json({ test: true });
 };

@@ -1,3 +1,3 @@
 exports.GET = function (req, res) {
-	res.redirect('/redirect/dest', 301);
+    res.redirect('/redirect/dest', 301);
 };

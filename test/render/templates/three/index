@@ -13,12 +13,12 @@
 <th>Category</th>
 <th>Name</th>
 {{
-	for (i = 0; i < {list.length}; i+= 1):
-		<tr>
-		<td>{ list.i.category}</td>
-		<td>{ list.i.name}</td>
-		</tr>
-	endfor
+    for (i = 0; i < {list.length}; i+= 1):
+        <tr>
+        <td>{ list.i.category}</td>
+        <td>{ list.i.name}</td>
+        </tr>
+    endfor
 }}
 </tr>
 </table>

@@ -1,3 +1,3 @@
 module.exports.GET = function (req, res) {
-	res.html('index');
+    res.html('index');
 };

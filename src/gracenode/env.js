@@ -14,15 +14,15 @@ The above will make care to load a configuration file called /var/www/app/config
 Example: export GRACENODE_RPC_HOST=my.awesome.game.domain.com
 
 {
-	rpc: {
-		host: '{$RPC_HOST}'
-	}
+    rpc: {
+        host: '{$RPC_HOST}'
+    }
 }
 
 {
-	rpc: {
-		host: 'my.awesome.game.domain.com'
-	}
+    rpc: {
+        host: 'my.awesome.game.domain.com'
+    }
 }
 */
 
@@ -33,15 +33,15 @@ module.exports.setPrefix = setPrefix;
 module.exports.getEnv = getEnv;
 
 function setPrefix(_prefix) {
-	prefix = _prefix;
+    prefix = _prefix;
 }
 
 function getEnv() {
-	for (const name in process.env) {
-		if (name.indexOf(prefix) === 0) {
-			env[name.replace(prefix + '_', '')] = process.env[name];
-		}
-	}
-	return env;
+    for (const name in process.env) {
+        if (name.indexOf(prefix) === 0) {
+            env[name.replace(prefix + '_', '')] = process.env[name];
+        }
+    }
+    return env;
 }
 

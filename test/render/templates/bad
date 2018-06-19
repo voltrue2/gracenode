@@ -3,7 +3,7 @@ bad
 end}}
 
 {{ for (loop) 
-	5678
+    5678
 }}
 
 {{foreach bad

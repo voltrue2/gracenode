@@ -1,3 +1,3 @@
 module.exports.HEAD = function (req, res) {
-	res.json('');
+    res.json('');
 };

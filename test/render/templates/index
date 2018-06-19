@@ -5,12 +5,12 @@
 </head>
 <body>
 {{ for (abc = 0; abc < {keys.length}; abc++):
-	<div>class&nbps;name:&nbsp;{keys.abc}</div>
+    <div>class&nbps;name:&nbsp;{keys.abc}</div>
 endfor}}
 {{
-	foreach (i in {data}):
-		<div style="color: #f00;">{data.i.type} : {data.i.value}</div>
-	endforeach
+    foreach (i in {data}):
+        <div style="color: #f00;">{data.i.type} : {data.i.value}</div>
+    endforeach
 }}
 </body>
 </html>
