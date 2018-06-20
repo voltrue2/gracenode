@@ -21,11 +21,11 @@
     "redis": "2.7.1"
   },
   "devDependencies": {
-    "mocha": "2.3.3",
-    "staticdata": "0.0.7",
+    "express": "^4.16.3",
     "gracenode-server": "0.4.3",
+    "mocha": "^5.2.0",
     "request": "2.86.0",
-    "express": "4.13.3"
+    "staticdata": "0.0.7"
   },
   "engine": {
     "engine": "node >= 4.0.0"
