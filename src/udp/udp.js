@@ -39,6 +39,8 @@ const connectionInfo = {
     port: null
 };
 
+module.exports.name = 'udp';
+
 module.exports.info = function __udpInfo() {
     return {
         address: connectionInfo.address,
@@ -51,13 +53,19 @@ module.exports.info = function __udpInfo() {
 module.exports.setup = function __udpSetup(cb) {
     logger = gn.log.create('UDP');
     config = gn.getConfig('udp');
-
     if (!gn.isSupportedVersion()) {
         return gn.stop(new Error(
             'UDP server does not support node.js version: ' + process.version
         ));
     }
+    if (config.manualStart) {
+        logger.info('UDP server must be started manually by gracenode.manualStart([ gracenode.udp ], callback)');
+        return cb();
+    }
+    module.exports.startModule(cb);
+};
 
+module.exports.startModule = function (cb) {
     if (config && config.port) {
         config.portRange = [
             config.port,

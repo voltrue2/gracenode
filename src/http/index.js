@@ -29,6 +29,8 @@ const STATIC_PARAM = '{static:staticfile}';
 const E_NOT_FOUND = 'NOT_FOUND';
 const E_ALREADY_REGISTERD = 'ALREADY_REGISTERD';
 
+exports.name = 'http';
+
 exports.config = function __httpConfig(configIn) {
     logger = gn.log.create('HTTP');
     config = configIn;
@@ -118,6 +120,14 @@ exports.error = function __httpError(status, func) {
 };
 
 exports.setup = function __httpSetup(cb) {
+    if (config.manualStart) {
+        logger.info('HTTP server must be started manually by gracenode.manualStart([ gracenode.http ], callback)');
+        return cb();
+    }
+    exports.startModule(cb);
+};
+
+exports.startModule = function (cb) {
     server = http.createServer(requestHandler);
     server.on('listening', function __onHttpSetupListening() {
         const info = server.address();

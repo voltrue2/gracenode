@@ -31,6 +31,8 @@ const connectionInfo = {
     family: null
 };
 
+module.exports.name = 'rpc';
+
 module.exports.info = function __rpcInfo() {
     return {
         address: connectionInfo.address,
@@ -47,14 +49,20 @@ module.exports.shutdown = function () {
 module.exports.setup = function __rpcSetup(cb) {
     logger = gn.log.create('RPC');
     config = gn.getConfig('rpc');
-
-    connection.setup();
-
     if (!gn.isSupportedVersion()) {
         return gn.stop(new Error(
             'RPC server does not support node.js version: ' + process.version
         ));
     }
+    if (config.manualStart) {
+        logger.info('RPC server must be started manually by gracenode.manualStart([ gracenode.rpc ], callback)');
+        return cb();
+    }
+    module.exports.startModule(cb);
+};
+
+module.exports.startModule = function (cb) {
+    connection.setup();
 
     // change default max size for packets
            if (config.maxPayloadSize) {

@@ -122,6 +122,19 @@ exports.isCluster = function __gnIsCluster() {
     return cluster.isCluster();
 };
 
+exports.manualStart = function (mods, cb) {
+    async.forEachSeries(mods, _manualStartModule, cb);    
+};
+
+function _manualStartModule(mod, next) {
+    if (mod && mod.startModule) {
+        logger.info('Manual start', mod.name);
+        return mod.startModule(next);
+    }
+    logger.warn('Module does not support manual start:', (mod.name || 'Anonymous'));
+    next();
+}
+
 // call this when everything is ready
 exports.start = function startGracenode(cb) {
     applyConfig();
@@ -248,7 +261,7 @@ function applyConfig() {
         clusterConfig = setOption(clusterConfig, clusterConf);
     }
     if (httpPort && httpHost) {
-        exports.http.config({ port: httpPort, host: httpHost });
+        exports.http.config(config.get('http'));
     }
 }
 
