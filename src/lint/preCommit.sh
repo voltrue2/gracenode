@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
-jschanged=`${rootDir}/scripts/detect_js_change`;
+jschanged=`${rootDir}/detect_js_change`;
 
 if [ $jschanged -eq 1 ]; then
     echo "javascript files have been changed: run lint and tests";

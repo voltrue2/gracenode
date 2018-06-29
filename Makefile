@@ -10,9 +10,10 @@ install: ## Initial installation
 	npm install
 	@echo 'create git pre-commit hook'
 	ln -fs ../../src/lint/preCommit.sh .git/hooks/pre-commit
-	ln -fs ../src/gracenode/index.js node_modules/gracenode	
+	ln -fs ../../src/lint/detect_js_change .git/hooks/detect_js_change
 	@echo 'adjust pre-commit hook file permission'
 	chmod +x .git/hooks/pre-commit
+	chmod +x .git/hooks/detect_js_change
 	@echo 'done'
 
 lint: ## Execute lint against the source code
