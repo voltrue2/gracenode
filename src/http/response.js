@@ -58,6 +58,7 @@ Response.prototype.error = function __httpResponseError(error, status) {
     if (error instanceof Error) {
         data.message = error.message;
         data.code = error.code || status;
+        data.trace = error.stack;
     } else {
         data = error;
     }
