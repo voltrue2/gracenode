@@ -14,7 +14,7 @@
     "eslint": "4.18.2",
     "gracelog": "0.7.1",
     "aeterno": "1.0.0",
-    "cluster-mode": "1.2.0",
+    "cluster-mode": "1.2.1",
     "node-datetime": "0.1.5",
     "multiparty": "4.1.2",
     "cookies": "0.5.1",
