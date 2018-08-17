@@ -55,10 +55,11 @@ Response.prototype.gzip = function __httpResponseGzip(bool) {
 
 Response.prototype.error = function __httpResponseError(error, status) {
     var data = {};
+    var trace = null;
     if (error instanceof Error) {
         data.message = error.message;
         data.code = error.code || status;
-        data.trace = error.stack;
+        trace = error.stack;
     } else {
         data = error;
     }
@@ -66,6 +67,7 @@ Response.prototype.error = function __httpResponseError(error, status) {
     this.headers['Content-Type'] = 'application/json; charset=UTF-8';
     logger.error(
         'Error response:', data, status,
+        (trace ? 'trace:\n' + trace : ''),
         util.fmt('url', this._req.method + ' ' + this._req.url),
         util.fmt('id', this._req.id)
     );
