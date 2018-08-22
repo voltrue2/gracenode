@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "express": "^4.16.3",
-    "gracenode-server": "0.4.3",
     "mocha": "^5.2.0",
     "request": "2.86.0",
     "staticdata": "0.0.7"
