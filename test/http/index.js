@@ -156,6 +156,7 @@ describe('gracenode.http', function () {
         gn.http.get('/test/params/{one}/{two}', require(pre + '/test/params').GET);
         gn.http.post('/test/post', require(pre + '/test/post').POST);
         gn.http.post('/test/post2', require(pre + '/test/post2').POST);
+        gn.http.post('/test/postform', require(pre + '/test/postform').POST);
         gn.http.put('/test/put', require(pre + '/test/put').PUT);
         gn.http.get('/test/sub/call/{one}/{two}', require(pre + '/test/sub/call').GET);
         gn.http.get('/test/sub/{one}/{two}', require(pre + '/test/sub/index').GET);
@@ -269,7 +270,7 @@ describe('gracenode.http', function () {
         });
     });
 
-    it('can handle a POST request', function (done) {
+    it('can handle a POST request (application/json)', function (done) {
         var args = {
             boo: 'BOO',
         };
@@ -278,6 +279,30 @@ describe('gracenode.http', function () {
             allRequestHookCalled = false;
             assert.equal(error, undefined);
             assert.equal(body, args.boo);
+            done();
+        });
+    });
+
+    it('can handle a POST request (application/x-www-form-urlencoded)', function (done) {
+        var args = {
+            boo: ['BOO1', 'BOO2', true, false],
+            foo: [123, 123.45]
+        };
+        var options = {
+            form: args,
+            qsStringifyOptions: {arrayFormat: 'repeat'}
+        };
+        require('request').post(http + '/test/postform/', options, function (error, response, body) {
+            assert.equal(allRequestHookCalled, true);
+            allRequestHookCalled = false;
+            assert.equal(error, undefined);
+            body = JSON.parse(body);
+            assert.equal(body.boo[0], args.boo[0]);
+            assert.equal(body.boo[1], args.boo[1]);
+            assert.equal(body.boo[2], args.boo[2]);
+            assert.equal(body.boo[3], args.boo[3]);
+            assert.equal(body.foo[0], args.foo[0]);
+            assert.equal(body.foo[1], args.foo[1]);
             done();
         });
     });

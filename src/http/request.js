@@ -85,6 +85,13 @@ function readRequestBody(url, headers, body) {
 }
 
 function typecast(data) {
+    if (Array.isArray(data)) {
+        // already parsed by queryString.parse
+        for( var i = 0, len = data.length; i < len; i++ ){
+            data[i] = typecast(data[i]);
+        }
+        return data;
+    }
     if (isNaN(data)) {
         switch (data.toLowerCase()) {
             case 'undefined':
