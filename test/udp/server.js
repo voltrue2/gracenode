@@ -9,7 +9,7 @@ gn.config({
     },
     udp: {
         supportJSON: false,
-        address: 'fe80::5054:1ff:fe00:3345%eth0',
+        //address: 'fe80::5054:1ff:fe00:3345%eth0',
         portRange: [7980]
     },
     log: {

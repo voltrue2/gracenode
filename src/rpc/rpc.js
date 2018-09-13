@@ -1,5 +1,6 @@
 'use strict';
 
+const neti = require('os').networkInterfaces();
 const net = require('net');
 const gn = require('../gracenode');
 
@@ -20,6 +21,9 @@ var shutdown = false;
 var server;
 const conns = {};
 
+const IPv4 = 'ipv4';
+const DEFAULT_NETWORKINTERFACE = 'eth0';
+const LOCALHOST = '127.0.0.1';
 const PORT_IN_USE = 'EADDRINUSE';
 const TIMEOUT_FOR_CLOSE = 5000;
 const HEARTBEAT_ID =  911;
@@ -78,7 +82,7 @@ module.exports.startModule = function (cb) {
         ];
     }
 
-    if (!config || !config.host || !config.portRange) {
+    if (!config || !config.portRange) {
         return cb();
     }
     
@@ -90,14 +94,32 @@ module.exports.startModule = function (cb) {
         );
         throw new Error('<PORT_RANGE_FOR_RPC_SERVER_INCORRECT>');
     }
+    
+    // if config.host is not provided, dynamically obtain the host address
+    // for now we support IPv4 ONLY...
+    var addrMap = findAddrMap();
+
+    logger.info('Available Addresses:', addrMap);
+
+    if (!config.nic) {
+        config.nic = DEFAULT_NETWORKINTERFACE;
+    }
+
+    if (!config.host) {
+        logger.info('Obtaining the address dynamically from network interface', config.nic);
+        if (!addrMap[config.nic]) {
+            logger.info('Network interface', config.nic, 'not found falling back to localhost');
+        }
+        config.host = addrMap[config.nic] || LOCALHOST;
+    }
 
     // set up RPC command controller router
     router.setup();
     
-    const ports = [];
+    var ports = [];
     var portIndex = 0;
     var boundPort;
-    const pend = config.portRange[1] || config.portRange[0];
+    var pend = config.portRange[1] || config.portRange[0];
 
     for (var p = config.portRange[0]; p <= pend; p++) {
         ports.push(p);
@@ -105,7 +127,7 @@ module.exports.startModule = function (cb) {
 
     logger.verbose('port range is', config.portRange[0], 'to', pend);
 
-    const done = function __rpcSetupDone() {
+    var done = function __rpcSetupDone() {
         // RPC server is now successfully bound and listening
         boundPort = ports[portIndex];
         // gracenode shutdown task
@@ -163,7 +185,7 @@ module.exports.startModule = function (cb) {
 
         cb();
     };    
-    const listen = function __rpcListen() {
+    var listen = function __rpcListen() {
         const port = ports[portIndex];
         logger.verbose('binding to:', config.host + ':' + port);
         server.listen({
@@ -316,5 +338,20 @@ function closeAllConnections(cb) {
         }
     }
     server.on('close', cb);
+}
+
+function findAddrMap() {
+    var map = {};
+    for (var interfaceName in neti) {
+        var list = neti[interfaceName];
+        for (var i = 0, len = list.length; i < len; i++) {
+            var fam = list[i].family.toLowerCase();
+            var addr = list[i].address;
+            if (fam === IPv4) {
+                map[interfaceName] = addr;
+            }
+        }
+    }
+    return map;
 }
 

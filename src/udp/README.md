@@ -23,7 +23,9 @@ In order to start the UDP server, you will need to provide the following configu
 		portRange: [[port to start from], [port to end with]],
 		// or pass one port insead. The server will bind to incremented port number in cluster mode
 		port: [ port number ],
-		// this is optional and by default it binds to 0.0.0.0 to listen to all addresses
+		// if you leave out address, udp module will use this network interface to find the address to bind to
+        nic: [network interface],
+        // this is optional
 		address: [address to bind to]
 	}
 }

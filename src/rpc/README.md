@@ -12,7 +12,8 @@ RPC server can optionally use built-in session/encryption for secure data transm
 
 ```
 rpc: {
-	host: [host name],
+    nic: [network interfacename] // if you omit host, rpc module will use this network interface to find the address to bind to
+	host: [host name], // optional
 	portRange: [ [port to start from], [port to end with] ],
 	// or pass one port number instead of portRange, RPC server will bind to incremented port number in cluster mode
 	port: [ port number ]

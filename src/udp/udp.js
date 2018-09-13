@@ -14,12 +14,13 @@ const PING_MSG = gn.Buffer.alloc('ping');
 const PONG_MSG = gn.Buffer.alloc('PONG\n');
 const CLEAN_INTERVAL = 60000;
 // configurable
-const PACKET_NUM_LIMIT = 10;
 const PORT_IN_USE = 'EADDRINUSE';
 const IPv6 = 'ipv6';
 const IPv4 = 'ipv4';
 const IPV6_ADDR_PREFIX = 'fe80';
 const LAST_RANGE = 1000;
+const DEFAULT_NETWORKINTERFACE = 'eth0';
+const LOCALHOST = '127.0.0.1';
 const clientMap = {};
 
 var udpVersion = 'udp4';
@@ -73,12 +74,13 @@ module.exports.startModule = function (cb) {
         ];
     }
 
-    if (!config.packets) {
-        config.packets = PACKET_NUM_LIMIT;
-    }
-
     if (!config || !config.portRange) {
         return cb();
+    }
+
+    // set network interface name to beused to obtain the address to bind if there's no address provided
+    if (!config.nic) {
+        config.nic = DEFAULT_NETWORKINTERFACE;
     }
 
     // set transport protocol
@@ -102,13 +104,18 @@ module.exports.startModule = function (cb) {
     }
 
     if (!config.address) {
+        logger.info('Obtaining the address dynamically from network interface', config.nic);
         if (ipv6) {
-            config.address = '::0';
+            config.address = addrMap.ipv6[config.nic];
         } else {
-            config.address = '0.0.0.0';
+            config.address = addrMap.ipv4[config.nic];
         }
-        logger.info('UDP server is binding to address:', config.address);
+        if (!config.address) {
+            logger.info('Network interface', config.nic, 'not found falling back to localhost');
+            config.address = LOCALHOST;
+        }
     }
+    logger.info('UDP server is binding to address:', config.address);
 
     if (isIPv6()) {
         ipv6 = true;
@@ -597,8 +604,8 @@ function isIPv6() {
 
 function findAddrMap() {
     var map = {
-        ipv4: [],
-        ipv6: []
+        ipv4: {},
+        ipv6: {}
     };
     for (var interfaceName in neti) {
         var list = neti[interfaceName];
@@ -606,9 +613,9 @@ function findAddrMap() {
             var fam = list[i].family.toLowerCase();
             var addr = list[i].address;
             if (fam === IPv6 && addr.indexOf(IPV6_ADDR_PREFIX) === 0) {
-                map.ipv6.push(addr + '%' + interfaceName);
+                map.ipv6[interfaceName] = addr + '%' + interfaceName;
             } else if (fam === IPv4) {
-                map.ipv4.push(addr);
+                map.ipv4[interfaceName] = addr;
             }
         }
     }
