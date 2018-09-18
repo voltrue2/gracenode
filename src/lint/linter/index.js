@@ -26,12 +26,12 @@ module.exports = {
 };
 
 function start(path, _packagePath, ignores, cb) {
-    var packagePath = getPackagePath(_packagePath);    
+    var packagePath = getPackagePath(_packagePath);
     try {
         conf = require(packagePath + '/package.json').eslintConfig;
         process.stdout.write(color(
             'Lint loading ' + packagePath +
-            'package.json' + ' as configuration', GREY) + '\n'
+            '/package.json' + ' as configuration', GREY) + '\n'
         );
     } catch (err) {
         process.stdout.write(color(
