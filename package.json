@@ -16,14 +16,14 @@
     "aeterno": "1.0.0",
     "cluster-mode": "1.2.1",
     "node-datetime": "2.0.9",
-    "multiparty": "4.1.2",
-    "cookies": "0.5.1",
+    "multiparty": "4.2.1",
+    "cookies": "0.7.2",
     "redis": "2.8.0"
   },
   "devDependencies": {
     "express": "^4.16.3",
     "mocha": "^5.2.0",
-    "request": "2.86.0",
+    "request": "^2.88.0",
     "staticdata": "0.0.7"
   },
   "engine": {
