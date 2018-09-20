@@ -29,15 +29,19 @@ function start(path, _packagePath, ignores, cb) {
     var packagePath = getPackagePath(_packagePath);
     try {
         conf = require(packagePath + '/package.json').eslintConfig;
-        process.stdout.write(color(
-            'Lint loading ' + packagePath +
-            '/package.json' + ' as configuration', GREY) + '\n'
-        );
+        if (gn.log.isEnabled('sys')) {
+            process.stdout.write(color(
+                'Lint loading ' + packagePath +
+                '/package.json' + ' as configuration', GREY) + '\n'
+            );
+        }
     } catch (err) {
-        process.stdout.write(color(
-            'Lint loading ' + __dirname +
-            '/../../../package.json as configuration', GREY) + '\n'
-        );
+        if (gn.log.isEnabled('sys')) {
+            process.stdout.write(color(
+                'Lint loading ' + __dirname +
+                '/../../../package.json as configuration', GREY) + '\n'
+            );
+        }
     }
     gn.lib.walkDir(path, function (error, list) {
         if (error) {
@@ -106,7 +110,9 @@ function _onEachLint(path, ignores, item) {
                 color('Ignore', DARK_BLUE) +
                 color(' ] ' + item.file, GREY
             );
-            process.stdout.write(skip + '\n');
+            if (gn.log.isEnabled('sys')) {
+                process.stdout.write(skip + '\n');
+            }
             return;
         }
     }
@@ -126,8 +132,10 @@ function _onExec(file, data) {
     var msg = linter.verify(data, conf);
     if (!msg.length) {
         // no error!
-        var good = color('Lint [ ', GREY) + color('OK', GREEN) + color(' ] ' + file, GREY);
-        process.stdout.write(good + '\n');
+        if (gn.log.isEnabled('sys')) {
+            var good = color('Lint [ ', GREY) + color('OK', GREEN) + color(' ] ' + file, GREY);
+            process.stdout.write(good + '\n');
+        }
         return;
     }
     // if there are errors...
@@ -151,19 +159,21 @@ function print(file, msg) {
         if (item.severity === 2) {
             error = true;
         }
-        process.stdout.write(
-            color('Lint [', GREY) +
-            getSeverity(item.severity) +
-            color('] ' + file + ' Line:' + item.line + ' Column:' + item.column, GREY) +
-            '\n' +
-            color('[', GREY) +
-            getType(item.severity, item.nodeType) +
-            getMessage(item.severity, item.message) +
-            color(']', GREY) +
-            '\n' +
-            '{' + color(item.ruleId, GREY) + '} ' +
-            getSource(color(item.source, GREY)) + '\n'
-        );
+        if (gn.log.isEnabled('sys')) {
+            process.stdout.write(
+                color('Lint [', GREY) +
+                getSeverity(item.severity) +
+                color('] ' + file + ' Line:' + item.line + ' Column:' + item.column, GREY) +
+                '\n' +
+                color('[', GREY) +
+                getType(item.severity, item.nodeType) +
+                getMessage(item.severity, item.message) +
+                color(']', GREY) +
+                '\n' +
+                '{' + color(item.ruleId, GREY) + '} ' +
+                getSource(color(item.source, GREY)) + '\n'
+            );
+        }
     }
     return error;
 }
