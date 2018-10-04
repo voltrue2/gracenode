@@ -395,6 +395,7 @@ function _discardResponse(that, id) {
         logger.sys('Response discarded ID:', id);
         if (that.responses[id].timeout) {
             clearTimeout(that.responses[id].timeout);
+            that.responses[id].timeout = null;
         }
         delete that.responses[id];
     }
