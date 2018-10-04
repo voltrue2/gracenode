@@ -14,13 +14,13 @@
     "aeterno": "1.0.0",
     "cluster-mode": "1.2.1",
     "cookies": "0.7.2",
-    "eslint": "4.18.2",
     "gracelog": "0.7.5",
     "multiparty": "4.2.1",
     "node-datetime": "2.1.2",
     "redis": "2.8.0"
   },
   "devDependencies": {
+    "eslint": "^4.18.2",
     "express": "^4.16.3",
     "mocha": "^5.2.0",
     "request": "^2.88.0",
@@ -42,7 +42,7 @@
       "mocha": true
     },
     "rules": {
-      "max-depth": 5,
+      "max-depth": 2,
       "no-undef": "error",
       "no-unused-vars": "error",
       "no-cond-assign": "error",

@@ -11,6 +11,8 @@ const router = require('./router');
 
 const PING_MSG = gn.Buffer.alloc('ping');
 const PONG_MSG = gn.Buffer.alloc('PONG\n');
+// a response object must not live longer than 30 seconds
+const RESPONSE_TTL = 30000;
 
 var logger;
 var heartbeatConf;
@@ -37,19 +39,13 @@ module.exports.create = function __rpcConnectionCreate(sock) {
 function Connection(sock) {
     EventEmitter.call(this);
     var you = sock.remoteAddress + ':' + sock.remotePort;
-    // object to hold response data/options/status/timeout/skipped
-    this.response = {
-        data: null,
-        options: null,
-        timeout: null,
-        skipped: false,
-        status: transport.STATUS.OK
-    };
+    // holds all response objects
+    this.responses = {};
     this.sock = sock;
     this.id = gn.lib.uuid.v4().toString();
     this.state = createState(this.id);
-    // server push
     var params = { that: this };
+    // server push
     this.state.send = _send.bind(null, params);
     // server response (if you need to use this to pretend as a response)
     this.state.respond = _respond.bind(null, params); 
@@ -159,6 +155,15 @@ function _onRespond() {
     }
 }
 
+Connection.prototype._checkResponses = function _rpcConnectionCheckResponses() {
+    var now = gn.lib.now();
+    for (var id in this.responses) {
+        if (this.responses[id].ttl <= now) {
+            _discardResponse(this, id);
+        }
+    } 
+};
+
 Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
     try {
         if (!this.connected) {
@@ -183,7 +188,9 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
     setTimeout(_callHeartbeatCheck.bind({ that: this }), heartbeatConf.checkFrequency);
 };
 
+// we check reponse objects and hartbeat
 function _callHeartbeatCheck() {
+    this.that._checkResponses();
     this.that._checkHeartbeat();
 }
 
@@ -241,7 +248,7 @@ Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
     async.loopSeries(
         parsed,
         params,
-        _onEachData,
+        _onEachData.bind(null, params),
         _onDataHandled.bind(null, params)
     );
 };
@@ -268,14 +275,29 @@ function _onDataHandled(bind, error) {
     }
 }
 
-function _onEachData(parsedData, params, next) {
+function _onEachData(bind, parsedData, params, next) {
     if (!parsedData) {
         return next();
     }
-    params.that._decrypt(parsedData, next);
+    var id = gn.lib.uuid.v4().toString();
+    bind.that.responses[id] = _createResponse(gn.lib.now());
+    logger.sys('Command response initialized ID:', id);
+    var bind2 = { that: bind.that, id: id };
+    params.that._decrypt(bind2, parsedData, next);
 }
 
-Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) {
+function _createResponse(now) {
+    return {
+        ttl: now + RESPONSE_TTL,
+        data: null,
+        options: null,
+        timeout: null,
+        skipped: false,
+        status: transport.STATUS.OK
+    };
+}
+
+Connection.prototype._decrypt = function __rpcConnectionDecrypt(bind, parsedData, cb) {
     // handle command routing
     var cmd = router.route(this.name, parsedData);
     // execute command w/ encryption and decryption
@@ -285,6 +307,7 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
         }
         var that = this;
         var params = {
+            id: bind.id,
             that: that,
             parsedData: parsedData,
             cmd: cmd,
@@ -301,9 +324,9 @@ Connection.prototype._decrypt = function __rpcConnectionDecrypt(parsedData, cb) 
     }
     // execute command w/o encryption + decryption
     if (!cmd) {
-        return this._errorResponse(parsedData, null, cb);
+        return this._errorResponse(bind.id, parsedData, null, cb);
     }
-    this._execCmd(cmd, parsedData, null, cb);
+    this._execCmd(bind.id, cmd, parsedData, null, cb);
 };
 
 function _onDecrypt(bind, error, sid, seq, sdata, decrypted) {
@@ -317,12 +340,13 @@ function _onDecrypt(bind, error, sid, seq, sdata, decrypted) {
     };
     bind.parsedData.payload = decrypted;
     if (!bind.cmd) {
-        return bind.that._errorResponse(bind.parsedData, sess, bind.cb);
+        return bind.that._errorResponse(bind.id, bind.parsedData, sess, bind.cb);
     }
-    bind.that._execCmd(bind.cmd, bind.parsedData, sess, bind.cb);
+    bind.that._execCmd(bind.id, bind.cmd, bind.parsedData, sess, bind.cb);
 }
 
-Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(parsedData, sess, cb) {
+Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(id, parsedData, sess, cb) {
+    _discardResponse(this, id);
     if (!this.sock) {
         return cb(new Error('SocketUnexceptedlyGone'));
     }
@@ -340,8 +364,9 @@ Connection.prototype._errorResponse = function __rpcConnectionErrorResponse(pars
     this._write(new Error('NOT_FOUND'), this.state.STATUS.NOT_FOUND, this.state.seq, msg, cb);
 };
 
-Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData, sess, cb) {
+Connection.prototype._execCmd = function __rpcConnectionExecCmd(id, cmd, parsedData, sess, cb) {
     if (!this.sock) {
+        _discardResponse(this, id);
         return cb(new Error('SocketUnexceptedlyGone'));
     }
     this.state.command = parsedData.command;
@@ -356,6 +381,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
     }
     // execute hooks before the handler(s)
     var params = {
+        id: id,
         that: this,
         cmd: cmd,
         parsedData: parsedData,
@@ -364,12 +390,23 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(cmd, parsedData,
     cmd.hooks(parsedData, this.state, _onHooksFinished.bind(null, params));
 };
 
+function _discardResponse(that, id) {
+    if (that.responses[id]) {
+        logger.sys('Response discarded ID:', id);
+        if (that.responses[id].timeout) {
+            clearTimeout(that.responses[id].timeout);
+        }
+        delete that.responses[id];
+    }
+}
+
 function _onHooksFinished(bind, error, status) {
     var that = bind.that;
     var cmd = bind.cmd;
     var parsedData = bind.parsedData;
     var cb = bind.cb;
     var params = {
+        id: bind.id,
         that: that,
         cmd: cmd,
         parsedData: parsedData,
@@ -382,11 +419,6 @@ function _onHooksFinished(bind, error, status) {
         }
         return that._write(error, status, parsedData.seq, msg, cb);
     }
-    that.response.data = null;
-    that.response.options = null;
-    that.response.timeout = null;
-    that.response.skipped = false;
-    that.response.status = status || transport.STATUS.OK;
     async.eachSeries(
         cmd.handlers,
         _onEachCommand.bind(null, params),
@@ -398,12 +430,14 @@ function _onEachCommand(bind, handler, next) {
     var that = bind.that;
     var cmd = bind.cmd;
     var params = {
+        id: bind.id,
         that: that,
         cmd: cmd,
         next: next
     };
-    if (callbackTimeout) {
-        that.response.timeout = setTimeout(
+    if (callbackTimeout && that.responses[bind.id]) {
+        var response = that.responses[bind.id];
+        response.timeout = setTimeout(
             _onResponseTimeout.bind(null, params),
             callbackTimeout
         );
@@ -412,6 +446,7 @@ function _onEachCommand(bind, handler, next) {
 }
 
 function _onResponseTimeout(bind) {
+    var id = bind.id;
     var that = bind.that;
     var cmd = bind.cmd;
     var next = bind.next;
@@ -423,69 +458,88 @@ function _onResponseTimeout(bind) {
         'respond as an error with status',
         transport.STATUS.SERVER_ERR
     );
-    that.response.skipped = true;
-    that.response.status = transport.STATUS.SERVER_ERR;
-    that.response.data = gn.Buffer.alloc('MISSING_CALLBACK');
+    var response = that.responses[id];
+    if (response) {   
+        response.skipped = true;
+        response.status = transport.STATUS.SERVER_ERR;
+        response.data = gn.Buffer.alloc('MISSING_CALLBACK');
+    }
     next();
 }
 
 function _onCommand(bind, _res, _status, _options) {
+    var id = bind.id;
     var that = bind.that;
     var next = bind.next;
-    if (that.response.timeout) {
-        clearTimeout(that.response.timeout);
-        that.response.timeout = null;
+    var response = that.responses[id];
+    if (!response) {
+        throw new Error('Response object gone ID: ' + id);
     }
-    if (that.response.skipped) {
+    if (response.timeout) {
+        clearTimeout(response.timeout);
+        response.timeout = null;
+    }
+    if (response.skipped) {
         // timeout has been called: skip
+        _discardResponse(that, id);
         return;
     }
-    that.response.options = _options;
+    response.options = _options;
     if (_res instanceof Error) {
         if (!_status) {
             _status = transport.STATUS.BAD_REQ;
         }
-        that.response.status = _status;
-        that.response.data = gn.Buffer.alloc(_res.message);
+        response.status = _status;
+        response.data = gn.Buffer.alloc(_res.message);
         return next(_res);
     }
     if (!_status) {
         _status = transport.STATUS.OK;
     }
-    that.response.status = _status;
-    that.response.data = _res;
+    response.status = _status;
+    response.data = _res;
     next();
 }
 
 function _onCommandsFinished(bind, error) {
+    var id = bind.id;
     var that = bind.that;
     var parsedData = bind.parsedData;
     var cb = bind.cb;
     var params = {
+        id: id,
         that: that,
         cb: cb
     };
+    var response = that.responses[id];
     // respond to client
-    if (!that.response.data) {
+    if (!response || !response.data) {
+        _discardResponse(that, id);
         throw new Error('MissingResponsePacket');
     }
     that._write(
         error,
-        that.response.status,
+        response.status,
         parsedData.seq,
-        that.response.data,
+        response.data,
         _onCommandResponseFinished.bind(null, params)
     );
 }
 
 function _onCommandResponseFinished(bind, error) {
+    var id = bind.id;
     var that = bind.that;
     var cb = bind.cb;
-    if (that.response.options) {
-        if (that.response.options.closeAfterReply) {
+    var response = that.responses[id];
+    if (!response) {
+        throw new Error('Response object gone ID:', id);
+    }
+    _discardResponse(that, id);
+    if (response.options) {
+        if (response.options.closeAfterReply) {
             return that.close();
         }
-        if (that.response.options.killAfterReply) {
+        if (response.options.killAfterReply) {
             return that.kill();
         }
     }
