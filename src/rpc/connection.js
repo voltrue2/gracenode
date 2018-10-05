@@ -472,10 +472,7 @@ function _onCommand(bind, _res, _status, _options) {
     var id = bind.id;
     var that = bind.that;
     var next = bind.next;
-    var response = that.responses[id];
-    if (!response) {
-        throw new Error('Response object gone ID: ' + id);
-    }
+    var response = that.responses[id] || _createResponse(gn.lib.now());
     if (response.timeout) {
         clearTimeout(response.timeout);
         response.timeout = null;
@@ -532,11 +529,7 @@ function _onCommandResponseFinished(bind, error) {
     var that = bind.that;
     var cb = bind.cb;
     var response = that.responses[id];
-    if (!response) {
-        throw new Error('Response object gone ID:', id);
-    }
-    _discardResponse(that, id);
-    if (response.options) {
+    if (response && response.options) {
         if (response.options.closeAfterReply) {
             return that.close();
         }
@@ -544,6 +537,7 @@ function _onCommandResponseFinished(bind, error) {
             return that.kill();
         }
     }
+    _discardResponse(that, id);
     cb(error);
 }
 
