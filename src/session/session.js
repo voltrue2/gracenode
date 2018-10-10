@@ -1,5 +1,10 @@
 'use strict';
 
+/***
+* FIXME: This session module is way too complex for no merit
+* We need to remove this or overhaul it completly...
+*/
+
 var gn = require('../gracenode');
 var mem = require('./mem');
 var logger;
@@ -165,11 +170,12 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
             set(PROTO_RPC + id, data, _onCustomSet.bind({
                 id: id,
                 data: data,
-                cb: cb
+                cb: cb,
+                req
             }));
             return;
         }
-        return set(id, data, cb);
+        return set(id, data, cb, req);
     }
     
     if (using.udp || using.rpc) {
