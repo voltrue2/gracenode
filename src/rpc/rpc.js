@@ -58,6 +58,30 @@ module.exports.setup = function __rpcSetup(cb) {
             'RPC server does not support node.js version: ' + process.version
         ));
     }
+    // gracenode shutdown task
+    gn.onExit(function RPCShutdown(next) {
+        shutdown = true;
+        logger.info(
+            'RPC server closing',
+            config.host + ':' + config.port,
+            'waiting for all open connections to close...'
+        );
+        logger.info(
+            'RPC server will forcefully close if all connections do not close in',
+            TIMEOUT_FOR_CLOSE, 'msc'
+        );
+        // set up time out if connections do not close within the time, it hard closes
+        const timeout = setTimeout(next, TIMEOUT_FOR_CLOSE);
+        // stop accepting new connections and shutdown when all connections are closed
+        // server will emit 'close' event when closeAllConnections finishes
+        server.close();
+        // instruct all connections to close
+        closeAllConnections(function () {
+            clearTimeout(timeout);
+            next();
+        });
+    });
+    // if manual start is enabled
     if (config.manualStart) {
         logger.info('RPC server must be started manually by gracenode.manualStart([ gracenode.rpc ], callback)');
         return cb();
@@ -130,30 +154,6 @@ module.exports.startModule = function (cb) {
     var done = function __rpcSetupDone() {
         // RPC server is now successfully bound and listening
         boundPort = ports[portIndex];
-        // gracenode shutdown task
-        gn.onExit(function RPCShutdown(next) {
-            shutdown = true;
-            logger.info(
-                'RPC server closing',
-                config.host + ':' + boundPort,
-                'waiting for all open connections to close...'
-            );
-            logger.info(
-                'RPC server will forcefully close if all connections do not close in',
-                TIMEOUT_FOR_CLOSE, 'msc'
-            );
-            // set up time out if connections do not close within the time, it hard closes
-            const timeout = setTimeout(next, TIMEOUT_FOR_CLOSE);
-            // stop accepting new connections and shutdown when all connections are closed
-            // server will emit 'close' event when closeAllConnections finishes
-            server.close();
-            // instruct all connections to close
-            closeAllConnections(function () {
-                clearTimeout(timeout);
-                next();
-            });
-        });
-
         const info = server.address();
         connectionInfo.address = info.address;
         connectionInfo.host = config.host;

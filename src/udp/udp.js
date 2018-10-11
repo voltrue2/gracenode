@@ -59,6 +59,25 @@ module.exports.setup = function __udpSetup(cb) {
             'UDP server does not support node.js version: ' + process.version
         ));
     }
+    // gracenode shutdown task
+    gn.onExit(function UDPShutdown(next) {
+
+        shutdown = true;
+
+        logger.info(
+            'UDP server closing',
+            config.address + ':' + config.port
+        );
+
+        try {
+            server.close();
+        } catch (err) {
+            logger.error(err);
+        }
+
+        next();
+    });
+    // if manual start is enabled
     if (config.manualStart) {
         logger.info('UDP server must be started manually by gracenode.manualStart([ gracenode.udp ], callback)');
         return cb();
@@ -135,38 +154,12 @@ module.exports.startModule = function (cb) {
 
     router.setup();
 
-    var running = false;
     var ports = [];
     var portIndex = 0;
-    var boundPort;
 
     var done = function __udpSetupDone() {
         // UDP server is now successfully bound and listening
-        boundPort = ports[portIndex];
-        // gracenode shutdown task
-        gn.onExit(function UDPShutdown(next) {
 
-            shutdown = true;
-
-            if (!running) {
-                logger.info(
-                    'UDP server not running yet [skip]:',
-                    config.address + ':' + boundPort
-                );
-                return next();
-            }
-
-            logger.info(
-                'UDP server closing',
-                config.address + ':' + boundPort
-            );
-
-            server.close();
-
-            next();
-        });
-
-        running = true;
         server.on('message', handleMessage);
         
         var info = server.address();
