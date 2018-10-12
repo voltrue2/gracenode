@@ -37,6 +37,24 @@ exports.config = function __httpConfig(configIn) {
     route.setup();
     request.setup();
     response.setup();
+    gn.onExit(function HTTPShutdown(next) {
+        try {
+            logger.info('Stopping HTTP server...');
+            server.close();
+            logger.info(
+                'HTTP server stopped gracefully:',
+                config.host + ':' + config.port
+            );
+            next();
+        } catch (e) {
+            if (e.message === 'Not running') {
+                logger.verbose(e.message);
+                return next();
+            }
+            logger.error('HTTP server error on stop:', e);
+            next(e);
+        }
+    });
 };
 
 exports.info = function __httpInfo() {
@@ -150,24 +168,6 @@ exports.startModule = function (cb) {
             (config.host + ':' + config.port)
         );
         cb(error);
-    });
-    gn.onExit(function __httpOnExit(next) {
-        try {
-            logger.info('Stopping HTTP server...');
-            server.close();
-            logger.info(
-                'HTTP server stopped gracefully:',
-                config.host + ':' + config.port
-            );
-            next();
-        } catch (e) {
-            if (e.message === 'Not running') {
-                logger.verbose(e.message);
-                return next();
-            }
-            logger.error('HTTP server error on stop:', e);
-            next(e);
-        }
     });
     try {
         server.listen(config.port, config.host);
