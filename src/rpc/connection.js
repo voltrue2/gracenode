@@ -392,7 +392,7 @@ Connection.prototype._execCmd = function __rpcConnectionExecCmd(id, cmd, parsedD
 
 function _discardResponse(that, id) {
     if (that.responses[id]) {
-        logger.sys('Response discarded ID:', id);
+        logger.verbose('Response discarded ID:', id);
         if (that.responses[id].timeout) {
             clearTimeout(that.responses[id].timeout);
             that.responses[id].timeout = null;

@@ -199,6 +199,10 @@ exports.stop = function __gnStop(error) {
     cluster.stop(error);
 };
 
+exports.terminate = function __onTerminate() {
+    cluster.terminate();
+};
+
 exports.isSupportedVersion = function __gnIsSupportedVersion() {
     return isSupportedVersion;
 };
@@ -208,17 +212,29 @@ function applyConfig() {
     var envmap = env.getEnv();
     if (envmap && envmap.CONF) {
         // load a configuration file from ENV
-        config.load(require(envmap.CONF));
+        try {
+            config.load(require(envmap.CONF));
+        } catch (error) {
+            var envName = '';
+            for (var name in process.env) {
+                if (process.env[name] === envmap.CONF) {
+                    envName = name;
+                    break;
+                }
+            }
+            error.message + ' - env name: ' + envName;
+            throw new error;
+        }
     }
     if (Object.keys(envmap).length) {
         var dump = config.dump();
         // try to replace placeholders in the configurations
-        for (var name in envmap) {
-            if (name === 'CONF') {
+        for (var _name in envmap) {
+            if (_name === 'CONF') {
                 continue;
             }
-            var key = '\\{\\$' + name + '\\}';
-            dump = dump.replace(new RegExp(key, 'g'), envmap[name]);
+            var key = '\\{\\$' + _name + '\\}';
+            dump = dump.replace(new RegExp(key, 'g'), envmap[_name]);
         }
         config.restore(dump);
     }
