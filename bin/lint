@@ -4,30 +4,30 @@ const gn = require('../src/gracenode');
 const lint = require('../src/lint');
 
 gn.config({
-	log: { level: 'error >=', color: true },
-	cluster: { max: 0 }
+    log: { level: 'error >=', color: true },
+    cluster: { max: 0 }
 });
 
 var root = process.cwd();
 var list = [];
 
 gn.start(function () {
-	// we change the current working directory from gracenode/bin/
-	process.chdir(root);
-	for (var i = 2, len = process.argv.length; i < len; i++) {
-		list.push(root + '/' + process.argv[i]);
-	}
-	gn.async.forEachSeries(list, function (path, next) {
-		lint(path, '', [], function (error) {
-			if (error) {
-				return next(error);
-			}
-			next();
-		});
-	}, function (error) {
-		if (error) {
-			return process.exit(1);
-		}
-		process.exit(0);
-	});
+    // we change the current working directory from gracenode/bin/
+    process.chdir(root);
+    for (var i = 2, len = process.argv.length; i < len; i++) {
+        list.push(root + '/' + process.argv[i]);
+    }
+    gn.async.forEachSeries(list, function (path, next) {
+        lint(path, '', [], function (error) {
+            if (error) {
+                return next(error);
+            }
+            next();
+        });
+    }, function (error) {
+        if (error) {
+            return process.exit(1);
+        }
+        process.exit(0);
+    });
 });

@@ -29,14 +29,14 @@ function start(path, _packagePath, ignores, cb) {
     var packagePath = getPackagePath(_packagePath);
     try {
         conf = require(packagePath + '/package.json').eslintConfig;
-        if (gn.log.isEnabled('sys')) {
+        if (gn.log.isEnabled('verbose')) {
             process.stdout.write(color(
                 'Lint loading ' + packagePath +
                 '/package.json' + ' as configuration', GREY) + '\n'
             );
         }
     } catch (err) {
-        if (gn.log.isEnabled('sys')) {
+        if (gn.log.isEnabled('verbose')) {
             process.stdout.write(color(
                 'Lint loading ' + __dirname +
                 '/../../../package.json as configuration', GREY) + '\n'
@@ -133,7 +133,7 @@ function _onExec(file, data) {
     if (!msg.length) {
         // no error!
         if (gn.log.isEnabled('sys')) {
-            var good = color('Lint [ ', GREY) + color('OK', GREEN) + color(' ] ' + file, GREY);
+            var good = color(getSeverity(0) + file, GREY);
             process.stdout.write(good + '\n');
         }
         return;
@@ -159,56 +159,46 @@ function print(file, msg) {
         if (item.severity === 2) {
             error = true;
         }
-        if (gn.log.isEnabled('sys')) {
+        if (gn.log.isEnabled('error')) {
+            var _color = getSeverityColor(item.severity);
             process.stdout.write(
-                color('Lint [', GREY) +
+                // indicator symbol
                 getSeverity(item.severity) +
-                color('] ' + file + ' Line:' + item.line + ' Column:' + item.column, GREY) +
-                '\n' +
-                color('[', GREY) +
-                getType(item.severity, item.nodeType) +
-                getMessage(item.severity, item.message) +
-                color(']', GREY) +
-                '\n' +
-                '{' + color(item.ruleId, GREY) + '} ' +
-                getSource(color(item.source, GREY)) + '\n'
+                // error type and message
+                color(ud('  ' + item.nodeType + ' [ ' + item.message + ' ] ' +
+                file + ' Line:' + item.line + ' Column:' + item.column), GREY) +
+                // errored code
+                color('\n {', GREY) + color(item.ruleId, _color) + color('} ', GREY) +
+                getSource(color(item.source, _color)) + '\n\n'
             );
         }
     }
     return error;
 }
 
+function getSeverityColor(severity) {
+    switch (severity) {
+        case 0:
+            return GREY;
+        case 1:
+            return BROWN;
+        case 2:
+            return RED;
+        default:
+            return DARK_BLUE;
+    }
+}
+
 function getSeverity(severity) {
     switch (severity) {
+        case 0:
+            return color('✓', GREEN);
         case 1:
-            return color('Warning', BROWN);
+            return color('⚑', BROWN);
         case 2:
-            return color('Error', RED);
+            return color('✖', RED);
         default:
-            return color('Info', DARK_BLUE);    
-    }
-}
-
-function getType(severity, type) {
-    type = '<' + type + '>';
-    switch (severity) {
-        case 1:
-            return color(type, BROWN);
-        case 2:
-            return color(type, RED);
-        default:
-            return color(type, DARK_BLUE);    
-    }
-}
-
-function getMessage(severity, msg) {
-    switch (severity) {
-        case 1:
-            return color(msg, BROWN);
-        case 2:
-            return color(msg, RED);
-        default:
-            return color(msg, DARK_BLUE);    
+            return color('‼', DARK_BLUE);
     }
 }
 
@@ -221,5 +211,9 @@ function getSource(source) {
 
 function color(val, code) {
     return '\x1b[' + code + 'm' + val + '\x1b[0m';
+}
+
+function ud(val) {
+    return '\x1b[4m' + val + '\x1b[0m';
 }
 
