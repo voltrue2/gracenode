@@ -133,7 +133,7 @@ function _onExec(file, data) {
     if (!msg.length) {
         // no error!
         if (gn.log.isEnabled('sys')) {
-            var good = color(getSeverity(0) + file, GREY);
+            var good = getSeverity(0) + ' ' + color(file, GREY);
             process.stdout.write(good + '\n');
         }
         return;
@@ -203,6 +203,8 @@ function getSeverity(severity) {
 }
 
 function getSource(source) {
+    // remove unnecessary whitespaces
+    source = source.replace(/  /g, '');
     if (source.length > MAX_SOURCE_LEN) {
         return source.substring(0, MAX_SOURCE_LEN) + '...';
     }
