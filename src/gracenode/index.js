@@ -102,12 +102,12 @@ exports.registerShutdownTask = function __gnRegisterShutdownTask(name, func) {
         '.registerShutdownTask() has been deprecated and should not be used.',
         'Use .onExit(taskFunction, *runOnMaster) instead',
         e.stack
-    );    
+    );
     exports.onExit(func);
 };
 
 // add module name and path to be bootstrapped by .start()
-exports.use = function __gnUse(name, path, options) { 
+exports.use = function __gnUse(name, path, options) {
     if (typeof path === 'string') {
         path = rootPath + path;
     }
@@ -123,7 +123,7 @@ exports.isCluster = function __gnIsCluster() {
 };
 
 exports.manualStart = function (mods, cb) {
-    async.forEachSeries(mods, _manualStartModule, cb);    
+    async.forEachSeries(mods, _manualStartModule, cb);
 };
 
 function _manualStartModule(mod, next) {
