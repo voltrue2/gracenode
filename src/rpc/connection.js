@@ -48,7 +48,7 @@ function Connection(sock) {
     // server push
     this.state.send = _send.bind(null, params);
     // server response (if you need to use this to pretend as a response)
-    this.state.respond = _respond.bind(null, params); 
+    this.state.respond = _respond.bind(null, params);
     // force disconnect (graceful) connection
     this.state.close = _close.bind(null, params);
     // force kill connection
@@ -183,7 +183,7 @@ Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker(
             return;
         }
     } catch (error) {
-        logger.error(this.name, 'TCP heartbeat error:', error);        
+        logger.error(this.name, 'TCP heartbeat error:', error);
     }
     setTimeout(_callHeartbeatCheck.bind({ that: this }), heartbeatConf.checkFrequency);
 };
@@ -214,7 +214,7 @@ Connection.prototype.close = function __rpcConnectionClose(error) {
                 this.sock.end();
             }
         } catch (e) {
-            logger.error(this.name, 'TCP socket end failed:', e);    
+            logger.error(this.name, 'TCP socket end failed:', e);
         }
     }
     this._clear();
@@ -460,7 +460,7 @@ function _onResponseTimeout(bind) {
         transport.STATUS.SERVER_ERR
     );
     var response = that.responses[id];
-    if (response) {   
+    if (response) {
         response.skipped = true;
         response.status = transport.STATUS.SERVER_ERR;
         response.data = gn.Buffer.alloc('MISSING_CALLBACK');
@@ -583,7 +583,7 @@ function _onPushEncrypt(bind, error, data) {
 }
 
 Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, cb) {
-    
+
     if (rpc.shutdown()) {
         return cb();
     }
@@ -607,7 +607,7 @@ Connection.prototype.__write = function __rpcConnectionWriteToSock(error, data, 
 };
 
 Connection.prototype.__push = function __rpcConnectionPushToSock(data, cb) {
-    
+
     if (rpc.shutdown()) {
         return cb();
     }

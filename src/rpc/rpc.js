@@ -96,7 +96,7 @@ module.exports.startModule = function (cb) {
            if (config.maxPayloadSize) {
         transport.setMaxSize(config.maxPayloadSize);
     }
-    
+
     protocol.setup(gn);
 
     if (config && config.port) {
@@ -109,7 +109,7 @@ module.exports.startModule = function (cb) {
     if (!config || !config.portRange) {
         return cb();
     }
-    
+
     if (!Array.isArray(config.portRange) || config.portRange.length < 1) {
         logger.error(
             'incorrect port range',
@@ -118,7 +118,7 @@ module.exports.startModule = function (cb) {
         );
         throw new Error('<PORT_RANGE_FOR_RPC_SERVER_INCORRECT>');
     }
-    
+
     // if config.host is not provided, dynamically obtain the host address
     // for now we support IPv4 ONLY...
     var addrMap = findAddrMap();
@@ -139,7 +139,7 @@ module.exports.startModule = function (cb) {
 
     // set up RPC command controller router
     router.setup();
-    
+
     var ports = [];
     var portIndex = 0;
     var boundPort;
@@ -169,14 +169,12 @@ module.exports.startModule = function (cb) {
             }
             */
             try {
-                router.define(HEARTBEAT_ID, HEARTBEAT_NAME, function __rpcOnHeartbeat(state, cb) {
-                    handleHeartbeat(state, cb);
-                });
+                router.define(HEARTBEAT_ID, HEARTBEAT_NAME, handleHeartbeat);
             } catch (e) {
                 logger.warn(e);
             }
-        }    
-    
+        }
+
         connection.useCryptoEngine(cryptoEngine);
 
         logger.info('RPC server started at', config.host + ':' + boundPort, connectionInfo.family);
@@ -184,7 +182,7 @@ module.exports.startModule = function (cb) {
         logger.info('using decryption:', (cryptoEngine.decrypt ? true : false));
 
         cb();
-    };    
+    };
     var listen = function __rpcListen() {
         const port = ports[portIndex];
         logger.verbose('binding to:', config.host + ':' + port);
@@ -241,7 +239,7 @@ module.exports.useDecryption = function __rpcUseDecryption(decrypt) {
 
 // assign a handler function to a command
 module.exports.command = function __rpcCommand(cmdId, commandName, handler) {
-    router.define(cmdId, commandName, handler);    
+    router.define(cmdId, commandName, handler);
 };
 
 // assign a command hook function
@@ -300,7 +298,7 @@ function handleConn(sock) {
             'kill connection'
         );
         sock.destory();
-        return;    
+        return;
     }
     var conn = connection.create(sock);
     conn.on('clear', onConnectionClear);
