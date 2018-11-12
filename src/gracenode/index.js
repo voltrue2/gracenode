@@ -123,7 +123,7 @@ exports.isCluster = function __gnIsCluster() {
 };
 
 exports.manualStart = function (mods, cb) {
-    async.forEachSeries(mods, _manualStartModule, cb);
+    async.forEachSeries(mods, _manualStartModule, _onManualStart.bind(null, { cb: cb }));
 };
 
 function _manualStartModule(mod, next) {
@@ -133,6 +133,14 @@ function _manualStartModule(mod, next) {
     }
     logger.warn('Module does not support manual start:', (mod.name || 'Anonymous'));
     next();
+}
+
+function _onManualStart(bind, error) {
+    if (error) {
+        bind.cb(error);
+        return;
+    }
+    bind.cb();
 }
 
 // call this when everything is ready

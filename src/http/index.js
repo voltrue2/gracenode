@@ -32,6 +32,9 @@ const E_ALREADY_REGISTERD = 'ALREADY_REGISTERD';
 exports.name = 'http';
 
 exports.config = function __httpConfig(configIn) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return;
+    }
     logger = gn.log.create('HTTP');
     config = configIn;
     route.setup();
@@ -63,7 +66,7 @@ exports.info = function __httpInfo() {
         address: connectionInfo.address,
         port: connectionInfo.port,
         family: connectionInfo.family
-    };    
+    };
 };
 
 exports.get = function __httpGet(path, handler, opt) {
@@ -138,6 +141,9 @@ exports.error = function __httpError(status, func) {
 };
 
 exports.setup = function __httpSetup(cb) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return cb();
+    }
     if (config.manualStart) {
         logger.info('HTTP server must be started manually by gracenode.manualStart([ gracenode.http ], callback)');
         return cb();
@@ -146,6 +152,9 @@ exports.setup = function __httpSetup(cb) {
 };
 
 exports.startModule = function (cb) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return cb();
+    }
     server = http.createServer(requestHandler);
     server.on('listening', function __onHttpSetupListening() {
         const info = server.address();
@@ -164,8 +173,9 @@ exports.startModule = function (cb) {
     });
     server.on('error', function __onHttpSetupError(error) {
         logger.fatal(
-            'HTTP server router failed to start:',
-            (config.host + ':' + config.port)
+            'HTTP server router failed to start with an error:',
+            (config.host + ':' + config.port),
+            error
         );
         cb(error);
     });
@@ -174,14 +184,15 @@ exports.startModule = function (cb) {
     } catch (error) {
         logger.fatal(
             'HTTP server router failed to start:',
-            config.host, ':', config.port
+            config.host, ':', config.port,
+            error
         );
         cb(error);
     }
 };
 
 function requestHandler(req, res) {
-    
+
     if (trailingSlash) {
         const uriComponents = req.url.split('?');
         const uri = uriComponents[0];
@@ -222,7 +233,7 @@ function requestHandler(req, res) {
     if (parsed === null) {
         // 404
         resp.error(new Error(E_NOT_FOUND), 404);
-        return;    
+        return;
     }
 
     // listener on unexpected connection termination
@@ -234,7 +245,7 @@ function requestHandler(req, res) {
             util.fmt('time', Date.now() - req.startTime),
             '\n<headers>',
             req.headers
-        );        
+        );
     });
 
     const hookDone = function __onRequestHandlerHookDone(error, statusCode) {

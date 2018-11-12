@@ -52,6 +52,9 @@ module.exports.info = function __udpInfo() {
 };
 
 module.exports.setup = function __udpSetup(cb) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return cb();
+    }
     logger = gn.log.create('UDP');
     config = gn.getConfig('udp');
     if (!gn.isSupportedVersion()) {
@@ -86,6 +89,9 @@ module.exports.setup = function __udpSetup(cb) {
 };
 
 module.exports.startModule = function (cb) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return cb();
+    }
     if (config && config.port) {
         config.portRange = [
             config.port,

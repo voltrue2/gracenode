@@ -4,7 +4,7 @@ var dummy = '/dummy';
 var assert = require('assert');
 var request = require('./request');
 var gn = require('../../src/gracenode');
-var http = 'http://localhost:' + port + dummy; 
+var http = 'http://localhost:' + port + dummy;
 var options = {
     gzip: true,
     headers: {
@@ -40,7 +40,7 @@ var failure = function (req, done) {
 };
 
 describe('gracenode with  gracenode-server/', function () {
-    
+
     var allRequestHookCalled = false;
     var root = gn.getRootPath() + '../../../';
 
@@ -282,7 +282,7 @@ describe('gracenode with  gracenode-server/', function () {
             assert.equal(status, 200);
             done();
         });
-    });    
+    });
 
     it('can ignore a request', function (done) {
         request.GET(http + '/ignore/me/', {}, options, function (error, body, status) {
@@ -322,7 +322,7 @@ describe('gracenode with  gracenode-server/', function () {
         var args = {
             boo: 'BOO',
         };
-    
+
         request.DELETE(http + '/test/delete/', args, options, function (error) {
             assert.equal(allRequestHookCalled, true);
             allRequestHookCalled = false;
@@ -370,7 +370,7 @@ describe('gracenode with  gracenode-server/', function () {
             done();
         });
     });
-    
+
     it('can reroute a request from / to /land/here/', function (done) {
         request.GET(http, {}, options, function (error, body, status) {
             assert.equal(allRequestHookCalled, true);
@@ -400,7 +400,7 @@ describe('gracenode with  gracenode-server/', function () {
             assert.equal(status, 500);
             assert.equal(body, 'internal error');
             done();
-        });        
+        });
     });
 
     it('can execute pre-assigned error controller on error status 404', function (done) {
@@ -411,7 +411,7 @@ describe('gracenode with  gracenode-server/', function () {
             assert.equal(status, 404);
             assert.equal(body, 'not found');
             done();
-        });        
+        });
     });
 
     it('can auto look-up index.js for a request /test/', function (done) {
@@ -444,7 +444,7 @@ describe('gracenode with  gracenode-server/', function () {
             done();
         });
     });
-    
+
     it('can catch double responses', function (done) {
         request.GET(http + '/test/double/', {}, options, function (error, body, status) {
             assert.equal(allRequestHookCalled, true);
@@ -469,7 +469,7 @@ describe('gracenode with  gracenode-server/', function () {
             assert.equal(body, '');
             done();
         });
-        
+
     });
 
     it('can not call response.error() more than once', function (done) {
@@ -813,7 +813,7 @@ describe('gracenode with  gracenode-server/', function () {
         ];
         for (var i = 0, len = expectedList.length; i < len; i++) {
             if (list.indexOf(expectedList[i]) === -1) {
-                throw new Error('endpoint list does not match the expected: ' + expectedList[i]);        
+                throw new Error('endpoint list does not match the expected: ' + expectedList[i]);
             }
         }
     });
@@ -856,7 +856,7 @@ describe('gracenode with  gracenode-server/', function () {
             assert.equal(body.data, data);
             assert.equal(status, 200);
             done();
-        });    
+        });
     });
 
 });

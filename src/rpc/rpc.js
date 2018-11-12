@@ -51,6 +51,9 @@ module.exports.shutdown = function () {
 };
 
 module.exports.setup = function __rpcSetup(cb) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return cb();
+    }
     logger = gn.log.create('RPC');
     config = gn.getConfig('rpc');
     if (!gn.isSupportedVersion()) {
@@ -90,6 +93,10 @@ module.exports.setup = function __rpcSetup(cb) {
 };
 
 module.exports.startModule = function (cb) {
+    if (gn.isCluster() && gn.isMaster()) {
+        return cb();
+    }
+
     connection.setup();
 
     // change default max size for packets

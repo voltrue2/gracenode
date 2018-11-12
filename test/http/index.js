@@ -49,7 +49,7 @@ var failure = function (req, res, done) {
 };
 
 describe('gracenode.http', function () {
-    
+
     var allRequestHookCalled = false;
 
     it('can start HTTP server', function (done) {
@@ -260,7 +260,7 @@ describe('gracenode.http', function () {
             assert.equal(status, 200);
             done();
         });
-    });    
+    });
 
     it('can ignore a request', function (done) {
         request.GET(http + '/ignore/me/', {}, options, function (error, body, status) {
@@ -324,7 +324,7 @@ describe('gracenode.http', function () {
         var args = {
             boo: 'BOO',
         };
-    
+
         request.DELETE(http + '/test/delete/', args, options, function (error) {
             assert.equal(allRequestHookCalled, true);
             allRequestHookCalled = false;
@@ -360,7 +360,7 @@ describe('gracenode.http', function () {
             assert.equal(status, 500);
             assert.equal(body, 'internal error');
             done();
-        });        
+        });
     });
 
     it('can execute pre-assigned error controller on error status 404', function (done) {
@@ -370,7 +370,7 @@ describe('gracenode.http', function () {
             assert.equal(status, 404);
             assert.equal(body, 'not found');
             done();
-        });        
+        });
     });
 
     it('can pass request hook', function (done) {
@@ -392,7 +392,7 @@ describe('gracenode.http', function () {
             done();
         });
     });
-    
+
     it('can catch double responses', function (done) {
         request.GET(http + '/test/double/', {}, options, function (error, body, status) {
             assert.equal(allRequestHookCalled, true);
@@ -417,7 +417,7 @@ describe('gracenode.http', function () {
             assert.equal(body, '');
             done();
         });
-        
+
     });
 
     it('can not call response.error() more than once', function (done) {
@@ -759,7 +759,7 @@ describe('gracenode.http', function () {
             assert.equal(body.data, data);
             assert.equal(status, 200);
             done();
-        });    
+        });
     });
 
     it('can define typed params', function (done) {
@@ -1168,7 +1168,7 @@ describe('gracenode.http', function () {
                 assert.equal(error, null);
                 assert.equal(req.args.session.message, data.message);
                 res.json({ message: 'OK' });
-            });            
+            });
         });
         request.POST(http + '/login/', {}, options, function (error, res, st, headers) {
             assert.equal(error, null);
@@ -1191,7 +1191,7 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'SessionIdNotFound');
             done();
         });
-    });    
+    });
 
     it('can access route that requires session w/ built-in session for HTTP', function (done) {
         gn.http.get('/secure', function (req, res) {
@@ -1208,13 +1208,13 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'OK');
             done();
         });
-    });    
+    });
 
     it('can delete session w/ built-in session for HTTP', function (done) {
         gn.http.post('/logout/', function (req, res) {
             gn.session.delHTTPSession(req, res, function (error) {
                 assert.equal(error, null);
-                res.json({ message: 'OK' });    
+                res.json({ message: 'OK' });
             });
         });
         var opt = gn.lib.deepCopy(options);
@@ -1271,7 +1271,7 @@ describe('gracenode.http', function () {
                 assert.equal(error, null);
                 assert.equal(req.args.session.message, data.message);
                 res.json({ message: 'OK' });
-            });            
+            });
         });
         request.POST(http + '/login2/', {}, options, function (error, res, st, headers) {
             assert.equal(error, null);
@@ -1294,7 +1294,7 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'SessionIdNotFound');
             done();
         });
-    });    
+    });
 
     it('can access route that requires session w/ built-in session for HTTP using custom get/set/del', function (done) {
         gn.http.get('/secure2', function (req, res) {
@@ -1311,13 +1311,13 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'OK');
             done();
         });
-    });    
+    });
 
     it('can delete session w/ built-in session for HTTP using custom get/set/del', function (done) {
         gn.http.post('/logout2/', function (req, res) {
             gn.session.delHTTPSession(req, res, function (error) {
                 assert.equal(error, null);
-                res.json({ message: 'OK' });    
+                res.json({ message: 'OK' });
             });
         });
         var opt = gn.lib.deepCopy(options);
@@ -1375,7 +1375,7 @@ describe('gracenode.http', function () {
                 assert.equal(error, null);
                 assert.equal(req.args.session.message, data.message);
                 res.json({ message: 'OK' });
-            });            
+            });
         });
         request.POST(http + '/login3/', {}, options, function (error, res, st, headers) {
             assert.equal(error, null);
@@ -1398,7 +1398,7 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'SessionIdNotFound');
             done();
         });
-    });    
+    });
 
     it('can access route that requires session w/ built-in session (no cookie) for HTTP', function (done) {
         gn.http.get('/secure3', function (req, res) {
@@ -1415,13 +1415,13 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'OK');
             done();
         });
-    });    
+    });
 
     it('can delete session w/ built-in session (no cookie) for HTTP', function (done) {
         gn.http.post('/logout3/', function (req, res) {
             gn.session.delHTTPSession(req, res, function (error) {
                 assert.equal(error, null);
-                res.json({ message: 'OK' });    
+                res.json({ message: 'OK' });
             });
         });
         var opt = gn.lib.deepCopy(options);
@@ -1480,7 +1480,7 @@ describe('gracenode.http', function () {
                 assert.equal(error, null);
                 assert.equal(req.args.session.message, data.message);
                 res.json({ message: 'OK' });
-            });            
+            });
         });
         request.POST(http + '/login4/', {}, options, function (error, res, st, headers) {
             assert.equal(error, null);
@@ -1503,7 +1503,7 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'SessionIdNotFound');
             done();
         });
-    });    
+    });
 
     it('can access route that requires session w/ built-in session (no cookie one time session ID) for HTTP', function (done) {
         gn.http.get('/secure4', function (req, res) {
@@ -1521,13 +1521,13 @@ describe('gracenode.http', function () {
             testData.sessionid = headers.sessionid;
             done();
         });
-    });    
+    });
 
     it('can delete session w/ built-in session (no cookie + one time session ID) for HTTP', function (done) {
         gn.http.post('/logout4/', function (req, res) {
             gn.session.delHTTPSession(req, res, function (error) {
                 assert.equal(error, null);
-                res.json({ message: 'OK' });    
+                res.json({ message: 'OK' });
             });
         });
         var opt = gn.lib.deepCopy(options);
@@ -1563,7 +1563,7 @@ describe('gracenode.http', function () {
                 assert.equal(error, null);
                 assert.equal(req.args.session.message, data.message);
                 res.json({ message: 'OK' });
-            });            
+            });
         });
         request.POST(http + '/login10/', {}, options, function (error, res, st, headers) {
             assert.equal(error, null);
@@ -1590,7 +1590,7 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'OK');
             var cookie = headers['set-cookie'][0].replace('sessionid=', '');
             var sessionid = cookie.substring(0, cookie.indexOf(';'));
-            assert.notEqual(testData.sessionid, sessionid);    
+            assert.notEqual(testData.sessionid, sessionid);
             testData.sessionid = sessionid;
             done();
         });
@@ -1610,7 +1610,7 @@ describe('gracenode.http', function () {
             assert.equal(res.message, 'OK');
             var cookie = headers['set-cookie'][0].replace('sessionid=', '');
             var sessionid = cookie.substring(0, cookie.indexOf(';'));
-            assert.notEqual(testData.sessionid, sessionid);    
+            assert.notEqual(testData.sessionid, sessionid);
             testData.sessionid = sessionid;
             done();
         });
@@ -1649,7 +1649,7 @@ describe('gracenode.http', function () {
         gn.http.post('/logout10/', function (req, res) {
             gn.session.delHTTPSession(req, res, function (error) {
                 assert.equal(error, null);
-                res.json({ message: 'OK' });    
+                res.json({ message: 'OK' });
             });
         });
         var opt = gn.lib.deepCopy(options);
