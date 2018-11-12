@@ -137,10 +137,14 @@ function _manualStartModule(mod, next) {
 
 function _onManualStart(bind, error) {
     if (error) {
-        bind.cb(error);
+        if (!bind.cb) {
+            bind.cb(error);
+        }
         return;
     }
-    bind.cb();
+    if (!bind.cb) {
+        bind.cb();
+    }
 }
 
 // call this when everything is ready

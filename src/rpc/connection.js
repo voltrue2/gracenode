@@ -666,6 +666,7 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 function createState(id) {
     return {
         STATUS: transport.STATUS,
+        paused: false,
         command: 0,
         payload: null,
         connId: id,
