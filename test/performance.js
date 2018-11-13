@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var lib = require('../lib/'); 
+var lib = require('../lib/');
 var CryptoEngine = require('../lib/packet/cryptoengine');
 var uuid = require('../lib/uuid');
 
@@ -24,7 +24,7 @@ describe('gracenode performance tests', function () {
                 }
             }
             var e = Date.now();
-            r.push(e - s);    
+            r.push(e - s);
             assert.equal(res.length, max);
         }
         console.log('Custom search by full scan average:', avg(r), ' ms with', max, 'matches');
@@ -41,7 +41,7 @@ describe('gracenode performance tests', function () {
             var s = Date.now();
             var res = lib.find(list, find);
             var e = Date.now();
-            r.push(e - s);    
+            r.push(e - s);
             assert.equal(res.length, max);
         }
         console.log('Custom search by lib.find() average:', avg(r), 'ms with', max, 'matches');
@@ -60,7 +60,7 @@ describe('gracenode performance tests', function () {
                 }
             }
             var e = Date.now();
-            r.push(e - s);    
+            r.push(e - s);
             assert.equal(res.length, max);
         }
         console.log('Range search by full scan average:', avg(r), 'ms with', max, 'matches');
@@ -74,7 +74,7 @@ describe('gracenode performance tests', function () {
             var s = Date.now();
             var res = lib.brange(list, 'id', min, max - 1);
             var e = Date.now();
-            r.push(e - s);    
+            r.push(e - s);
             assert.equal(res.length, max);
         }
         console.log('Range search by lib.brange() average:', avg(r), 'ms with', max, 'matches');
@@ -93,7 +93,7 @@ describe('gracenode performance tests', function () {
                 }
             }
             var e = Date.now();
-            r.push(e - s);    
+            r.push(e - s);
         }
         console.log('Search by full scan average:', avg(r), 'ms');
     });
@@ -106,7 +106,7 @@ describe('gracenode performance tests', function () {
             var index = lib.bsearch(list, 'id', m);
             var res = list[index];
             var e = Date.now();
-            r.push(e - s);    
+            r.push(e - s);
         }
         console.log('Search by lib.bsearch() average:', avg(r), 'ms');
     });
