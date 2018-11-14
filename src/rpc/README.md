@@ -13,12 +13,12 @@ RPC server can optionally use built-in session/encryption for secure data transm
 ```
 rpc: {
     nic: [network interfacename] // if you omit host, rpc module will use this network interface to find the address to bind to
-	host: [host name], // optional
-	portRange: [ [port to start from], [port to end with] ],
-	// or pass one port number instead of portRange, RPC server will bind to incremented port number in cluster mode
-	port: [ port number ]
-	maxPayloadSize: [optional] // default is 8000 bytes,
-	heartbeat: [optional] { timeout: [milliseconds], checkFrequency: [milliseconds] }
+    host: [host name], // optional
+    portRange: [ [port to start from], [port to end with] ],
+    // or pass one port number instead of portRange, RPC server will bind to incremented port number in cluster mode
+    port: [ port number ]
+    maxPayloadSize: [optional] // default is 8000 bytes,
+    heartbeat: [optional] { timeout: [milliseconds], checkFrequency: [milliseconds] }
 }
 ```
 
@@ -44,8 +44,8 @@ RPC server sends response back to each heartbeat. The response packet's payload 
 
 ```
 {
-	message: 'heartbeat',
-	serverTime: [timestamp in milliseconds]
+    message: 'heartbeat',
+    serverTime: [timestamp in milliseconds]
 }
 ```
 
@@ -205,10 +205,10 @@ Example in C:
 
 ```c
 struct packet {
-	int ver;
-	uint16_t cmd;
-	uint16_t seq;
-	char payload[0];
+    int ver;
+    uint16_t cmd;
+    uint16_t seq;
+    char payload[0];
 };
 
 // request packet
@@ -316,8 +316,8 @@ var gn = require('gracenode');
 var commandId = 1;
 var commandName = 'exampleCommand';
 gn.rpc.command(commandId, commandName, function (state, cb) {
-	// do something here
-	// call "cb" if the server wants to respond to the client
+    // do something here
+    // call "cb" if the server wants to respond to the client
 });
 ```
 
@@ -330,16 +330,16 @@ var gn = require('gracenode');
 var commandId = 1;
 var commandName = 'mycommand';
 gn.rpc.command(commandId, commandName, function (state, cb, next) {
-	// the first handler
-	next();
+    // the first handler
+    next();
 });
 gn.rpc.command(commandId, commandName, function (state, cb, next) {
-	// the second handler
-	next();
+    // the second handler
+    next();
 });
 gn.rpc.command(commandId, commandName, function (state, cb) {
-	// last handler
-	cb();
+    // last handler
+    cb();
 });
 ```
 
@@ -351,47 +351,47 @@ Command handler functions will have `state` object and `callback` function passe
 
 ```
 {
-	// constants for response status
-	STATUS: {
-		OK: 1,
-		// HTTP 400
-		BAD_REQ: 2,
-		// HTTP 401
-		FORBIDDEN: 3,
-		// HTTP 404
-		NOT_FOUND: 4,
-		// HTTP 500
-		ERROR: 5,
-		// HTTP 503
-		UNAVAILABLE: 6,
-		// UNKNOWN
-		UNKNOWN: 99
-	},
-	// state.now is updated every time the connection recieves a packet
-	now: [timestamp in milliseconds],
-	command: [command ID],
-	// connection.id is a unique ID for each connection
-	connection: [connection object],
-	payload: [payload data],
-	// set a key/value for this TCP connection to remember
-	set: [function],
-	// get key/value that has been "set" by state.set()
-	get: [function],
-	// send packet as a push to connected client
-	send: [function],
-	// send packet as a response to connected client: same as callback
-	respond: [function],
-	// force connection close (graceful) from server
-	close: [function],
-	// force connection kill from server
-	kill: [function],
-	// if session and encryption/decryption is used
-	sessionId: [session ID],
-	// if session and encryption/decryption is used
-	// state.seq MUST be incremented by 1 when the server sends push packet to client
-	seq: [seq],
-	// if sessin and encryption/decryption is used
-	session: [session object]
+    // constants for response status
+    STATUS: {
+        OK: 1,
+        // HTTP 400
+        BAD_REQ: 2,
+        // HTTP 401
+        FORBIDDEN: 3,
+        // HTTP 404
+        NOT_FOUND: 4,
+        // HTTP 500
+        ERROR: 5,
+        // HTTP 503
+        UNAVAILABLE: 6,
+        // UNKNOWN
+        UNKNOWN: 99
+    },
+    // state.now is updated every time the connection recieves a packet
+    now: [timestamp in milliseconds],
+    command: [command ID],
+    // connection.id is a unique ID for each connection
+    connection: [connection object],
+    payload: [payload data],
+    // set a key/value for this TCP connection to remember
+    set: [function],
+    // get key/value that has been "set" by state.set()
+    get: [function],
+    // send packet as a push to connected client
+    send: [function],
+    // send packet as a response to connected client: same as callback
+    respond: [function],
+    // force connection close (graceful) from server
+    close: [function],
+    // force connection kill from server
+    kill: [function],
+    // if session and encryption/decryption is used
+    sessionId: [session ID],
+    // if session and encryption/decryption is used
+    // state.seq MUST be incremented by 1 when the server sends push packet to client
+    seq: [seq],
+    // if sessin and encryption/decryption is used
+    session: [session object]
 }
 ```
 
@@ -400,10 +400,10 @@ Command handler functions will have `state` object and `callback` function passe
 ```javascript
 var gn = require('gracenode');
 gn.rpc.command(1, 'command1', function (state, cb) {
-	var response = { message: 'Hello' };
-	var status = state.STATUS.OK;
-	var options = {};
-	cb(response, status, options);
+    var response = { message: 'Hello' };
+    var status = state.STATUS.OK;
+    var options = {};
+    cb(response, status, options);
 });
 ```
 
@@ -417,8 +417,8 @@ Example:
 var gn = require('gracenode');
 
 gn.rpc.command(1, 'command1', function (state, cb) {
-	// this response withh be sent to the client as an error with status of `5`
-	cb(new Error('SomeError'), state.STATUS.ERROR);
+    // this response withh be sent to the client as an error with status of `5`
+    cb(new Error('SomeError'), state.STATUS.ERROR);
 });
 
 ```
@@ -431,14 +431,20 @@ Default status for an error response is `4` (`state.STATUS.BAD_REQ`).
 
 ```
 {
-	// use this to control response status
-	status: [response status code],
-	// if true, RPC server will disconnect after reply
-	closeAfterReply: [bool],
-	// if true, RPC server will "kill" the connection after reply
-	killAfterReply: [bool]
+    // use this to control response status
+    status: [response status code],
+    // if true, RPC server will disconnect after reply
+    closeAfterReply: [bool],
+    // if true, RPC server will "kill" the connection after reply
+    killAfterReply: [bool]
 }
 ```
+
+### Change heartbeat timeout per client
+
+#### state.changeHeartbeatTimeout(timeout [number])
+
+`timeout` is in milliseconds.
 
 ### Send packets to client
 
@@ -446,9 +452,9 @@ Default status for an error response is `4` (`state.STATUS.BAD_REQ`).
 
 ```javascript
 gn.rpc.command(3, 'command3', function (state, cb) {
-	// do something here
-	// now send some packets other than response
-	state.send({ message: 'Hello' });
+    // do something here
+    // now send some packets other than response
+    state.send({ message: 'Hello' });
 });
 ```
 
@@ -458,7 +464,7 @@ gn.rpc.command(3, 'command3', function (state, cb) {
 
 ```javascript
 gn.rpc.command(3, 'command3', function (state, cb) {
-	state.close();
+    state.close();
 });
 ```
 
@@ -466,7 +472,7 @@ gn.rpc.command(3, 'command3', function (state, cb) {
 
 ```javascript
 gn.rpc.command(3, 'command3', function (state, cb) {
-	state.kill(new Error('SomeError'));
+    state.kill(new Error('SomeError'));
 });
 ```
 
@@ -519,20 +525,20 @@ var gn = require('gracenode');
 gn.session.useRPCSession();
 // set up HTTP endpoint to authenticate client BEFORE connecting to RPC server
 gn.http.post('/authenticate', function (req, res) {
-	// do some authentication here
-	// once it is successfully authenticated the client/user, start HTTP session
-	session = 'some session data';
-	gn.session.setHTTPSession(req, res, session, function (error) {
-		if (error) {
-			return res.error(error, 401);	
-		}
-		// respond to the client with authentication cipher for RPC encryption/decryption
-		res.json({
-			serverAddress: [RPC server for the client to connect to],
-			serverPort: [RPC server port for the client to connect to],
-			cipherData: req.args.cipher
-		});
-	});
+    // do some authentication here
+    // once it is successfully authenticated the client/user, start HTTP session
+    session = 'some session data';
+    gn.session.setHTTPSession(req, res, session, function (error) {
+        if (error) {
+            return res.error(error, 401);    
+        }
+        // respond to the client with authentication cipher for RPC encryption/decryption
+        res.json({
+            serverAddress: [RPC server for the client to connect to],
+            serverPort: [RPC server port for the client to connect to],
+            cipherData: req.args.cipher
+        });
+    });
 });
 ```
 
@@ -544,10 +550,10 @@ The structure of the object is:
 
 ```
 {
-	cipherKey: [buffer],
-	cipherNonce: [buffer],
-	macKey: [buffer],
-	seq: [integer]
+    cipherKey: [buffer],
+    cipherNonce: [buffer],
+    macKey: [buffer],
+    seq: [integer]
 }
 ```
 
@@ -580,8 +586,8 @@ Call this function to register command handler function.
 ```javascript
 var gn = require('gracenode');
 gn.rpc.command(1, 'commandOne', function (state, cb) {
-	// do something here and respond
-	cb({ message: 'OK' });
+    // do something here and respond
+    cb({ message: 'OK' });
 });
 ```
 
@@ -593,7 +599,7 @@ Call this function to register a command hook handler function.
 // command hook for command ID 1
 var gn = require('gracenode');
 gn.rpc.hook(1, function (state, next) {
-	next();
+    next();
 });
 ```
 
@@ -603,7 +609,7 @@ or
 // command hook for command ID 1 and 2
 var gn = require('gracenode');
 gn.rpc.hook([1, 2], function (state, next) {
-	next();
+    next();
 });
 ```
 
@@ -628,9 +634,9 @@ Allows you to register a custom response data format function for heartbeat.
 
 ```javascript
 gracenode.rpc.setHeartbeatResponseFormat(function () {
-	var buf = Buffer.alloc(9);
-	buf.write('heartbeat');
-	return buf;
+    var buf = Buffer.alloc(9);
+    buf.write('heartbeat');
+    return buf;
 });
 ```
 
@@ -643,7 +649,7 @@ Usueful if you need to broadcast that this connection is gone to other connectio
 ```javascript
 var gn = require('gracenode');
 gn.rpc.onClosed(function (connectionId, connection) {
-	// do something
+    // do something
 });
 ```
 
@@ -656,7 +662,7 @@ Usueful if you need to broadcast that this connection is gone to other connectio
 ```javascript
 var gn = require('gracenode');
 gn.rpc.onKilled(function (connectionId, connection) {
-	// do something
+    // do something
 });
 ```
 

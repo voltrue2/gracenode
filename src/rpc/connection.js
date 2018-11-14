@@ -45,6 +45,8 @@ function Connection(sock) {
     this.id = gn.lib.uuid.v4().toString();
     this.state = createState(this.id);
     var params = { that: this };
+    // allow the client to change the heartbeat timeout
+    this.state.changeHeartbeatTimeout = _changeHeartbeatTimeout.bind(null, params);
     // server push
     this.state.send = _send.bind(null, params);
     // server response (if you need to use this to pretend as a response)
@@ -66,6 +68,10 @@ function Connection(sock) {
     if (heartbeatConf) {
         this._checkHeartbeat();
     }
+}
+
+function _changeHeartbeatTimeout(bind, time) {
+    bind.that.state.heartbeatTimeout = time;
 }
 
 function _send(bind, payload) {
@@ -195,7 +201,9 @@ function _callHeartbeatCheck() {
 }
 
 Connection.prototype.isTimedout = function __rpcConnectionIsTimedout() {
-    if (gn.lib.now() - this.state.now >= heartbeatConf.timeout) {
+    var hbtime = this.state.heartbeatTimeout || heartbeatConf.timeout;
+    var delta = gn.lib.now() - this.state.now;
+    if (delta >= hbtime) {
         return true;
     }
     return false;
@@ -666,7 +674,8 @@ Connection.prototype._clear = function __rpcConnectionClear(killed) {
 function createState(id) {
     return {
         STATUS: transport.STATUS,
-        paused: false,
+        // RPC allows individual client to have out heartbeat timeout as well...
+        heartbeatTimeout: 0,
         command: 0,
         payload: null,
         connId: id,
@@ -675,6 +684,7 @@ function createState(id) {
         sessionId: null,
         seq: 0,
         session: null,
+        changeHeartbeatTimeout: null,
         respond: null,
         send: null,
         push: null,

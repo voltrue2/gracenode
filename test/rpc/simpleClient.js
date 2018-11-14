@@ -36,7 +36,7 @@ Client.prototype.send = function (commandId, seq, msg, cb) {
     if (!(msg instanceof Buffer)) {
         msg = JSON.stringify(msg);
     }
-    
+
     this.logger.debug('client sending', commandId, seq, msg);
 
     var packet = transport.createRequest(commandId, seq, msg);
@@ -127,7 +127,7 @@ Client.prototype.batchSendSecure = function (sid, cipher, dataList, cb) {
         dataList[i].payload = Buffer.concat([ session, encrypted ]);
     }
     var packed = transport.createBatchRequest(dataList);
-    this.client.write(packed, cb);    
+    this.client.write(packed, cb);
 };
 
 Client.prototype.recvOnceSecure = function (cipher, cb) {

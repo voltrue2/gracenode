@@ -40,6 +40,11 @@ gn.rpc.command(1, 'test1', function (state, cb) {
     cb({ message: 'OK' });
 });
 
+gn.rpc.command(2, 'changeHeartbeatTimeOut', function (state, cb) {
+    state.changeHeartbeatTime(10000);
+    cb({ message: state.heartbeatTime });
+});
+
 gn.rpc.hook(function all(state, next) {
     //console.log('hook got called!');
     next();

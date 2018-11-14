@@ -10,6 +10,7 @@ var udpPort = 7980;
 
 var client;
 var client2;
+var client3;
 var cipher;
 var sessionId;
 var addr = '127.0.0.1';
@@ -18,7 +19,7 @@ var udpAddr = '::0';
 describe('gracenode.rpc', function () {
 
     udpCli.useBinary();
-    
+
     it('can setup RPC server', function (done) {
         gn.config({
             log: {
@@ -481,7 +482,7 @@ describe('gracenode.rpc', function () {
                 assert.equal(error, null);
             });
         });
-        
+
     });
 
     it('can fail secure command hook w/ session', function (done) {
@@ -692,7 +693,7 @@ describe('gracenode.rpc', function () {
     it('can require callback and detect callblack not being called on the server', function (done) {
         gn.rpc.requireCallback(500);
         gn.rpc.command(9988, 'mustCallCallback', function (state) {
-            
+
         });
         client.recvOnceSecure(cipher, function (data) {
             done();
@@ -794,7 +795,7 @@ describe('gracenode.rpc', function () {
     });
 
     it ('can start another connection', function (done) {
-        client2 = new Client();    
+        client2 = new Client();
         client2.start(addr, portOne, done);
     });
 
@@ -807,7 +808,7 @@ describe('gracenode.rpc', function () {
         client2.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function () {});
     });
 
-    it('Can RPC server detect a client that disappears', function (done) {
+    it('RPC server can detect a client that disappears', function (done) {
         request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
             assert.equal(error, null);
             assert(res.cipher);
@@ -842,6 +843,78 @@ describe('gracenode.rpc', function () {
                 }, 1000);
             });
         });
+    });
+
+    it('can be authenticated by HTTP endpoint', function (done) {
+        request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
+            assert.equal(error, null);
+            assert(res.cipher);
+            assert(res.sessionId);
+            cipher = {
+                cipherKey: new Buffer(res.cipher.cipherKey),
+                cipherNonce: new Buffer(res.cipher.cipherNonce),
+                macKey: new Buffer(res.cipher.macKey),
+                seq: res.cipher.seq
+            };
+            sessionId = res.sessionId;
+            done();
+        });
+    });
+
+    it('can start a client 3', function (done) {
+        client3 = new Client();
+        client3.start(addr, portOne, done);
+    });
+
+    it('client 3 can change its heartbeat timeout to be 10000 ms', function (done) {
+        var cid = 4044;
+        gn.rpc.command(cid, 'changeHeartbeatTime' + cid, function (state, cb) {
+            state.changeHeartbeatTimeout(10000);
+            cb({ message: state.heartbeatTimeout });
+        });
+        client3.recvOnceSecure(cipher, function (data) {
+            assert.equal(data.message, 10000);
+            done();
+        });
+        cipher.seq += 1;
+        client3.sendSecure(sessionId, cipher, cid, cipher.seq, {}, function (error) {
+            assert.equal(error, null);
+        });
+    });
+
+    it('can wait for 5000 ms', function (done) {
+        setTimeout(done, 5000);
+    });
+
+    it('client 3 is still connected w/o sending a heartbeat for 5000 ms', function (done) {
+        var cid = 4045;
+        var msg = 'still online';
+        gn.rpc.command(cid, msg + cid, function (state, cb) {
+            cb({ message: msg });
+        });
+        client3.recvOnceSecure(cipher, function (data) {
+            assert.equal(data.message, msg);
+            done();
+        });
+        cipher.seq += 1;
+        client3.sendSecure(sessionId, cipher, cid, cipher.seq, {}, function (error) {
+            assert.equal(error, null);
+        });
+    });
+
+    it('can be disconnected from the server b/c of heartbeat timeout for not sending a heartbeat more than 10000 ms', function (done) {
+        client3.recvOnceSecure(cipher, function (data) {
+            assert.equal(data.message, 'closed');
+            done();
+        });
+        /*
+        setTimeout(function () {
+            cipher.seq += 1;
+            client3.sendSecure(sessionId, cipher, 4045, cipher.seq, {}, function (error) {
+                assert.equal(error, null);
+            });
+        }, 15000);
+        */
     });
 
 });
