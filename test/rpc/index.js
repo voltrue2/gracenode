@@ -907,14 +907,6 @@ describe('gracenode.rpc', function () {
             assert.equal(data.message, 'closed');
             done();
         });
-        /*
-        setTimeout(function () {
-            cipher.seq += 1;
-            client3.sendSecure(sessionId, cipher, 4045, cipher.seq, {}, function (error) {
-                assert.equal(error, null);
-            });
-        }, 15000);
-        */
     });
 
 });
