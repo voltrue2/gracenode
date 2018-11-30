@@ -2,14 +2,11 @@ services:
   - redis-server
 language: node_js
 node_js:
+- 10.0
 - 9.0
 - 8.9
 - 7.3
 - 6.0
-- 5.0
-- 4.2
-- 4.1
-- 4.0
 env:
 - CXX=g++-4.8
 addons:

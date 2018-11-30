@@ -50,6 +50,9 @@ function setup(cb) {
         .then(next)
         .catch(next);
     });
+    if (!conf.prefix) {
+        conf.prefix = 'gn';
+    }
     if (conf.type) {
         mlink.setType(conf.type);
     }
