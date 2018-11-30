@@ -1,60 +1,94 @@
 'use strict';
 
 const gn = require('../gracenode');
-const announce = require('./announce');
-const broker = require('./broker');
-const meshNodes = require('./meshnodes');
+const mlink = require('mesh-link');
+
+const RUDP = 0;
+const UDP = 1;
+
+var conf;
 
 module.exports = {
-    RUDP: broker.RUDP,
-    UDP: broker.UDP,
+    RUDP: RUDP,
+    UDP: UDP,
     // internally used methods
     config: config,
     setup: setup,
-    // mesh network helper object
-    nodes: meshNodes,
     // public methods for mesh network communication
-    emit: broker.emit,
+    emit: emit,
     on: on,
     // mesh network methods
-    info: broker.info,
+    info: mlink.info,
     // mesh network node methods
-    setNodeValue: announce.setValue,
-    nodeExists: announce.nodeExists,
-    onAnnounce: announce.onAnnounce,
-    onNewNode: announce.onNewNode,
-    getNodes: announce.getNodes,
-    getAllNodes: announce.getAllNodes
+    prepareNodes: mlink.prepareNodes,
+    setNodeType: mlink.setType,
+    setNodeValue: mlink.setValue,
+    nodeExists: mlink.nodeExists,
+    onAnnounce: mlink.onUpdate,
+    onAnnounced: mlink.onUpdated,
+    onNewNodes: mlink.onNewNodes,
+    getType: mlink.getType,
+    getBackupNodes: mlink.getBackupNodes,
+    getNodeValue: mlink.getNodeValue,
+    getNodes: mlink.getNodesByType,
+    getAllNodes: mlink.getNodeEndPoints
 };
 
-function config(conf) {
-
+function config(_conf) {
     if (gn.isCluster() && gn.isMaster()) {
         return;
     }
-
-    announce.config(conf);
-    broker.config(conf);
+    conf = _conf;
 }
 
 function setup(cb) {
-
     if (gn.isCluster() && gn.isMaster()) {
         return cb();
     }
-    
-    broker.setup(function () {
-        announce.setup(cb);
+    gn.onExit(function _stopPortal(next) {
+        mlink.stop()
+        .then(next)
+        .catch(next);
     });
+    if (conf.type) {
+        mlink.setType(conf.type);
+    }
+    mlink.start(conf)
+    .then(cb)
+    .catch(cb);
 }
 
 /** @description A mesh network communication event listener
-* @param {string} eventName - An event name of
-*    mesh network communication event
+* @param {number} eventId - An event ID
 * @param {function} handler - A listener handler
 * @param {function} cb - Indicates as RUDP if given
 *    the handler must call "callback" within itself
 */
-function on(eventName, handler) {
-    broker.on(eventName, handler);
+function on(eventId, handler) {
+    mlink.handler(eventId, handler);
 }
+
+/** @description Sends a message to one or more mesh nodes
+* @param {number} protocol - 0 for RUDP and 1 for UDP
+* @param {number} eventId - An event ID that is pre-defined by .on()
+* @param {array} nodes - An array of mesh node addresses and portes [ { address, port } ]
+* @param {function} cb - A callback, if you want a response back
+*/
+function emit(protocol, eventId, nodes, data, cb) {
+    switch (protocol) {
+        case RUDP:
+            mlink.send(eventId, nodes, data, cb);
+        break;
+        case UDP:
+            mlink.usend(eventId, nodes, data, cb);
+        break;
+        default:
+            if (typeof cb === 'function') {
+                cb(new Error('InvalidProtocol ' + protocol));
+            } else {
+                throw new Error('InvalidProtocol ' + protocol);
+            }
+        break;
+    }
+}
+

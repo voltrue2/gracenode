@@ -11,7 +11,7 @@ const ONE = 'node ' + __dirname + '/servers/one.js';
 const TWO = 'node ' + __dirname + '/servers/two.js';
 
 describe('gracenode.portal', function () {
-    
+
     var one2two;
 
     it('can clean up before the tests', function (done) {
@@ -76,7 +76,7 @@ describe('gracenode.portal', function () {
             assert.equal(status, 200);
             assert.equal(body.str, 'one2two');
             one2two = body;
-            done(); 
+            done();
         });
     });
 
@@ -97,7 +97,7 @@ describe('gracenode.portal', function () {
             body = JSON.parse(body);
             assert.equal(status, 200);
             assert.equal(body.message, 'OK');
-            done(); 
+            done();
         });
     });
 
@@ -114,10 +114,10 @@ describe('gracenode.portal', function () {
             assert.equal(body.str, 'two2one');
             body.str = 'one2two';
             assert.equal(JSON.stringify(one2two), JSON.stringify(body));
-            done(); 
+            done();
         });
-        
-    });
+
+});
 
     it('can clean up after the tests', function (done) {
         clean(done);
@@ -135,10 +135,10 @@ function clean(cb) {
     function _checkdir(next) {
         fs.stat(__dirname + '/servers/logs/', function (error) {
             if (error) {
-                createdir = true;            
+                createdir = true;
             }
             next();
-        });    
+        });
     }
     function _createdir(next) {
         if (createdir) {

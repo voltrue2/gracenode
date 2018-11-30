@@ -16,17 +16,17 @@ In order to use `portal`, you must provide the minimum configuration as shown be
 
 ```
 gracenode.config({
-	portal: {
-		type: <string>,
-		address: <mesh network address>,
-		port: <mesh network port>,
-		relayLimit: <number>,
-		announce: {
-			host: '<host of Redis server>',
-			port: <port of Redis server>,
-			interval: <interval of announce in milliseconds>
-		}
-	}
+    portal: {
+        type: <string>,
+        address: <mesh network address>,
+        port: <mesh network port>,
+        relayLimit: <number>,
+        announce: {
+            host: '<host of Redis server>',
+            port: <port of Redis server>,
+            interval: <interval of announce in milliseconds>
+        }
+    }
 });
 ```
 
@@ -62,7 +62,7 @@ The default is 1000ms.
 
 ### .onAnnounce(callback [Function])
 
-Registers a callback function (synchronous) to be invoked on every announce.
+Registers a callback function (synchronous) to be invoked on every announce **BEFORE** the update.
 
 It is useful when you need to update mesh node value on every announce.
 
@@ -70,11 +70,15 @@ Example:
 
 ```javascript
 gn.portal.onAnnounce(function () {
-	gn.portal.setNodeValue('onlineUsers', getNumberOfOnlineUsers());
+    gn.portal.setNodeValue('onlineUsers', getNumberOfOnlineUsers());
 });
 ```
 
 The above example will update "onlineUsers" on every announce.
+
+### .onAnnounced(callback [Function])
+
+Registers a callback function (synchronous) to be invoked on every announce **AFTER** the update.
 
 ### .onNewNode(callback [Function])
 
@@ -84,14 +88,14 @@ Example:
 
 ```javascript
 gn.portal.onNewNode(function (node) {
-	/**
-	node {
-		address,
-		port,
-		value,
-		type
-	}
-	*/
+    /**
+    node {
+        address,
+        port,
+        value,
+        type
+    }
+    */
 });
 ```
 
@@ -125,7 +129,7 @@ Converts address and port to bytes.
 
 Converts bytes to address and port: `{ address: <string>, port: <number> }`
 
-### .emit(protocol [Number], name [String], nodeList [Array], data [Object], callback [Function])
+### .emit(protocol [Number], emitId [Number], nodeList [Array], data [Object], callback [Function])
 
 Sends mesh netowrk communication to multiple mesh network nodes.
 
@@ -133,9 +137,9 @@ Sends mesh netowrk communication to multiple mesh network nodes.
 
 Mesh network protocol. The valid values are: `portal.RUDP` or `portal.UDP`.
 
-#### name [String]
+#### emitId [Number]
 
-The name that has been defined by `.define(...)`.
+A unique emitId of a number that is pre-defined by `.on(...)`.
 
 #### data [Object]
 
@@ -149,14 +153,14 @@ Structure of `nodeList`:
 
 ```
 [
-	{ address: '127.0.0.1', port: 8000 },
-	{ address: '127.0.0.1', port: 8001 }
-	{ address: '127.0.0.1', port: 8002 }
-	{ address: '127.0.0.1', port: 8003 }
+    { address: '127.0.0.1', port: 8000 },
+    { address: '127.0.0.1', port: 8001 }
+    { address: '127.0.0.1', port: 8002 }
+    { address: '127.0.0.1', port: 8003 }
 ]
 ```
 
-### .on(name [String], callback [Function])
+### .on(emitId [Num], callback [Function])
 
-The listener for `name` pre-defined by `.define(...)`.
+Registers a handler function for `emitId`.
 

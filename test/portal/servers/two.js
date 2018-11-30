@@ -37,7 +37,7 @@ const remember = {};
 gn.start(function () {
     gn.log.setPrefix('TWO');
     logger = gn.log.create();
-    gn.portal.on('one2two', function (payload, cb) {
+    gn.portal.on(101, function (payload, cb) {
         logger.debug('event one2two handled', payload);
         remember.one2two = payload;
         cb(payload);
@@ -53,7 +53,7 @@ gn.http.get('two2one', function (req, res) {
     const data = JSON.parse(JSON.stringify(remember.one2two));
     data.str = 'two2one';
     //data.obj.bin = new Buffer(data.obj.bin.data);
-    gn.portal.emit(gn.portal.UDP, 'two2one', nodes, data);
+    gn.portal.emit(gn.portal.UDP, 100, nodes, data);
     res.json({ message: 'OK' });
 });
 

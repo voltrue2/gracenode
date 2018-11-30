@@ -36,10 +36,8 @@ gn.portal.onAnnounce(function () {
     gn.portal.setNodeValue('one-value-key', 'one-value-' + Date.now());
 });
 
-gn.portal.onNewNode(function (node) {
-    
+gn.portal.onNewNodes(function (node) {
     console.log(node);
-    
     prefix = 'deadbeef';
 });
 
@@ -48,10 +46,8 @@ const remember = {};
 gn.start(function () {
     gn.log.setPrefix('ONE');
     logger = gn.log.create();
-    gn.portal.on('two2one', function (payload) {
-        
+    gn.portal.on(100, function (payload) {
         console.log(payload);
-
         remember.two2one = payload;
     });
 
@@ -77,7 +73,7 @@ gn.http.get('/one2two', function (req, res) {
         return res.error(new Error('NoNodeFound'));
     }
     logger.debug('emit event one2two', nodes, data);
-    gn.portal.emit(gn.portal.RUDP, 'one2two', nodes, data, function (error, resp) {
+    gn.portal.emit(gn.portal.RUDP, 101, nodes, data, function (error, resp) {
         if (error) {
             return res.error(error);
         }
