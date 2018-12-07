@@ -349,7 +349,7 @@ function startCluster(cb) {
             log.setPrefix(
                 (cluster.isMaster() ? 'MASTER' : 'WORKER') +
                 ':' + process.pid +
-                (cluster.id() ? ' ' + cluster.id() : '') 
+                (cluster.id() ? ' ' + cluster.id() : '')
             );
         }
         async.series(onCluster, cb);

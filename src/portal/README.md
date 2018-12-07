@@ -21,10 +21,10 @@ gracenode.config({
         address: <mesh network address>,
         port: <mesh network port>,
         relayLimit: <number>,
-        announce: {
+        updateInterval: <interval of announce in milliseconds>,
+        redis: {
             host: '<host of Redis server>',
-            port: <port of Redis server>,
-            interval: <interval of announce in milliseconds>
+            port: <port of Redis server>
         }
     }
 });
@@ -52,11 +52,49 @@ The maximum cap for the number of mesh network node to be communicated at a time
 
 Default is `10`.
 
-### interval [Number]
+### updateInterval [Number]
 
 The interval of cached mesh network node data renewal.
 
 The default is 1000ms.
+
+### Redis Cluster and Sentinel
+
+Portal module supports Redis Cluster and Sentinel to keep the mesh network states of each node.
+
+In order to use Cluster your configuration must follow as shown:
+
+```
+{
+    /* rest of the configurations */
+    redis: {
+        cluster: [
+            { host, port },
+            { host, port },
+            [...]
+        ]
+    }
+}
+```
+
+You must add an array of Redist Cluster node address and port. You do NOT have to cover all node, but a few.
+
+In order to use Sentinel your configuration must follow as shown:
+
+```
+{
+    /* rest of the configurations */
+    redis: {
+        sentinel: [
+            { host, port },
+            { host, port },
+            [...]
+        ]
+    }
+}
+```
+
+You must add an array of Redist Sentinel node address and port. You do NOT have to cover all node, but a few.
 
 ## Methods
 

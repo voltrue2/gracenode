@@ -65,7 +65,7 @@ function merge(key, origin, obj) {
             }
         }
     } else {
-        origin[key] = obj[key]; 
+        origin[key] = obj[key];
     }
     return origin[key];
 }

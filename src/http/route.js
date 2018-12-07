@@ -14,7 +14,7 @@ exports.define = function __httpRouteDefine(method, path, handler, opt) {
             'InvalidRouteHandler: ' +
             method + ' ' + path +
             ' [' + (typeof handler) + ']'
-        );        
+        );
     }
     mapping.add(method, path, handler, opt);
 };

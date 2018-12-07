@@ -41,7 +41,7 @@ exports.getReqBody = function __httpRequestGetRequestBody(read, req, cb) {
     });
     req.on('error', function __httpRequestGetRequestOnError(error) {
         cb(error);
-    });    
+    });
 };
 
 function readMultipartBody(req, cb) {
@@ -67,7 +67,7 @@ function readMultipartBody(req, cb) {
 
 function readRequestBody(url, headers, body) {
     var reqBody;
-    
+
     if (mime.is(headers, 'json')) {
         try {
             reqBody = JSON.parse(body);

@@ -103,7 +103,7 @@ Response.prototype.download = function __httpResponseDownload(dataOrPath, status
                 that.error(error, 404);
                 return;
             }
-            const filename = dataOrPath.substring(dataOrPath.lastIndexOf('/') + 1); 
+            const filename = dataOrPath.substring(dataOrPath.lastIndexOf('/') + 1);
             that.headers['Content-Disposition'] = 'attachment; filename=' + filename;
             that.headers['Content-Type'] = mime.getFromPath(dataOrPath);
             that.headers['Content-Length'] = data.length;
@@ -202,7 +202,7 @@ Response.prototype.stream = function __httpResponseStream(path) {
             that._res.writeHead(200, { 'Content-Length': total, 'Content-Type': type });
             fs.createReadStream(path).pipe(that._res);
         }
-    });    
+    });
 };
 
 Response.prototype.redirect = function __httpResponseRedirect(path, status) {
@@ -251,7 +251,7 @@ Response.prototype._send = function __httpResponseSend(data, status) {
         if (error) {
             // forced 500 error
             that.error(error, 500);
-            return;    
+            return;
         }
         that.headers['Content-Length'] = size;
         if (dataType === 'UTF-8') {
