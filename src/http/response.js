@@ -59,7 +59,7 @@ Response.prototype.error = function __httpResponseError(error, status) {
     if (error instanceof Error) {
         data.message = error.message;
         data.code = error.code || status;
-        trace = error.stack;
+        trace = logger.config.compress ? error.stack.replace(/\n/g, '\t') : error.stack;
     } else {
         data = error;
     }
@@ -67,7 +67,7 @@ Response.prototype.error = function __httpResponseError(error, status) {
     this.headers['Content-Type'] = 'application/json; charset=UTF-8';
     logger.error(
         'Error response:', data, status,
-        (trace ? 'trace:\n' + trace : ''),
+        (trace ? 'trace:' + trace : ''),
         util.fmt('url', this._req.method + ' ' + this._req.url),
         util.fmt('id', this._req.id)
     );

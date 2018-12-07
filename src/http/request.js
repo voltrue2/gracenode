@@ -35,7 +35,7 @@ exports.getReqBody = function __httpRequestGetRequestBody(read, req, cb) {
             'Reuest body:',
             util.fmt('url', req.method + ' ' + req.url),
             util.fmt('id', req.id),
-            '\n<body>', data
+            '<body>', data
         );
         cb(null, data);
     });
@@ -59,7 +59,7 @@ function readMultipartBody(req, cb) {
             'Request multipart body:',
             util.fmt('url', req.method + ' ' + req.url),
             util.fmt('id', req.id),
-            '\n<body>', body
+            '<body>', body
         );
         cb(null, body);
     });
