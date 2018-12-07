@@ -331,14 +331,18 @@ function createCookieGetter(req, res) {
 }
 
 function reqHandlerLog(req) {
+    var chr = '\n';
+    if (logger.config.compress) {
+        chr = '\t';
+    }
     logger.verbose(
         'Handle request:',
         util.fmt('url', req.method + ' ' + req.url),
         util.fmt('id', req.id),
-        '\n<request headers>', req.headers,
-        '\n<args>', req.args,
-        '\n<query>', req.query,
-        '\n<params>', req.params,
-        '\n<body>', req.body
+        chr + '<request headers>', req.headers,
+        chr + '<args>', req.args,
+        chr + '<query>', req.query,
+        chr + '<params>', req.params,
+        chr + '<body>', req.body
     );
 }
