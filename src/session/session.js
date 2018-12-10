@@ -61,7 +61,7 @@ module.exports.setup = function __sessSetup() {
             throw new Error('<SESSION_CUSTOM_DEL_MISSING>');
         }
     }
-    
+
     setup = true;
 
     mem.setup();
@@ -177,7 +177,7 @@ module.exports.setHTTPSession = function __sessSetHTTPSession(req, res, sessionD
         }
         return set(id, data, cb, req);
     }
-    
+
     if (using.udp || using.rpc) {
         sessionData.seq = 0;
         sessionData.cipher = createSocketCipher();
@@ -251,7 +251,7 @@ module.exports.delHTTPSession = function __sessDelHTTPSession(req, res, cb) {
 
     if (options.useCookie) {
         var cookies = req.cookies();
-        id = cookies.get(SESSION_ID_NAME);    
+        id = cookies.get(SESSION_ID_NAME);
     } else {
         id = req.headers[SESSION_ID_NAME];
     }
@@ -406,7 +406,7 @@ function _onMemSockValFinished(error){
     if (error) {
         return next(error);
     }
-    mem.set(sid, sess, _onSockValSet.bid({
+    mem.set(sid, sess, _onSockValSet.bind({
         ce: ce,
         res: res,
         sess: sess,

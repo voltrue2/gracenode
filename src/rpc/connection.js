@@ -40,6 +40,8 @@ function Connection(sock) {
     EventEmitter.call(this);
     var you = sock.remoteAddress + ':' + sock.remotePort;
     // holds all response objects
+    this.incomingPacketQueue = [];
+    this.incomingLoopTriggered = false;
     this.responses = {};
     this.sock = sock;
     this.id = gn.lib.uuid.v4().toString();
@@ -88,7 +90,7 @@ function _close(bind) {
 
 function _kill(bind, error) {
     bind.that.kill(error);
-} 
+}
 
 function _onDataReceived(bind, packet) {
     bind.that.state.now = gn.lib.now();
@@ -167,7 +169,7 @@ Connection.prototype._checkResponses = function _rpcConnectionCheckResponses() {
         if (this.responses[id].ttl <= now) {
             _discardResponse(this, id);
         }
-    } 
+    }
 };
 
 Connection.prototype._checkHeartbeat = function __rpcConnectionHeartbeatChecker() {
@@ -245,6 +247,21 @@ Connection.prototype.kill = function __rpcConnectionKill(error) {
 };
 
 Connection.prototype._data = function __rpcConnectionDataHandler(packet) {
+    // we put the packet in the queue to make sure the order of packets being handled is maintained
+    this.incomingPacketQueue.push(packet);
+    if (this.incomingPacketQueue.length && !this.incomingLoopTriggered) {
+        this.incomingLoopTriggered = true;
+        this._handlePendingInComingPacket();
+    }
+};
+
+Connection.prototype._handlePendingInComingPacket = function __rpcConnectionHandlePendingInComingPacket() {
+    var packet = this.incomingPacketQueue.shift();
+    if (!packet) {
+        // there is no more packet in the queue
+        this.incomingLoopTriggered = false;
+        return;
+    }
     if (this._handleIfPing(packet)) {
         return;
     }
@@ -281,6 +298,15 @@ function _onDataHandled(bind, error) {
     if (error) {
         return bind.that.kill(error);
     }
+    // there is no more pending incoming packet in the queue
+    if (!bind.that.incomingPacketQueue.length) {
+        bind.that.incomingLoopTriggered = false;
+        return;
+    }
+    // try to handle next packet in the queue
+    process.nextTick(function () {
+        bind.that._handlePendingInComingPacket();
+    });
 }
 
 function _onEachData(bind, parsedData, params, next) {

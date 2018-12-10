@@ -46,7 +46,10 @@ Client.prototype.send = function (commandId, seq, msg, cb) {
 
 Client.prototype.recvOnce = function (cb) {
     var that = this;
-    this.client.once('data', function (packet) {
+    this.client.once('data', _onData);
+    this.client.once('close', _onClose);
+
+    function _onData(packet) {
         that.client.removeAllListeners('close');
         var parsed = that.parser.parse(packet);
         var value = parsed[0].payload;
@@ -57,10 +60,12 @@ Client.prototype.recvOnce = function (cb) {
         }
         that.logger.debug('client received:', parsed, value);
         cb(value, parsed[0].status);
-    });
-    this.client.once('close', function () {
+    }
+
+    function _onClose() {
+        that.client.removeAllListeners('data');
         cb(new Error('closed'));
-    });
+    }
 
 };
 
@@ -159,6 +164,7 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
         }
     });
     this.client.once('close', function () {
+        that.client.removeAllListeners('data');
         cb(new Error('closed'));
     });
 };
@@ -166,6 +172,7 @@ Client.prototype.recvOnceSecure = function (cipher, cb) {
 Client.prototype.recvSecure = function (cipher, cb) {
     var that = this;
     this.client.on('data', function (packet) {
+        that.client.removeAllListeners('close');
         var parsed = that.parser.parse(packet);
         var value;
         for (var i = 0, len = parsed.length; i < len; i++) {
@@ -193,6 +200,7 @@ Client.prototype.recvSecure = function (cipher, cb) {
         }
     });
     this.client.on('close', function () {
+        that.client.removeAllListeners('data');
         cb(new Error('closed'));
     });
 };
