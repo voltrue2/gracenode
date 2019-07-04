@@ -8,7 +8,9 @@
     "url": "https://github.com/voltrue2/gracenode.git"
   },
   "scripts": {
-    "test": "make lint && make test"
+    "test": "make lint && make test",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "aeterno": "1.0.0",
@@ -19,7 +21,8 @@
     "mesh-link": "0.9.0",
     "multiparty": "4.2.1",
     "node-datetime": "2.1.2",
-    "redis": "2.8.0"
+    "redis": "2.8.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "express": "4.16.3",
@@ -115,5 +118,6 @@
     "rest",
     "game"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
