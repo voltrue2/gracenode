@@ -151,6 +151,7 @@ describe('gracenode.http', function () {
         gn.http.get('/test/get2', require(pre + '/test/get2').GET, { readBody: true });
         gn.http.get('/test/get2/{one}/{two}/{three}', require(pre + '/test/get2').GET, { readBody: true });
         gn.http.get('/test/get3', require(pre + '/test/get3').GET);
+        gn.http.get('/test/get4', require(pre + '/test/get4').GET);
         gn.http.head('/test/head', require(pre + '/test/head').HEAD);
         gn.http.get('/test', require(pre + '/test/index').GET);
         gn.http.get('/test/params/{one}/{two}', require(pre + '/test/params').GET);
@@ -676,6 +677,28 @@ describe('gracenode.http', function () {
         });
     });
 
+    it('can read a GET query string including a JSON encoded by RFC 1738', function (done) {
+        request.GET(http + '/test/get2?foo={%22text%22%3A%20%22val%201%22%2C%0A%22next%22%3A%20%22val%202%22}', null, options, function(error, body, status) {
+            assert.equal(allRequestHookCalled, true);
+            allRequestHookCalled = false;
+            assert.equal(error, undefined);
+            assert.equal(status, 200);
+            assert.deepEqual(body.foo, {'text': 'val 1', 'next': 'val 2'});
+            done();
+        });
+    });
+
+    it('can read a GET query string which keys encoded by RFC 1738', function(done) {
+        request.GET(http + '/test/get4?%E9%80%81%E4%BF%A1=OK', null, options, function(error, body, status) {
+            assert.equal(allRequestHookCalled, true);
+            allRequestHookCalled = false;
+            assert.equal(error, undefined);
+            assert.equal(status, 200);
+            assert.equal('OK', body['\u9001\u4FE1']);
+            done();
+        });
+    });
+
     it('can force trailing slash', function (done) {
         request.GET(http + '/redirect/dest', null, options, function (error, body, status, headers) {
             assert.equal(allRequestHookCalled, true);
@@ -743,6 +766,18 @@ describe('gracenode.http', function () {
     it('can auto decode encoded URI paramteres', function (done) {
         var one = '日本語　英語';
         var two = '<html> test\test"test"';
+        request.GET(http + '/test/params/' + encodeURIComponent(one) + '/' + encodeURIComponent(two) + '/', null, options, function (error, body, status) {
+            assert.equal(error, undefined);
+            assert.equal(body.one, one);
+            assert.equal(body.two, two);
+            assert.equal(status, 200);
+            done();
+        });
+    });
+
+    it('can auto decode encoded URI parameters including special characters', function(done) {
+        var one = 'hoge=id';
+        var two = '{tag:"include"}';
         request.GET(http + '/test/params/' + encodeURIComponent(one) + '/' + encodeURIComponent(two) + '/', null, options, function (error, body, status) {
             assert.equal(error, undefined);
             assert.equal(body.one, one);
