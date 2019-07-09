@@ -6,6 +6,11 @@ var app = 'node ' + path;
 
 describe('gracenode daemon', function () {
 
+    it('Daemon feature is now deprecated', function () {
+        console.log('Tests no longer required');
+    });
+
+    /*
     it('resets the test environment', function (done) {
         exec(app + ' stop', function () {
             done();
@@ -67,7 +72,7 @@ describe('gracenode daemon', function () {
             exec(app + ' status', function (err, out) {
                 assert.equal(err, null);
                 assert.notEqual(sout1, out);
-                next();                
+                next();
             });
         };
         var tasks = [
@@ -120,61 +125,6 @@ describe('gracenode daemon', function () {
             done();
         });
     });
-    /* TODO
-    it('Can auto-restart killed daemon process', function (done) {
-        var pid;
-        var getPid = function (next) {
-            exec(command + ' status ' + app, function (err, out) {
-                assert.equal(err, null);
-                var list = out.split('\n');
-                var masterLine;
-                for (var i = 0, len = list.length; i < len; i++) {
-                    if (list[i].indexOf(' Daemon application process (master)') !== -1) {
-                        masterLine = list[i];
-                        break;
-                    }
-                }    
-                assert(masterLine);
-                pid = masterLine.substring(masterLine.lastIndexOf('pid: ') + 1).replace(')', '');
-                assert(pid);
-                next();
-            });
-        };
-        var kill = function (next) {
-            exec('`kill -9 ' + pid + '`', function (err) {
-
-                console.log(pid, err);
-
-                assert.equal(err, null);
-                next();
-            });
-        };
-        var checkRestarted = function (next) {
-            exec(command + ' status ' + app, function (err, out) {
-                assert.equal(err, null);
-                var list = out.split('\n');
-                var masterLine;
-                for (var i = 0, len = list.length; i < len; i++) {
-                    if (list[i].indexOf(' Daemon application process (master)') !== -1) {
-                        masterLine = list[i];
-                        break;
-                    }
-                }    
-                assert(masterLine);
-                var newPid = masterLine.substring(masterLine.lastIndexOf('pid: ') + 1).replace(')', '');
-                assert.notEqual(newPid, pid);
-                next();
-            });
-
-        };
-        var tasks = [
-            getPid,
-            kill,
-            checkRestarted
-        ];
-        async.series(tasks, done);
-    });
-    */
     it('stops a daemon that is running', function (done) {
         var stop = function (next) {
             exec(app + ' stop', function (err, out) {
@@ -273,6 +223,7 @@ describe('gracenode daemon', function () {
         ];
         async.series(tasks, done);
     });
+    */
 
 });
 
