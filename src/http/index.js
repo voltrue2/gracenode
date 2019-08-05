@@ -179,6 +179,9 @@ exports.startModule = function (cb) {
         );
         cb(error);
     });
+    server.on('connection', function (socket) {
+        socket.setNoDelay(!!config.noDelay);
+    });
     try {
         server.listen(config.port, config.host);
     } catch (error) {
