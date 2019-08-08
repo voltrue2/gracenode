@@ -462,7 +462,7 @@ function _socketSessionValidation(res, sockType, remoteIp, remotePort, sess, nex
     }
     // check for client IP and port
     if (sockType === PROTO_RPC) {
-        if (sess.client[sockType].ip !== remoteIp || sess.client[sockType].port !== remotePort) {
+        if (sess.client[sockType].ip !== remoteIp) {
             logger.error(
                 'invalid client IP address detected:',
                 sockType,

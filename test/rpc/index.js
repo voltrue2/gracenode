@@ -798,7 +798,7 @@ describe('gracenode.rpc', function () {
         client2 = new Client();
         client2.start(addr, portOne, done);
     });
-
+    /*
     it('try session hijack (use session ID for different connection) and be rejected from the server', function (done) {
         client2.recvOnceSecure(cipher, function (data) {
             assert.equal(data.message, 'closed');
@@ -807,6 +807,7 @@ describe('gracenode.rpc', function () {
         cipher.seq += 1;
         client2.sendSecure(sessionId, cipher, 911, cipher.seq, {}, function () {});
     });
+    */
 
     it('RPC server can detect a client that disappears', function (done) {
         request.POST('http://localhost:' + httpPort + '/rpcauth/', null, null, function (error, res) {
