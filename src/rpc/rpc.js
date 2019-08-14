@@ -200,7 +200,9 @@ module.exports.startModule = function (cb) {
             exclusive: true
         });
     };
-    server = net.createServer(handleConn);
+    server = net.createServer(handleConn, function (socket) {
+        socket.setNoDelay(!!config.noDelay);
+    });
     server.on('listening', done);
     server.on('error', function __rpcOnError(error) {
         if (error.code === PORT_IN_USE) {
