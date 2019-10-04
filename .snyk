@@ -10,3 +10,8 @@ patch:
         patched: '2019-07-04T00:22:45.891Z'
     - eslint > table > lodash:
         patched: '2019-07-04T00:22:45.891Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T00:22:47.710Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T00:22:47.710Z'
