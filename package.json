@@ -22,7 +22,7 @@
     "multiparty": "4.2.1",
     "node-datetime": "2.1.2",
     "redis": "2.8.0",
-    "snyk": "^1.211.0"
+    "snyk": "^1.290.1"
   },
   "devDependencies": {
     "express": "4.16.3",
