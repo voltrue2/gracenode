@@ -16,7 +16,7 @@
     "aeterno": "1.0.0",
     "cluster-mode": "1.4.0",
     "cookies": "0.7.2",
-    "eslint": "5.16.0",
+    "eslint": "6.0.0",
     "gracelog": "0.7.9",
     "mesh-link": "0.11.0",
     "multiparty": "4.2.1",
